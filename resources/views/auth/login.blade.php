@@ -26,7 +26,7 @@
     <div class="row justify-content-center" >
         <div class="col-md-5">
             <div class="card border border-primary">
-                <div class="card-header card text-white bg-primary ">{{ __('HTP-Report') }}</div>
+                <div class="card-header card text-white bg-primary ">{{ __('H-SmartData') }}</div>
                 <div class="card-body">
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
