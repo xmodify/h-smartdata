@@ -1,6 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\MainSettingController;
+use App\Http\Controllers\Admin\LookupIcodeController;
+use App\Http\Controllers\Admin\LookupWardController;
+use App\Http\Controllers\Admin\LookupHospcodeController;
+use App\Http\Controllers\Admin\User_AccessController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Backoffice_AssetController;
 use App\Http\Controllers\Backoffice_HrdController;
@@ -37,15 +42,44 @@ use App\Http\Controllers\Service_XrayController;
 use App\Http\Controllers\Service_LabController;
 use App\Http\Controllers\SkpcardController;
 
+// Clear-cache #####################################################################################
+Route::get('/clear-cache', function() {
+    $exitCode = Artisan::call('config:clear');
+    $exitCode = Artisan::call('cache:clear');
+    $exitCode = Artisan::call('route:clear');
+    $exitCode = Artisan::call('view:clear');
+    $exitCode = Artisan::call('config:cache');
+    return 'DONE'; //Return anything
+    });
+    
+// IsAdmin ##########################################################################################
+Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(function () {    
+    Route::post('/git-pull', function () {
+        try { $output = shell_exec('cd ' . base_path() . ' && git pull origin main 2>&1');
+            return response()->json(['output' => $output]);
+        } catch (\Exception $e) { return response()->json(['error' => $e->getMessage()], 500);}})->name('git.pull');
+    Route::resource('user_access', User_AccessController::class);
+    Route::get('main_setting', [MainSettingController::class, 'index'])->name('main_setting');
+    Route::put('main_setting/{id}', [MainSettingController::class, 'update']);
+    Route::post('main_setting/up_structure', [MainSettingController::class, 'up_structure'])->name('up_structure');;
+    Route::resource('lookup_icode', LookupIcodeController::class)->parameters(['lookup_icode' => 'icode']);
+    Route::post('insert_lookup_uc_cr', [LookupIcodeController::class, 'insert_lookup_uc_cr'])->name('insert_lookup_uc_cr');
+    Route::post('insert_lookup_ppfs', [LookupIcodeController::class, 'insert_lookup_ppfs'])->name('insert_lookup_ppfs');
+    Route::post('insert_lookup_herb32', [LookupIcodeController::class, 'insert_lookup_herb32'])->name('insert_lookup_herb32');
+    Route::resource('lookup_ward', LookupWardController::class)->parameters(['lookup_ward' => 'ward']);
+    Route::post('insert_lookup_ward', [LookupWardController::class, 'insert_lookup_ward'])->name('insert_lookup_ward');
+    Route::resource('lookup_hospcode', LookupHospcodeController::class)->parameters(['lookup_hospcode' => 'hospcode']);
+});
+
+// home #############################################################################################
+Auth::routes();
 Route::get('/', function () {
     // return view('welcome');
     return redirect()->route('home') ;
 });
-
-Auth::routes();
 Route::match(['get','post'],'/home', [HomeController::class, 'index'])->name('home');
 
-// backoffice_asset
+// backoffice_asset ###################################################################################
 Route::get('backoffice_asset/',[Backoffice_AssetController::class,'index']);
 Route::match(['get','post'],'backoffice_asset/office',[Backoffice_AssetController::class,'office']);
 Route::get('backoffice_asset/office_excel',[Backoffice_AssetController::class,'office_excel']);
@@ -90,7 +124,7 @@ Route::get('backoffice_asset/computer_7440_006_excel',[Backoffice_AssetControlle
 Route::get('backoffice_asset/computer_7440_007_excel',[Backoffice_AssetController::class,'computer_7440_007_excel']);
 Route::get('backoffice_asset/computer_7440_009_excel',[Backoffice_AssetController::class,'computer_7440_009_excel']);
 
-// backoffice_hrd
+// backoffice_hrd ##########################################################################################################################################################################
 Route::get('backoffice_hrd/',[Backoffice_HrdController::class,'index']);
 Route::match(['get','post'],'backoffice_hrd/health_screen',[Backoffice_HrdController::class,'health_screen']);
 Route::get('backoffice_hrd/health_screen_excel',[Backoffice_HrdController::class,'health_screen_excel']);
@@ -154,14 +188,14 @@ Route::get('backoffice_hrd/nurse_productivity_hd_delete/{id}',[Backoffice_HrdCon
 Route::get('backoffice_hrd/nurse_productivity_hd_service',[Backoffice_HrdController::class,'nurse_productivity_hd_service'])->name('nurse_productivity_hd_service'); 
 Route::post('backoffice_hrd/nurse_productivity_hd_service_save',[Backoffice_HrdController::class,'nurse_productivity_hd_service_save'])->name('nurse_productivity_hd_service_save');
 
-// backoffice_plan
+// backoffice_plan ############################################################################################################################################################################
 Route::get('backoffice_plan/',[Backoffice_PlanController::class,'index']);
 Route::match(['get','post'],'backoffice_plan/service',[Backoffice_PlanController::class,'service']);
 Route::match(['get','post'],'backoffice_plan/diag',[Backoffice_PlanController::class,'diag']);
 Route::match(['get','post'],'backoffice_plan/death',[Backoffice_PlanController::class,'death']);
 Route::match(['get','post'],'backoffice_plan/plan_project',[Backoffice_PlanController::class,'plan_project']);
 
-// backoffice_risk
+// backoffice_risk ################################################################################################################################
 Route::match(['get','post'],'backoffice_risk/',[Backoffice_RiskController::class,'index']);
 Route::get('backoffice_risk/program_sub/{id}',[Backoffice_RiskController::class,'risk_program_sub']);
 Route::get('backoffice_risk/program_subsub/{id}',[Backoffice_RiskController::class,'risk_program_subsub']);
@@ -177,13 +211,13 @@ Route::get('backoffice_risk/nrls_export',[Backoffice_RiskController::class,'risk
 Route::match(['get','post'],'backoffice_risk/nrls_edit',[Backoffice_RiskController::class,'risk_nrls_edit']);
 Route::get('backoffice_risk/nrls_editexport',[Backoffice_RiskController::class,'risk_nrls_editexport']);
 
-// customer
+// Customer ##################################################################################################################
 Route::match(['get','post'],'customer_complain/',[Customer_ComplainController::class,'index']);
 Route::get('customer_complain/create',[Customer_ComplainController::class,'create'])->name('customer_complain.create');
 Route::post('customer_complain/store',[Customer_ComplainController::class,'store'])->name('customer_complain.store');
 Route::get('customer_queue/{vn}',[Customer_QueueController::class,'index']);
 
-// Dashboard_DigitalhealthController
+// Dashboard_DigitalhealthController #########################################################################################################
 Route::match(['get','post'],'dashboard/digitalhealth',[Dashboard_DigitalhealthController::class,'digitalhealth']);
 Route::match(['get','post'],'dashboard/opd_mornitor',[Dashboard_DigitalhealthController::class,'opd_mornitor']);
 Route::match(['get','post'],'dashboard/nhso_endpoint_pull_daily',[Dashboard_DigitalhealthController::class,'nhso_endpoint_pull_daily']);
@@ -198,38 +232,7 @@ Route::match(['get','post'],'dashboard/opd_mornitor_homeward',[Dashboard_Digital
 Route::match(['get','post'],'dashboard/opd_mornitor_healthmed',[Dashboard_DigitalhealthController::class,'opd_mornitor_healthmed']);
 Route::match(['get','post'],'dashboard/ipd_mornitor',[Dashboard_DigitalhealthController::class,'ipd_mornitor']);
 
-// Finance
-Route::get('finance/',[FinanceController::class,'index']);
-Route::match(['get','post'],'finance/debtor_hosxp_1102050101_202',[FinanceController::class,'debtor_hosxp_1102050101_202']);
-Route::match(['get','post'],'finance/debtor_hosxp_1102050101_203',[FinanceController::class,'debtor_hosxp_1102050101_203']);
-Route::get('finance/debtor_hosxp_1102050101_203_pdf',[FinanceController::class,'debtor_hosxp_1102050101_203_pdf']);
-Route::match(['get','post'],'finance/debtor_hosxp_1102050101_303',[FinanceController::class,'debtor_hosxp_1102050101_303']);
-Route::match(['get','post'],'finance/debtor_hosxp_1102050101_307',[FinanceController::class,'debtor_hosxp_1102050101_307']);
-Route::match(['get','post'],'finance/debtor_hosxp_1102050101_401',[FinanceController::class,'debtor_hosxp_1102050101_401']);
-Route::match(['get','post'],'finance/debtor_hosxp_1102050101_801',[FinanceController::class,'debtor_hosxp_1102050101_801']);
-Route::match(['get','post'],'finance/debtor_hosxp_1102050102_106',[FinanceController::class,'debtor_hosxp_1102050102_106']);
-Route::match(['get','post'],'finance/debtor_hosxp_1102050102_107',[FinanceController::class,'debtor_hosxp_1102050102_107']);
-Route::match(['get','post'],'finance/eclaim_drugherb',[FinanceController::class,'eclaim_drugherb']);
-Route::match(['get','post'],'finance/eclaim_hempoil',[FinanceController::class,'eclaim_hempoil']);
-Route::match(['get','post'],'finance/eclaim_morphine',[FinanceController::class,'eclaim_morphine']);
-Route::match(['get','post'],'finance/eclaim_palliative',[FinanceController::class,'eclaim_palliative']);
-Route::match(['get','post'],'finance/eclaim_sk',[FinanceController::class,'eclaim_sk']);
-Route::match(['get','post'],'finance/eclaim_instrument',[FinanceController::class,'eclaim_instrument']);
-Route::match(['get','post'],'finance/eclaim_telemedicine',[FinanceController::class,'eclaim_telemedicine']);
-Route::match(['get','post'],'finance/eclaim_rider',[FinanceController::class,'eclaim_rider']);
-Route::match(['get','post'],'finance/eclaim_uc_ucep24',[FinanceController::class,'eclaim_uc_ucep24']);
-Route::match(['get','post'],'finance/eclaim_uc_er_ext',[FinanceController::class,'eclaim_uc_er_ext']);
-Route::match(['get','post'],'finance/eclaim_uc_walkin',[FinanceController::class,'eclaim_uc_walkin']);
-Route::match(['get','post'],'finance/fs66_2',[FinanceController::class,'fs66_2']);
-Route::match(['get','post'],'finance/fs66_7',[FinanceController::class,'fs66_7']);
-Route::match(['get','post'],'finance/fs66_8',[FinanceController::class,'fs66_8']);
-Route::match(['get','post'],'finance/fs66_14',[FinanceController::class,'fs66_14']);
-Route::match(['get','post'],'finance/fs66_17',[FinanceController::class,'fs66_17']);
-Route::match(['get','post'],'finance/fs66_18',[FinanceController::class,'fs66_18']);
-Route::match(['get','post'],'finance/fs66_20',[FinanceController::class,'fs66_20']);
-Route::match(['get','post'],'finance/fs66_21',[FinanceController::class,'fs66_21']);
- 
-// Finance_claim
+// Finance_claim #########################################################################################################################
 Route::get('finance_claim/',[Finance_ClaimController::class,'index']);
 Route::match(['get','post'],'finance_claim/ofc_claim_opd',[Finance_ClaimController::class,'ofc_claim_opd']);
 Route::match(['get','post'],'finance_claim/ofc_claim_ipd',[Finance_ClaimController::class,'ofc_claim_ipd']);
@@ -267,7 +270,7 @@ Route::match(['get','post'],'finance_claim/ucs_ppfs_21',[Finance_ClaimController
 Route::match(['get','post'],'finance_claim/stp_claim_opd',[Finance_ClaimController::class,'stp_claim_opd']);
 Route::match(['get','post'],'finance_claim/stp_claim_ipd',[Finance_ClaimController::class,'stp_claim_ipd']);
  
-// Finance_debtor
+// Finance_debtor ############################################################################################################################
 Route::get('finance_debtor/',[Finance_DebtorController::class,'index']);
 Route::match(['get','post'],'finance_debtor/check_income',[Finance_DebtorController::class,'_check_income']);
 Route::match(['get','post'],'finance_debtor/summary',[Finance_DebtorController::class,'_summary']);
@@ -478,7 +481,7 @@ Route::match(['get','post'],'finance_debtor/hosxp_1102050101_801',[Finance_Debto
 Route::match(['get','post'],'finance_debtor/hosxp_1102050102_106',[Finance_DebtorController::class,'hosxp_1102050102_106']);
 Route::match(['get','post'],'finance_debtor/hosxp_1102050102_107',[Finance_DebtorController::class,'hosxp_1102050102_107']);
 
-// Finance_Stm
+// Finance_Stm ############################################################################################################################
 Route::get('finance_stm/',[Finance_StmController::class,'index']);
 Route::match(['get','post'],'finance_stm/stm_ofc',[Finance_StmController::class,'stm_ofc'])->name('stm_ofc');
 Route::post('finance_stm/stm_ofc_save',[Finance_StmController::class,'stm_ofc_save']);
@@ -502,7 +505,7 @@ Route::match(['get','post'],'finance_stm/stm_ucs_kidney',[Finance_StmController:
 Route::post('finance_stm/stm_ucs_kidney_save',[Finance_StmController::class,'stm_ucs_kidney_save']);
 Route::match(['get','post'],'finance_stm/stm_ucs_kidneydetail',[Finance_StmController::class,'stm_ucs_kidneydetail']);
 
-// From
+// From ################################################################################################################################
 Route::get('form',[Form_CheckController::class,'index']);
 Route::match(['get','post'],'form/check_asset_report',[Form_CheckController::class,'check_asset_report']);
 Route::get('form/check_asset_create/{depart}',[Form_CheckController::class,'check_asset_create'])->name('check_asset_create');
@@ -511,7 +514,7 @@ Route::match(['get','post'],'form/check_nurse_report',[Form_CheckController::cla
 Route::get('form/check_nurse_create/{depart}',[Form_CheckController::class,'check_nurse_create'])->name('check_nurse_create');
 Route::post('form/check_nurse_save',[Form_CheckController::class,'check_nurse_save'])->name('check_nurse_save');
 
-// hosxp_setting
+// hosxp_setting ######################################################################################################################
 Route::get('hosxp_setting',[Hosxp_settingController::class,'index']);
 Route::get('hosxp_setting/income',[Hosxp_settingController::class,'income']);
 Route::match(['get','post'],'hosxp_setting/nondrug',[Hosxp_settingController::class,'nondrug']);
@@ -544,35 +547,6 @@ Route::get('hosxp_setting/department',[Hosxp_settingController::class,'departmen
 Route::get('hosxp_setting/ovstist',[Hosxp_settingController::class,'ovstist']);
 Route::get('hosxp_setting/vaccine',[Hosxp_settingController::class,'vaccine']);
 Route::get('hosxp_backup',[Hosxp_settingController::class,'hosxp_backup']);
-
-// LineNotify_InsuranceController
-Route::get('linenotify_insurance/ipd_service',[LineNotify_InsuranceController::class,'ipd_service']);
-Route::get('linenotify_insurance/opd_service',[LineNotify_InsuranceController::class,'opd_service']);
-
-// Linenotify
-Route::get('linenotify/service_s',[LineNotifyController::class,'service_s']);
-Route::get('linenotify/service_i',[LineNotifyController::class,'service_i']);
-Route::get('linenotify/service_o',[LineNotifyController::class,'service_o']);
-Route::get('linenotify/risk',[LineNotifyController::class,'risk']);
-Route::get('linenotify/er_service_s',[LineNotifyController::class,'er_service_s']);
-Route::get('linenotify/er_service_i',[LineNotifyController::class,'er_service_i']);
-Route::get('linenotify/er_service_o',[LineNotifyController::class,'er_service_o']);
-Route::get('linenotify/ipd_service_s',[LineNotifyController::class,'ipd_service_s']);
-Route::get('linenotify/ipd_service_i',[LineNotifyController::class,'ipd_service_i']);
-Route::get('linenotify/ipd_service_o',[LineNotifyController::class,'ipd_service_o']); 
-Route::get('linenotify/vip_service_s',[LineNotifyController::class,'vip_service_s']);
-Route::get('linenotify/vip_service_i',[LineNotifyController::class,'vip_service_i']);
-Route::get('linenotify/vip_service_o',[LineNotifyController::class,'vip_service_o']); 
-Route::get('linenotify/opd_service_i',[LineNotifyController::class,'opd_service_i']); 
-Route::get('linenotify/opd_service_bd',[LineNotifyController::class,'opd_service_bd']); 
-Route::get('linenotify/ncd_service_i',[LineNotifyController::class,'ncd_service_i']); 
-Route::get('linenotify/lr_service_s',[LineNotifyController::class,'lr_service_s']);
-Route::get('linenotify/lr_service_i',[LineNotifyController::class,'lr_service_i']);
-Route::get('linenotify/lr_service_o',[LineNotifyController::class,'lr_service_o']); 
-Route::get('linenotify/or_service_i',[LineNotifyController::class,'or_service_i']); 
-Route::get('linenotify/ckd_service_i',[LineNotifyController::class,'ckd_service_i']);
-Route::get('linenotify/hd_service',[LineNotifyController::class,'hd_service']);  
-Route::get('linenotify/health_screen',[LineNotifyController::class,'health_screen']); 
 
 // medicalrecord_opd
 Route::get('medicalrecord_opd/',[Medicalrecord_OpdController::class,'index']);
@@ -779,12 +753,3 @@ Route::post('skpcard/store',[SkpcardController::class,'store'])->name('skpcard.s
 Route::get('skpcard/edit/{id}',[SkpcardController::class,'edit'])->name('skpcard.edit');
 Route::put('skpcard/update/{id}',[SkpcardController::class,'update'])->name('skpcard.update');
 
-// Clear-cache
-Route::get('/clear-cache', function() {
-    $exitCode = Artisan::call('config:clear');
-    $exitCode = Artisan::call('cache:clear');
-    $exitCode = Artisan::call('route:clear');
-    $exitCode = Artisan::call('view:clear');
-    $exitCode = Artisan::call('config:cache');
-    return 'DONE'; //Return anything
-    });

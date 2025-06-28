@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\User_Access;
 
 class User extends Authenticatable
 {
@@ -16,6 +17,12 @@ class User extends Authenticatable
     protected $connection = 'backoffice';
     protected $table = 'users';
 
+    public function hasAccessRole($role)
+    {
+        return User_Access::where('username', $this->username)
+                        ->where('role', $role)
+                        ->exists();
+    }
     /**
      * The attributes that are mass assignable.
      *

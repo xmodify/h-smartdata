@@ -683,7 +683,7 @@ public function _1102050101_201(Request $request )
 		LEFT JOIN s_drugitems s ON s.icode = o1.icode			
     WHERE p1.hipdata_code = "UCS" AND vp.hospmain ="10989" 		
 		AND (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
 		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_201)
     GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue) AS a WHERE debtor <> "0" '); 
 
@@ -745,7 +745,7 @@ public function _1102050101_201_confirm(Request $request )
 		LEFT JOIN s_drugitems s ON s.icode = o1.icode			
     WHERE p1.hipdata_code = "UCS" AND vp.hospmain ="10989" 	
 		AND (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
 		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_201)
     AND o.vn IN ('.$checkbox.')
     GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue) AS a WHERE debtor <> "0" ');     
@@ -832,7 +832,7 @@ public function _1102050101_203(Request $request )
 		LEFT JOIN s_drugitems s ON s.icode = o1.icode			
     WHERE p1.hipdata_code = "UCS" AND vp.hospmain IN ("10703","10985","10986","10987","10988","10990") 		
 		AND (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
 		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_203)
     GROUP BY o.vn ORDER BY o1.sum_price DESC ,o.vstdate,o.oqueue) AS a WHERE debtor <> "0" '); 
 
@@ -895,7 +895,7 @@ public function _1102050101_203_confirm(Request $request )
 		LEFT JOIN s_drugitems s ON s.icode = o1.icode			
     WHERE p1.hipdata_code = "UCS" AND vp.hospmain IN ("10703","10985","10986","10987","10988","10990")
 		AND (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
 		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_203)
     AND o.vn IN ('.$checkbox.')
     GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue) AS a WHERE debtor <> "0" ');     
@@ -988,7 +988,7 @@ public function _1102050101_209(Request $request )
 		LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn	
     WHERE v.income-v.rcpt_money <>"0" AND (o.an IS NULL OR o.an ="")  		
 		AND p1.hipdata_code NOT LIKE "O%" AND p1.hipdata_code NOT LIKE "L%" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND v.pdx IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+    AND v.pdx IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
 		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_209)
     GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue'); 
 
@@ -1008,7 +1008,7 @@ public function _1102050101_209(Request $request )
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn	
     WHERE v.income-v.rcpt_money <>"0" AND (o.an IS NULL OR o.an ="") AND o1.vn IS NOT NULL 		
     AND p1.hipdata_code NOT LIKE "O%" AND p1.hipdata_code NOT LIKE "L%" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
     AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_209)
     GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue'); 
 
@@ -1074,7 +1074,7 @@ public function _1102050101_209_confirm(Request $request )
 		LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn	
     WHERE v.income-v.rcpt_money <>"0" AND (o.an IS NULL OR o.an ="")  		
 		AND p1.hipdata_code NOT LIKE "O%" AND p1.hipdata_code NOT LIKE "L%" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND v.pdx IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+    AND v.pdx IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
 		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_209)
     AND o.vn IN ('.$checkbox.')
     GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue');     
@@ -1129,7 +1129,7 @@ public function _1102050101_209_confirm_nonpp(Request $request )
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn	
     WHERE v.income-v.rcpt_money <>"0" AND (o.an IS NULL OR o.an ="") AND o1.vn IS NOT NULL 		
     AND p1.hipdata_code NOT LIKE "O%" AND p1.hipdata_code NOT LIKE "L%" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
     AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_209)
     AND o.vn IN ('.$checkbox.')
     GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue');     
@@ -1505,7 +1505,7 @@ public function _1102050101_301(Request $request )
 		LEFT JOIN s_drugitems s ON s.icode = o1.icode			
     WHERE p1.pttype IN ("S1","S2","S3","S4","S5","S7") AND vp.hospmain ="10703" 		
 		AND (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
 		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_301)
     GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue) AS a WHERE debtor <> "0" '); 
 
@@ -1567,7 +1567,7 @@ public function _1102050101_301_confirm(Request $request )
 		LEFT JOIN s_drugitems s ON s.icode = o1.icode			
     WHERE p1.pttype IN ("S1","S2","S3","S4","S5","S7") AND vp.hospmain ="10703" 	
 		AND (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
 		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_301)
     AND o.vn IN ('.$checkbox.')
     GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue) AS a WHERE debtor <> "0" ');     
@@ -1648,7 +1648,7 @@ public function _1102050101_303(Request $request )
 		LEFT JOIN s_drugitems s ON s.icode = o1.icode			
     WHERE p1.pttype IN ("S1","S2","S3","S4","S5","S7") AND vp.hospmain <>"10703" 		
 		AND (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
 		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_303)
     GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue) AS a WHERE debtor <> "0" '); 
 
@@ -1711,7 +1711,7 @@ public function _1102050101_303_confirm(Request $request )
 		LEFT JOIN s_drugitems s ON s.icode = o1.icode			
     WHERE p1.pttype IN ("S1","S2","S3","S4","S5","S7") AND vp.hospmain <>"10703" 	
 		AND (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
 		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_303)
     AND o.vn IN ('.$checkbox.')
     GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue) AS a WHERE debtor <> "0" ');     
@@ -1811,7 +1811,7 @@ public function _1102050101_307(Request $request )
 		LEFT JOIN s_drugitems s ON s.icode = o1.icode			
     WHERE p1.pttype IN ("25","31","D1","S6")	
 		AND (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
 		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_307)
     GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue) AS a WHERE debtor <> "0" '); 
 
@@ -1893,7 +1893,7 @@ public function _1102050101_307_confirm(Request $request )
 		LEFT JOIN s_drugitems s ON s.icode = o1.icode			
     WHERE p1.pttype IN ("25","31","D1","S6")
 		AND (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
 		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_307)
     AND o.vn IN ('.$checkbox.')
     GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue) AS a WHERE debtor <> "0" ');     
@@ -2193,7 +2193,7 @@ public function _1102050101_401(Request $request )
 		LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn	
     WHERE (p1.pttype LIKE "O%" OR p1.pttype ="H1") AND (o.an IS NULL OR o.an ="") 
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-		AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+		AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
 		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_401)
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue) AS a WHERE a.debtor <> 0');  
 
@@ -2217,7 +2217,7 @@ public function _1102050101_401(Request $request )
 		LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn	
     WHERE (p1.pttype LIKE "O%" OR p1.pttype ="H1") AND (o.an IS NULL OR o.an ="") 
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-		AND v.pdx IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+		AND v.pdx IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
 		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_401)
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue) AS a WHERE a.debtor <> 0');  
 
@@ -2289,7 +2289,7 @@ public function _1102050101_401_confirm(Request $request )
 		LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn	
     WHERE (p1.pttype LIKE "O%" OR p1.pttype ="H1") AND (o.an IS NULL OR o.an ="") 
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-		AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+		AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
 		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_401)
     AND o.vn IN ('.$checkbox.')
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue) AS a WHERE a.debtor <> 0');     
@@ -2371,7 +2371,7 @@ public function _1102050101_401_confirm_pp(Request $request )
 		LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn	
     WHERE (p1.pttype LIKE "O%" OR p1.pttype ="H1") AND (o.an IS NULL OR o.an ="") 
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-		AND v.pdx IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+		AND v.pdx IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
 		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_401)
     AND o.vn IN ('.$checkbox.')
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue) AS a WHERE a.debtor <> 0');     
@@ -2626,7 +2626,7 @@ public function _1102050101_703(Request $request )
 		LEFT JOIN s_drugitems s ON s.icode = o1.icode			
     WHERE p1.pttype IN ("ST")
 		AND (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
 		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_703)
     GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue) AS a WHERE debtor <> "0" '); 
 
@@ -2688,7 +2688,7 @@ public function _1102050101_703_confirm(Request $request )
 		LEFT JOIN s_drugitems s ON s.icode = o1.icode			
     WHERE  p1.pttype IN ("ST")	
 		AND (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
 		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_703)
     AND o.vn IN ('.$checkbox.')
     GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue) AS a WHERE debtor <> "0" ');     
@@ -3026,7 +3026,7 @@ public function _1102050102_108(Request $request )
 		LEFT JOIN s_drugitems s ON s.icode = o1.icode			
     WHERE p1.hipdata_code IN ("A2","BFC","GOF","PVT","WVO") AND v.paid_money = "0"
 		AND (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
 		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050102_108)
     GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue) AS a WHERE debtor <> "0" '); 
 
@@ -3088,7 +3088,7 @@ public function _1102050102_108_confirm(Request $request )
 		LEFT JOIN s_drugitems s ON s.icode = o1.icode			
     WHERE p1.hipdata_code IN ("A2","BFC","GOF","PVT","WVO") AND v.paid_money = "0"
 		AND (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
 		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050102_108)
     AND o.vn IN ('.$checkbox.')
     GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue) AS a WHERE debtor <> "0" ');     
@@ -3186,7 +3186,7 @@ public function _1102050102_602(Request $request )
 		LEFT JOIN s_drugitems s ON s.icode = o1.icode			
     WHERE p1.pttype = "29"
 		AND (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
 		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050102_602)
     GROUP BY o.vn ORDER BY o.hn ,o.vstdate,o.oqueue) AS a WHERE debtor <> "0" '); 
 
@@ -3249,7 +3249,7 @@ public function _1102050102_602_confirm(Request $request )
 		LEFT JOIN s_drugitems s ON s.icode = o1.icode			
     WHERE p1.pttype ="29"
 		AND (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+    AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
 		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050102_602)
     AND o.vn IN ('.$checkbox.')
     GROUP BY o.vn ORDER BY o.hn,o.vstdate,o.oqueue) AS a WHERE debtor <> "0" ');     
@@ -3353,7 +3353,7 @@ public function _1102050102_801(Request $request )
 		LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn	
     WHERE p1.pttype LIKE "L%" AND (o.an IS NULL OR o.an ="") 
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-		AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+		AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
 		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050102_801)
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue) AS a WHERE a.debtor <> 0');  
 
@@ -3378,7 +3378,7 @@ public function _1102050102_801(Request $request )
 		LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn	
     WHERE p1.pttype LIKE "L%" AND (o.an IS NULL OR o.an ="") 
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-		AND v.pdx IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+		AND v.pdx IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
 		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050102_801)
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue) AS a WHERE a.debtor <> 0'); 
 
@@ -3449,7 +3449,7 @@ public function _1102050102_801_confirm(Request $request )
 		LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn	
     WHERE p1.pttype LIKE "L%" AND (o.an IS NULL OR o.an ="") 
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-		AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+		AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
 		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050102_801)
     AND o.vn IN ('.$checkbox.')
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue) AS a WHERE a.debtor <> 0 ');     
@@ -3531,7 +3531,7 @@ public function _1102050102_801_confirm_pp(Request $request )
 		LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn	
     WHERE p1.pttype LIKE "L%" AND (o.an IS NULL OR o.an ="") 
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-		AND v.pdx IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE icd10_type = "PP")
+		AND v.pdx IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
 		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050102_801)
     AND o.vn IN ('.$checkbox.')
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue) AS a WHERE a.debtor <> 0');     

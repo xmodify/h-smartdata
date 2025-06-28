@@ -8,7 +8,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title >{{ config('app.name', 'H-SmartData') }}</title>
+    <title >SmartData</title>
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
@@ -32,7 +32,12 @@
                 <a class="navbar-brand btn btn-outline-info " href="{{ url('/') }}">
                      {{ config('app.name', 'H-SmartData') }} 
                 </a>
-
+                <!-- ปุ่มเมนูมือถือ -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <!-- เมนูหลัก -->
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->                                    
                     <ul class="navbar-nav me-auto">
@@ -216,6 +221,17 @@
                                 </a>
 
                                 <div class="btn btn-outline-primary dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <!-- Admin -->
+                                    @auth                
+                                        @if (auth()->user()->hasAccessRole('admin'))                                         
+                                            <a class="dropdown-item text-white" href="{{ route('admin.main_setting') }}">Main Setting</a>
+                                            <a class="dropdown-item text-white" href="{{ route('admin.user_access.index') }}">Manage User</a>                                            
+                                            <a class="dropdown-item text-white" href="{{ route('admin.lookup_icode.index') }}">Lookup icode</a>
+                                            <a class="dropdown-item text-white" href="{{ route('admin.lookup_ward.index') }}">Lookup ward</a>
+                                            <a class="dropdown-item text-white" href="{{ route('admin.lookup_hospcode.index') }}">Lookup hospcode</a>
+                                        @endif
+                                    @endauth
+                                    <!-- -->                                    
                                     <a class="dropdown-item text-white" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
