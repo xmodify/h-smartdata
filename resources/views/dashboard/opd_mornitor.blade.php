@@ -69,11 +69,14 @@
         <div class="alert alert-primary" role="alert">
           <div class="row" >
             <div class="col-10 mt-2" align="left">
-              <h4>OPD Mornitor Huataphanhospital <br>ณ วันที่ {{DatetimeThai(date('Y-m-d h:i:sa'))}} OPvisit : <font color="#e91e63"><strong>{{$total}}</strong></font> Visit 
-                      <!-- ปุ่มเรียก Modal -->
-                      <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#nhsoModal">
-                        ดึงปิดสิทธิ สปสช.
-                      </button>
+              <h4>OPD Mornitor Huataphanhospital <br>
+                ณ วันที่ <font style="color:red;">{{DatetimeThai(date('Y-m-d h:i:sa'))}}</font> 
+                ทั้งหมด : <font style="color:red;">{{$total}}</font> Visit | 
+                ปิดสิทธิ สปสช : <font style="color:red;">{{$endpoint}}</font> Visit               
+                <!-- ปุ่มเรียก Modal -->
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#nhsoModal">
+                  ดึงปิดสิทธิ สปสช.
+                </button>
               </h4>
             </div>
             <div class="col-2 mt-2" align="right">
@@ -93,9 +96,9 @@
           </div>
           <div class="card-body">
             <h1 class="card-title text-center">{{$ucs_all}} : {{$endpoint}}</h1>
-            <p class="card-text">
-             .
-            </p>
+              <p class="card-text" data-bs-toggle="modal" data-bs-target="#nhsoModal">
+                ดึงปิดสิทธิ สปสช.
+              </p>
           </div>
         </div>
       </div>
