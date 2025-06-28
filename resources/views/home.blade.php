@@ -7,7 +7,7 @@
     @csrf
         <div class="row">                          
             <div class="col-md-9" align="left">               
-                <h5 class="alert alert-primary"><strong>ระบบรายงานข้อมูลโรงพยาบาลหัวตะพาน </strong></h5>
+                <h5 class="alert alert-primary"><strong>ระบบข้อมูลอัจฉริยะโรงพยาบาลหัวตะพาน </strong></h5>
             </div>
             <div class="col-md-2" align="right">     
                 <select class="form-select my-2" name="budget_year">
