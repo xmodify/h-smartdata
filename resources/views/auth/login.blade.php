@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -22,19 +23,25 @@
 
     
 </head>
-<div class="container my-5 ">
+<div class="container ">
     <div class="row justify-content-center" >
-        <div class="col-md-5">
-            <div class="card border border-primary">
-                <div class="card-header card text-white bg-primary ">{{ __('H-SmartData') }}</div>
-                <div class="card-body">
+        <div class="col-md-6">
+        <div class="card border border-success"> 
+                <div class="card-body text-white" style="
+                    background-image: url('{{ asset('images/logo_smartdata.png') }}');
+                    background-repeat: no-repeat;
+                    background-position: left 1px;
+                    background-size: 300px;
+                    background-blend-mode: lighten;
+                    padding-top: 200px;
+                ">
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
 
-                        <div class="row mb-3">
-                            <label for="Username" class="col-md-4 col-form-label text-md-end ">{{ __('Username') }}</label>
+                        <div class="row mb-2">
+                            <label for="Username" class="col-md-4 col-form-label text-md-end text-primary">{{ __('Username') }}</label>
 
-                            <div class="col-md-6">
+                            <div class="col-md-7">
                                 <input id="username" type="text" class="form-control @error('username') is-invalid @enderror" name="username" value="{{ old('username') }}" required autocomplete="username" autofocus>
 
                                 @error('username')
@@ -45,10 +52,10 @@
                             </div>
                         </div>
 
-                        <div class="row mb-3">
-                            <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>
+                        <div class="row mb-2">
+                            <label for="password" class="col-md-4 col-form-label text-md-end text-primary">{{ __('Password') }}</label>
 
-                            <div class="col-md-6">
+                            <div class="col-md-7">
                                 <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
 
                                 @error('password')

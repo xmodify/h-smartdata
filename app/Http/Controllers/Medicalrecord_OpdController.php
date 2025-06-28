@@ -134,100 +134,89 @@ public function nhso_endpoint(Request $request)
 
 //Create nhso_endpoint_pull
 public function nhso_endpoint_pull(Request $request)
-{
-    $hcode = "10989";
-    $start_date = Session::get('start_date');
-    $end_date = Session::get('end_date');
-    //$cid ="1341800057879";
-    if($start_date == '' || $end_date == null)
-    {$start_date = date('Y-m-d');}else{$start_date = Session::get('start_date');}
-    if($end_date == '' || $end_date == null)
-    {$end_date = date('Y-m-d');}else{$end_date = Session::get('end_date');}
-    
-    $url = "https://authenservice.nhso.go.th/authencode/api/authencode-report?hcode=$hcode&claimDateFrom=$start_date&claimDateTo=$end_date&size=1000";
-    $cookies  = request()->cookies->all();   
-    $response = Http::withBasicAuth('6213043246152', 'h10989')
-                ->withCookies($cookies, $url)    
-                ->get($url);
-    $authen= $response['content'];  
-  
-    foreach ($authen as $value) {   
-        $transId = $value['transId'];   
-        $hmain = $value['hmain'];    
-        $hname = $value['hname'];              
-        $personalId = $value['personalId'];
-        //$patientName = $value['patientName'];
-        if (isset($value['patientName'])) {$patientName = $value['patientName'];} else {$patientName = '';}
-        //$moonanName = $value['moonanName'];
-        if (isset($value['moonanName'])) {$moonanName = $value['moonanName'];} else {$moonanName = '';}
-        //$tumbonName = $value['tumbonName'];
-        if (isset($value['tumbonName'])) {$tumbonName = $value['tumbonName'];} else {$tumbonName = '';}
-        //$amphurName = $value['amphurName'];
-        if (isset($value['amphurName'])) {$amphurName = $value['amphurName'];} else {$amphurName = '';}
-        //$changwatName = $value['changwatName'];
-        if (isset($value['changwatName'])) {$changwatName = $value['changwatName'];} else {$changwatName = '';}
-        //$mainInscl = $value['mainInscl'];
-        if (isset($value['mainInscl'])) {$mainInscl = $value['mainInscl'];} else {$mainInscl = '';}
-        //$mainInsclName = $value['mainInsclName'];
-        if (isset($value['mainInsclName'])) {$mainInsclName = $value['mainInsclName'];} else {$mainInsclName = '';}
-        //$subInscl = $value['subInscl'];
-        if (isset($value['subInscl'])) {$subInscl = $value['subInscl'];} else {$subInscl = '';}
-        //$subInsclName = $value['subInsclName'];
-        if (isset($value['subInsclName'])) {$subInsclName = $value['subInsclName'];} else {$subInsclName = '';}
-        //$claimStatus = $value['claimStatus'];   
-        if (isset($value['claimStatus'])) {$claimStatus = $value['claimStatus'];} else {$claimStatus = '';}
-        //$claimCode = $value['claimCode'];
-        if (isset($value['claimCode'])) {$claimCode = $value['claimCode'];} else {$claimCode = '';}
-        //$claimType = $value['claimType'];
-        if (isset($value['claimType'])) {$claimType = $value['claimType'];} else {$claimType = '';}
-        //$claimTypeName = $value['claimTypeName'];
-        if (isset($value['claimTypeName'])) {$claimTypeName = $value['claimTypeName'];} else {$claimTypeName = '';}
-        //$claimDate = $value['claimDate'];
-        if (isset($value['claimDate'])) {$claimDate = $value['claimDate'];} else {$claimDate = '';}
-        $createDate = $value['createDate'];
-        //$claimDate_old =  explode("T",$value['claimDate']);
-        //$claimDate = $claimDate_old[0];
-        //$claimTime = $claimDate_old[1]; 
-        //$sourceChannel = $value['sourceChannel'];  
-        if (isset($value['sourceChannel'])) {$sourceChannel = $value['sourceChannel'];} else {$sourceChannel = '';}
-        $claimAuthen = $value['claimAuthen'];  
+{   
+    $vstdate = $request->input('vstdate') ?? now()->format('Y-m-d'); 
+    $hosxp = DB::connection('hosxp')->select('
+        SELECT o.vn, o.hn, pt.cid, vp.auth_code
+        FROM ovst o
+        INNER JOIN visit_pttype vp ON vp.vn = o.vn 
+        LEFT JOIN patient pt ON pt.hn = o.hn
+        WHERE o.vstdate = ?
+        AND vp.auth_code NOT LIKE "EP%" ', [$vstdate]);  
 
-        $check_authen = Nhso_Endpoint::where('transId',$transId)->count();
-        if ( $check_authen > 0 ) {
-            Nhso_Endpoint::where('transId',$transId)->update([
-                'claimCode'         => $claimCode,
-                'claimType'         => $claimType,
-                'claimTypeName'     => $claimTypeName,
-                'claimStatus'       => $claimStatus
+    $cids = array_column($hosxp, 'cid');      
+    $token = DB::table('main_setting')
+        ->where('name', 'token_authen_kiosk_nhso')
+        ->value('value');
+
+    foreach ($cids as $cid) {
+        $response = Http::withToken($token)
+            ->acceptJson()
+            ->get('https://authenucws.nhso.go.th/authencodestatus/api/check-authen-status', [
+                'personalId' => $cid,
+                'serviceDate' => $vstdate
             ]);
-        } else if ( $sourceChannel=='ENDPOINT' || $claimType == "PG0140001" ) {
-            Nhso_Endpoint::insert([   
-                'transId'           => $transId,                 
-                'hmain'             => $hmain,
-                'hname'             => $hname,
-                'personalId'        => $personalId,
-                'patientName'       => $patientName,
-                'moonanName'        => $moonanName,
-                'tumbonName'        => $tumbonName,
-                'amphurName'        => $amphurName,
-                'changwatName'      => $changwatName,               
-                'mainInscl'         => $mainInscl,
-                'mainInsclName'     => $mainInsclName,
-                'subInscl'          => $subInscl,
-                'subInsclName'      => $subInsclName,
-                'claimStatus'       => $claimStatus,            
-                'claimCode'         => $claimCode,
-                'claimType'         => $claimType,
-                'claimTypeName'     => $claimTypeName,
-                'claimDate'         => $claimDate, 
-                'createDate'        => $claimDate,   
-                'sourceChannel'     => $sourceChannel,   
-                'claimAuthen'       => $claimAuthen                        
-            ]);   
-        }    
-    }   
-    return back(); 
-}    
+
+        if ($response->failed()) {
+            \Log::warning("ดึงข้อมูลไม่สำเร็จสำหรับ CID: $cid", [
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
+            continue;
+        }
+
+        $result = $response->json();
+
+        if (!isset($result['firstName']) || empty($result['serviceHistories'])) {
+            continue;
+        }
+
+        $firstName = $result['firstName'];
+        $lastName  = $result['lastName'];
+        $mainInscl = $result['mainInscl']['id'] ?? null;
+        $mainInsclName = $result['mainInscl']['name'] ?? null;
+        $subInscl = $result['subInscl']['id'] ?? null;
+        $subInsclName = $result['subInscl']['name'] ?? null;
+
+        foreach ($result['serviceHistories'] as $row) {
+            $serviceDateTime = $row['serviceDateTime'] ?? null;
+            $sourceChannel = $row['sourceChannel'] ?? '';
+            $claimCode = $row['claimCode'] ?? null;
+            $claimType = $row['service']['code'] ?? null;
+
+            if (!$claimCode) continue;
+
+            $exists = Nhso_Endpoint_Indiv::where('cid', $cid)
+                ->where('claimCode', $claimCode)
+                ->exists();
+
+            if ($exists) {
+                Nhso_Endpoint_Indiv::where('cid', $cid)
+                    ->where('claimCode', $claimCode)
+                    ->update([
+                        'claimType' => $claimType
+                    ]);
+            } elseif ($sourceChannel == 'ENDPOINT' || $claimType == 'PG0140001') {
+                Nhso_Endpoint_Indiv::create([
+                    'cid' => $cid,
+                    'firstName' => $firstName,
+                    'lastName' => $lastName,
+                    'mainInscl' => $mainInscl,
+                    'mainInsclName' => $mainInsclName,
+                    'subInscl' => $subInscl,
+                    'subInsclName' => $subInsclName,
+                    'serviceDateTime' => $serviceDateTime,
+                    'sourceChannel' => $sourceChannel,
+                    'claimCode' => $claimCode,
+                    'claimType' => $claimType,
+                ]);
+            }
+        }
+    }
+ 
+    return response()->json(['success' => true, 'message' => 'ดึงข้อมูลจาก สปสช สำเร็จ' ]);
+}
+
 //Create nhso_endpoint_pull_indiv
 public function nhso_endpoint_pull_indiv(Request $request,$vstdate,$cid)
 {

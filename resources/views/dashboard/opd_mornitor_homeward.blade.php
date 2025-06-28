@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -70,7 +71,7 @@
               <tr class="table-primary">
                 <th class="text-center">ลำดับ</th>
                 <th class="text-center">AuthenCode</th>
-                <th class="text-center">Action</th>
+                {{-- <th class="text-center">Action</th> --}}
                 <th class="text-center">วัน-เวลาที่รับบริการ</th>
                 <th class="text-center">Q</th>
                 <th class="text-center">HN</th>
@@ -89,7 +90,7 @@
               <tr>
                 <td align="center">{{ $count }}</td> 
                 <td align="center">{{ $row->claimCode }}</td> 
-                <td align="center"><a class="btn btn-outline-info btn-sm" href="{{ url('medicalrecord_opd/nhso_endpoint_pull'.$row->vstdate,$row->cid) }}" >Pull Authen</a></td> 
+                {{-- <td align="center"><a class="btn btn-outline-info btn-sm" href="{{ url('medicalrecord_opd/nhso_endpoint_pull'.$row->vstdate,$row->cid) }}" >Pull Authen</a></td>  --}}
                 <td align="center">{{ DateThai($row->vstdate) }} เวลา {{ $row->vsttime }}</td>
                 <td align="center">{{ $row->oqueue }}</td>
                 <td align="center">{{ $row->hn }}</td>

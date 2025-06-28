@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -72,7 +73,7 @@
                   <th class="text-center">ลำดับ</th>
                   <th class="text-center">Authen</th>  
                   <th class="text-center">ปิดสิทธิ</th>
-                  <th class="text-center">Action</th>
+                  {{-- <th class="text-center">Action</th> --}}
                   <th class="text-center">ชื่อ-สกุล</th>    
                   <th class="text-center">CID</th>           
                   <th class="text-center">วันที่รับบริการ</th> 
@@ -94,7 +95,7 @@
                 <td align="center" @if($row->endpoint == 'Y') style="color:green"
                   @elseif($row->endpoint == 'N') style="color:red" @endif>
                   <strong>{{ $row->endpoint }}</strong></td> 
-                <td align="center"><a class="btn btn-outline-info btn-sm" href="{{ url('medicalrecord_opd/nhso_endpoint_pull'.$row->vstdate,$row->cid) }}" >Pull Endpoint</a></td> 
+                {{-- <td align="center"><a class="btn btn-outline-info btn-sm" href="{{ url('medicalrecord_opd/nhso_endpoint_pull'.$row->vstdate,$row->cid) }}" >Pull Endpoint</a></td>  --}}
                 <td align="left">{{$row->ptname}}</td> 
                 <td align="center">{{$row->cid}}</td> 
                 <td align="left">{{ DateThai($row->vstdate) }}</td>             

@@ -3,12 +3,14 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+    
     {{-- <meta http-equiv="refresh" content="10; {{ url('dashboard/opd_mornitor') }}"> --}}
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title >OPD Mornitor Huataphanhospital</title>
+    <title >OPD Mornitor Huataphanhospital</title> 
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
@@ -22,14 +24,6 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 
 <style>  
-  .btn {
-      background: #f9bdbb;
-      border: solid 1px #fde0dc;
-      background: linear-gradient(180deg, #f69988 0%, #e84e40 35%, #b0120a 100%);
-      border-radius: 8px;
-      color: white;
-      padding: .75rem 1rem;
-  }
 
   .bg-1 {
       background-color: #3f51b5;
@@ -75,10 +69,15 @@
         <div class="alert alert-primary" role="alert">
           <div class="row" >
             <div class="col-10 mt-2" align="left">
-              <h4>OPD Mornitor Huataphanhospital <br>ณ วันที่ {{DatetimeThai(date('Y-m-d h:i:sa'))}} OPvisit : <font color="#e91e63"><strong>{{$total}}</strong></font> Visit </h4>
+              <h4>OPD Mornitor Huataphanhospital <br>ณ วันที่ {{DatetimeThai(date('Y-m-d h:i:sa'))}} OPvisit : <font color="#e91e63"><strong>{{$total}}</strong></font> Visit 
+                      <!-- ปุ่มเรียก Modal -->
+                      <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#nhsoModal">
+                        ดึงปิดสิทธิ สปสช.
+                      </button>
+              </h4>
             </div>
             <div class="col-2 mt-2" align="right">
-              <h4><a class="btn text-center" href="{{ url('/dashboard/ipd_mornitor') }}" ><strong>IPD Mornitor</strong></a></h4>
+              <h4><a class="btn btn-danger text-center" href="{{ url('/dashboard/ipd_mornitor') }}" > <i class="bi bi-trash me-1"></i><strong>IPD Mornitor</strong></a></h4>
             </div>
           </div>
         </div>
@@ -95,7 +94,7 @@
           <div class="card-body">
             <h1 class="card-title text-center">{{$ucs_all}} : {{$endpoint}}</h1>
             <p class="card-text">
-              <a href="#" class="text-white" style="text-decoration: none; "> ดึงข้อมูลจาก สปสช.</a>
+             .
             </p>
           </div>
         </div>
@@ -387,13 +386,94 @@
     </div> <!-- //row --> 
     <hr>
   </div> <!-- //container --> 
+
+<!-- Modal -->
+<div class="modal fade" id="nhsoModal" tabindex="-1" aria-labelledby="nhsoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center">
+      <div class="modal-header">
+        <h5>เลือกวันที่เข้ารับบริการ</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <form id="nhsoForm">
+        <div class="modal-body">         
+          <input type="date" id="vstdate" name="vstdate" class="form-control"  value="{{ date('Y-m-d') }}" required>
+
+          <div id="loadingSpinner" class="mt-4 d-none">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">กำลังดึงข้อมูลจาก สปสช....</p>
+          </div>
+
+          <div id="resultMessage" class="mt-3 d-none"></div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">ดึงข้อมูล</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <!-- ionicon -->
 <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
 <!-- Vendor JS Files -->
 <script src="{{ asset('assets/vendor/apexcharts/apexcharts.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/chart.js/chart.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/echarts/echarts.min.js') }}"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("nhsoForm");
+    const spinner = document.getElementById("loadingSpinner");
+    const resultMessage = document.getElementById("resultMessage");
+    const nhsoModal = document.getElementById('nhsoModal');
+
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        spinner.classList.remove("d-none");
+        resultMessage.classList.add("d-none");
+        resultMessage.innerHTML = "";
+
+        const formData = new FormData(form);
+
+        fetch("{{ url('medicalrecord_opd/nhso_endpoint_pull') }}", {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                "Accept": "application/json"
+            },
+            body: formData
+        })
+        .then(response => {
+            spinner.classList.add("d-none");
+            if (!response.ok) throw new Error("โหลดล้มเหลว");
+            return response.json();
+        })
+        .then(data => {
+            resultMessage.classList.remove("d-none");
+            resultMessage.classList.add("text-success");
+            resultMessage.innerHTML = "✅ " + (data.message || "ดึงข้อมูลสำเร็จ");
+        })
+        .catch(err => {
+            resultMessage.classList.remove("d-none");
+            resultMessage.classList.add("text-danger");
+            resultMessage.innerHTML = "❌ ดึงข้อมูลล้มเหลว";
+        });
+    });
+
+    nhsoModal.addEventListener('hide.bs.modal', function () {
+        // ✅ Redirect ไปหน้า /home เมื่อปิด Modal
+        window.location.href = "{{ url('/dashboard/opd_mornitor') }}";
+    });
+});
+</script>
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {

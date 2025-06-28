@@ -20,7 +20,7 @@ public function __construct()
 public function nhso_endpoint_pull_daily(Request $request)
 {
     $hcode = "10989";
-    $date_now = date('Y-m-d');
+    $date_now = date('Y-m-d'); 
     //$cid ="1341800057879";
     $url = "https://authenservice.nhso.go.th/authencode/api/authencode-report?hcode=$hcode&claimDateFrom=$date_now&claimDateTo=$date_now&size=1000";
     $cookies  = request()->cookies->all(); 
@@ -106,7 +106,7 @@ public function nhso_endpoint_pull_daily(Request $request)
     }   
     return back(); 
 }    
-
+ 
 //Create Digitalhealth
 public function digitalhealth(Request $request )
 {
