@@ -117,7 +117,8 @@
                 const value = this.dataset.value;                
 
                 document.getElementById('editValue').value = value;
-                document.getElementById('editForm').action = `/admin/main_setting/${id}`;
+                // document.getElementById('editForm').action = `/admin/main_setting/${id}`;
+                document.getElementById('editForm').action = "{{ url('admin/main_setting') }}/" + id;
             });
         });
     </script>

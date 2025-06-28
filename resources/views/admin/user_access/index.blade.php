@@ -133,7 +133,8 @@
                 document.getElementById('editName').value = name;
                 document.getElementById('editEmail').value = email; 
                 document.getElementById('editStatus').value = status;
-                document.getElementById('editForm').action = `/admin/user_access/${id}`;
+                // document.getElementById('editForm').action = `/admin/user_access/${id}`;
+                document.getElementById('editForm').action = "{{ url('admin/user_access') }}/" + id;
             });
         });
 

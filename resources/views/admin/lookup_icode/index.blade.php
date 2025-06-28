@@ -167,7 +167,9 @@
                     document.getElementById('edituc_cr').checked = (this.dataset.uc_cr === 'Y');
                     document.getElementById('editppfs').checked = (this.dataset.ppfs === 'Y');
                     document.getElementById('editherb32').checked = (this.dataset.herb32 === 'Y');
-                    document.getElementById('editForm').action = `/admin/lookup_icode/${icode}`;      
+                    // document.getElementById('editForm').action = `/admin/lookup_icode/${icode}`;  
+                    document.getElementById('editForm').action = "{{ url('admin/lookup_icode') }}/" + icode;  
+                        
                 });
             });
 
