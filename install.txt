@@ -1,3 +1,4 @@
+For Windows
 1.Set Laravel Public Directory as Document Root
 	C:\xampp\apache\conf\extra\httpd-vhosts.conf
 
@@ -24,8 +25,10 @@
 	LoadModule rewrite_module modules/mod_rewrite.so
 
 3.Clone the repository (first time only)
-	git clone https://github.com/xmodify/h-rims.git
-	cd h-rims
+	git clone https://github.com/xmodify/h-smartdata.git
+		หรือ sudo git clone https://github.com/xmodify/h-smartdata.git
+		    sudo chown -R huataphanhospital: /var/www/html/h-smartdata
+	cd h-smartdata
 
 4.Pull latest changes (if already cloned)
 	git pull origin main
@@ -50,3 +53,10 @@
 			#!/bin/sh
 			echo "❌ git push ถูกบล็อกไว้ ห้าม push ไปยัง GitHub"
 			exit 1
+
+10. Linux : cd /var/www/html/h-smartdata
+		sudo chown -R apache:apache /var/www/html/h-smartdata
+		sudo chmod -R 775 /var/www/html/h-smartdata/storage /var/www/html/h-smartdata/bootstrap/cache
+		sudo -u apache git -C /var/www/html/h-smartdata remote -v
+		sudo -u apache git -C /var/www/html/h-smartdata pull origin main
+		sudo systemctl restart httpd
