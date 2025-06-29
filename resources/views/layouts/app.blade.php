@@ -139,9 +139,9 @@
                                     - เวชระเบียนผู้ป่วยใน
                                 </a>                
                             </div>                 
-                        </li> 
+                        </li>
                         <li class="nav-item dropdown">
-                            <a id="navbarDropdown" class="nav-link btn btn-outline-info dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                            <a id="navbarDropdown" class="nav-link btn btn-info dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                 ศูนย์จัดเก็บรายได้
                             </a>
                             <div class=" btn btn-outline-primary dropdown-menu dropdown-menu-end">    
@@ -155,7 +155,7 @@
                                     - นำเข้า Statement
                                 </a>             
                             </div>                 
-                        </li> 
+                        </li>
                         <li class="nav-item dropdown">
                             <a id="navbarDropdown" class="nav-link btn btn-outline-info dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                 Dashboard
@@ -171,36 +171,24 @@
                                     - นโยบาย 30 บาท
                                 </a> 
                             </div>                 
-                        </li> 
-                        <!-- <div class="btn btn-outline-info text-white">
-                                <a class="dropdown-item text-white " href="{{ url('/finance') }}">
-                                    ศูนย์จัดเก็บรายได้
-                                </a>
-                            </div> -->
-                            
-                        <!-- dropdown munu -->
+                        </li>                    
+      
 
-                        <!-- <li class="nav-item dropdown">
-                            <a id="navbarDropdown" class="btn btn-outline-info dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                ข้อมูลบริการ
-                            </a>
-                            <div class="btn btn-outline-info dropdown-menu dropdown-menu-end">
-                                <a class="dropdown-item" href="{{ url('/hos_opd') }}" >
-                                    OPD
-                                </a>
-                                <a class="dropdown-item" href="{{ url('/hos_ipd') }}" >
-                                    IPD
-                                </a>
-                                <a class="dropdown-item" href="{{ url('/hos_ipd') }}" >
-                                    ER
-                                </a>
-                            </div>
-                        </li> -->
                     @endguest
                     </ul>
                     
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ms-auto">
+                        <!-- H-RiMS -->
+                        @auth                
+                            @if (auth()->user()->hasAccessHrims('Y'))  
+                                <li >                            
+                                    <a class="navbar-brand btn btn-outline-info " href="{{ url('/hrims') }}">
+                                        H-RiMS
+                                    </a>       
+                                </li>
+                            @endif
+                        @endauth
                         <!-- Authentication Links -->
                         @guest
                             <!-- @if (Route::has('login'))
@@ -221,14 +209,11 @@
                                 </a>
 
                                 <div class="btn btn-outline-primary dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <!-- Admin -->
+                                    <!-- Admin --> 
                                     @auth                
-                                        @if (auth()->user()->hasAccessRole('admin'))                                         
-                                            <a class="dropdown-item text-white" href="{{ route('admin.main_setting') }}">Main Setting</a>
-                                            <a class="dropdown-item text-white" href="{{ route('admin.user_access.index') }}">Manage User</a>                                            
-                                            <a class="dropdown-item text-white" href="{{ route('admin.lookup_icode.index') }}">Lookup icode</a>
-                                            <a class="dropdown-item text-white" href="{{ route('admin.lookup_ward.index') }}">Lookup ward</a>
-                                            <a class="dropdown-item text-white" href="{{ route('admin.lookup_hospcode.index') }}">Lookup hospcode</a>
+                                        @if (auth()->user()->hasAccessRole('admin'))
+                                        <a class="dropdown-item text-white" href="{{ route('admin.main_setting') }}">Main Setting</a>                                                                                            
+                                            <a class="dropdown-item text-white" href="{{ route('admin.user_access.index') }}">Manage User</a>
                                         @endif
                                     @endauth
                                     <!-- -->                                    

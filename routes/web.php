@@ -6,6 +6,8 @@ use App\Http\Controllers\Admin\LookupIcodeController;
 use App\Http\Controllers\Admin\LookupWardController;
 use App\Http\Controllers\Admin\LookupHospcodeController;
 use App\Http\Controllers\Admin\User_AccessController;
+use App\Http\Controllers\Hrims\HrimsController;
+use App\Http\Controllers\Hrims\ImportStmController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Backoffice_AssetController;
 use App\Http\Controllers\Backoffice_HrdController;
@@ -16,7 +18,6 @@ use App\Http\Controllers\Customer_ComplainController;
 use App\Http\Controllers\Dashboard_DigitalhealthController;
 use App\Http\Controllers\Finance_ClaimController;
 use App\Http\Controllers\Finance_DebtorController;
-use App\Http\Controllers\Finance_StmController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\Form_CheckController;
 use App\Http\Controllers\Hosxp_SettingController;
@@ -69,6 +70,33 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::resource('lookup_ward', LookupWardController::class)->parameters(['lookup_ward' => 'ward']);
     Route::post('insert_lookup_ward', [LookupWardController::class, 'insert_lookup_ward'])->name('insert_lookup_ward');
     Route::resource('lookup_hospcode', LookupHospcodeController::class)->parameters(['lookup_hospcode' => 'hospcode']);
+});
+// H-RiMS ##########################################################################################
+Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(function () {
+    Route::get('/', [HrimsController::class, 'index'])->name('dashboard');
+    // STM
+    Route::get('import_stm/',[ImportStmController::class,'index']);
+    Route::match(['get','post'],'import_stm/ofc',[ImportStmController::class,'ofc'])->name('import_stm.ofc');
+    Route::post('import_stm/ofc_save',[ImportStmController::class,'ofc_save']);
+    Route::match(['get','post'],'import_stm/ofc_detail',[ImportStmController::class,'ofc_detail']);
+    Route::match(['get','post'],'import_stm/ofc_kidney',[ImportStmController::class,'ofc_kidney'])->name('ofc_kidney');
+    Route::post('import_stm/ofc_kidney_save',[ImportStmController::class,'ofc_kidney_save']);
+    Route::match(['get','post'],'import_stm/ofc_kidneydetail',[ImportStmController::class,'ofc_kidneydetail']);
+    Route::match(['get','post'],'import_stm/lgo',[ImportStmController::class,'lgo'])->name('lgo');
+    Route::post('import_stm/lgo_save',[ImportStmController::class,'lgo_save']);
+    Route::match(['get','post'],'import_stm/lgo_detail',[ImportStmController::class,'lgo_detail']);
+    Route::match(['get','post'],'import_stm/lgo_kidney',[ImportStmController::class,'lgo_kidney'])->name('lgo_kidney');
+    Route::post('import_stm/lgo_kidney_save',[ImportStmController::class,'lgo_kidney_save']);
+    Route::match(['get','post'],'import_stm/lgo_kidneydetail',[ImportStmController::class,'lgo_kidneydetail']);
+    Route::match(['get','post'],'import_stm/sss_kidney',[ImportStmController::class,'sss_kidney'])->name('sss_kidney');
+    Route::post('import_stm/sss_kidney_save',[ImportStmController::class,'sss_kidney_save']);
+    Route::match(['get','post'],'import_stm/sss_kidneydetail',[ImportStmController::class,'sss_kidneydetail']);
+    Route::match(['get','post'],'import_stm/ucs',[ImportStmController::class,'ucs'])->name('ucs');
+    Route::post('import_stm/ucs_save',[ImportStmController::class,'ucs_save']);
+    Route::match(['get','post'],'import_stm/ucs_detail',[ImportStmController::class,'ucs_detail']);
+    Route::match(['get','post'],'import_stm/ucs_kidney',[ImportStmController::class,'ucs_kidney'])->name('ucs_kidney');
+    Route::post('import_stm/ucs_kidney_save',[ImportStmController::class,'ucs_kidney_save']);
+    Route::match(['get','post'],'import_stm/ucs_kidneydetail',[ImportStmController::class,'ucs_kidneydetail']);
 });
 
 // home #############################################################################################

@@ -23,11 +23,13 @@ class User extends Authenticatable
                         ->where('role', $role)
                         ->exists();
     }
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+
+    public function hasAccessHrims($hrims)
+    {
+        return User_Access::where('username', $this->username)
+                        ->where('h_rims', $hrims)
+                        ->exists();
+    }
            
      protected $fillable = [
         'name',
