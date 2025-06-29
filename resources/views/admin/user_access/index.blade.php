@@ -1,6 +1,4 @@
 @extends('layouts.app')
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
 
 @section('content')
 <div class="container">
@@ -19,6 +17,7 @@
                 <th>ชื่อ-สกุล</th>
                 <th class="text-center" width = "5%">Role</th>
                 <th class="text-center" width = "10%">Del_Product</th>
+                <th class="text-center" width = "10%">H-Rims</th>
                 <th class="text-center" width = "20%">Actions</th>
             </tr>
         </thead>
@@ -29,21 +28,22 @@
                     <td>{{ $user->ptname }}</td>
                     <td class="text-center">{{ $user->role }}</td>
                     <td class="text-center">{{ $user->del_product }}</td>
+                    <td class="text-center">{{ $user->h_rims }}</td>
                     <td>
                         <!-- ปุ่ม Edit -->
-                        <button class="btn btn-warning btn-sm btn-edit" 
-                            data-id="{{ $user->id }}"
-                            data-name="{{ $user->username }}"
-                            data-email="{{ $user->ptname }}"
-                            data-active="{{ $user->role }}"
-                            data-status="{{ $user->del_product }}"
+                        <button class="btn btn-warning btn-sm btn-edit"                            
+                            data-username="{{ $user->username }}"
+                            data-ptname="{{ $user->ptname }}"
+                            data-role="{{ $user->role }}"
+                            data-del_product="{{ $user->del_product }}"
+                            data-h_rims="{{ $user->h_rims }}"
                             data-bs-toggle="modal"
                             data-bs-target="#editModal">
                             Edit
                         </button>
 
                         <!-- ปุ่ม Delete -->
-                        <form class="d-inline delete-form" method="POST" action="{{ route('admin.user_access.destroy', $user) }}">
+                        <form class="d-inline delete-form" method="POST" action="{{ route('admin.user_access.destroy', $user->username) }}">
                             @csrf @method('DELETE')
                             <button type="button" class="btn btn-danger btn-sm btn-delete">Delete</button>
                         </form>
@@ -59,14 +59,19 @@
             <form method="POST" action="{{ route('admin.user_access.store') }}" class="modal-content">
                 @csrf
                 <div class="modal-header">
-                    <h5 class="modal-title">Create User</h5>
+                    <h5 class="modal-title">Create User Access</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <input name="name" type="text" class="form-control mb-2" placeholder="Name" required>
-                    <input name="email" type="email" class="form-control mb-2" placeholder="Email" required>                  
-                    <input name="password" type="password" class="form-control mb-2" placeholder="Password" required>
-                    <input type="hidden" name="active" value="Y">
+                    <input name="username" type="text" class="form-control mb-2" placeholder="username" required>
+                    <input name="ptname" type="text" class="form-control mb-2" placeholder="ptname" required>                  
+                    <input type="hidden" name="role" value="user">
+                    <br>                                  
+                    <input type="checkbox" name="del_product" id="del_product" value="Y">
+                    <label for="del_product">Del_product</label>
+                    <br>                                  
+                    <input type="checkbox" name="h_rims" id="h_rims" value="Y">
+                    <label for="h_rims">H-RiMS</label>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-primary">Save</button>
@@ -81,21 +86,24 @@
             <form method="POST" id="editForm" class="modal-content">
                 @csrf @method('PUT')
                 <div class="modal-header">
-                    <h5 class="modal-title">Edit User</h5>
+                    <h5 class="modal-title">Edit User Access</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <input class="form-control mb-2" id="editName" name="name" type="text"  required>
-                    <input class="form-control mb-2" id="editEmail" name="email" type="email"   required>
-                    <select class="form-select" id="editStatus" name="status" >
+                    <input class="form-control mb-2" id="editusername" name="username" type="text"  required>
+                    <input class="form-control mb-2" id="editptname" name="ptname" type="text"   required>
+                    <select class="form-select" id="editrole" name="role" >
                         <option value="user">User</option>
                         <option value="admin">Admin</option>
                     </select>    
                     <br>                                  
-                    <input type="checkbox" name="active" id="editActive" value="Y"
-                        {{ $user->active === 'Y' ? 'checked' : '' }}>
-                    <label for="editActive">เปิดใช้งาน</label>
-                    <input class="form-control mb-2" type="password" name="password" placeholder="New Password (ไม่กรอก = ไม่เปลี่ยน)">
+                    <input type="checkbox" name="del_product" id="editdel_product" value="Y"
+                        {{ $user->del_product === 'Y' ? 'checked' : '' }}>
+                    <label for="editdel_product">Del_product</label>
+                    <br>                                  
+                    <input type="checkbox" name="h_rims" id="edith_rims" value="Y"
+                        {{ $user->h_rims === 'Y' ? 'checked' : '' }}>
+                    <label for="edith_rims">H-RiMS</label>
                 </div>
   
                 <div class="modal-footer">
@@ -123,18 +131,19 @@
         // Set ข้อมูลใน Edit Modal
         document.querySelectorAll('.btn-edit').forEach(button => {
             button.addEventListener('click', function () {
-                const id = this.dataset.id;
-                const name = this.dataset.name;
-                const email = this.dataset.email; 
-                const status = this.dataset.status;
-                const activeCheckbox = document.getElementById('editActive');
-                activeCheckbox.checked = (this.dataset.active === 'Y');
+                const username = this.dataset.username;
+                const ptname = this.dataset.ptname; 
+                const role = this.dataset.role;
+                const activedel_product = document.getElementById('editdel_product');
+                activedel_product.checked = (this.dataset.del_product === 'Y');
+                const activeh_rims= document.getElementById('edith_rims');
+                activeh_rims.checked = (this.dataset.h_rims === 'Y');
 
-                document.getElementById('editName').value = name;
-                document.getElementById('editEmail').value = email; 
-                document.getElementById('editStatus').value = status;
-                // document.getElementById('editForm').action = `/admin/user_access/${id}`;
-                document.getElementById('editForm').action = "{{ url('admin/user_access') }}/" + id;
+                document.getElementById('editusername').value = username;
+                document.getElementById('editptname').value = ptname; 
+                document.getElementById('editrole').value = role;
+                // document.getElementById('editForm').action = `/admin/user_access/${username}`;
+                document.getElementById('editForm').action = "{{ url('admin/user_access') }}/" + username;
             });
         });
 
@@ -160,12 +169,3 @@
 
 </div>
 @endsection
-
-<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
-<script type="text/javascript" class="init">
-    $(document).ready(function () {
-        $('#data').DataTable();
-    });
-</script>

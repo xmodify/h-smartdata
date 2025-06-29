@@ -10,5 +10,12 @@ class User_Access extends Model
     use HasFactory;
 
     protected $table = 'users_access';
-    protected $fillable = ['username', 'role'];
+    protected $primaryKey = 'username';
+    protected $fillable = [
+        'username',
+        'ptname',
+        'role',
+        'del_product',
+        'h_rims'
+    ];
 }

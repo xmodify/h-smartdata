@@ -1086,6 +1086,9 @@ public function ucs_kidney(Request $request)
 // ucs_kidney_save
 public function ucs_kidney_save(Request $request)
 {
+    // Set the execution time to 300 seconds (5 minutes)
+    set_time_limit(300);
+
     $this->validate($request, [
         'file' => 'required|file|mimes:xls,xlsx'
     ]);

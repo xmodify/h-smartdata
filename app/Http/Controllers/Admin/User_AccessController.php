@@ -33,21 +33,26 @@ class User_AccessController extends Controller
             'ptname' => $request->ptname,
             'role' => 'user',
             'del_product' => '',
+            'h_rims' => '',
         ]);
 
         return redirect()->route('admin.user_access.index')->with('success', 'เพิ่มข้อมูลสำเร็จ');
     }
+    public function show(User_Access $user)
+    {
+        //
+    }
 
-    // public function edit(User $user)
-    // {
-    //     return view('admin.users.edit', compact('user'));
-    // }
+    public function edit(User_Access $user)
+    {
+        //     
+    }
 
-    public function update(Request $request, User $user)
+    public function update(Request $request, User_Access $user)
     {
         $validated = $request->validate([
         'username' => 'required',
-        'ptnaame' => 'required',
+        'ptname' => 'required',
         'role' => 'required',
         ]);
 
@@ -55,7 +60,8 @@ class User_AccessController extends Controller
             'username' => $request->username,
             'ptname' => $request->ptname,
             'role' => $request->role,
-            'del_product' => $request->has('active') ? 'Y' : 'N',           
+            'del_product' => $request->has('del_product') ? 'Y' : 'N',
+            'h_rims' => $request->has('h_rims') ? 'Y' : 'N',          
         ];
 
         $user->update($data);
@@ -68,5 +74,6 @@ class User_AccessController extends Controller
         $user->delete();
         return redirect()->route('admin.user_access.index')->with('success', 'ลบข้อมูลสำเร็จ');
     }
+    
     
 }

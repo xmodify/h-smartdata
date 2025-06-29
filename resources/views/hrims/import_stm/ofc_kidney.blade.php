@@ -1,96 +1,147 @@
 @extends('layouts.hrims')
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
-<style>
-    table {
-    border-collapse: collapse;
-    border-spacing: 0;
-    width: 100%;
-    border: 1px solid #ddd;
-    }
-    th, td {
-    padding: 8px;
-    }
-</style>
 
 @section('content')
 <div class="container-fluid">
     <div class="row justify-content-center">  
         <div class="col-md-12"> 
-            <div class="card border-primary">
-                <div class="card-header bg-primary text-white">ข้อมูล Statement เบิกจ่ายตรงกรมบัญชีกลาง OFC [ฟอกไต]</div>
-                <div class="card-body">
-                    <form action="{{ url('finance_stm/stm_ofc_kidney_save') }}" method="POST" enctype="multipart/form-data">
-                        @csrf      
-                        <div class="row mb-2">            
-                            <div class="col"></div>
-                                <div class="col-md-5">
-                                    <div class="mb-3 mt-3">
-                                    <input class="form-control form-control-lg" id="formFileLg" name="file"
-                                        type="file" required>
-                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                </div>
-                                </div>
-                            <div class="col"></div>
-                        </div>
-                        <div class="row mb-2">            
-                            <div align="center">
-                                <button type="submit"
-                                    class="mb-3 me-2 btn-icon btn-shadow btn-dashed btn btn-outline-primary">
-                                    <i class="fa-solid fa-cloud-arrow-up me-2" data-bs-toggle="tooltip"
-                                    data-bs-placement="top" title="UP STM"></i>
-                                    UPLOAD STM
-                                </button> 
+            <div class="alert alert-success text-primary" role="alert">
+                <strong>ข้อมูล Statement เบิกจ่ายตรงกรมบัญชีกลาง OFC [ฟอกไต]</strong>
+            </div>
+
+            <div class="card-body">
+                <form action="{{ url('hrims/import_stm/ofc_kidney_save') }}" method="POST" enctype="multipart/form-data">
+                    @csrf      
+                    <div class="row mb-2">            
+                        <div class="col"></div>
+                            <div class="col-md-5">
+                                <div class="mb-3 mt-3">
+                                <input class="form-control form-control-lg" id="formFileLg" name="file"
+                                    type="file" required>
+                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
                             </div>
-                        </div>
-                        <div class="row"> 
-                            @if ($message = Session::get('success'))
-                            <div class="alert alert-success text-center">
-                            <h5><strong>{{ $message }}</strong></h5>
                             </div>
-                            @endif
+                        <div class="col"></div>
+                    </div>
+                    <div class="row mb-2">            
+                        <div align="center">
+                            <button type="submit" onclick="simulateProcess()"
+                                class="mb-3 me-2 btn-icon btn-shadow btn-dashed btn btn-outline-primary">
+                                <i class="fa-solid fa-cloud-arrow-up me-2" data-bs-toggle="tooltip"
+                                data-bs-placement="top" title="UP STM"></i>นำเข้า STM
+                            </button> 
                         </div>
-                    </form>
-                </div> 
-                <div class="card-body">
-                    <div style="overflow-x:auto;">   
-                        <table id="stm_ofc_kidney" class="table table-bordered table-striped my-3">
-                            <thead>
-                                <tr class="table-primary">
-                                    <th class="text-center">FileName</th> 
-                                    <th class="text-center">Station</th> 
-                                    <th class="text-center">จำนวน</th>                      
-                                    <th class="text-center">ค่ารักษาพยาบาลที่เบิก</th> 
-                                </tr>     
-                                </thead> 
-                                <?php $count = 1 ; ?>  
-                                @foreach($stm_ofc_kidney as $row)          
-                                <tr>
-                                    <td align="right">{{ $row->stmdoc }}</td>
-                                    <td align="right">{{ $row->station }}</td>
-                                    <td align="right">{{ number_format($row->count_no) }}</td> 
-                                    <td align="right">{{ number_format($row->amount,2) }}</td>
-                                </tr>                
-                                <?php $count++; ?>  
-                                @endforeach   
-                        </table>
-                    </div> 
-                </div> 
+                    </div>
+                    <div class="row"> 
+                        @if ($message = Session::get('success'))
+                        <div class="alert alert-success text-center">
+                        <h5><strong>{{ $message }}</strong></h5>
+                        </div>
+                        @endif
+                    </div>
+                </form>
             </div> 
+            <div class="card-body">
+                <div style="overflow-x:auto;">   
+                    <table id="stm_ofc_kidney" class="table table-bordered table-striped my-3">
+                        <thead>
+                            <tr class="table-primary">
+                                <th class="text-center">FileName</th> 
+                                <th class="text-center">Station</th> 
+                                <th class="text-center">จำนวน</th>                      
+                                <th class="text-center">ค่ารักษาพยาบาลที่เบิก</th> 
+                            </tr>     
+                            </thead> 
+                            <?php $count = 1 ; ?>  
+                            @foreach($stm_ofc_kidney as $row)          
+                            <tr>
+                                <td align="right">{{ $row->stmdoc }}</td>
+                                <td align="right">{{ $row->station }}</td>
+                                <td align="right">{{ number_format($row->count_no) }}</td> 
+                                <td align="right">{{ number_format($row->amount,2) }}</td>
+                            </tr>                
+                            <?php $count++; ?>  
+                            @endforeach   
+                    </table>
+                </div> 
+            </div>             
         </div> 
     </div> 
-</div>  
+</div>
+  
+@if (session('success'))
+<script>
+    Swal.fire({
+        title: 'นำเข้าสำเร็จ!',
+        text: '{{ session('success') }}',
+        icon: 'success',
+        confirmButtonText: 'ตกลง'
+    });
+</script>
+@endif
+
 @endsection
-<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
-<script type="text/javascript" class="init">
-    $(document).ready(function () {
-        $('#stm_ofc_kidney').DataTable();
-    });
+
+<script>
+    function showLoadingAlert() {
+        Swal.fire({
+            title: 'กำลังนำเข้าข้อมูล...',
+            text: 'กรุณารอสักครู่',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading()
+            }
+        });
+    }
+
+    function simulateProcess() {
+        const fileInput = document.querySelector('input[type="file"]');
+                // ตรวจสอบว่าไม่ได้เลือกไฟล์
+        if (!fileInput.files || fileInput.files.length === 0) {
+            Swal.fire({
+                title: 'แจ้งเตือน',
+                text: 'กรุณาเลือกไฟล์ก่อนนำเข้า',
+                icon: 'warning',
+                confirmButtonText: 'ตกลง'
+            });
+            return; // ❌ หยุดการทำงาน ไม่ส่งฟอร์ม
+        }
+
+        showLoadingAlert();
+        document.getElementById('importForm').submit();
+    }
 </script>
-<script type="text/javascript" class="init">
+
+@push('scripts')
+  <script>
     $(document).ready(function () {
-        $('#stm_ofc_kidney_list').DataTable();
+      $('#stm_ofc_kidney').DataTable({
+        dom: '<"row mb-3"' +
+                '<"col-md-6"l>' + // Show รายการ
+                '<"col-md-6 d-flex justify-content-end align-items-center gap-2"fB>' + // Search + Export
+              '>' +
+              'rt' +
+              '<"row mt-3"' +
+                '<"col-md-6"i>' + // Info
+                '<"col-md-6"p>' + // Pagination
+              '>',
+        buttons: [
+            {
+              extend: 'excelHtml5',
+              text: 'Excel',
+              className: 'btn btn-success',
+              title: 'ข้อมูล Statement เบิกจ่ายตรงกรมบัญชีกลาง OFC [ฟอกไต]'
+            }
+        ],
+        language: {
+            search: "ค้นหา:",
+            lengthMenu: "แสดง _MENU_ รายการ",
+            info: "แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ",
+            paginate: {
+              previous: "ก่อนหน้า",
+              next: "ถัดไป"
+            }
+        }
+      });
     });
-</script>
+  </script>  
+@endpush

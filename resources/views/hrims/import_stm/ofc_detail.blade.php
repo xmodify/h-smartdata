@@ -21,11 +21,11 @@
     <div class="row justify-content-center">  
         <div class="col-md-12"> 
             <div class="alert alert-success text-primary" role="alert">
-                <strong>ข้อมูล Statement เบิกจ่ายตรงกรมบัญชีกลาง OFC | กทม.BKK | ขสมก.BMT [OP-IP]</strong>
+                <strong>Statement เบิกจ่ายตรงกรมบัญชีกลาง OFC | กทม.BKK | ขสมก.BMT [OP-IP] รายละเอียด</strong>
             </div> 
             <div class="card-body">
                 <div style="overflow-x:auto;"> 
-                    <strong class="text-primary text-decoration">ผู้ป่วยนอก OP</strong>      
+                    <strong class="text-primary">ผู้ป่วยนอก OP</strong>      
                     <table id="stm_ofc_list" class="table table-bordered table-striped my-3">
                         <thead>
                             <tr class="table-primary">

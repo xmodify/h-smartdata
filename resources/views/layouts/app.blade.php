@@ -150,10 +150,7 @@
                                 </a>                                      
                                 <a class="dropdown-item text-white " href="{{ url('/finance_debtor') }}" >
                                     - ลูกหนี้ค่ารักษาพยาบาล
-                                </a>         
-                                <a class="dropdown-item text-white " href="{{ url('/finance_stm') }}" >
-                                    - นำเข้า Statement
-                                </a>             
+                                </a>            
                             </div>                 
                         </li>
                         <li class="nav-item dropdown">
@@ -171,8 +168,7 @@
                                     - นโยบาย 30 บาท
                                 </a> 
                             </div>                 
-                        </li>                    
-      
+                        </li>
 
                     @endguest
                     </ul>

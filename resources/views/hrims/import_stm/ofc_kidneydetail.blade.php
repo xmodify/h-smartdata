@@ -1,17 +1,4 @@
 @extends('layouts.hrims')
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
-<style>
-    table {
-    border-collapse: collapse;
-    border-spacing: 0;
-    width: 100%;
-    border: 1px solid #ddd;
-    }
-    th, td {
-    padding: 8px;
-    }
-</style> 
 
 @section('content')
 <form method="POST" enctype="multipart/form-data">
@@ -33,56 +20,83 @@
 <div class="container-fluid">
     <div class="row justify-content-center">  
         <div class="col-md-12"> 
-            <div class="card border-primary">
-                <div class="card-header bg-primary text-white">Statement เบิกจ่ายตรงกรมบัญชีกลาง OFC [ฟอกไต] รายละเอียด</div>
-                <div class="card-body">
-                    <div style="overflow-x:auto;">                           
-                        <table id="stm_ofc_kidney_list" class="table table-bordered table-striped my-3">
-                            <thead>
-                                <tr class="table-success">
-                                    <th class="text-center">Hcode</th>
-                                    <th class="text-center">Hname</th> 
-                                    <th class="text-center">FileName</th> 
-                                    <th class="text-center">Station</th> 
-                                    <th class="text-center">Hreg</th>                      
-                                    <th class="text-center">HN</th>
-                                    <th class="text-center">InvNo</th>                    
-                                    <th class="text-center">วันที่รับบริการ</th>
-                                    <th class="text-center">เอกสารตอบรับ</th>                  
-                                    <th class="text-center">ค่ารักษาพยาบาลที่เบิก</th> 
-                                    <th class="text-center">HDFlag</th>
-                                </tr>     
-                                </thead> 
-                                <?php $count = 1 ; ?>  
-                                @foreach($stm_ofc_kidney_list as $row)          
-                                <tr>
-                                    <td align="center">{{ $row->hcode }}</td> 
-                                    <td align="right">{{ $row->hname }}</td>
-                                    <td align="right">{{ $row->stmdoc }}</td>
-                                    <td align="right">{{ $row->station }}</td>
-                                    <td align="right">{{ $row->hreg }}</td>
-                                    <td align="left">{{ $row->hn }}</td>
-                                    <td align="right">{{ $row->invno }}</td>
-                                    <td align="right">{{ $row->dttran }}</td>
-                                    <td align="right">{{ $row->rid }}</td>
-                                    <td align="right">{{ number_format($row->amount,2) }}</td> 
-                                    <td align="right">{{ $row->hdflag }}</td>
-                                </tr>                
-                                <?php $count++; ?>  
-                                @endforeach   
-                        </table>
-                    </div> 
-                </div>  
+            <div class="alert alert-success text-primary" role="alert">
+                <strong>Statement เบิกจ่ายตรงกรมบัญชีกลาง OFC [ฟอกไต] รายละเอียด</strong>
+            </div>
+            <div class="card-body">
+                <div style="overflow-x:auto;">                           
+                    <table id="stm_ofc_kidney_list" class="table table-bordered table-striped my-3">
+                        <thead>
+                            <tr class="table-primary">
+                                <th class="text-center">Hcode</th>
+                                <th class="text-center">Hname</th> 
+                                <th class="text-center">FileName</th> 
+                                <th class="text-center">Station</th> 
+                                <th class="text-center">Hreg</th>                      
+                                <th class="text-center">HN</th>
+                                <th class="text-center">InvNo</th>                    
+                                <th class="text-center">วันที่รับบริการ</th>
+                                <th class="text-center">เอกสารตอบรับ</th>                  
+                                <th class="text-center">ค่ารักษาพยาบาลที่เบิก</th> 
+                                <th class="text-center">HDFlag</th>
+                            </tr>     
+                            </thead> 
+                            <?php $count = 1 ; ?>  
+                            @foreach($stm_ofc_kidney_list as $row)          
+                            <tr>
+                                <td align="center">{{ $row->hcode }}</td> 
+                                <td align="right">{{ $row->hname }}</td>
+                                <td align="right">{{ $row->stmdoc }}</td>
+                                <td align="right">{{ $row->station }}</td>
+                                <td align="right">{{ $row->hreg }}</td>
+                                <td align="left">{{ $row->hn }}</td>
+                                <td align="right">{{ $row->invno }}</td>
+                                <td align="right">{{ $row->dttran }}</td>
+                                <td align="right">{{ $row->rid }}</td>
+                                <td align="right">{{ number_format($row->amount,2) }}</td> 
+                                <td align="right">{{ $row->hdflag }}</td>
+                            </tr>                
+                            <?php $count++; ?>  
+                            @endforeach   
+                    </table>
+                </div> 
             </div> 
         </div> 
     </div> 
 </div> 
 @endsection
-<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
-<script type="text/javascript" class="init">
+
+@push('scripts')
+<script>
     $(document).ready(function () {
-        $('#stm_ofc_kidney_list').DataTable();
+      $('#stm_ofc_kidney_list').DataTable({
+        dom: '<"row mb-3"' +
+                '<"col-md-6"l>' + // Show รายการ
+                '<"col-md-6 d-flex justify-content-end align-items-center gap-2"fB>' + // Search + Export
+              '>' +
+              'rt' +
+              '<"row mt-3"' +
+                '<"col-md-6"i>' + // Info
+                '<"col-md-6"p>' + // Pagination
+              '>',
+        buttons: [
+            {
+              extend: 'excelHtml5',
+              text: 'Excel',
+              className: 'btn btn-success',
+              title: 'Statement เบิกจ่ายตรงกรมบัญชีกลาง OFC [ฟอกไต] รายละเอียด'
+            }
+        ],
+        language: {
+            search: "ค้นหา:",
+            lengthMenu: "แสดง _MENU_ รายการ",
+            info: "แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ",
+            paginate: {
+              previous: "ก่อนหน้า",
+              next: "ถัดไป"
+            }
+        }
+      });
     });
-</script>
+  </script> 
+@endpush
