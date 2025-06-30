@@ -135,6 +135,9 @@ public function nhso_endpoint(Request $request)
 //Create nhso_endpoint_pull
 public function nhso_endpoint_pull(Request $request)
 {   
+    // Set the execution time to 300 seconds (5 minutes)
+    set_time_limit(300);
+
     $vstdate = $request->input('vstdate') ?? now()->format('Y-m-d'); 
     $hosxp = DB::connection('hosxp')->select('
         SELECT o.vn, o.hn, pt.cid, vp.auth_code
@@ -148,7 +151,7 @@ public function nhso_endpoint_pull(Request $request)
     $token = DB::table('main_setting')
         ->where('name', 'token_authen_kiosk_nhso')
         ->value('value');
-
+ 
     foreach ($cids as $cid) {
         $response = Http::withToken($token)
             ->acceptJson()

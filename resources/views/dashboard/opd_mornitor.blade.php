@@ -390,46 +390,43 @@
     <hr>
   </div> <!-- //container --> 
 
-<!-- Modal -->
-<div class="modal fade" id="nhsoModal" tabindex="-1" aria-labelledby="nhsoModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content text-center">
-      <div class="modal-header">
-        <h5>เลือกวันที่เข้ารับบริการ</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
+  <!-- Modal -->
+  <div class="modal fade" id="nhsoModal" tabindex="-1" aria-labelledby="nhsoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content text-center">
+        <div class="modal-header">
+          <h5>เลือกวันที่เข้ารับบริการ</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
 
-      <form id="nhsoForm">
-        <div class="modal-body">         
-          <input type="date" id="vstdate" name="vstdate" class="form-control"  value="{{ date('Y-m-d') }}" required>
+        <form id="nhsoForm">
+          <div class="modal-body">         
+            <input type="date" id="vstdate" name="vstdate" class="form-control"  value="{{ date('Y-m-d') }}" required>
 
-          <div id="loadingSpinner" class="mt-4 d-none">
-            <div class="spinner-border text-primary" role="status">
-              <span class="visually-hidden">Loading...</span>
+            <div id="loadingSpinner" class="mt-4 d-none">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <p class="mt-2">กำลังดึงข้อมูลจาก สปสช....</p>
             </div>
-            <p class="mt-2">กำลังดึงข้อมูลจาก สปสช....</p>
+
+            <div id="resultMessage" class="mt-3 d-none"></div>
           </div>
 
-          <div id="resultMessage" class="mt-3 d-none"></div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">ดึงข้อมูล</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
-        </div>
-      </form>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">ดึงข้อมูล</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
-</div>
 
 <!-- ionicon -->
 <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 
-<!-- Vendor JS Files -->
-<script src="{{ asset('assets/vendor/apexcharts/apexcharts.min.js') }}"></script>
-<script src="{{ asset('assets/vendor/chart.js/chart.min.js') }}"></script>
-<script src="{{ asset('assets/vendor/echarts/echarts.min.js') }}"></script>
+</body>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
@@ -478,6 +475,10 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
+<!-- Vendor JS Files -->
+<script src="{{ asset('assets/vendor/apexcharts/apexcharts.min.js') }}"></script>
+<script src="{{ asset('assets/vendor/chart.js/chart.min.js') }}"></script>
+<script src="{{ asset('assets/vendor/echarts/echarts.min.js') }}"></script>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     new ApexCharts(document.querySelector("#op_visit"), {
@@ -524,7 +525,5 @@ document.addEventListener("DOMContentLoaded", function () {
     }).render();
   });
 </script>
-<!-- End Line Chart -->
 
-</body>
 </html>
