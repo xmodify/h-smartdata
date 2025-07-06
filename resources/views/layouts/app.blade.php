@@ -24,6 +24,15 @@
     <!-- SweetAlert2 CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <style>
+        .dropdown-menu .dropend:hover > .dropdown-menu {
+        display: block;
+        top: 0;
+        left: 100%;
+        margin-top: -1px;
+        }
+    </style>
+
 </head>
 <body>
     <div id="app">
@@ -49,54 +58,54 @@
                                 ข้อมูลงานบริการ
                             </a>
                             <div class=" btn btn-outline-primary dropdown-menu dropdown-menu-end">
-                                <a class="dropdown-item text-white " href="{{ url('/service_opd') }}" >
-                                    - ผู้ป่วยนอก
+                                <a class="dropdown-item link-primary text-white " href="{{ url('/service_opd') }}" >
+                                    ผู้ป่วยนอก
                                 </a>
-                                <a class="dropdown-item text-white " href="{{ url('/service_ipd') }}" >
-                                    - ผู้ป่วยใน
+                                <a class="dropdown-item link-primary text-white " href="{{ url('/service_ipd') }}" >
+                                    ผู้ป่วยใน
                                 </a>
-                                <a class="dropdown-item text-white " href="{{ url('/service_er') }}" >
-                                    - อุบัติเหตุ-ฉุกเฉิน
+                                <a class="dropdown-item link-primary text-white " href="{{ url('/service_er') }}" >
+                                    อุบัติเหตุ-ฉุกเฉิน
                                 </a>
-                                <a class="dropdown-item text-white " href="{{ url('/service_drug') }}" >
-                                    - เภสัชกรรม
+                                <a class="dropdown-item link-primary text-white " href="{{ url('/service_drug') }}" >
+                                    เภสัชกรรม
                                 </a>
-                                <a class="dropdown-item text-white " href="{{ url('/service_mental') }}" >
-                                    - สุขภาพจิต/ยาเสพติด
+                                <a class="dropdown-item link-primary text-white " href="{{ url('/service_mental') }}" >
+                                    สุขภาพจิต/ยาเสพติด
                                 </a>
-                                <a class="dropdown-item text-white " href="{{ url('/service_physic') }}" >
-                                    - กายภาพบำบัด
+                                <a class="dropdown-item link-primary text-white " href="{{ url('/service_physic') }}" >
+                                    กายภาพบำบัด
                                 </a>
-                                <a class="dropdown-item text-white " href="{{ url('/service_healthmed') }}">
-                                    - แพทย์แผนไทย
+                                <a class="dropdown-item link-primary text-white " href="{{ url('/service_healthmed') }}">
+                                    แพทย์แผนไทย
                                 </a>
-                                <a class="dropdown-item text-white " href="{{ url('/service_dent') }}" >
-                                    - ทันตกรรม
+                                <a class="dropdown-item link-primary text-white " href="{{ url('/service_dent') }}" >
+                                    ทันตกรรม
                                 </a> 
-                                <a class="dropdown-item text-white " href="{{ url('/service_ncd') }}" >
-                                    - คลินิกโรคเรื้อรัง
+                                <a class="dropdown-item link-primary text-white " href="{{ url('/service_ncd') }}" >
+                                    คลินิกโรคเรื้อรัง
                                 </a>
-                                <a class="dropdown-item text-white " href="{{ url('/service_pcu') }}" >
-                                    - งานเชิงรุก
+                                <a class="dropdown-item link-primary text-white " href="{{ url('/service_pcu') }}" >
+                                    งานเชิงรุก
                                 </a>
-                                <a class="dropdown-item text-white " href="{{ url('/service_xray') }}" >
-                                    - รังสีวิทยา
+                                <a class="dropdown-item link-primary text-white " href="{{ url('/service_xray') }}" >
+                                    รังสีวิทยา
                                 </a> 
-                                <a class="dropdown-item text-white " href="{{ url('/service_lab') }}" >
-                                    - เทคนิคการแพทย์
-                                </a> 
-                                <a class="dropdown-item text-white " href="{{ url('/service_refer') }}" >
-                                    - ข้อมูลการส่งต่อ
+                                <a class="dropdown-item link-primary text-white " href="{{ url('/service_lab') }}" >
+                                    เทคนิคการแพทย์
                                 </a>
-                                <a class="dropdown-item text-white " href="{{ url('/service_death') }}" >
-                                    - ข้อมูลเสียชีวิต
+                                <a class="dropdown-item link-primary text-white " href="{{ url('/service_operation') }}" >
+                                    ห้องผ่าผ่าตัด
+                                </a>  
+                                <a class="dropdown-item link-primary text-white " href="{{ url('/service_refer') }}" >
+                                    ข้อมูลการส่งต่อ
                                 </a>
-                                <a class="dropdown-item text-white " href="{{ url('/service_diag') }}" >
-                                    - ข้อมูลเฉพาะโรค
+                                <a class="dropdown-item link-primary text-white " href="{{ url('/service_death') }}" >
+                                    ข้อมูลเสียชีวิต
                                 </a>
-                                <a class="dropdown-item text-white " href="{{ url('/service_operation') }}" >
-                                    - ข้อมูลผ่าตัด
-                                </a>   
+                                <a class="dropdown-item link-primary text-white " href="{{ url('/service_diag') }}" >
+                                    ข้อมูลเฉพาะโรค
+                                </a>  
                             </div>                 
                         </li> 
                         <li class="nav-item dropdown">
@@ -104,23 +113,23 @@
                                 ข้อมูลงานสนับสนุน
                             </a>
                             <div class=" btn btn-outline-primary dropdown-menu dropdown-menu-end">
-                                <a class="dropdown-item text-white " href="{{ url('/backoffice_asset') }}" >
-                                    - งานทรัพย์สิน
+                                <a class="dropdown-item link-primary text-white " href="{{ url('/backoffice_asset') }}" >
+                                    งานทรัพย์สิน
                                 </a>
-                                <a class="dropdown-item text-white " href="{{ url('/backoffice_hrd') }}" >
-                                    - บุคลากร
+                                <a class="dropdown-item link-primary text-white " href="{{ url('/backoffice_hrd') }}" >
+                                    บุคลากร
                                 </a>
-                                <a class="dropdown-item text-white " href="{{ url('/backoffice_plan') }}" >
-                                    - แผนยุทธศาสตร์
+                                <a class="dropdown-item link-primary text-white " href="{{ url('/backoffice_plan') }}" >
+                                    แผนยุทธศาสตร์
                                 </a>
-                                <a class="dropdown-item text-white " href="{{ url('/backoffice_risk') }}" >
-                                    - ความเสี่ยง
+                                <a class="dropdown-item link-primary text-white " href="{{ url('/backoffice_risk') }}" >
+                                    ความเสี่ยง
                                 </a>
-                                <a class="dropdown-item text-white " href="{{ url('/skpcard') }}" >
-                                    - บัตรสังฆประชาร่วมใจ
+                                <a class="dropdown-item link-primary text-white " href="{{ url('/skpcard') }}" >
+                                    บัตรสังฆประชาร่วมใจ
                                 </a>   
-                                <a class="dropdown-item text-white " href="{{ url('/form') }}" >
-                                    - ระบบตรวจสอบ/ประเมิน
+                                <a class="dropdown-item link-primary text-white " href="{{ url('/form') }}" >
+                                    ระบบตรวจสอบ/ประเมิน
                                 </a>     
                             </div>                 
                         </li> 
@@ -128,28 +137,37 @@
                             <a id="navbarDropdown" class="nav-link btn btn-outline-info dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                 งานเวชระเบียน
                             </a>
-                            <div class=" btn btn-outline-primary dropdown-menu dropdown-menu-end">                                       
-                                <a class="dropdown-item text-white " href="{{ url('/hosxp_setting') }}" >
-                                    - ข้อมูลพื้นฐาน HOSxP
-                                </a>    
-                                <a class="dropdown-item text-white " href="{{ url('/medicalrecord_opd') }}" >
-                                    - เวชระเบียนผู้ป่วยนอก
-                                </a>   
-                                <a class="dropdown-item text-white " href="{{ url('/medicalrecord_ipd') }}" >
-                                    - เวชระเบียนผู้ป่วยใน
-                                </a>                
-                            </div>                 
+                            <ul class="bg-primary dropdown-menu dropdown-menu-end">   
+                                <!-- เมนูอื่น -->
+                                <li>
+                                    <a class="link-primary dropdown-item text-white " href="{{ url('/hosxp_setting') }}">
+                                       ข้อมูลพื้นฐาน HOSxP
+                                    </a>
+                                    <a class="link-primary dropdown-item text-white " href="{{ url('/medicalrecord_opd') }}" >
+                                        เวชระเบียนผู้ป่วยนอก
+                                    </a> 
+                                </li>
+                                <!-- ชี้ขวา -->
+                                <li class="dropend">
+                                    <a class="link-primary dropdown-item dropdown-toggle text-white" href="#" data-bs-toggle="dropdown">
+                                        เวชระเบียนผู้ป่วยใน
+                                    </a>
+                                    <ul class="bg-primary dropdown-menu">
+                                        <li><a class="dropdown-item link-primary text-white" href="{{ url('medicalrecord_ipd/dchsummary') }}">D/C Summary</a></li> 
+                                    </ul>
+                                </li>
+                            </ul>           
                         </li>
                         <li class="nav-item dropdown">
                             <a id="navbarDropdown" class="nav-link btn btn-info dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                 ศูนย์จัดเก็บรายได้
                             </a>
                             <div class=" btn btn-outline-primary dropdown-menu dropdown-menu-end">    
-                                <a class="dropdown-item text-white " href="{{ url('/finance_claim') }}" >
-                                    - เรียกเก็บค่ารักษาพยาบาล
+                                <a class="dropdown-item link-primary text-white " href="{{ url('/finance_claim') }}" >
+                                    เรียกเก็บค่ารักษาพยาบาล
                                 </a>                                      
-                                <a class="dropdown-item text-white " href="{{ url('/finance_debtor') }}" >
-                                    - ลูกหนี้ค่ารักษาพยาบาล
+                                <a class="dropdown-item link-primary text-white " href="{{ url('/finance_debtor') }}" >
+                                    ลูกหนี้ค่ารักษาพยาบาล
                                 </a>            
                             </div>                 
                         </li>
@@ -158,14 +176,14 @@
                                 Dashboard
                             </a>
                             <div class=" btn btn-outline-primary dropdown-menu dropdown-menu-end">  
-                                <a class="dropdown-item text-white " href="{{ url('/dashboard/opd_mornitor') }}" target="_blank">
-                                    - OPD Mornitor
+                                <a class="dropdown-item link-primary text-white " href="{{ url('/dashboard/opd_mornitor') }}" target="_blank">
+                                    OPD Mornitor
                                 </a>   
-                                <a class="dropdown-item text-white " href="{{ url('/dashboard/ipd_mornitor') }}" target="_blank">
-                                    - IPD Mornitor
+                                <a class="dropdown-item link-primary text-white " href="{{ url('/dashboard/ipd_mornitor') }}" target="_blank">
+                                    IPD Mornitor
                                 </a>   
-                                <a class="dropdown-item text-white " href="{{ url('/dashboard/digitalhealth') }}" target="_blank">
-                                    - นโยบาย 30 บาท
+                                <a class="dropdown-item link-primary text-white " href="{{ url('/dashboard/digitalhealth') }}" target="_blank">
+                                    นโยบาย 30 บาท
                                 </a> 
                             </div>                 
                         </li>

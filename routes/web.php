@@ -537,11 +537,12 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
 
 // medicalrecord_ipd ---------------------------------------------------------------------------------------------------------------------------------
     Route::get('medicalrecord_ipd/',[Medicalrecord_IpdController::class,'index']);
+    Route::match(['get','post'],'medicalrecord_ipd/wait_doctor_dchsummary',[Medicalrecord_IpdController::class,'wait_doctor_dchsummary']);
     Route::match(['get','post'],'medicalrecord_ipd/wait_icd_coder',[Medicalrecord_IpdController::class,'wait_icd_coder']);
-    Route::match(['get','post'],'medicalrecord_ipd/patient_dchsummary',[Medicalrecord_IpdController::class,'patient_dchsummary']);
+    Route::match(['get','post'],'medicalrecord_ipd/dchsummary',[Medicalrecord_IpdController::class,'dchsummary']);
     Route::match(['get','post'],'medicalrecord_ipd/dchsummary_audit',[Medicalrecord_IpdController::class,'dchsummary_audit']);
     Route::get('medicalrecord_ipd/non_dchsummary',[Medicalrecord_IpdController::class,'non_dchsummary']);
-    Route::get('medicalrecord_ipd/non_dchsummary_1',[Medicalrecord_IpdController::class,'non_dchsummary_1']);
+  
     Route::get('medicalrecord_ipd/finance_chk',[Medicalrecord_IpdController::class,'finance_chk']);
     Route::get('medicalrecord_ipd/finance_chk_opd_wait_money',[Medicalrecord_IpdController::class,'finance_chk_opd_wait_money']);
     Route::get('medicalrecord_ipd/finance_chk_wait_rcpt_money',[Medicalrecord_IpdController::class,'finance_chk_wait_rcpt_money']);

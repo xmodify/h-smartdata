@@ -201,7 +201,7 @@ public function opd_mornitor(Request $request )
     $nhso_monitor=DB::connection('hosxp')->select('
         SELECT COUNT(vn) AS total,IFNULL(SUM(CASE WHEN hipdata_code = "UCS" AND (an ="" OR an IS NULL) THEN 1 ELSE 0 END),0) AS "ucs_all",
 			IFNULL(SUM(CASE WHEN endpoint_code LIKE "EP%" THEN 1 ELSE 0 END),0) AS "endpoint",
-        IFNULL(SUM(CASE WHEN (auth_code IS NULL OR auth_code ="") AND pttype NOT IN ("10","11","12","13")  
+        IFNULL(SUM(CASE WHEN (auth_code IS NULL OR auth_code ="") AND cid NOT LIKE "0%" AND pttype NOT IN ("10","11","12","13")  
             THEN 1 ELSE 0 END),0) AS "non_authen",
         IFNULL(SUM(CASE WHEN (hipdata_code = "UCS" OR hipdata_code ="SSS")AND (hospmain="" OR hospmain IS NULL)
             THEN 1 ELSE 0 END),0) AS "non_hospmain",
@@ -238,7 +238,7 @@ public function opd_mornitor(Request $request )
             AND icode IN (SELECT icode FROM xray_items WHERE xray_items_group = 3)) AS "ct",
 		(SELECT SUM(sum_price) FROM opitemrece  WHERE rxdate = DATE(NOW())
             AND icode IN (SELECT icode FROM xray_items WHERE xray_items_group = 3)) AS "ct_price"
-        FROM (SELECT o.vn,vp.auth_code,IF(vp.auth_code NOT LIKE "EP%",IFNULL(epi.claimCode,ep.claimCode),vp.auth_code) AS endpoint_code,vp.pttype,vp.hospmain,
+        FROM (SELECT o.vn,v.cid,vp.auth_code,IF(vp.auth_code NOT LIKE "EP%",IFNULL(epi.claimCode,ep.claimCode),vp.auth_code) AS endpoint_code,vp.pttype,vp.hospmain,
             p.hipdata_code,IFNULL(ep.sourceChannel,epi.sourceChannel) AS sourceChannel,ep.claimStatus,x.xray_items_code,l.lab_items_code,p.paidst,o1.icode,
             o2.icode AS icode_cr,o3.icode AS icode_ppfs,oe.moph_finance_upload_datetime AS fdh,o.an,i.an AS homeward,IFNULL(ep.claimType,epi.claimType) AS claimType,
             p.pttype_price_group_id,v.pdx,o4.icode AS icode_herb,hm.vn AS healthmed,v.income,v.paid_money
@@ -449,6 +449,7 @@ public function opd_mornitor_non_authen(Request $request )
         LEFT JOIN kskdepartment k ON k.depcode=o.main_dep
         WHERE o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
         AND vp.pttype NOT IN ("10","11","12","13")
+        AND p.cid NOT LIKE "0%"
         AND (vp.auth_code IS NULL OR vp.auth_code ="")           
         GROUP BY o.vn ORDER BY o.vsttime');
 
@@ -821,7 +822,7 @@ public function ipd_mornitor(Request $request )
         ROUND(SUM(i.adjrw),2) AS adjrw ,SUM(a.income-a.rcpt_money)/SUM(i.adjrw) AS "income_rw"  
         FROM an_stat a INNER JOIN ipt i ON a.an=i.an
         WHERE i.dchdate BETWEEN "'.$start_date.'" AND DATE(NOW())
-        AND a.pdx NOT IN ("Z290","Z208") AND i.ward IN ("01","02","03","10")
+        AND a.pdx NOT IN ("Z290","Z208") AND i.ward NOT IN (SELECT ward FROM htp_report.lookup_ward WHERE ward_homeward = "Y")
         GROUP BY MONTH(i.dchdate)
         ORDER BY YEAR(i.dchdate) , MONTH(i.dchdate)');
 
@@ -845,7 +846,7 @@ public function ipd_mornitor(Request $request )
         ROUND(SUM(i.adjrw),2) AS adjrw ,SUM(a.income-a.rcpt_money)/SUM(i.adjrw) AS "income_rw"  
         FROM an_stat a INNER JOIN ipt i ON a.an=i.an
         WHERE i.dchdate BETWEEN "'.$start_date.'" AND DATE(NOW())
-        AND a.pdx NOT IN ("Z290","Z208") AND i.ward IN ("06")
+        AND a.pdx NOT IN ("Z290","Z208") AND i.ward IN (SELECT ward FROM htp_report.lookup_ward WHERE ward_homeward = "Y")
         GROUP BY MONTH(i.dchdate)
         ORDER BY YEAR(i.dchdate) , MONTH(i.dchdate)');
 

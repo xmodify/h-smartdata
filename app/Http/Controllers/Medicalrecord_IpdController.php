@@ -21,6 +21,55 @@ public function index()
       return view('medicalrecord_ipd.index');          
 }
 
+//Create wait_doctor_dchsummary
+public function wait_doctor_dchsummary(Request $request)
+{      
+      $start_date = $request->start_date;
+      $end_date = $request->end_date;
+      if($start_date == '' || $end_date == null)
+      {$start_date = Session::get('start_date');}else{$start_date =$request->start_date;}
+      if($end_date == '' || $end_date == null)
+      {$end_date = Session::get('end_date');}else{$end_date =$request->end_date;}
+
+      $non_dchsummary=DB::connection('hosxp')->select('
+            SELECT w.`name` AS ward,i.hn,i.an,iptdiag.icd10,a.diag_text_list,d.`name` AS owner_doctor_name,
+            i.dchdate,TIMESTAMPDIFF(day,i.dchdate,DATE(NOW())) AS dch_day,
+            CASE WHEN (a.diag_text_list ="" OR a.diag_text_list IS NULL) THEN "รอแพทย์สรุป Chart"
+            WHEN (iptdiag.icd10 ="" OR iptdiag.icd10 IS NULL) THEN "รอลงรหัสวินิจฉัยโรค" END AS diag_status
+            FROM ipt i
+            LEFT JOIN ward w ON w.ward=i.ward        
+            LEFT JOIN iptdiag ON iptdiag.an = i.an AND iptdiag.diagtype = "1"
+            LEFT JOIN ipt_doctor_list il ON il.an = i.an AND il.ipt_doctor_type_id = 1 AND il.active_doctor = "Y"
+            LEFT JOIN doctor d ON d.`code` = il.doctor
+            LEFT JOIN an_stat a ON a.an=i.an
+            WHERE i.ward NOT IN (SELECT ward FROM htp_report.lookup_ward WHERE ward_homeward = "Y")
+            AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
+            AND (a.diag_text_list ="" OR a.diag_text_list IS NULL)
+            GROUP BY i.an
+            ORDER BY d.`name`,dch_day DESC');  
+
+      $non_dchsummary_sum=DB::connection('hosxp')->select('
+            SELECT d.`name` AS owner_doctor_name,COUNT(i.an) AS total
+            FROM ipt i     
+            LEFT JOIN iptdiag ON iptdiag.an = i.an AND iptdiag.diagtype = "1"
+            LEFT JOIN ipt_doctor_list il ON il.an = i.an AND il.ipt_doctor_type_id = 1 AND il.active_doctor = "Y"
+            LEFT JOIN doctor d ON d.`code` = il.doctor
+            LEFT JOIN an_stat a ON a.an=i.an
+            WHERE i.ward NOT IN (SELECT ward FROM htp_report.lookup_ward WHERE ward_homeward = "Y")
+            AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
+            AND (a.diag_text_list ="" OR a.diag_text_list IS NULL)
+            GROUP BY d.`name` 
+            ORDER BY total DESC'); 
+      $owner_doctor_name = array_column($non_dchsummary_sum,'owner_doctor_name');
+      $owner_doctor_total = array_column($non_dchsummary_sum,'total');
+
+      $request->session()->put('start_date',$start_date);
+      $request->session()->put('end_date',$end_date);
+      $request->session()->save();
+      
+      return view('medicalrecord_ipd.non_dchsummary',compact('non_dchsummary','owner_doctor_name','owner_doctor_total'));        
+}
+
 //Create wait_icd_coder
 public function wait_icd_coder(Request $request)
 {      
@@ -31,6 +80,9 @@ public function wait_icd_coder(Request $request)
       if($end_date == '' || $end_date == null)
       {$end_date = Session::get('end_date');}else{$end_date =$request->end_date;}
 
+      $k_value = DB::table('main_setting')->where('name','k_value')->value('value'); 
+      $base_rate = DB::table('main_setting')->where('name','base_rate')->value('value');
+
       $sql=DB::connection('hosxp')->select('
             SELECT COUNT(an) AS discharge,
             SUM(CASE WHEN (dx1 IS NULL OR dx1 ="") THEN 1 ELSE 0 END) AS wait_dchsummary,
@@ -38,7 +90,8 @@ public function wait_icd_coder(Request $request)
             SUM(CASE WHEN (dx1 IS NOT NULL OR dx1 <>"" OR dx2 IS NOT NULL OR dx2 <>"" OR dx3 IS NOT NULL OR dx3 <>""
                   OR dx4 IS NOT NULL OR dx4 <>"" OR dx5 IS NOT NULL OR dx5 <>"") AND pdx <>"" AND pdx IS NOT NULL THEN 1 ELSE 0 END) AS dchsummary,
             SUM(CASE WHEN (dx1_audit IS NOT NULL OR dx1_audit <>"" OR dx2_audit IS NOT NULL OR dx2_audit <>"" OR dx3_audit IS NOT NULL OR dx3_audit <>""
-                  OR dx4_audit IS NOT NULL OR dx4_audit <>"" OR dx5_audit IS NOT NULL OR dx5_audit <>"") THEN 1 ELSE 0 END) AS dchsummary_audit,SUM(rw) AS rw
+                  OR dx4_audit IS NOT NULL OR dx4_audit <>"" OR dx5_audit IS NOT NULL OR dx5_audit <>"") THEN 1 ELSE 0 END) AS dchsummary_audit,
+            SUM(rw) AS rw,IFNULL((SUM(rw)*"'.$k_value.'"*"'.$base_rate.'"),0) AS rw_recive
             FROM (SELECT i.an,i.regdate,i.dchdate,id1.diag_text AS dx1,id2.diag_text AS dx2,id3.diag_text AS dx3,id4.diag_text AS dx4,id5.diag_text AS dx5,
             id1.audit_diag_text AS dx1_audit,id2.audit_diag_text AS dx2_audit,id3.audit_diag_text AS dx3_audit,id4.audit_diag_text AS dx4_audit,
             id5.audit_diag_text AS dx5_audit,a.pdx,a.rw 
@@ -49,7 +102,7 @@ public function wait_icd_coder(Request $request)
             LEFT JOIN ipt_doctor_diag id4 ON id4.an = i.an	AND id4.diagtype = 4
             LEFT JOIN ipt_doctor_diag id5 ON id5.an = i.an	AND id5.diagtype = 5
             LEFT JOIN an_stat a ON a.an=i.an
-            WHERE i.ward IN ("01","02","03","10") 
+            WHERE i.ward NOT IN (SELECT ward FROM htp_report.lookup_ward WHERE ward_homeward = "Y")
             AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
             GROUP BY i.an) AS a'); 
       foreach ($sql as $row){
@@ -58,7 +111,8 @@ public function wait_icd_coder(Request $request)
             $wait_icd_coder = $row->wait_icd_coder;
             $dchsummary = $row->dchsummary;
             $dchsummary_audit = $row->dchsummary_audit;
-            $rw = $row->rw;
+            $rw = $row->rw; 
+            $rw_recive = $row->rw_recive;
       }
 
       $patient_dchsummary=DB::connection('hosxp')->select('
@@ -98,7 +152,8 @@ public function wait_icd_coder(Request $request)
             LEFT JOIN iptdiag id_t3 ON id_t3.an=i.an AND id_t3.diagtype = 3
             LEFT JOIN iptdiag id_t4 ON id_t4.an=i.an AND id_t4.diagtype = 4
             LEFT JOIN iptdiag id_t5 ON id_t5.an=i.an AND id_t5.diagtype = 5
-            WHERE i.ward IN ("01","02","03","10") AND (id1.diag_text <> "" OR id1.diag_text IS NOT NULL)
+            WHERE i.ward NOT IN (SELECT ward FROM htp_report.lookup_ward WHERE ward_homeward = "Y")
+            AND (id1.diag_text <> "" OR id1.diag_text IS NOT NULL)
             AND (a.pdx = "" OR a.pdx IS NULL) AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
             GROUP BY i.an'); 
       
@@ -106,12 +161,12 @@ public function wait_icd_coder(Request $request)
       $request->session()->put('end_date',$end_date);
       $request->session()->save();
 
-      return view('medicalrecord_ipd.patient_dchsummary',compact('start_date','end_date','patient_dchsummary','discharge',
-            'wait_dchsummary','wait_icd_coder','dchsummary','dchsummary_audit','rw'));        
+      return view('medicalrecord_ipd.dchsummary',compact('start_date','end_date','patient_dchsummary','discharge',
+            'wait_dchsummary','wait_icd_coder','dchsummary','dchsummary_audit','rw','rw_recive','k_value','base_rate'));        
 }
 
-//Create patient_dchsummary
-public function patient_dchsummary(Request $request)
+//Create dchsummary
+public function dchsummary(Request $request)
 {      
       $start_date = $request->start_date;
       $end_date = $request->end_date;
@@ -120,6 +175,9 @@ public function patient_dchsummary(Request $request)
       if($end_date == '' || $end_date == null)
       {$end_date = Session::get('end_date');}else{$end_date =$request->end_date;}
 
+      $k_value = DB::table('main_setting')->where('name','k_value')->value('value'); 
+      $base_rate = DB::table('main_setting')->where('name','base_rate')->value('value');
+
       $sql=DB::connection('hosxp')->select('
             SELECT COUNT(an) AS discharge,
             SUM(CASE WHEN (dx1 IS NULL OR dx1 ="") THEN 1 ELSE 0 END) AS wait_dchsummary,
@@ -127,7 +185,8 @@ public function patient_dchsummary(Request $request)
             SUM(CASE WHEN (dx1 IS NOT NULL OR dx1 <>"" OR dx2 IS NOT NULL OR dx2 <>"" OR dx3 IS NOT NULL OR dx3 <>""
                   OR dx4 IS NOT NULL OR dx4 <>"" OR dx5 IS NOT NULL OR dx5 <>"") AND pdx <>"" AND pdx IS NOT NULL THEN 1 ELSE 0 END) AS dchsummary,
             SUM(CASE WHEN (dx1_audit IS NOT NULL OR dx1_audit <>"" OR dx2_audit IS NOT NULL OR dx2_audit <>"" OR dx3_audit IS NOT NULL OR dx3_audit <>""
-                  OR dx4_audit IS NOT NULL OR dx4_audit <>"" OR dx5_audit IS NOT NULL OR dx5_audit <>"") THEN 1 ELSE 0 END) AS dchsummary_audit,SUM(rw) AS rw
+                  OR dx4_audit IS NOT NULL OR dx4_audit <>"" OR dx5_audit IS NOT NULL OR dx5_audit <>"") THEN 1 ELSE 0 END) AS dchsummary_audit,
+            SUM(rw) AS rw,IFNULL((SUM(rw)*"'.$k_value.'"*"'.$base_rate.'"),0) AS rw_recive
             FROM (SELECT i.an,i.regdate,i.dchdate,id1.diag_text AS dx1,id2.diag_text AS dx2,id3.diag_text AS dx3,id4.diag_text AS dx4,id5.diag_text AS dx5,
             id1.audit_diag_text AS dx1_audit,id2.audit_diag_text AS dx2_audit,id3.audit_diag_text AS dx3_audit,id4.audit_diag_text AS dx4_audit,
             id5.audit_diag_text AS dx5_audit,a.pdx,a.rw 
@@ -138,7 +197,7 @@ public function patient_dchsummary(Request $request)
             LEFT JOIN ipt_doctor_diag id4 ON id4.an = i.an	AND id4.diagtype = 4
             LEFT JOIN ipt_doctor_diag id5 ON id5.an = i.an	AND id5.diagtype = 5
             LEFT JOIN an_stat a ON a.an=i.an
-            WHERE i.ward IN ("01","02","03","10") 
+            WHERE i.ward NOT IN (SELECT ward FROM htp_report.lookup_ward WHERE ward_homeward = "Y")
             AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
             GROUP BY i.an) AS a'); 
       foreach ($sql as $row){
@@ -148,6 +207,7 @@ public function patient_dchsummary(Request $request)
             $dchsummary = $row->dchsummary;
             $dchsummary_audit = $row->dchsummary_audit;
             $rw = $row->rw;
+            $rw_recive = $row->rw_recive;
       }
 
       $patient_dchsummary=DB::connection('hosxp')->select('
@@ -187,7 +247,8 @@ public function patient_dchsummary(Request $request)
             LEFT JOIN iptdiag id_t3 ON id_t3.an=i.an AND id_t3.diagtype = 3
             LEFT JOIN iptdiag id_t4 ON id_t4.an=i.an AND id_t4.diagtype = 4
             LEFT JOIN iptdiag id_t5 ON id_t5.an=i.an AND id_t5.diagtype = 5
-            WHERE i.ward IN ("01","02","03","10") AND (id1.an IS NOT NULL OR id1.an <>"")
+            WHERE i.ward NOT IN (SELECT ward FROM htp_report.lookup_ward WHERE ward_homeward = "Y")
+            AND (id1.an IS NOT NULL OR id1.an <>"")
             AND a.pdx <> "" AND a.pdx IS NOT NULL AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
             GROUP BY i.an'); 
 
@@ -195,8 +256,8 @@ public function patient_dchsummary(Request $request)
       $request->session()->put('end_date',$end_date);
       $request->session()->save();
       
-      return view('medicalrecord_ipd.patient_dchsummary',compact('start_date','end_date','patient_dchsummary','discharge',
-            'wait_dchsummary','wait_icd_coder','dchsummary','dchsummary_audit','rw'));        
+      return view('medicalrecord_ipd.dchsummary',compact('start_date','end_date','patient_dchsummary','discharge',
+            'wait_dchsummary','wait_icd_coder','dchsummary','dchsummary_audit','rw','rw_recive','k_value','base_rate'));        
 }
 
 //Create dchsummary_audit
@@ -209,6 +270,9 @@ public function dchsummary_audit(Request $request)
       if($end_date == '' || $end_date == null)
       {$end_date = Session::get('end_date');}else{$end_date =$request->end_date;}
 
+      $k_value = DB::table('main_setting')->where('name','k_value')->value('value'); 
+      $base_rate = DB::table('main_setting')->where('name','base_rate')->value('value');
+
       $sql=DB::connection('hosxp')->select('
             SELECT COUNT(an) AS discharge,
             SUM(CASE WHEN (dx1 IS NULL OR dx1 ="") THEN 1 ELSE 0 END) AS wait_dchsummary,
@@ -216,7 +280,8 @@ public function dchsummary_audit(Request $request)
             SUM(CASE WHEN (dx1 IS NOT NULL OR dx1 <>"" OR dx2 IS NOT NULL OR dx2 <>"" OR dx3 IS NOT NULL OR dx3 <>""
                   OR dx4 IS NOT NULL OR dx4 <>"" OR dx5 IS NOT NULL OR dx5 <>"") AND pdx <>"" AND pdx IS NOT NULL THEN 1 ELSE 0 END) AS dchsummary,
             SUM(CASE WHEN (dx1_audit IS NOT NULL OR dx1_audit <>"" OR dx2_audit IS NOT NULL OR dx2_audit <>"" OR dx3_audit IS NOT NULL OR dx3_audit <>""
-                  OR dx4_audit IS NOT NULL OR dx4_audit <>"" OR dx5_audit IS NOT NULL OR dx5_audit <>"") THEN 1 ELSE 0 END) AS dchsummary_audit,SUM(rw) AS rw
+                  OR dx4_audit IS NOT NULL OR dx4_audit <>"" OR dx5_audit IS NOT NULL OR dx5_audit <>"") THEN 1 ELSE 0 END) AS dchsummary_audit,
+            SUM(rw) AS rw,IFNULL((SUM(rw)*"'.$k_value.'"*"'.$base_rate.'"),0) AS rw_recive
             FROM (SELECT i.an,i.regdate,i.dchdate,id1.diag_text AS dx1,id2.diag_text AS dx2,id3.diag_text AS dx3,id4.diag_text AS dx4,id5.diag_text AS dx5,
             id1.audit_diag_text AS dx1_audit,id2.audit_diag_text AS dx2_audit,id3.audit_diag_text AS dx3_audit,id4.audit_diag_text AS dx4_audit,
             id5.audit_diag_text AS dx5_audit,a.pdx,a.rw 
@@ -227,7 +292,7 @@ public function dchsummary_audit(Request $request)
             LEFT JOIN ipt_doctor_diag id4 ON id4.an = i.an	AND id4.diagtype = 4
             LEFT JOIN ipt_doctor_diag id5 ON id5.an = i.an	AND id5.diagtype = 5
             LEFT JOIN an_stat a ON a.an=i.an
-            WHERE i.ward IN ("01","02","03","10") 
+            WHERE i.ward NOT IN (SELECT ward FROM htp_report.lookup_ward WHERE ward_homeward = "Y")
             AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
             GROUP BY i.an) AS a'); 
       foreach ($sql as $row){
@@ -237,6 +302,7 @@ public function dchsummary_audit(Request $request)
             $dchsummary = $row->dchsummary;
             $dchsummary_audit = $row->dchsummary_audit;
             $rw = $row->rw;
+            $rw_recive = $row->rw_recive;
       }
 
       $patient_dchsummary=DB::connection('hosxp')->select('
@@ -276,7 +342,8 @@ public function dchsummary_audit(Request $request)
             LEFT JOIN iptdiag id_t3 ON id_t3.an=i.an AND id_t3.diagtype = 3
             LEFT JOIN iptdiag id_t4 ON id_t4.an=i.an AND id_t4.diagtype = 4
             LEFT JOIN iptdiag id_t5 ON id_t5.an=i.an AND id_t5.diagtype = 5
-            WHERE i.ward IN ("01","02","03","10")  AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
+            WHERE i.ward NOT IN (SELECT ward FROM htp_report.lookup_ward WHERE ward_homeward = "Y")
+            AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
             AND ((id1.audit_diag_text IS NOT NULL OR id1.audit_diag_text <>"") 
                   OR (id2.audit_diag_text IS NOT NULL OR id2.audit_diag_text <>"")
                   OR (id3.audit_diag_text IS NOT NULL OR id3.audit_diag_text <>"")
@@ -288,55 +355,18 @@ public function dchsummary_audit(Request $request)
       $request->session()->put('end_date',$end_date);
       $request->session()->save();
       
-      return view('medicalrecord_ipd.patient_dchsummary',compact('start_date','end_date','patient_dchsummary','discharge',
-            'wait_dchsummary','wait_icd_coder','dchsummary','dchsummary_audit','rw'));        
+      return view('medicalrecord_ipd.dchsummary',compact('start_date','end_date','patient_dchsummary','discharge',
+            'wait_dchsummary','wait_icd_coder','dchsummary','dchsummary_audit','rw','rw_recive','k_value','base_rate'));        
 }
 
 //Create non_dchsummary
 public function non_dchsummary(Request $request)
 {      
-      $non_dchsummary=DB::connection('hosxp')->select('
-            SELECT w.`name` AS ward,i.hn,i.an,iptdiag.icd10,a.diag_text_list,d.`name` AS owner_doctor_name,
-            i.dchdate,TIMESTAMPDIFF(day,i.dchdate,DATE(NOW())) AS dch_day,
-            CASE WHEN (a.diag_text_list ="" OR a.diag_text_list IS NULL) THEN "รอแพทย์สรุป Chart"
-            WHEN (iptdiag.icd10 ="" OR iptdiag.icd10 IS NULL) THEN "รอลงรหัสวินิจฉัยโรค" END AS diag_status
-            FROM ipt i
-            LEFT JOIN ward w ON w.ward=i.ward        
-            LEFT JOIN iptdiag ON iptdiag.an = i.an AND iptdiag.diagtype = "1"
-            LEFT JOIN ipt_doctor_list il ON il.an = i.an AND il.ipt_doctor_type_id = 1 AND il.active_doctor = "Y"
-            LEFT JOIN doctor d ON d.`code` = il.doctor
-            LEFT JOIN an_stat a ON a.an=i.an
-            WHERE i.ward IN ("01","02","03","10") AND i.dchdate > "2024-12-01" 
-            AND (a.diag_text_list ="" OR a.diag_text_list IS NULL)
-            GROUP BY i.an
-            ORDER BY d.`name`,dch_day DESC');  
-
-      $non_dchsummary_sum=DB::connection('hosxp')->select('
-            SELECT d.`name` AS owner_doctor_name,COUNT(i.an) AS total
-            FROM ipt i     
-            LEFT JOIN iptdiag ON iptdiag.an = i.an AND iptdiag.diagtype = "1"
-            LEFT JOIN ipt_doctor_list il ON il.an = i.an AND il.ipt_doctor_type_id = 1 AND il.active_doctor = "Y"
-            LEFT JOIN doctor d ON d.`code` = il.doctor
-            LEFT JOIN an_stat a ON a.an=i.an
-            WHERE i.ward IN ("01","02","03","10") AND i.dchdate > "2024-12-01" 
-            AND (a.diag_text_list ="" OR a.diag_text_list IS NULL)
-            GROUP BY d.`name` 
-            ORDER BY total DESC'); 
-      $owner_doctor_name = array_column($non_dchsummary_sum,'owner_doctor_name');
-      $owner_doctor_total = array_column($non_dchsummary_sum,'total');
-      
-      return view('medicalrecord_ipd.non_dchsummary',compact('non_dchsummary','owner_doctor_name','owner_doctor_total'));        
-}
-
-//Create non_dchsummary_1
-public function non_dchsummary_1(Request $request)
-{      
-      $start_date = $request->start_date;
-      $end_date = $request->end_date;
-      if($start_date == '' || $end_date == null)
-      {$start_date = Session::get('start_date');}else{$start_date =$request->start_date;}
-      if($end_date == '' || $end_date == null)
-      {$end_date = Session::get('end_date');}else{$end_date =$request->end_date;}
+      $budget_year_last = DB::connection('backoffice')->table('budget_year')->where('DATE_END','>=',date('Y-m-d'))->where('DATE_BEGIN','<=',date('Y-m-d'))->value('LEAVE_YEAR_ID');
+      $budget_year = $request->budget_year;
+      if($budget_year == '' || $budget_year == null)
+      {$budget_year = $budget_year_last;}else{$budget_year =$request->budget_year;}       
+      $start_date = DB::connection('backoffice')->table('budget_year')->where('LEAVE_YEAR_ID',$budget_year)->value('DATE_BEGIN');
 
       $non_dchsummary=DB::connection('hosxp')->select('
             SELECT w.`name` AS ward,i.hn,i.an,iptdiag.icd10,a.diag_text_list,d.`name` AS owner_doctor_name,
@@ -349,7 +379,8 @@ public function non_dchsummary_1(Request $request)
             LEFT JOIN ipt_doctor_list il ON il.an = i.an AND il.ipt_doctor_type_id = 1 AND il.active_doctor = "Y"
             LEFT JOIN doctor d ON d.`code` = il.doctor
             LEFT JOIN an_stat a ON a.an=i.an
-            WHERE i.ward IN ("01","02","03","10") AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
+            WHERE i.ward NOT IN (SELECT ward FROM htp_report.lookup_ward WHERE ward_homeward = "Y")
+            AND i.dchdate > "'.$start_date.'"
             AND (a.diag_text_list ="" OR a.diag_text_list IS NULL)
             GROUP BY i.an
             ORDER BY d.`name`,dch_day DESC');  
@@ -361,17 +392,14 @@ public function non_dchsummary_1(Request $request)
             LEFT JOIN ipt_doctor_list il ON il.an = i.an AND il.ipt_doctor_type_id = 1 AND il.active_doctor = "Y"
             LEFT JOIN doctor d ON d.`code` = il.doctor
             LEFT JOIN an_stat a ON a.an=i.an
-            WHERE i.ward IN ("01","02","03","10") AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
+            WHERE i.ward NOT IN (SELECT ward FROM htp_report.lookup_ward WHERE ward_homeward = "Y")
+            AND i.dchdate > "'.$start_date.'"
             AND (a.diag_text_list ="" OR a.diag_text_list IS NULL)
             GROUP BY d.`name` 
             ORDER BY total DESC'); 
       $owner_doctor_name = array_column($non_dchsummary_sum,'owner_doctor_name');
       $owner_doctor_total = array_column($non_dchsummary_sum,'total');
-
-      $request->session()->put('start_date',$start_date);
-      $request->session()->put('end_date',$end_date);
-      $request->session()->save();
-      
+ 
       return view('medicalrecord_ipd.non_dchsummary',compact('non_dchsummary','owner_doctor_name','owner_doctor_total'));        
 }
 

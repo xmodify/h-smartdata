@@ -63,7 +63,7 @@
                         <div class="card-body">
                             <h1 class="card-title text-center">{{$wait_dchsummary}}</h1>
                             <p class="card-text">
-                                <a href="{{ url('/medicalrecord_ipd/non_dchsummary_1') }}" target="_blank" class="text-white" style="text-decoration: none; "> more detail...</a>
+                                <a href="{{ url('/medicalrecord_ipd/wait_doctor_dchsummary') }}" target="_blank" class="text-white" style="text-decoration: none; "> more detail...</a>
                             </p>            
                         </div>
                     </div>
@@ -91,7 +91,7 @@
                         <div class="card-body">
                             <h1 class="card-title text-center">{{$dchsummary}}</h1>   
                             <p class="card-text">
-                                <a href="{{ url('/medicalrecord_ipd/patient_dchsummary') }}" class="text-white" style="text-decoration: none; "> more detail...</a>
+                                <a href="{{ url('/medicalrecord_ipd/dchsummary') }}" class="text-white" style="text-decoration: none; "> more detail...</a>
                             </p>               
                         </div>
                     </div>
@@ -114,12 +114,11 @@
                     <div class="card text-white mb-3" style="max-width: 18rem; background-color: #ffc107" >
                         <div class="card-header">
                             <ion-icon name="people-outline"></ion-icon>
-                            AdjRW
+                            รายได้พึงรับ {{number_format($base_rate)}}*{{$k_value}}
                         </div>
-                        <div class="card-body">
-                            <h1 class="card-title text-center">{{number_format($rw,2)}}</h1>
-                            <p class="card-text">RW
-                            </p>      
+                        <div class="card-body">                         
+                            <h1 class="card-title text-center">{{number_format($rw,2)}} Rw. <font style="color: green;" >{{number_format($rw_recive,2)}}</font></h1>
+  
                         </div>
                     </div>
                 </div>
