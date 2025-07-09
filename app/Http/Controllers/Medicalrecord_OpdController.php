@@ -151,7 +151,7 @@ public function nhso_endpoint_pull(Request $request)
         ->value('value');
  
     foreach ($cids as $cid) {
-        $response = Http::timeout(10)  // สูงสุดรอ 10 วิ ต่อ 1 request
+        $response = Http::timeout(5)  // สูงสุดรอ 5 วิ ต่อ 1 request
             ->withToken($token)
             ->acceptJson()
             ->get('https://authenucws.nhso.go.th/authencodestatus/api/check-authen-status', [
