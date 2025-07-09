@@ -240,7 +240,7 @@ public function opd_mornitor(Request $request )
             AND icode IN (SELECT icode FROM xray_items WHERE xray_items_group = 3)) AS "ct_price"
         FROM (SELECT o.vn,v.cid,vp.auth_code,IF(vp.auth_code NOT LIKE "EP%",IFNULL(epi.claimCode,ep.claimCode),vp.auth_code) AS endpoint_code,vp.pttype,vp.hospmain,
             p.hipdata_code,IFNULL(ep.sourceChannel,epi.sourceChannel) AS sourceChannel,ep.claimStatus,x.xray_items_code,l.lab_items_code,p.paidst,o1.icode,
-            o2.icode AS icode_cr,o3.icode AS icode_ppfs,oe.moph_finance_upload_datetime AS fdh,o.an,i.an AS homeward,IFNULL(ep.claimType,epi.claimType) AS claimType,
+            o2.icode AS icode_cr,o3.icode AS icode_ppfs,oe.moph_finance_upload_datetime AS fdh,o.an,i.an AS homeward,epi_homeward.claimType,
             p.pttype_price_group_id,v.pdx,o4.icode AS icode_herb,hm.vn AS healthmed,v.income,v.paid_money
         FROM ovst o
         LEFT JOIN visit_pttype vp ON vp.vn=o.vn
@@ -263,6 +263,8 @@ public function opd_mornitor(Request $request )
 		LEFT JOIN health_med_service hm ON hm.vn=o.vn
         LEFT JOIN htp_report.nhso_endpoint ep ON ep.personalId=v.cid AND DATE(ep.claimDate)=o.vstdate AND ep.claimStatus="E"
         LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate
+        LEFT JOIN htp_report.nhso_endpoint_indiv epi_homeward ON epi_homeward.cid=pt.cid 
+            AND DATE(epi_homeward.serviceDateTime)=o.vstdate AND epi_homeward.claimType = "PG0140001" 
         WHERE o.vstdate = DATE(NOW()) GROUP BY o.vn) AS a');
 
     foreach ($nhso_monitor as $row){

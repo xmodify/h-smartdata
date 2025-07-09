@@ -533,7 +533,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::match(['get','post'],'medicalrecord_opd/nhso_authen',[Medicalrecord_OpdController::class,'nhso_authen']);
     Route::match(['get','post'],'medicalrecord_opd/nhso_endpoint',[Medicalrecord_OpdController::class,'nhso_endpoint']);
     Route::match(['get','post'],'medicalrecord_opd/nhso_endpoint_pull',[Medicalrecord_OpdController::class,'nhso_endpoint_pull']);
-    Route::match(['get','post'],'medicalrecord_opd/nhso_endpoint_pull{vstdate}/{cid}',[Medicalrecord_OpdController::class,'nhso_endpoint_pull_indiv']);
+    Route::match(['get','post'],'medicalrecord_opd/nhso_endpoint_pull/{vstdate}/{cid}',[Medicalrecord_OpdController::class,'nhso_endpoint_pull_indiv']);
 
 // medicalrecord_ipd ---------------------------------------------------------------------------------------------------------------------------------
     Route::get('medicalrecord_ipd/',[Medicalrecord_IpdController::class,'index']);
