@@ -508,7 +508,7 @@ public function opd_mornitor_xray_chest(Request $request )
         LEFT JOIN kskdepartment k ON k.depcode = o.cur_dep
         LEFT JOIN vn_stat v ON v.vn = o.vn
         LEFT JOIN htp_report.nhso_endpoint ep ON ep.personalId=v.cid AND DATE(ep.claimDate)=o.vstdate AND ep.claimStatus="E"
-        LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate
+        LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate AND epi.claimCode LIKE "EP%"
         WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate  BETWEEN "'.$start_date.'" AND "'.$end_date.'"
         AND (x.xray_items_code IN ("10","46","70","71") OR lo.lab_items_code IN ("167","169")) AND p.paidst = "02"   
         AND v.income-v.paid_money <> 0
@@ -540,9 +540,9 @@ public function opd_mornitor_opanywhere(Request $request )
         LEFT JOIN vn_stat v ON v.vn = o.vn
         LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
         LEFT JOIN htp_report.nhso_endpoint ep ON ep.personalId=v.cid AND DATE(ep.claimDate)=o.vstdate AND ep.claimStatus="E"
-        LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate
+        LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate AND epi.claimCode LIKE "EP%"
         WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-        AND p.hipdata_code = "UCS" AND vp.hospmain NOT IN ("10703","10985","10986","10987","10988","10989","10990") 
+        AND p.hipdata_code = "UCS" AND vp.hospmain NOT IN (SELECT hospcode FROM hrims.lookup_hospcode WHERE in_province ="Y")
         AND v.income-v.paid_money <> 0
         GROUP BY o.vn ORDER BY ep.sourceChannel,o.vstdate,o.vsttime');
 
@@ -571,7 +571,7 @@ public function opd_mornitor_kidney(Request $request )
 		LEFT JOIN opitemrece o1 ON o1.vn=o.vn
         LEFT JOIN vn_stat v ON v.vn = o.vn
         LEFT JOIN htp_report.nhso_endpoint ep ON ep.personalId=v.cid AND DATE(ep.claimDate)=o.vstdate AND ep.claimStatus="E"
-         LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate
+        LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate AND epi.claimCode LIKE "EP%"
         WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
         AND p.hipdata_code = "UCS" AND o1.icode IN ("3003375","3004035")
         GROUP BY o.vn ORDER BY ep.sourceChannel,o.vstdate,o.vsttime');
@@ -609,8 +609,8 @@ public function opd_mornitor_ucop_cr(Request $request )
         LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn	
         LEFT JOIN kskdepartment k ON k.depcode = o.cur_dep
         LEFT JOIN htp_report.nhso_endpoint ep ON ep.personalId=v.cid AND DATE(ep.claimDate)=o.vstdate AND ep.claimStatus="E"
-        LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate
-        WHERE p1.hipdata_code = "UCS" AND vp.hospmain IN ("10703","10985","10986","10987","10988","10989","10990")
+        LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate AND epi.claimCode LIKE "EP%"
+        WHERE p1.hipdata_code = "UCS" AND vp.hospmain IN (SELECT hospcode FROM hrims.lookup_hospcode WHERE in_province ="Y")
         AND (o.an IS NULL OR o.an ="") AND o1.vn IS NOT NULL AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
         GROUP BY o.vn ORDER BY o.vstdate,o.oqueue');
 
@@ -647,7 +647,7 @@ public function opd_mornitor_uc_ppfs(Request $request )
 		LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn	
         LEFT JOIN kskdepartment k ON k.depcode = o.cur_dep
         LEFT JOIN htp_report.nhso_endpoint ep ON ep.personalId=v.cid AND DATE(ep.claimDate)=o.vstdate AND ep.claimStatus="E"
-        LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate
+        LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate AND epi.claimCode LIKE "EP%"
         WHERE (o.an ="" OR o.an IS NULL) AND o1.vn IS NOT NULL AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"		
         GROUP BY o.vn ORDER BY o.vstdate,o.oqueue');
 
@@ -673,8 +673,8 @@ public function opd_mornitor_homeward(Request $request )
         LEFT JOIN pttype p1 ON p1.pttype=vp.pttype				
         LEFT JOIN kskdepartment k ON k.depcode=o.main_dep
 		LEFT JOIN ipt i ON i.an=o.an AND i.ward = "06"
-		LEFT JOIN htp_report.nhso_endpoint ep ON ep.personalId=v.cid AND DATE(ep.claimDate)=o.vstdate AND ep.claimType = "PG0140001"
-        LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate AND epi.claimType = "PG0140001"
+		LEFT JOIN htp_report.nhso_endpoint ep ON ep.personalId=p.cid AND DATE(ep.claimDate)=o.vstdate AND ep.claimType = "PG0140001"
+        LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=p.cid AND DATE(epi.serviceDateTime)=o.vstdate AND epi.claimType = "PG0140001" 
         WHERE (i.an IS NOT NULL OR i.an <>"") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
 		GROUP BY o.vn ORDER BY o.vsttime');
 
@@ -712,7 +712,7 @@ public function opd_mornitor_healthmed(Request $request )
 			WHERE h.service_date BETWEEN "'.$start_date.'" AND "'.$end_date.'"
 			GROUP BY h1.health_med_service_id,h1.health_med_operation_item_id) hm ON hm.vn=o.vn
         LEFT JOIN htp_report.nhso_endpoint ep ON ep.personalId=v.cid AND DATE(ep.claimDate)=o.vstdate AND ep.claimStatus="E"
-        LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate
+        LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate AND epi.claimCode LIKE "EP%"
         WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" AND p.hipdata_code = "UCS"
         AND (o1.icode IN (SELECT icode FROM drugitems WHERE nhso_adp_code LIKE "HERB%")	
             OR o1.icode IN (SELECT icode FROM drugitems_property_list WHERE drugitems_property_id IN ("12","13"))	

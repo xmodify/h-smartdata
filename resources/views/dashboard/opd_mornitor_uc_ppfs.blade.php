@@ -24,6 +24,9 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
 
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
 <style>
   table {
   border-collapse: collapse;
@@ -73,7 +76,7 @@
                 <th class="text-center">ลำดับ</th>
                 <th class="text-center">Authen</th>
                 <th class="text-center">ปิดสิทธิ</th>    
-                {{-- <th class="text-center">Action</th>             --}}
+                <th class="text-center" width="6%">Action</th>   
                 <th class="text-center">Q</th>               
                 <th class="text-center" width="10%">ชื่อ-สกุล</th>
                 <th class="text-center">CID</th>
@@ -101,8 +104,13 @@
                   <strong>{{ $row->auth_code }}</strong></td>        
                 <td align="center" @if($row->endpoint == 'Y') style="color:green"
                   @elseif($row->endpoint == 'N') style="color:red" @endif>
-                <strong>{{ $row->endpoint }}</strong></td> 
-                {{-- <td align="center"><a class="btn btn-outline-info btn-sm" href="{{ url('medicalrecord_opd/nhso_endpoint_pull'.$row->vstdate,$row->cid) }}" >Pull Endpoint</a></td>             --}}
+                  <strong>{{ $row->endpoint }}</strong>
+                </td> 
+                <td align="center" width="6%">                  
+                  <button onclick="pullNhsoData('{{ $row->vstdate }}', '{{ $row->cid }}')" class="btn btn-outline-info btn-sm w-100">
+                      ดึงปิดสิทธิ
+                  </button>
+                </td>  
                 <td align="center">{{ $row->oqueue }}</td>                
                 <td align="left">{{ $row->ptname }}</td>
                 <td align="center">{{ $row->cid }}</td>
@@ -127,7 +135,48 @@
       </div>  
     </div> 
   </div> 
-</div>      
+</div>    
+
+<script>
+  function pullNhsoData(vstdate, cid) {
+      Swal.fire({
+          title: 'กำลังดึงข้อมูล...',
+          text: 'กรุณารอสักครู่',
+          allowOutsideClick: false,
+          didOpen: () => {
+              Swal.showLoading()
+          }
+      });
+
+      fetch(`/medicalrecord_opd/nhso_endpoint_pull${vstdate}/${cid}`)
+          .then(async response => {
+              const data = await response.json();
+              if (!response.ok) {
+                  throw new Error(data.message || 'เกิดข้อผิดพลาดในการดึงข้อมูล');
+              }
+              return data;
+          })
+          .then(data => {
+              Swal.fire({
+                  icon: 'success',
+                  title: 'ดึงข้อมูลสำเร็จ',
+                  text: data.message || 'ข้อมูลถูกบันทึกเรียบร้อยแล้ว',
+                  timer: 2000,
+                  showConfirmButton: false
+              }).then(() => {
+                  location.reload();
+              });
+          })
+          .catch(error => {
+              Swal.fire({
+                  icon: 'error',
+                  title: 'เกิดข้อผิดพลาด',
+                  text: error.message || 'ไม่สามารถเชื่อมต่อกับระบบได้',
+              });
+          });
+  }
+</script>
+
 </body>
 
 <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
