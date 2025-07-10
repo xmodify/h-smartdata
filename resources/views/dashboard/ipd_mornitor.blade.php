@@ -78,7 +78,9 @@
         <div class="alert alert-primary" role="alert">
           <div class="row" >
             <div class="col-10 mt-2" align="left">
-              <h4>IPD Mornitor Huataphanhospital <br>ณ วันที่ {{DatetimeThai(date('Y-m-d h:i:sa'))}} Admit : <font color="#e91e63"><strong>{{$total}}</strong></font> AN </h4>
+              <h4>IPD Mornitor Huataphanhospital <br>
+                 ณ วันที่ <font style="color:red;">{{DateThai(date('Y-m-d'))}}</font> เวลา: <font style="color:red;"><span id="realtime-clock"></span></font> 
+                 Admit ปัจจุบัน: <font color="#e91e63"><strong>{{$total}}</strong></font> AN </h4>
             </div>
             <div class="col-2 mt-2" align="right">
               <h4><a class="btn text-center" href="{{ url('/dashboard/opd_mornitor') }}" ><strong>OPD Mornitor</strong></a></h4>
@@ -301,6 +303,30 @@
 <!-- ionicon -->
 <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+<script>
+    // ฟังก์ชันแสดงเวลาปัจจุบัน
+    function updateClock() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        const time = `${hours}:${minutes}:${seconds}`;
+        document.getElementById('realtime-clock').textContent = time;
+    }
+
+    // อัปเดตทุกวินาที
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // รีโหลดหน้าทุก 1 นาที (60000 ms)
+    setTimeout(function() {
+        location.reload();
+    }, 60000);
+</script>
+
+</body>
+
 <!-- Vendor JS Files -->
 <script src="{{ asset('assets/vendor/apexcharts/apexcharts.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/chart.js/chart.min.js') }}"></script>
@@ -348,5 +374,5 @@
           }).render();
       });
 </script>
-</body>
+
 </html>
