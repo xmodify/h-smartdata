@@ -15,7 +15,7 @@
               <input type="date" name="end_date" class="form-control my-1" placeholder="Date" value="{{ $end_date }}" > 
           </div>                     
           <div class="col-md-1" >                            
-              <button type="submit" class="btn btn-primary my-1 ">{{ __('ค้นหา') }}</button>
+              <button onclick="fetchData()" type="submit" class="btn btn-primary my-1 ">{{ __('ค้นหา') }}</button>
           </div>
       </div>
   </form> 
@@ -42,20 +42,18 @@
                   <th class="text-center">ปิดสิทธิ</th>
                   <th class="text-center">ประสงค์เบิก</th> 
                   <th class="text-center">พร้อมส่ง</th>   
-                  <th class="text-center">วันที่รับบริการ</th>  
+                  <th class="text-center" width = "5%">วันที่รับบริการ</th>  
                   <th class="text-center">Queue</th>     
-                  <th class="text-center">ชื่อ-สกุล</th>
-                  <th class="text-center">HN</th>     
-                  <th class="text-center">CID</th> 
-                  <th class="text-center">สิทธิการรักษา</th>
-                  <th class="text-center">อาการสำคัญ</th>
+                  <th class="text-center" width = "10%">ชื่อ-สกุล</th>
+                  <th class="text-center">HN</th>    
+                  <th class="text-center" width = "10%">สิทธิการรักษา</th>
+                  <th class="text-center" width = "10%">อาการสำคัญ</th>
                   <th class="text-center">PDX</th>
-                  <th class="text-center">DX</th>
-                  <th class="text-center">ICD9</th>                  
-                  <th class="text-center">รายการที่เรียกเก็บ</th>                 
+                  <th class="text-center" width = "5%">ICD9</th>                  
+                  <th class="text-center" width = "10%">รายการที่เรียกเก็บ</th>                 
                   <th class="text-center">ค่ารักษาทั้งหมด</th> 
                   <th class="text-center">ชำระเอง</th> 
-                  <th class="text-center">ค่าบริการที่เรียกเก็บ</th> 
+                  <th class="text-center">เรียกเก็บ</th> 
                   <th class="text-center">Project</th> 
               </tr>
             </thead> 
@@ -76,17 +74,15 @@
                 <td align="center" @if($row->confirm_and_locked == 'Y') style="color:green"
                     @elseif($row->confirm_and_locked == 'N') style="color:red" @endif>
                     <strong>{{ $row->confirm_and_locked }}</strong></td>
-                <td align="left">{{ DateThai($row->vstdate) }} {{$row->vsttime}}</td>            
+                <td align="left" width = "5%">{{ DateThai($row->vstdate) }} {{$row->vsttime}}</td>            
                 <td align="center">{{ $row->oqueue }}</td>   
-                <td align="left">{{$row->ptname}}</td> 
+                <td align="left" width = "10%">{{$row->ptname}}</td> 
                 <td align="center">{{$row->hn}}</td> 
-                <td align="center">{{$row->cid}}</td>
-                <td align="left">{{$row->pttype}} [{{$row->hospmain}}]</td> 
-                <td align="right">{{ $row->cc }}</td>
+                <td align="left" width = "10%">{{$row->pttype}} [{{$row->hospmain}}]</td> 
+                <td align="left" width = "10%">{{ $row->cc }}</td>
                 <td align="right">{{ $row->pdx }}</td>
-                <td align="right">{{ $row->dx }}</td>
-                <td align="center">{{$row->icd9}}</td>     
-                <td align="right">{{ $row->claim_list }}</td>                    
+                <td align="right" width = "5%">{{$row->icd9}}</td>     
+                <td align="right" width = "10%">{{ $row->claim_list }}</td>                    
                 <td align="right">{{ number_format($row->income,2) }}</td>              
                 <td align="right">{{ number_format($row->paid_money,2) }}</td>  
                 <td align="right">{{ number_format($row->claim_price,2) }}</td> 
@@ -108,21 +104,24 @@
                     <th class="text-center">ปิดสิทธิ</th>
                     <th class="text-center">ประสงค์เบิก</th> 
                     <th class="text-center">พร้อมส่ง</th>   
-                    <th class="text-center">วันที่รับบริการ</th>  
+                    <th class="text-center" width = "5%">วันที่รับบริการ</th>  
                     <th class="text-center">Queue</th>     
-                    <th class="text-center">ชื่อ-สกุล</th>
-                    <th class="text-center">HN</th>     
-                    <th class="text-center">CID</th> 
-                    <th class="text-center">สิทธิการรักษา</th>
-                    <th class="text-center">อาการสำคัญ</th>
+                    <th class="text-center" width = "10%">ชื่อ-สกุล</th>
+                    <th class="text-center">HN</th> 
+                    <th class="text-center" width = "10%">สิทธิการรักษา</th>
+                    <th class="text-center" width = "10%">อาการสำคัญ</th>
                     <th class="text-center">PDX</th>
-                    <th class="text-center">DX</th>
-                    <th class="text-center">ICD9</th>                  
-                    <th class="text-center">รายการที่เรียกเก็บ</th>                 
+                    <th class="text-center" width = "5%">ICD9</th>                  
+                    <th class="text-center" width = "10%">รายการที่เรียกเก็บ</th>                 
                     <th class="text-center">ค่ารักษาทั้งหมด</th> 
                     <th class="text-center">ชำระเอง</th> 
-                    <th class="text-center">ค่าบริการที่เรียกเก็บ</th> 
-                    <th class="text-center">Project</th> 
+                    <th class="text-center">เรียกเก็บ</th> 
+                    <th class="text-center">Project</th>
+                    <th class="text-center text-primary">Rep NHSO</th> 
+                    <th class="text-center text-primary">Error</th> 
+                    <th class="text-center text-primary">STM ชดเชย</th> 
+                    <th class="text-center text-primary">ผลต่าง</th> 
+                    <th class="text-center text-primary">REP</th>  
                 </tr>
               </thead> 
               <tbody> 
@@ -142,21 +141,28 @@
                     <td align="center" @if($row->confirm_and_locked == 'Y') style="color:green"
                         @elseif($row->confirm_and_locked == 'N') style="color:red" @endif>
                         <strong>{{ $row->confirm_and_locked }}</strong></td>
-                    <td align="left">{{ DateThai($row->vstdate) }} {{$row->vsttime}}</td>            
+                    <td align="left" width = "5%">{{ DateThai($row->vstdate) }} {{$row->vsttime}}</td>            
                     <td align="center">{{ $row->oqueue }}</td>   
-                    <td align="left">{{$row->ptname}}</td> 
-                    <td align="center">{{$row->hn}}</td> 
-                    <td align="center">{{$row->cid}}</td>
-                    <td align="left">{{$row->pttype}} [{{$row->hospmain}}]</td> 
-                    <td align="right">{{ $row->cc }}</td>
-                    <td align="right">{{ $row->pdx }}</td>
-                    <td align="right">{{ $row->dx }}</td>
-                    <td align="center">{{$row->icd9}}</td>     
-                    <td align="right">{{ $row->claim_list }}</td>                    
+                    <td align="left" width = "10%">{{$row->ptname}}</td> 
+                    <td align="center">{{$row->hn}}</td>
+                    <td align="left" width = "10%">{{$row->pttype}} [{{$row->hospmain}}]</td> 
+                    <td align="left" width = "10%">{{ $row->cc }}</td>
+                    <td align="right">{{ $row->pdx }}</td>                  
+                    <td align="right" width = "5%">{{$row->icd9}}</td>     
+                    <td align="right" width = "10%">{{ $row->claim_list }}</td>                    
                     <td align="right">{{ number_format($row->income,2) }}</td>              
                     <td align="right">{{ number_format($row->paid_money,2) }}</td>  
                     <td align="right">{{ number_format($row->claim_price,2) }}</td> 
                     <td align="right">{{ $row->project }}</td>  
+                    <td align="right" class="text-primary">{{ number_format($row->rep_nhso,2) }}</td>
+                    <td align="center">{{ $row->rep_error }}</td>
+                    <td align="right" @if($row->receive_total > 0) style="color:green" 
+                        @elseif($row->receive_total < 0) style="color:red" @endif>
+                        {{ number_format($row->receive_total,2) }}</td>
+                    <td align="right" @if($row->receive_total-$row->rep_nhso > 0) style="color:green" 
+                        @elseif($row->receive_total-$row->rep_nhso < 0) style="color:red" @endif>
+                        {{ number_format($row->receive_total-$row->rep_nhso,2) }}</td>
+                    <td align="right">{{ $row->repno }}</td> 
                 </tr>
                 <?php $count++; ?>
                 @endforeach                 
@@ -169,6 +175,22 @@
     <!-- Pills Tabs -->
   </div> 
 </div>      
+
+<script>
+  function showLoading() {
+      Swal.fire({
+          title: 'กำลังโหลด...',
+          text: 'กรุณารอสักครู่',
+          allowOutsideClick: false,
+          didOpen: () => {
+              Swal.showLoading();
+          }
+      });
+  }
+  function fetchData() {
+      showLoading();
+  }
+</script>
 
 @endsection
 
