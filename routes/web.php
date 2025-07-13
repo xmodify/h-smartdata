@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\LookupHospcodeController;
 use App\Http\Controllers\Admin\User_AccessController;
 use App\Http\Controllers\Hrims\HrimsController;
 use App\Http\Controllers\Hrims\ImportStmController;
+use App\Http\Controllers\Hrims\ClaimOpController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Backoffice_AssetController;
 use App\Http\Controllers\Backoffice_HrdController;
@@ -734,7 +735,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
 // H-RiMS ################################################################################################################################
 Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(function () {
     Route::get('/', [HrimsController::class, 'index'])->name('dashboard');
-    // STM ------------------------------------------------------------------------------------------------------------------------------
+    // Import_stm -----------------------------------------------------------------------------------------------------------------------
     Route::get('import_stm/',[ImportStmController::class,'index']);
     Route::match(['get','post'],'import_stm/ofc',[ImportStmController::class,'ofc'])->name('import_stm.ofc');
     Route::post('import_stm/ofc_save',[ImportStmController::class,'ofc_save']);
@@ -757,4 +758,7 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
     Route::match(['get','post'],'import_stm/ucs_kidney',[ImportStmController::class,'ucs_kidney'])->name('import_stm.ucs_kidney');
     Route::post('import_stm/ucs_kidney_save',[ImportStmController::class,'ucs_kidney_save']);
     Route::match(['get','post'],'import_stm/ucs_kidneydetail',[ImportStmController::class,'ucs_kidneydetail']);
+    // Claim_OP -------------------------------------------------------------------------------------------------------------------------
+    Route::match(['get','post'],'claim_op/ucs_incup',[ClaimOpController::class,'ucs_incup']);
+
 });

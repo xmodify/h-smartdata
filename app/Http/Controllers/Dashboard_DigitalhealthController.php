@@ -262,7 +262,7 @@ public function opd_mornitor(Request $request )
 		LEFT JOIN ipt i ON i.an=o.an AND i.ward = "06" 	
 		LEFT JOIN health_med_service hm ON hm.vn=o.vn
         LEFT JOIN htp_report.nhso_endpoint ep ON ep.personalId=v.cid AND DATE(ep.claimDate)=o.vstdate AND ep.claimStatus="E"
-        LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate
+        LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate AND epi.claimCode LIKE "EP%"
         LEFT JOIN htp_report.nhso_endpoint_indiv epi_homeward ON epi_homeward.cid=v.cid 
             AND DATE(epi_homeward.serviceDateTime)=o.vstdate AND epi_homeward.claimType = "PG0140001" 
         WHERE o.vstdate = DATE(NOW()) GROUP BY o.vn) AS a');

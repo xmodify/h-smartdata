@@ -51,8 +51,7 @@
                     <!-- Left Side Of Navbar -->                                    
                     <ul class="navbar-nav me-auto">
                     @guest
-                    @else 
-                        
+                    @else                         
                         <li class="nav-item dropdown">
                             <a id="navbarDropdown" class="nav-link btn btn-outline-info dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                 ข้อมูลงานบริการ

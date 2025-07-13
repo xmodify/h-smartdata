@@ -705,7 +705,7 @@ public function ucs_claim_opanywhere(Request $request )
     LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate
     LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE (o.an ="" OR o.an IS NULL) AND p1.hipdata_code = "UCS" AND vp.hospmain NOT IN ("10703","10985","10986","10987","10988","10989","10990")		
-    AND v.income <> "0" AND kidney.vn IS NULL AND oe.moph_finance_upload_datetime IS NULL 
+    AND v.income <> "0" AND kidney.vn IS NULL AND oe.moph_finance_upload_status IS NULL 
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue'); 
 
@@ -738,7 +738,7 @@ public function ucs_claim_opanywhere(Request $request )
     LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate
     LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE (o.an ="" OR o.an IS NULL) AND p1.hipdata_code = "UCS" AND vp.hospmain NOT IN ("10703","10985","10986","10987","10988","10989","10990")		
-    AND v.income <> "0" AND kidney.vn IS NULL AND oe.moph_finance_upload_datetime IS NOT NULL 
+    AND v.income <> "0" AND kidney.vn IS NULL AND oe.moph_finance_upload_status IS NOT NULL 
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue');    
 
@@ -1174,7 +1174,7 @@ public function ucs_claim_drug_herb32(Request $request )
     WHERE p1.hipdata_code = "UCS" AND vp.hospmain ="10989" AND (o.an ="" OR o.an IS NULL)		 
 		AND claim.icode IN (SELECT icode FROM drugitems_property_list WHERE drugitems_property_id="12")
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND oe.moph_finance_upload_datetime IS NULL AND oe.upload_datetime IS NULL
+    AND oe.moph_finance_upload_status IS NULL AND oe.upload_datetime IS NULL
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue'); 
 
   $claim_fdh = DB::connection('hosxp')->select('
@@ -1204,7 +1204,7 @@ public function ucs_claim_drug_herb32(Request $request )
     WHERE p1.hipdata_code = "UCS" AND vp.hospmain ="10989" AND (o.an ="" OR o.an IS NULL)		 
 		AND claim.icode IN (SELECT icode FROM drugitems_property_list WHERE drugitems_property_id="12")
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND oe.moph_finance_upload_datetime IS NOT NULL
+    AND oe.moph_finance_upload_status IS NOT NULL
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue');  
 
   return view('finance_claim.ucs_claim_drug_herb32',compact('start_date','end_date','search','claim_fdh'));
@@ -1429,7 +1429,7 @@ public function ucs_ppfs_2(Request $request )
     WHERE (o.an ="" OR o.an IS NULL) AND vp.pttype <> "10" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND (claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("30008","30009","30010","30011","30012","30013","52612")) OR
     v.pdx IN ("Z340","Z348","Z350","Z359") OR a.vn IS NOT NULL OR a.vn <>"" OR ov.icd10 IN ("8878","2330011","2387010","2277310","2277320","2287310","2287320"))
-    AND oe.moph_finance_upload_datetime IS NULL AND oe.upload_datetime IS NULL
+    AND oe.moph_finance_upload_status IS NULL AND oe.upload_datetime IS NULL
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue');
 
   $claim_fdh = DB::connection('hosxp')->select('
@@ -1460,7 +1460,7 @@ public function ucs_ppfs_2(Request $request )
     WHERE (o.an ="" OR o.an IS NULL) AND vp.pttype <> "10" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND (claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("30008","30009","30010","30011","30012","30013","52612")) OR
     v.pdx IN ("Z340","Z348","Z350","Z359") OR a.vn IS NOT NULL OR a.vn <>"" OR ov.icd10 IN ("8878","2330011","2387010","2277310","2277320","2287310","2287320"))
-    AND oe.moph_finance_upload_datetime IS NOT NULL
+    AND oe.moph_finance_upload_status IS NOT NULL
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue');
 
   $claim_eclaim = DB::connection('hosxp')->select('
