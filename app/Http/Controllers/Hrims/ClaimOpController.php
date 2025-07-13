@@ -50,9 +50,13 @@ class ClaimOpController extends Controller
         LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
         LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND DATE(ep.serviceDateTime)=o.vstdate AND ep.claimCode LIKE "EP%"
         LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
+        LEFT JOIN htp_report.finance_stm_ucs stm ON stm.cid=pt.cid AND DATE(stm.datetimeadm) = o.vstdate	
+	        AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+        LEFT JOIN (SELECT cid,datetimeadm AS vstdate,sum(receive_total) AS receive_total,repno
+	        FROM htp_report.finance_stm_ucs_kidney GROUP BY cid,datetimeadm) stm_k ON stm_k.cid=pt.cid AND stm_k.vstdate = o.vstdate
         WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
         AND p.hipdata_code = "UCS" AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
-        AND o1.vn IS NOT NULL AND oe.moph_finance_upload_status IS NULL AND rep.vn IS NULL
+        AND o1.vn IS NOT NULL AND oe.moph_finance_upload_status IS NULL AND rep.vn IS NULL AND stm.cid IS NULL AND stm_k.cid IS NULL
         GROUP BY o.vn ORDER BY o.vstdate,o.vsttime');
 
     $claim=DB::connection('hosxp')->select('
@@ -87,7 +91,7 @@ class ClaimOpController extends Controller
 	        FROM htp_report.finance_stm_ucs_kidney GROUP BY cid,datetimeadm) stm_k ON stm_k.cid=pt.cid AND stm_k.vstdate = o.vstdate
         WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
         AND p.hipdata_code = "UCS" AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
-        AND o1.vn IS NOT NULL AND (oe.moph_finance_upload_status IS NOT NULL OR rep.vn IS NOT NULL)
+        AND o1.vn IS NOT NULL AND (oe.moph_finance_upload_status IS NOT NULL OR rep.vn IS NOT NULL OR stm.cid IS NOT NULL OR stm_k.cid IS NOT NULL)
         GROUP BY o.vn ORDER BY o.vstdate,o.vsttime');
 
         return view('hrims.claim_op.ucs_incup',compact('start_date','end_date','search','claim'));

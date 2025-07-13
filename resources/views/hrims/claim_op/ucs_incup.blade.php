@@ -212,7 +212,7 @@
               extend: 'excelHtml5',
               text: 'Excel',
               className: 'btn btn-success',
-              title: 'รายชื่อผู้มารับบริการ UC-OP Anywhere รอส่ง Claim วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}'
+              title: 'รายชื่อผู้มารับบริการ UC-OP ใน CUP รอส่ง Claim วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}'
             }
         ],
         language: {
@@ -244,7 +244,7 @@
               extend: 'excelHtml5',
               text: 'Excel',
               className: 'btn btn-success',
-              title: 'รายชื่อผู้มารับบริการ UC-OP Anywhere ส่ง FDN วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}'
+              title: 'รายชื่อผู้มารับบริการ UC-OP ใน CUP ส่ง Claim วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}'
             }
         ],
         language: {
