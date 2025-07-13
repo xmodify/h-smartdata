@@ -57,7 +57,7 @@ class MainSettingController extends Controller
                     'id' => $row['id'],
                     'name_th' => $row['name_th'],
                     'name' => $row['name'],
-                    'value' => "",
+                    'value' => $row['value'],
                 ]);
             }
         }
