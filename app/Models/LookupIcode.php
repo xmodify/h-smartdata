@@ -20,6 +20,7 @@ class LookupIcode extends Model
         'uc_cr',
         'ppfs',
         'herb32',
+        'kidney',
     ];
     
 }
