@@ -87,6 +87,9 @@
                                         <li>
                                             <a class="dropdown-item link-primary text-white" href="#"> UC-OP ต่างจังหวัด </a>
                                         </li> 
+                                        <li>
+                                            <a class="dropdown-item link-primary text-white" href="#"> UC-OP ฟอกไต </a>
+                                        </li> 
                                     </ul>
                                 </li>
                                 <!-- เมนูอื่น -->
