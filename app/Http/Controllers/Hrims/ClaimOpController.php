@@ -40,7 +40,7 @@ class ClaimOpController extends Controller
         LEFT JOIN ovstdiag od ON od.vn = o.vn AND od.hn=o.hn AND od.diagtype = "2"
         LEFT JOIN vn_stat v ON v.vn = o.vn
         LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
-        LEFT JOIN opitemrece o1 ON o1.vn=o.vn AND o1.icode IN (SELECT icode FROM htp_report.lookup_icode)
+        LEFT JOIN opitemrece o1 ON o1.vn=o.vn AND o1.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE (kidney IS NULL OR kidney = ""))
         LEFT JOIN nondrugitems n ON n.icode=o1.icode
         LEFT JOIN drugitems d ON d.icode=o1.icode
         LEFT JOIN (SELECT vn,SUM(sum_price) AS claim_price FROM opitemrece
@@ -75,7 +75,7 @@ class ClaimOpController extends Controller
         LEFT JOIN ovstdiag od ON od.vn = o.vn AND od.hn=o.hn AND od.diagtype = "2"
         LEFT JOIN vn_stat v ON v.vn = o.vn
         LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn        
-        LEFT JOIN opitemrece o1 ON o1.vn=o.vn AND o1.icode IN (SELECT icode FROM htp_report.lookup_icode)
+        LEFT JOIN opitemrece o1 ON o1.vn=o.vn AND o1.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE (kidney IS NULL OR kidney = ""))
         LEFT JOIN nondrugitems n ON n.icode=o1.icode
         LEFT JOIN drugitems d ON d.icode=o1.icode
         LEFT JOIN (SELECT vn,SUM(sum_price) AS claim_price FROM opitemrece
