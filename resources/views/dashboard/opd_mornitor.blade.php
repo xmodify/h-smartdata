@@ -441,10 +441,10 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // รีโหลดหน้าทุก 1 นาที (60000 ms)
+    // รีโหลดหน้าทุก 1.5 นาที (90000 ms)
     setTimeout(function() {
         location.reload();
-    }, 60000);
+    }, 90000);
 </script>
 
 </body>

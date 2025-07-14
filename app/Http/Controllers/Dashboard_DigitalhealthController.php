@@ -728,7 +728,11 @@ public function opd_mornitor_healthmed(Request $request )
 ###############################################################################################################################
 public function ipd_mornitor(Request $request )
 {
-    $start_date = "2024-10-01";
+    $budget_year_last = DB::connection('backoffice')->table('budget_year')->where('DATE_END','>=',date('Y-m-d'))->where('DATE_BEGIN','<=',date('Y-m-d'))->value('LEAVE_YEAR_ID');
+    $budget_year = $request->budget_year;
+    if($budget_year == '' || $budget_year == null)
+    {$budget_year = $budget_year_last;}else{$budget_year =$request->budget_year;}       
+    $start_date = DB::connection('backoffice')->table('budget_year')->where('LEAVE_YEAR_ID',$budget_year)->value('DATE_BEGIN');
    
     $sql=DB::connection('hosxp')->select('
         SELECT COUNT(DISTINCT an) AS total,
@@ -748,13 +752,15 @@ public function ipd_mornitor(Request $request )
     } 
 
     $sql2 = DB::connection('hosxp')->select('
-        SELECT SUM(CASE WHEN (id1.diag_text ="" OR id1.diag_text IS NULL) THEN 1 ELSE 0 END) AS non_diagtext,
-        SUM(CASE WHEN (id.icd10 ="" OR id.icd10 IS NULL) AND id1.diag_text <>"" AND id1.diag_text IS NOT NULL THEN 1 ELSE 0 END) AS non_icd10
+        SELECT SUM(CASE WHEN (a.diag_text_list ="" OR a.diag_text_list IS NULL ) THEN 1 ELSE 0 END) AS non_diagtext,
+        SUM(CASE WHEN (id.icd10 ="" OR id.icd10 IS NULL OR a.pdx = "" OR a.pdx IS NULL) THEN 1 ELSE 0 END) AS non_icd10
         FROM ipt i
         LEFT JOIN iptdiag id ON id.an = i.an AND id.diagtype = 1
-        LEFT JOIN ipt_doctor_diag id1 ON id1.an = i.an	AND id1.diagtype = 1 
-        WHERE i.ward IN ("01","02","03","10") AND i.dchdate >= "2024-12-01" 
-        AND (id.icd10 ="" OR id.icd10 IS NULL OR id1.diag_text ="" OR id1.diag_text IS NULL)');         
+		LEFT JOIN an_stat a ON a.an=i.an
+        WHERE i.dchdate >= "'.$start_date.'" AND  i.ward NOT IN (SELECT ward FROM hrims.lookup_ward WHERE ward_homeward = "Y") 
+        AND (a.diag_text_list ="" OR a.diag_text_list IS NULL 				
+		OR id.icd10 ="" OR id.icd10 IS NULL
+		OR a.pdx = "" OR a.pdx IS NULL)');         
 
     foreach ($sql2 as $row){ 
         $non_diagtext=$row->non_diagtext;
