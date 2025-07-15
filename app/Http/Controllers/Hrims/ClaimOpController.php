@@ -46,7 +46,7 @@ class ClaimOpController extends Controller
             LEFT JOIN drugitems d ON d.icode=o1.icode
             LEFT JOIN (SELECT op.vn, SUM(op.sum_price) AS claim_price FROM opitemrece op
                 INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
-	            WHERE op.vstdate BETWEEN ? AND ? GROUP BY op.vn) o2 ON o2.vn=o.vn
+	            WHERE op.vstdate BETWEEN ? AND ? AND (li.kidney = "" OR li.kidney IS NULL) GROUP BY op.vn) o2 ON o2.vn=o.vn
             LEFT JOIN opitemrece proj ON proj.vn=o.vn AND proj.icode 
                 IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("WALKIN","UCEP24"))
             LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
@@ -133,7 +133,7 @@ class ClaimOpController extends Controller
             LEFT JOIN drugitems d ON d.icode=o1.icode
             LEFT JOIN (SELECT op.vn, SUM(op.sum_price) AS claim_price FROM opitemrece op
                 INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
-	            WHERE op.vstdate BETWEEN ? AND ? GROUP BY op.vn) o2 ON o2.vn=o.vn
+	            WHERE op.vstdate BETWEEN ? AND ? AND (li.kidney = "" OR li.kidney IS NULL) GROUP BY op.vn) o2 ON o2.vn=o.vn
             LEFT JOIN opitemrece proj ON proj.vn=o.vn AND proj.icode 
                 IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("WALKIN","UCEP24"))
             LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
