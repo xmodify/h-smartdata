@@ -19,7 +19,7 @@
           </div>
       </div>
   </form> 
-  <div class="alert alert-success text-primary" role="alert"><strong>รายชื่อผู้มารับบริการ UC-OP ใน CUP วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</strong></div>
+  <div class="alert alert-success text-primary" role="alert"><strong>รายชื่อผู้มารับบริการ UC-OP ต่างจังหวัด วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</strong></div>
   
   <div class="card-body">
     <!-- Pills Tabs -->
@@ -52,9 +52,10 @@
                   <th class="text-center" width = "5%">ICD9</th> 
                   <th class="text-center">ค่ารักษาทั้งหมด</th> 
                   <th class="text-center">ชำระเอง</th>
-                  <th class="text-center" width = "10%">รายการที่เรียกเก็บ</th>  
-                  <th class="text-center">เรียกเก็บ</th> 
-                  <th class="text-center">Project</th> 
+                  <th class="text-center">ค่ารถ Refer</th>
+                  <th class="text-center">ER Type</th> 
+                  <th class="text-center">Project</th>                  
+                  <th class="text-center">Claim AE</th> 
               </tr>
             </thead> 
             <tbody> 
@@ -87,14 +88,14 @@
                 <td align="right" width = "5%">{{$row->icd9}}</td>
                 <td align="right">{{ number_format($row->income,2) }}</td>              
                 <td align="right">{{ number_format($row->rcpt_money,2) }}</td>
-                <td align="right" width = "10%">{{ $row->claim_list }}</td>   
-                <td align="right">{{ number_format($row->claim_price,2) }}</td> 
-                <td align="right">{{ $row->project }}</td>         
+                <td align="right">{{ number_format($row->refer,2) }}</td>
+                <td align="center">{{ $row->er }}</td>
+                <td align="center">{{ $row->project }}</td>
+                <td align="center">{{ $row->ae }}</td>         
               </tr>
               <?php $count++; ?>
               <?php $sum_income += $row->income ; ?>
-              <?php $sum_rcpt_money += $row->rcpt_money ; ?>
-              <?php $sum_claim_price += $row->claim_price ; ?>
+              <?php $sum_rcpt_money += $row->rcpt_money ; ?>              
               @endforeach                 
             </tbody>
           </table>
@@ -102,7 +103,7 @@
             <h5 class="text-primary text-center">
               รักษาทั้งหมด: <strong>{{ number_format($sum_income,2)}}</strong> บาท |
               ชำระเอง: <strong>{{ number_format($sum_rcpt_money,2)}}</strong> บาท |
-              เรียกเก็บ: <strong>{{ number_format($sum_claim_price,2)}}</strong> บาท
+              เรียกเก็บ: <strong>{{ number_format($sum_income-$sum_rcpt_money,2)}}</strong> บาท
               </h5>
           </div>  
         </div>          
@@ -123,11 +124,9 @@
                     <th class="text-center" width = "5%">ICD9</th> 
                     <th class="text-center">ค่ารักษาทั้งหมด</th> 
                     <th class="text-center">ชำระเอง</th>
-                    <th class="text-center" width = "10%">รายการที่เรียกเก็บ</th>                    
-                    <th class="text-center">บริการเฉพาะ</th>
-                    <th class="text-center">PPFS</th>
-                    <th class="text-center">สมุนไพร</th>
-                    <th class="text-center">Project</th>
+                    <th class="text-center">ค่ารถ Refer</th>
+                    <th class="text-center">Project</th> 
+                    <th class="text-center">Claim AE</th> 
                     <th class="text-center text-primary">Rep NHSO</th> 
                     <th class="text-center text-primary">Error</th> 
                     <th class="text-center text-primary">STM ชดเชย</th> 
@@ -155,29 +154,24 @@
                     <td align="left" width = "10%">{{ $row->cc }}</td>
                     <td align="right">{{ $row->pdx }}</td>                  
                     <td align="right" width = "5%">{{$row->icd9}}</td> 
-                    <td align="right">{{ number_format($row->income,2) }}</td>              
+                    <td align="right">{{ number_format($row->income,2) }}</td>
                     <td align="right">{{ number_format($row->rcpt_money,2) }}</td>
-                    <td align="right" width = "10%">{{ $row->claim_list }}</td>  
-                    <td align="right">{{ number_format($row->uc_cr,2) }}</td> 
-                    <td align="right">{{ number_format($row->ppfs,2) }}</td> 
-                    <td align="right">{{ number_format($row->herb,2) }}</td> 
-                    <td align="right">{{ $row->project }}</td>  
+                    <td align="right">{{ number_format($row->refer,2) }}</td>
+                    <td align="center">{{ $row->project }}</td>   
+                    <td align="center">{{ $row->ae }}</td> 
                     <td align="right" class="text-primary">{{ number_format($row->rep_nhso,2) }}</td>
                     <td align="center">{{ $row->rep_error }}</td>
                     <td align="right" @if($row->receive_total > 0) style="color:green" 
                         @elseif($row->receive_total < 0) style="color:red" @endif>
                         {{ number_format($row->receive_total,2) }}</td>
-                    <td align="right" @if($row->receive_total-$row->uc_cr-$row->ppfs-$row->herb > 0) style="color:green" 
-                        @elseif($row->receive_total-$row->uc_cr-$row->ppfs-$row->herb < 0) style="color:red" @endif>
-                        {{ number_format($row->receive_total-$row->uc_cr-$row->ppfs-$row->herb,2) }}</td>
+                    <td align="right" @if($row->receive_total-$row->income-$row->rcpt_money > 0) style="color:green" 
+                        @elseif($row->receive_total-$row->income-$row->rcpt_money < 0) style="color:red" @endif>
+                        {{ number_format($row->receive_total-$row->income-$row->rcpt_money,2) }}</td>
                     <td align="right">{{ $row->repno }}</td> 
                 </tr>
                 <?php $count++; ?>
                 <?php $sum_income += $row->income ; ?>
                 <?php $sum_rcpt_money += $row->rcpt_money ; ?>
-                <?php $sum_uc_cr += $row->uc_cr ; ?>
-                <?php $sum_ppfs += $row->ppfs ; ?>
-                <?php $sum_herb += $row->herb ; ?>
                 <?php $sum_rep_nhso += $row->rep_nhso ; ?>
                 <?php $sum_receive_total += $row->receive_total ; ?>
                 @endforeach                 
@@ -187,15 +181,13 @@
               <h5 class="text-primary text-center">
               รักษาทั้งหมด: <strong>{{ number_format($sum_income,2)}}</strong> บาท |
               ชำระเอง: <strong>{{ number_format($sum_rcpt_money,2)}}</strong> บาท |
-              บริการเฉพาะ: <strong>{{ number_format($sum_uc_cr,2)}}</strong> บาท |
-              PPFS: <strong>{{ number_format($sum_ppfs,2)}}</strong> บาท |
-              สมุนไพร: <strong>{{ number_format($sum_herb,2)}}</strong> บาท |
+              เรียกเก็บ: <strong>{{ number_format($sum_income-$sum_rcpt_money,2)}}</strong> บาท |
               ชดเชย: <strong  @if($sum_receive_total > 0) style="color:green" 
                         @elseif($sum_receive_total < 0) style="color:red" @endif>
                         {{ number_format($sum_receive_total,2)}}</strong> บาท |
-              ผลต่าง: <strong  @if($sum_receive_total-$sum_uc_cr-$sum_ppfs-$sum_herb > 0) style="color:green" 
-                        @elseif($sum_receive_total-$sum_uc_cr-$sum_ppfs-$sum_herb < 0) style="color:red" @endif>
-                        {{ number_format($sum_receive_total-$sum_uc_cr-$sum_ppfs-$sum_herb,2)}}</strong> บาท
+              ผลต่าง: <strong  @if($sum_receive_total-$sum_income-$sum_rcpt_money > 0) style="color:green" 
+                        @elseif($sum_receive_total-$sum_income-$sum_rcpt_money < 0) style="color:red" @endif>
+                        {{ number_format($sum_receive_total-$sum_income-$sum_rcpt_money,2)}}</strong> บาท
               </h5>
             </div>     
           </div>          
@@ -242,7 +234,7 @@
               extend: 'excelHtml5',
               text: 'Excel',
               className: 'btn btn-success',
-              title: 'รายชื่อผู้มารับบริการ UC-OP ใน CUP รอส่ง Claim วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}'
+              title: 'รายชื่อผู้มารับบริการ UC-OP ต่างจังหวัด รอส่ง Claim วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}'
             }
         ],
         language: {
@@ -274,7 +266,7 @@
               extend: 'excelHtml5',
               text: 'Excel',
               className: 'btn btn-success',
-              title: 'รายชื่อผู้มารับบริการ UC-OP ใน CUP ส่ง Claim วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}'
+              title: 'รายชื่อผู้มารับบริการ UC-OP ต่างจังหวัด ส่ง Claim วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}'
             }
         ],
         language: {

@@ -82,13 +82,13 @@
                                             <a class="dropdown-item link-primary text-white" href="{{ url('hrims/claim_op/ucs_incup') }}"> UC-OP ใน CUP </a>
                                         </li> 
                                         <li>
-                                            <a class="dropdown-item link-primary text-white" href="#"> UC-OP ในจังหวัด </a>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/claim_op/ucs_inprovince') }}"> UC-OP ในจังหวัด </a>
                                         </li> 
                                         <li>
-                                            <a class="dropdown-item link-primary text-white" href="#"> UC-OP ต่างจังหวัด </a>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/claim_op/ucs_outprovince') }}"> UC-OP ต่างจังหวัด </a>
                                         </li> 
                                         <li>
-                                            <a class="dropdown-item link-primary text-white" href="#"> UC-OP ฟอกไต </a>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/claim_op/ucs_kidney') }}"> UC-OP ฟอกไต </a>
                                         </li> 
                                     </ul>
                                 </li>

@@ -82,7 +82,7 @@ public function wait_icd_coder(Request $request)
 
       $sql=DB::connection('hosxp')->select('
             SELECT COUNT(an) AS sum_discharge,
-            SUM(CASE WHEN (dx1 IS NULL OR dx1 ="") THEN 1 ELSE 0 END) AS sum_wait_dchsummary,
+            SUM(CASE WHEN (diag_text_list IS NULL OR diag_text_list ="") THEN 1 ELSE 0 END) AS sum_wait_dchsummary,
             SUM(CASE WHEN (dx1 IS NOT NULL OR dx1 <>"") AND (pdx ="" OR pdx IS NULL) THEN 1 ELSE 0 END) AS sum_wait_icd_coder,
             SUM(CASE WHEN (dx1 IS NOT NULL OR dx1 <>"" OR dx2 IS NOT NULL OR dx2 <>"" OR dx3 IS NOT NULL OR dx3 <>""
                   OR dx4 IS NOT NULL OR dx4 <>"" OR dx5 IS NOT NULL OR dx5 <>"") AND pdx <>"" AND pdx IS NOT NULL THEN 1 ELSE 0 END) AS sum_dchsummary,
@@ -90,7 +90,7 @@ public function wait_icd_coder(Request $request)
                   OR dx4_audit IS NOT NULL OR dx4_audit <>"" OR dx5_audit IS NOT NULL OR dx5_audit <>"") THEN 1 ELSE 0 END) AS sum_dchsummary_audit
             FROM (SELECT i.an,i.regdate,i.dchdate,id1.diag_text AS dx1,id2.diag_text AS dx2,id3.diag_text AS dx3,id4.diag_text AS dx4,id5.diag_text AS dx5,
             id1.audit_diag_text AS dx1_audit,id2.audit_diag_text AS dx2_audit,id3.audit_diag_text AS dx3_audit,id4.audit_diag_text AS dx4_audit,
-            id5.audit_diag_text AS dx5_audit,a.pdx,a.rw
+            id5.audit_diag_text AS dx5_audit,a.pdx,a.diag_text_list,a.rw
             FROM ipt i
             LEFT JOIN ipt_doctor_diag id1 ON id1.an = i.an	AND id1.diagtype = 1 
             LEFT JOIN ipt_doctor_diag id2 ON id2.an = i.an	AND id2.diagtype = 2
@@ -217,7 +217,7 @@ public function dchsummary(Request $request)
 
         $sql=DB::connection('hosxp')->select('
             SELECT COUNT(an) AS sum_discharge,
-            SUM(CASE WHEN (dx1 IS NULL OR dx1 ="") THEN 1 ELSE 0 END) AS sum_wait_dchsummary,
+            SUM(CASE WHEN (diag_text_list IS NULL OR diag_text_list ="") THEN 1 ELSE 0 END) AS sum_wait_dchsummary,
             SUM(CASE WHEN (dx1 IS NOT NULL OR dx1 <>"") AND (pdx ="" OR pdx IS NULL) THEN 1 ELSE 0 END) AS sum_wait_icd_coder,
             SUM(CASE WHEN (dx1 IS NOT NULL OR dx1 <>"" OR dx2 IS NOT NULL OR dx2 <>"" OR dx3 IS NOT NULL OR dx3 <>""
                 OR dx4 IS NOT NULL OR dx4 <>"" OR dx5 IS NOT NULL OR dx5 <>"") AND pdx <>"" AND pdx IS NOT NULL THEN 1 ELSE 0 END) AS sum_dchsummary,
@@ -225,7 +225,7 @@ public function dchsummary(Request $request)
                 OR dx4_audit IS NOT NULL OR dx4_audit <>"" OR dx5_audit IS NOT NULL OR dx5_audit <>"") THEN 1 ELSE 0 END) AS sum_dchsummary_audit
             FROM (SELECT i.an,i.regdate,i.dchdate,id1.diag_text AS dx1,id2.diag_text AS dx2,id3.diag_text AS dx3,id4.diag_text AS dx4,id5.diag_text AS dx5,
             id1.audit_diag_text AS dx1_audit,id2.audit_diag_text AS dx2_audit,id3.audit_diag_text AS dx3_audit,id4.audit_diag_text AS dx4_audit,
-            id5.audit_diag_text AS dx5_audit,a.pdx,a.rw 
+            id5.audit_diag_text AS dx5_audit,a.pdx,a.diag_text_list,a.rw 
             FROM ipt i
             LEFT JOIN ipt_doctor_diag id1 ON id1.an = i.an	AND id1.diagtype = 1 
             LEFT JOIN ipt_doctor_diag id2 ON id2.an = i.an	AND id2.diagtype = 2
@@ -352,7 +352,7 @@ $start_date = $request->start_date;
 
       $sql=DB::connection('hosxp')->select('
             SELECT COUNT(an) AS sum_discharge,
-            SUM(CASE WHEN (dx1 IS NULL OR dx1 ="") THEN 1 ELSE 0 END) AS sum_wait_dchsummary,
+            SUM(CASE WHEN (diag_text_list IS NULL OR diag_text_list ="") THEN 1 ELSE 0 END) AS sum_wait_dchsummary,
             SUM(CASE WHEN (dx1 IS NOT NULL OR dx1 <>"") AND (pdx ="" OR pdx IS NULL) THEN 1 ELSE 0 END) AS sum_wait_icd_coder,
             SUM(CASE WHEN (dx1 IS NOT NULL OR dx1 <>"" OR dx2 IS NOT NULL OR dx2 <>"" OR dx3 IS NOT NULL OR dx3 <>""
                   OR dx4 IS NOT NULL OR dx4 <>"" OR dx5 IS NOT NULL OR dx5 <>"") AND pdx <>"" AND pdx IS NOT NULL THEN 1 ELSE 0 END) AS sum_dchsummary,
@@ -360,7 +360,7 @@ $start_date = $request->start_date;
                   OR dx4_audit IS NOT NULL OR dx4_audit <>"" OR dx5_audit IS NOT NULL OR dx5_audit <>"") THEN 1 ELSE 0 END) AS sum_dchsummary_audit
             FROM (SELECT i.an,i.regdate,i.dchdate,id1.diag_text AS dx1,id2.diag_text AS dx2,id3.diag_text AS dx3,id4.diag_text AS dx4,id5.diag_text AS dx5,
             id1.audit_diag_text AS dx1_audit,id2.audit_diag_text AS dx2_audit,id3.audit_diag_text AS dx3_audit,id4.audit_diag_text AS dx4_audit,
-            id5.audit_diag_text AS dx5_audit,a.pdx,a.rw 
+            id5.audit_diag_text AS dx5_audit,a.pdx,a.diag_text_list,a.rw 
             FROM ipt i
             LEFT JOIN ipt_doctor_diag id1 ON id1.an = i.an	AND id1.diagtype = 1 
             LEFT JOIN ipt_doctor_diag id2 ON id2.an = i.an	AND id2.diagtype = 2
@@ -500,10 +500,10 @@ public function non_dchsummary(Request $request)
             LEFT JOIN doctor d ON d.`code` = il.doctor
             LEFT JOIN an_stat a ON a.an=i.an
             WHERE i.ward NOT IN (SELECT ward FROM htp_report.lookup_ward WHERE ward_homeward = "Y")
-            AND i.dchdate > "'.$start_date.'"
+            AND i.dchdate > ?
             AND (a.diag_text_list ="" OR a.diag_text_list IS NULL)
             GROUP BY i.an
-            ORDER BY d.`name`,dch_day DESC');  
+            ORDER BY d.`name`,dch_day DESC',[$start_date]);  
 
       $non_dchsummary_sum=DB::connection('hosxp')->select('
             SELECT d.`name` AS owner_doctor_name,COUNT(i.an) AS total
@@ -513,10 +513,10 @@ public function non_dchsummary(Request $request)
             LEFT JOIN doctor d ON d.`code` = il.doctor
             LEFT JOIN an_stat a ON a.an=i.an
             WHERE i.ward NOT IN (SELECT ward FROM htp_report.lookup_ward WHERE ward_homeward = "Y")
-            AND i.dchdate > "'.$start_date.'"
+            AND i.dchdate > ?
             AND (a.diag_text_list ="" OR a.diag_text_list IS NULL)
             GROUP BY d.`name` 
-            ORDER BY total DESC'); 
+            ORDER BY total DESC',[$start_date]); 
       $owner_doctor_name = array_column($non_dchsummary_sum,'owner_doctor_name');
       $owner_doctor_total = array_column($non_dchsummary_sum,'total');
  
