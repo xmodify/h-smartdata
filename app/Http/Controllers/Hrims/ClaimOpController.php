@@ -282,7 +282,7 @@ class ClaimOpController extends Controller
         $claim=DB::connection('hosxp')->select('
             SELECT o.vstdate,o.vsttime,o.oqueue,pt.hn,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,p.`name` AS pttype,vp.hospmain,
             os.cc,v.pdx,GROUP_CONCAT(DISTINCT od.icd10) AS icd9,v.income,v.rcpt_money,GROUP_CONCAT(DISTINCT sd.`name`) AS claim_list,
-            COALESCE(kidney.claim_price, 0) AS claim_price,SUM(stm.receive_total) AS receive_total,stm.repno
+            COALESCE(kidney.claim_price, 0) AS claim_price,stm.receive_total,stm.repno
             FROM ovst o
             LEFT JOIN patient pt ON pt.hn=o.hn
             LEFT JOIN visit_pttype vp ON vp.vn=o.vn
