@@ -207,7 +207,7 @@ class ClaimOpController extends Controller
             IF((vp.auth_code LIKE "EP%" OR ep.claimCode LIKE "EP%"),"Y",NULL) AS endpoint,
             vp.confirm_and_locked,vp.request_funds,o.vstdate,o.vsttime,o.oqueue,pt.cid,pt.hn,
             CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,p.`name` AS pttype,vp.hospmain,os.cc,
-            v.pdx,GROUP_CONCAT(DISTINCT od.icd10) AS icd9,v.income,v.rcpt_money,SUM(refer.sum_price) AS refer,
+            v.pdx,GROUP_CONCAT(DISTINCT od.icd10) AS icd9,v.income,v.rcpt_money,SUM(DISTINCT refer.sum_price) AS refer,
             GROUP_CONCAT(DISTINCT n_proj.nhso_adp_code) AS project,et.ucae AS er,vp.nhso_ucae_type_code AS ae
             FROM ovst o
             LEFT JOIN patient pt ON pt.hn=o.hn
@@ -239,7 +239,7 @@ class ClaimOpController extends Controller
             IF((vp.auth_code LIKE "EP%" OR ep.claimCode LIKE "EP%"),"Y",NULL) AS endpoint,
             vp.confirm_and_locked,vp.request_funds,o.vstdate,o.vsttime,o.oqueue,pt.cid,pt.hn,
             CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,p.`name` AS pttype,vp.hospmain,os.cc,
-            v.pdx,GROUP_CONCAT(DISTINCT od.icd10) AS icd9,v.income,v.rcpt_money,SUM(refer.sum_price) AS refer,
+            v.pdx,GROUP_CONCAT(DISTINCT od.icd10) AS icd9,v.income,v.rcpt_money,SUM(DISTINCT refer.sum_price) AS refer,
             GROUP_CONCAT(DISTINCT n_proj.nhso_adp_code) AS project,et.ucae AS er,vp.nhso_ucae_type_code AS ae,
             rep.rep_eclaim_detail_nhso AS rep_nhso,rep.rep_eclaim_detail_error_code AS rep_error,stm.receive_total,stm.repno
             FROM ovst o
