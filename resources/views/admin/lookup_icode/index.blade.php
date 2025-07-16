@@ -59,8 +59,8 @@
                                     data-uc_cr="{{ $item->uc_cr }}"
                                     data-ppfs="{{ $item->ppfs }}"
                                     data-herb32="{{ $item->herb32 }}"    
-                                    data-herb32="{{ $item->kidney }}" 
-                                    data-herb32="{{ $item->ems }}"                    
+                                    data-kidney="{{ $item->kidney }}" 
+                                    data-ems="{{ $item->ems }}"                    
                                     data-bs-toggle="modal"
                                     data-bs-target="#editModal">
                                     Edit
