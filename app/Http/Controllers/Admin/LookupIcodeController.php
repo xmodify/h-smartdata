@@ -59,6 +59,7 @@ class LookupIcodeController extends Controller
             'ppfs' => $request->has('ppfs') ? 'Y' : '',
             'herb32' => $request->has('herb32') ? 'Y' : '',
             'kidney' => $request->has('kidney') ? 'Y' : '',
+            'ems' => $request->has('ems') ? 'Y' : '',
         ]; 
 
         $item->update($data);

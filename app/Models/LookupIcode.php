@@ -21,6 +21,7 @@ class LookupIcode extends Model
         'ppfs',
         'herb32',
         'kidney',
+        'ems',
     ];
     
 }

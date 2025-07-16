@@ -27,7 +27,8 @@ class MainSettingController extends Controller
 
     return redirect()->back()->with('success', 'แก้ไขข้อมูลสำเร็จ');
     }
-    
+#######################################################################################################################################    
+// UP Structure -----------------------------------------------------------------------------------------------------------------------        
     public function up_structure(Request $request)
     {
         $structure = [
@@ -61,6 +62,27 @@ class MainSettingController extends Controller
                 ]);
             }
         }
-        return redirect()->route('admin.main_setting')->with('success', 'ปรับโครงสร้างสำเร็จ'); 
+
+    //Table lookup_icode-----------------------------------------------------------------------------------------------------------
+        $table = 'lookup_icode';
+        $columnsToAdd = [        
+            ['name' => 'herb32', 'definition' => 'VARCHAR(1) NULL'], 
+            ['name' => 'kidney', 'definition' => 'VARCHAR(1) NULL AFTER `herb32`'],
+            ['name' => 'ems', 'definition' => 'VARCHAR(1) NULL AFTER `kidney`']
+        ];
+
+        try {
+            foreach ($columnsToAdd as $col) {
+                if (!Schema::hasColumn($table, $col['name'])) {
+                    DB::statement("ALTER TABLE $table ADD COLUMN {$col['name']} {$col['definition']}");
+                }
+            }
+
+            return redirect()->route('admin.main_setting')->with('success', 'ปรับโครงสร้างสำเร็จ');
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'เกิดข้อผิดพลาด: ' . $e->getMessage());
+        }
     }
+    
 }

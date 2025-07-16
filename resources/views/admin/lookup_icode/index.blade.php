@@ -34,6 +34,7 @@
                     <th class="text-center">ppfs</th>
                     <th class="text-center">herb32</th>
                     <th class="text-center">kidney</th>
+                    <th class="text-center">ems</th>
                     <th class="text-center" width = "20%">Action</th>
                 </tr>
             </thead>
@@ -48,6 +49,7 @@
                             <td class="text-center">{{ $item->ppfs }}</td>
                             <td class="text-center">{{ $item->herb32 }}</td>
                             <td class="text-center">{{ $item->kidney }}</td>
+                            <td class="text-center">{{ $item->ems }}</td>
                             <td>
                                 <!-- ปุ่ม Edit -->
                                 <button class="btn btn-warning btn-sm btn-edit" 
@@ -57,7 +59,8 @@
                                     data-uc_cr="{{ $item->uc_cr }}"
                                     data-ppfs="{{ $item->ppfs }}"
                                     data-herb32="{{ $item->herb32 }}"    
-                                    data-herb32="{{ $item->kidney }}"                     
+                                    data-herb32="{{ $item->kidney }}" 
+                                    data-herb32="{{ $item->ems }}"                    
                                     data-bs-toggle="modal"
                                     data-bs-target="#editModal">
                                     Edit
@@ -99,6 +102,9 @@
                         <br>
                         <input type="checkbox" name="kidney" value="Y">
                         <label for="editkidney">kidney</label>
+                        <br>
+                        <input type="checkbox" name="ens" value="Y">
+                        <label for="editems">ems</label>
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-primary">Save</button>
@@ -135,7 +141,11 @@
                             <br>
                             <input type="checkbox" name="kidney" id="editkidney" value="Y"
                                 {{ $item->kidney === 'Y' ? 'checked' : '' }}>
-                            <label for="editkidney">ฟอกไต</label>     
+                            <label for="editkidney">ฟอกไต</label>
+                            <br>
+                            <input type="checkbox" name="ems" id="editems" value="Y"
+                                {{ $item->ems === 'Y' ? 'checked' : '' }}>
+                            <label for="editems">ems</label>     
                         @endif
                     </div>
     
@@ -171,6 +181,7 @@
                     const ppfs = this.dataset.ppfs; 
                     const herb32 = this.dataset.herb32; 
                     const kidney = this.dataset.kidney; 
+                    const ems = this.dataset.ems; 
 
                     document.getElementById('icode').value = this.dataset.icode;
                     document.getElementById('editName').value = this.dataset.name;
@@ -179,6 +190,7 @@
                     document.getElementById('editppfs').checked = (this.dataset.ppfs === 'Y');
                     document.getElementById('editherb32').checked = (this.dataset.herb32 === 'Y');
                     document.getElementById('editkidney').checked = (this.dataset.kidney === 'Y');
+                    document.getElementById('editems').checked = (this.dataset.ems === 'Y');
                     // document.getElementById('editForm').action = `/admin/lookup_icode/${icode}`;  
                     document.getElementById('editForm').action = "{{ url('admin/lookup_icode') }}/" + icode;  
                         
