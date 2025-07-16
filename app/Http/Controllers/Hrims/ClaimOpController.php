@@ -282,7 +282,7 @@ class ClaimOpController extends Controller
         $claim=DB::connection('hosxp')->select('
             SELECT o.vstdate,o.vsttime,o.oqueue,pt.hn,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,p.`name` AS pttype,vp.hospmain,
             os.cc,v.pdx,GROUP_CONCAT(DISTINCT od.icd10) AS icd9,v.income,v.rcpt_money,GROUP_CONCAT(DISTINCT sd.`name`) AS claim_list,
-            COALESCE(kidney.claim_price, 0) AS claim_price,stm.receive_total,stm.repno
+            COALESCE(kidney.claim_price, 0) AS claim_price,COALESCE(stm.receive_total, 0) AS receive_total ,stm.repno
             FROM ovst o
             LEFT JOIN patient pt ON pt.hn=o.hn
             LEFT JOIN visit_pttype vp ON vp.vn=o.vn
@@ -298,9 +298,10 @@ class ClaimOpController extends Controller
             INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
                 WHERE op.vstdate BETWEEN ? AND ? AND li.kidney = "Y" GROUP BY op.vn) kidney ON kidney.vn=o.vn
             LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND DATE(ep.serviceDateTime)=o.vstdate AND ep.claimCode LIKE "EP%"
-            LEFT JOIN htp_report.finance_stm_ucs_kidney stm ON stm.cid=pt.cid AND DATE(stm.datetimeadm) = o.vstdate
+            LEFT JOIN (SELECT cid,datetimeadm,sum(receive_total) AS receive_total,repno FROM htp_report.finance_stm_ucs_kidney
+                WHERE datetimeadm BETWEEN ? AND ? GROUP BY cid,datetimeadm) stm ON stm.cid=pt.cid AND stm.datetimeadm = o.vstdate
             WHERE o1.vn IS NOT NULL AND p.hipdata_code = "UCS" AND o.vstdate BETWEEN ? AND ?
-            GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
+            GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]);
 
         return view('hrims.claim_op.ucs_kidney',compact('start_date','end_date','claim'));
     }

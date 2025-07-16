@@ -1181,10 +1181,9 @@ public function ucs_kidneydetail(Request $request)
     {$end_date = date('Y-m-d', strtotime("last day of this month"));}else{$end_date =$request->end_date;}
 
     $stm_ucs_kidney_list=DB::select('
-        SELECT stm_filename,repno,hn,an,cid,pt_name,datetimeadm,SUM(charge_total) AS charge_total,
-        SUM(receive_total) AS receive_total,note 
-        FROM finance_stm_ucs_kidney WHERE DATE(datetimeadm) BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-        GROUP BY repno,cid,datetimeadm ORDER BY cid,datetimeadm');
+        SELECT stm_filename,repno,hn,an,cid,pt_name,datetimeadm,hd_type,charge_total,receive_total,note 
+        FROM finance_stm_ucs_kidney WHERE DATE(datetimeadm) BETWEEN ? AND ?
+        GROUP BY repno,cid,hd_type,datetimeadm ORDER BY cid,datetimeadm',[$start_date,$end_date]);
 
     return view('hrims.import_stm.ucs_kidneydetail',compact('start_date','end_date','stm_ucs_kidney_list'));
 }

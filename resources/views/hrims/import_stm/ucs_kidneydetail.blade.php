@@ -34,7 +34,8 @@
                                 <th class="text-center">AN</th>  
                                 <th class="text-center">CID</th>  
                                 <th class="text-center">ชื่อ-สกุล</th>
-                                <th class="text-center">วันเข้ารักษา</th>  
+                                <th class="text-center">วันเข้ารักษา</th> 
+                                <th class="text-center" width = "10%">รายการที่ขอเบิก</th> 
                                 <th class="text-center">จำนวนที่ขอเบิก</th> 
                                 <th class="text-center">จ่ายชดเชยสุทธิ</th>                                                         
                                 <th class="text-center">หมายเหตุ</th>
@@ -50,6 +51,7 @@
                                 <td align="right">{{ $row->cid }}</td>   
                                 <td align="left">{{ $row->pt_name }}</td>
                                 <td align="right">{{ DateThai($row->datetimeadm) }}</td>
+                                <td align="right" width = "10%">{{ $row->hd_type }}</td>
                                 <td align="right">{{ number_format($row->charge_total,2) }}</td>
                                 <td align="right">{{ number_format($row->receive_total,2) }}</td>
                                 <td align="right">{{ $row->note }}</td> 
