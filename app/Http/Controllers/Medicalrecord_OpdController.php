@@ -143,7 +143,7 @@ public function nhso_endpoint_pull(Request $request)
         LEFT JOIN patient pt ON pt.hn = o.hn
         WHERE o.vstdate = ?
         AND vp.auth_code NOT LIKE "EP%" 
-        AND vp.auth_code <> "" AND vp.auth_code IS NOT NULL', [$vstdate]);  
+        AND vp.auth_code <> "" ', [$vstdate]);  
 
     $cids = array_column($hosxp, 'cid');      
     $token = DB::table('main_setting')
