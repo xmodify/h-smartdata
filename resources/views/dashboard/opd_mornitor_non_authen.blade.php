@@ -72,7 +72,7 @@
               <tr class="table-primary">
                 <th class="text-center">ลำดับ</th>
                 <th class="text-center">วัน-เวลาที่รับบริการ</th>
-                <th class="text-center">Q</th>
+                <th class="text-center">Queue</th>
                 <th class="text-center">HN</th>
                 <th class="text-center">CID</th>
                 <th class="text-center">ชื่อ-สกุล</th>                    

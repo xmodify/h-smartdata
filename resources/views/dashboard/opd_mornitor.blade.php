@@ -74,7 +74,7 @@
                 ทั้งหมด : <font style="color:red;">{{$total}}</font> Visit | 
                 ปิดสิทธิ สปสช : <font style="color:red;">{{$endpoint}}</font> Visit               
                 <!-- ปุ่มเรียก Modal -->
-                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#nhsoModal">
+                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#nhsoModal">
                   ดึงปิดสิทธิ สปสช.
                 </button>
               </h4>
@@ -92,12 +92,12 @@
         <div class="card text-white bg-1 mb-3" style="max-width: 18rem;" >
           <div class="card-header">
             <ion-icon name="people-outline"></ion-icon>
-            UCS Visit : Endpoint All
+            OFC : รูดบัตร
           </div>
           <div class="card-body">
-            <h1 class="card-title text-center">{{$ucs_all}} : {{$endpoint}}</h1>
-              <p class="card-text" data-bs-toggle="modal" data-bs-target="#nhsoModal">
-                ดึงปิดสิทธิ สปสช.
+            <h1 class="card-title text-center">{{$ofc}} : {{$ofc_edc}}</h1>
+              <p class="card-text">
+                <a href="{{ url('/dashboard/opd_mornitor_ofc') }}"  target="_blank" class="text-white" style="text-decoration: none; "> more detail...</a>
               </p>
           </div>
         </div>
@@ -134,12 +134,12 @@
         <div class="card text-white bg-4 mb-3" style="max-width: 18rem;">
           <div class="card-header">
             <ion-icon name="people-outline"></ion-icon>
-            CXR-TB : Endpoint
+            TB : ปิดสิทธิ 
           </div>
           <div class="card-body">
-            <h1 class="card-title text-center">{{$cxr}} : {{$cxr_endpoint}}</h1>
+            <h1 class="card-title text-center">{{$tb}} : {{$tb_endpoint}}</h1>
             <p class="card-text">
-              <a href="{{ url('/dashboard/opd_mornitor_xray_chest') }}"  target="_blank" class="text-white" style="text-decoration: none;"> more detail...</a>
+              <a href="{{ url('/dashboard/opd_mornitor_tb') }}"  target="_blank" class="text-white" style="text-decoration: none;"> more detail...</a>
             </p>
           </div>
         </div>
@@ -151,10 +151,10 @@
         <div class="card text-white bg-5 mb-3" style="max-width: 18rem;" >
           <div class="card-header">
             <ion-icon name="people-outline"></ion-icon>
-            UC Anywhere : Endpoint : FDH
+            UC Anywhere : ปิดสิทธิ 
           </div>
           <div class="card-body">
-            <h1 class="card-title text-center">{{$op_anywhere}} : {{$op_anywhere_endpoint}} : {{$op_anywhere_fdh}}</h1>
+            <h1 class="card-title text-center">{{$op_anywhere}} : {{$op_anywhere_endpoint}}</h1>
             <p class="card-text">
               <a href="{{ url('/dashboard/opd_mornitor_opanywhere') }}"  target="_blank" class="text-white" style="text-decoration: none; "> more detail...</a>
             </p>
@@ -165,7 +165,7 @@
         <div class="card text-white bg-6 mb-3" style="max-width: 18rem;" >
           <div class="card-header">
             <ion-icon name="people-outline"></ion-icon>
-            UC ฟอกไต : Endpoint
+            UC ฟอกไต : ปิดสิทธิ
           </div>
           <div class="card-body">
             <h1 class="card-title text-center">{{$kidney}} : {{$kidney_endpoint}}</h1>
@@ -179,10 +179,10 @@
         <div class="card text-white bg-7 mb-3" style="max-width: 18rem;" >
           <div class="card-header">
             <ion-icon name="people-outline"></ion-icon>
-            UC บริการเฉพาะ : Endpoint : FDH
+            UC บริการเฉพาะ : ปิดสิทธิ 
           </div>
           <div class="card-body">
-            <h1 class="card-title text-center">{{$ucop_cr}} : {{$ucop_cr_endpoint}} : {{$ucop_cr_fdh}}</h1>
+            <h1 class="card-title text-center">{{$ucop_cr}} : {{$ucop_cr_endpoint}} </h1>
             <p class="card-text">
               <a href="{{ url('/dashboard/opd_mornitor_ucop_cr') }}"  target="_blank" class="text-white" style="text-decoration: none; "> more detail...</a>
             </p>
@@ -193,12 +193,12 @@
         <div class="card text-white bg-8 mb-3" style="max-width: 18rem;" >
           <div class="card-header">
             <ion-icon name="people-outline"></ion-icon>
-            UC PPFS : Endpoint : FDH 
+            PPFS : ปิดสิทธิ 
           </div>
           <div class="card-body">
-            <h1 class="card-title text-center">{{$uc_ppfs}} : {{$uc_ppfs_endpoint}} : {{$uc_ppfs_fdh}}</h1>
+            <h1 class="card-title text-center">{{$ppfs}} : {{$ppfs_endpoint}} </h1>
             <p class="card-text">
-              <a href="{{ url('/dashboard/opd_mornitor_uc_ppfs') }}"  target="_blank" class="text-white" style="text-decoration: none; "> more detail...</a>
+              <a href="{{ url('/dashboard/opd_mornitor_ppfs') }}"  target="_blank" class="text-white" style="text-decoration: none; "> more detail...</a>
             </p>
           </div>
         </div>
@@ -223,7 +223,7 @@
         <div class="card text-white bg-10 mb-3" style="max-width: 18rem;" >
           <div class="card-header">
             <ion-icon name="people-outline"></ion-icon>
-            แพทย์แผนไทย : Endpoint
+            แพทย์แผนไทย : ปิดสิทธิ
           </div>
           <div class="card-body">
             <h1 class="card-title text-center">{{$healthmed}} : {{$healthmed_endpoint}}</h1>
@@ -237,12 +237,12 @@
         <div class="card text-white bg-11 mb-3" style="max-width: 18rem;" >
           <div class="card-header">
             <ion-icon name="people-outline"></ion-icon>
-            CT Scan : Price
+            ยาสมุนไพร : ปิดสิทธิ
           </div>
           <div class="card-body">
-            <h1 class="card-title text-center">{{$ct}} : {{number_format($ct_price)}}</h1>
+            <h1 class="card-title text-center">{{$uc_herb}} : {{number_format($uc_herb_endpoint)}}</h1>
             <p class="card-text">
-              <a href="{{ url('/service_xray/ct') }}"  target="_blank" class="text-white" style="text-decoration: none; "> more detail...</a>
+              <a href="{{ url('/dashboard/opd_mornitor_herb') }}"  target="_blank" class="text-white" style="text-decoration: none; "> more detail...</a>
             </p>
           </div>
         </div>

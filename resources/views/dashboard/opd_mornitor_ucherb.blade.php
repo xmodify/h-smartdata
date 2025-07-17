@@ -8,7 +8,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title >OP Anywhere</title>
+    <title >PPFS</title>
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
@@ -20,13 +20,13 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-
+            
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
 
     <!-- SweetAlert2 CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    
 <style>
   table {
   border-collapse: collapse;
@@ -44,7 +44,7 @@
 <div class="container-fluid">  
   <div class="row"  >
     <div class="col-sm-12"> 
-        <div class="alert alert-success text-primary" role="alert"><strong>รายชื่อผู้มารับบริการ OP Anywhere วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</strong></div>          
+        <div class="alert alert-success text-primary" role="alert"><strong>รายชื่อผู้มารับบริการ UCS รับยาสมุนไพร 32 รายการ วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</strong></div>          
     </div>
   </div>   
   <form method="POST" enctype="multipart/form-data">
@@ -117,12 +117,12 @@
               <?php $count++; ?>
               @endforeach                 
             </tbody>
-          </table>   
+          </table>  
         </div>          
       </div>  
     </div> 
-  </div>  
-</div>  
+  </div> 
+</div>    
 
 <script>
   function pullNhsoData(vstdate, cid) {

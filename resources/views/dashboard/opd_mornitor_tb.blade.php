@@ -75,9 +75,10 @@
             <thead>            
               <tr class="table-primary">
                   <th class="text-center">ลำดับ</th>
+                  <th class="text-center" width="6%">Action</th>
                   <th class="text-center">Authen</th>  
                   <th class="text-center">ปิดสิทธิ</th>
-                  <th class="text-center" width="6%">Action</th> 
+                  <th class="text-center">Queue</th>                    
                   <th class="text-center">ชื่อ-สกุล</th>    
                   <th class="text-center">CID</th>           
                   <th class="text-center">วันที่รับบริการ</th> 
@@ -93,22 +94,23 @@
               @foreach($sql as $row) 
               <tr>
                 <td align="center">{{ $count }}</td>
-                <td align="center" @if($row->auth_code == 'Y') style="color:green"
-                  @elseif($row->auth_code == 'N') style="color:red" @endif>
-                  <strong>{{ $row->auth_code }}</strong></td>               
-                <td align="center" @if($row->endpoint == 'Y') style="color:green"
-                  @elseif($row->endpoint == 'N') style="color:red" @endif>
-                  <strong>{{ $row->endpoint }}</strong></td> 
                 <td align="center" width="6%">                  
                   <button onclick="pullNhsoData('{{ $row->vstdate }}', '{{ $row->cid }}')" class="btn btn-outline-info btn-sm w-100">
                       ดึงปิดสิทธิ
                   </button>
                 </td> 
+                <td align="center" @if($row->auth_code == 'Y') style="color:green"
+                  @elseif($row->auth_code == 'N') style="color:red" @endif>
+                  <strong>{{ $row->auth_code }}</strong></td>               
+                <td align="center" @if($row->endpoint == 'Y') style="color:green"
+                  @elseif($row->endpoint == 'N') style="color:red" @endif>
+                  <strong>{{ $row->endpoint }}</strong></td>
+                <td align="left">{{$row->oqueue}}</td>
                 <td align="left">{{$row->ptname}}</td> 
                 <td align="center">{{$row->cid}}</td> 
                 <td align="left">{{ DateThai($row->vstdate) }}</td>             
                 <td align="rigth">{{$row->vsttime}}</td>                
-                <td align="center">{{$row->informtel}}</td> 
+                <td align="center">{{$row->mobile_phone_number}}</td> 
                 <td align="right">{{ number_format($row->debtor,2) }}</td>
                 <td align="left">{{$row->pttype}} [{{$row->hospmain}}]</td>
                 <td align="left">{{$row->department}}</td>                  

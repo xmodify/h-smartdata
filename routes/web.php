@@ -227,10 +227,12 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::match(['get','post'],'dashboard/opd_mornitor_non_authen',[Dashboard_DigitalhealthController::class,'opd_mornitor_non_authen']);
     Route::match(['get','post'],'dashboard/opd_mornitor_non_hospmain',[Dashboard_DigitalhealthController::class,'opd_mornitor_non_hospmain']);
     Route::match(['get','post'],'dashboard/opd_mornitor_opanywhere',[Dashboard_DigitalhealthController::class,'opd_mornitor_opanywhere']);
-    Route::match(['get','post'],'dashboard/opd_mornitor_xray_chest',[Dashboard_DigitalhealthController::class,'opd_mornitor_xray_chest']);
+    Route::match(['get','post'],'dashboard/opd_mornitor_ofc',[Dashboard_DigitalhealthController::class,'opd_mornitor_ofc']);
+    Route::match(['get','post'],'dashboard/opd_mornitor_tb',[Dashboard_DigitalhealthController::class,'opd_mornitor_tb']);
     Route::match(['get','post'],'dashboard/opd_mornitor_kidney',[Dashboard_DigitalhealthController::class,'opd_mornitor_kidney']);
+    Route::match(['get','post'],'dashboard/opd_mornitor_ucherb',[Dashboard_DigitalhealthController::class,'opd_mornitor_ucherb']);
     Route::match(['get','post'],'dashboard/opd_mornitor_ucop_cr',[Dashboard_DigitalhealthController::class,'opd_mornitor_ucop_cr']);
-    Route::match(['get','post'],'dashboard/opd_mornitor_uc_ppfs',[Dashboard_DigitalhealthController::class,'opd_mornitor_uc_ppfs']);
+    Route::match(['get','post'],'dashboard/opd_mornitor_ppfs',[Dashboard_DigitalhealthController::class,'opd_mornitor_ppfs']);
     Route::match(['get','post'],'dashboard/opd_mornitor_homeward',[Dashboard_DigitalhealthController::class,'opd_mornitor_homeward']);
     Route::match(['get','post'],'dashboard/opd_mornitor_healthmed',[Dashboard_DigitalhealthController::class,'opd_mornitor_healthmed']);
     Route::match(['get','post'],'dashboard/ipd_mornitor',[Dashboard_DigitalhealthController::class,'ipd_mornitor']);

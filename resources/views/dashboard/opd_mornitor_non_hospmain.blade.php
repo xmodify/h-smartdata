@@ -71,14 +71,13 @@
             <thead>
               <tr class="table-primary">
                   <th class="text-center">ลำดับ</th>
-                  <th class="text-center">Authen</th>  
-                  <th class="text-center">ปิดสิทธิ</th>
-                  <th class="text-center">ชื่อ-สกุล</th>    
-                  <th class="text-center">CID</th>           
+                  <th class="text-center">Authen</th>
                   <th class="text-center">วันที่รับบริการ</th> 
-                  <th class="text-center">เวลา</th>                                      
-                  <th class="text-center">เบอร์โทร</th>
-                  <th class="text-center">ค่าบริการที่เบิกได้</th>
+                  <th class="text-center">เวลา</th>
+                  <th class="text-center">Queue</th>  
+                  <th class="text-center">ชื่อ-สกุล</th>    
+                  <th class="text-center">CID</th>   
+                  <th class="text-center">เบอร์โทร</th>                  
                   <th class="text-center">สิทธิการรักษา</th> 
                   <th class="text-center">Hmain</th>   
               </tr>
@@ -90,16 +89,13 @@
                 <td align="center">{{ $count }}</td>
                 <td align="center" @if($row->auth_code == 'Y') style="color:green"
                   @elseif($row->auth_code == 'N') style="color:red" @endif>
-                  <strong>{{ $row->auth_code }}</strong></td>               
-                <td align="center" @if($row->endpoint == 'Y') style="color:green"
-                  @elseif($row->endpoint == 'N') style="color:red" @endif>
-                  <strong>{{ $row->endpoint }}</strong></td> 
+                  <strong>{{ $row->auth_code }}</strong></td>
+                <td align="left">{{ DateThai($row->vstdate) }}</td>             
+                <td align="rigth">{{$row->vsttime}}</td> 
+                <td align="center">{{$row->cid}}</td>    
                 <td align="left">{{$row->ptname}}</td> 
                 <td align="center">{{$row->cid}}</td> 
-                <td align="left">{{ DateThai($row->vstdate) }}</td>             
-                <td align="rigth">{{$row->vsttime}}</td>                
-                <td align="center">{{$row->informtel}}</td> 
-                <td align="right">{{ number_format($row->debtor,2) }}</td>
+                <td align="center">{{$row->mobile_phone_number}}</td> 
                 <td align="left">{{$row->pttype}}</td>
                 <td align="center">{{$row->hospmain}}</td>                  
               </tr>

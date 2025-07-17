@@ -194,104 +194,89 @@ public function digitalhealth(Request $request )
 
     return view('dashboard.digitalhealth',compact('budget_year_select','budget_year',
     'moph_appointment','telehealth','opd_ucs'));
-}
+} 
 
 public function opd_mornitor(Request $request )
 {
-    $nhso_monitor=DB::connection('hosxp')->select('
-        SELECT COUNT(vn) AS total,IFNULL(SUM(CASE WHEN hipdata_code = "UCS" AND (an ="" OR an IS NULL) THEN 1 ELSE 0 END),0) AS "ucs_all",
-			IFNULL(SUM(CASE WHEN endpoint_code LIKE "EP%" THEN 1 ELSE 0 END),0) AS "endpoint",
-        IFNULL(SUM(CASE WHEN (auth_code IS NULL OR auth_code ="") AND cid NOT LIKE "0%" AND pttype NOT IN ("10","11","12","13")  
-            THEN 1 ELSE 0 END),0) AS "non_authen",
-        IFNULL(SUM(CASE WHEN (hipdata_code = "UCS" OR hipdata_code ="SSS")AND (hospmain="" OR hospmain IS NULL)
-            THEN 1 ELSE 0 END),0) AS "non_hospmain",
-        IFNULL(SUM(CASE WHEN hipdata_code = "UCS" AND hospmain NOT IN ("10703","10985","10986","10987","10988","10989","10990")
-            AND (an ="" OR an IS NULL) THEN 1 ELSE 0 END),0) AS "op_anywhere",
-        IFNULL(SUM(CASE WHEN hipdata_code = "UCS" AND hospmain NOT IN ("10703","10985","10986","10987","10988","10989","10990") 
-            AND endpoint_code LIKE "EP%" AND (an ="" OR an IS NULL) THEN 1 ELSE 0 END),0) AS "op_anywhere_endpoint",
-		IFNULL(SUM(CASE WHEN hipdata_code = "UCS" AND hospmain NOT IN ("10703","10985","10986","10987","10988","10989","10990") 
-            AND (fdh IS NOT NULL OR fdh <>"") AND (an ="" OR an IS NULL) 
-			THEN 1 ELSE 0 END),0) AS "op_anywhere_fdh",
-        IFNULL(SUM(CASE WHEN (xray_items_code <>"" OR lab_items_code <>"") AND paidst = "02" AND (an ="" OR an IS NULL) THEN 1 ELSE 0 END),0) AS "cxr",
-        IFNULL(SUM(CASE WHEN (xray_items_code <>"" OR lab_items_code <>"") AND paidst = "02" AND (an ="" OR an IS NULL) AND endpoint_code LIKE "EP%"
-             THEN 1 ELSE 0 END),0) AS "cxr_endpoint",      
-        IFNULL(SUM(CASE WHEN (icode IS NOT NULL OR icode <>"") AND (an ="" OR an IS NULL) AND hipdata_code = "UCS" 
-            THEN 1 ELSE 0 END),0) AS "kidney",
-        IFNULL(SUM(CASE WHEN (icode IS NOT NULL OR icode <>"") AND (an ="" OR an IS NULL) AND hipdata_code = "UCS"
-            AND endpoint_code LIKE "EP%" THEN 1 ELSE 0 END),0) AS "kidney_endpoint",
-        IFNULL(SUM(CASE WHEN (icode_cr IS NOT NULL OR icode_cr <>"") AND hospmain IN ("10703","10985","10986","10987","10988","10989","10990")
-            AND hipdata_code = "UCS" AND (an ="" OR an IS NULL) THEN 1 ELSE 0 END),0) AS "ucop_cr",
-        IFNULL(SUM(CASE WHEN (icode_cr IS NOT NULL OR icode_cr <>"") AND hospmain IN ("10703","10985","10986","10987","10988","10989","10990")
-            AND hipdata_code = "UCS" AND endpoint_code LIKE "EP%" AND (an ="" OR an IS NULL) THEN 1 ELSE 0 END),0) AS "ucop_cr_endpoint",
-        IFNULL(SUM(CASE WHEN (icode_cr IS NOT NULL OR icode_cr <>"") AND hospmain IN ("10703","10985","10986","10987","10988","10989","10990")
-            AND hipdata_code = "UCS" AND (fdh IS NOT NULL OR fdh <>"") AND (an ="" OR an IS NULL) THEN 1 ELSE 0 END),0) AS "ucop_cr_fdh",
-        IFNULL(SUM(CASE WHEN (icode_ppfs IS NOT NULL OR icode_ppfs <>"") AND (an ="" OR an IS NULL) THEN 1 ELSE 0 END),0) AS "uc_ppfs",
-        IFNULL(SUM(CASE WHEN (icode_ppfs IS NOT NULL OR icode_ppfs <>"") AND (an ="" OR an IS NULL) AND endpoint_code LIKE "EP%" THEN 1 ELSE 0 END),0) AS "uc_ppfs_endpoint",
-        IFNULL(SUM(CASE WHEN (icode_ppfs IS NOT NULL OR icode_ppfs <>"") AND (an ="" OR an IS NULL) AND (fdh IS NOT NULL OR fdh <>"") THEN 1 ELSE 0 END),0) AS "uc_ppfs_fdh",
-        IFNULL(SUM(CASE WHEN (homeward IS NOT NULL OR homeward <>"") THEN 1 ELSE 0 END),0) AS "homeward",
-        IFNULL(SUM(CASE WHEN (homeward IS NOT NULL OR homeward <>"") AND ClaimType= "PG0140001"	THEN 1 ELSE 0 END),0) AS "homeward_auth",
-        IFNULL(SUM(CASE WHEN (icode_herb IS NOT NULL OR icode_herb <>"" OR healthmed IS NOT NULL OR healthmed <>"") 
-            AND (an ="" OR an IS NULL) AND hipdata_code = "UCS"  AND income-paid_money <> 0 THEN 1 ELSE 0 END),0) AS "healthmed",
-        IFNULL(SUM(CASE WHEN (icode_herb IS NOT NULL OR icode_herb <>"" OR healthmed IS NOT NULL OR healthmed <>"") AND hipdata_code = "UCS"
-            AND endpoint_code LIKE "EP%" AND (an ="" OR an IS NULL) THEN 1 ELSE 0 END),0) AS "healthmed_endpoint",
-        (SELECT COUNT(DISTINCT hn) FROM opitemrece  WHERE rxdate = DATE(NOW())
-            AND icode IN (SELECT icode FROM xray_items WHERE xray_items_group = 3)) AS "ct",
-		(SELECT SUM(sum_price) FROM opitemrece  WHERE rxdate = DATE(NOW())
-            AND icode IN (SELECT icode FROM xray_items WHERE xray_items_group = 3)) AS "ct_price"
-        FROM (SELECT o.vn,v.cid,vp.auth_code,IF(vp.auth_code NOT LIKE "EP%",IFNULL(epi.claimCode,ep.claimCode),vp.auth_code) AS endpoint_code,vp.pttype,vp.hospmain,
-            p.hipdata_code,IFNULL(ep.sourceChannel,epi.sourceChannel) AS sourceChannel,ep.claimStatus,x.xray_items_code,l.lab_items_code,p.paidst,o1.icode,
-            o2.icode AS icode_cr,o3.icode AS icode_ppfs,oe.moph_finance_upload_datetime AS fdh,o.an,i.an AS homeward,epi_homeward.claimType,
-            p.pttype_price_group_id,v.pdx,o4.icode AS icode_herb,hm.vn AS healthmed,v.income,v.paid_money
+    $monitor=DB::connection('hosxp')->select('
+        SELECT COUNT(vn) AS total,IFNULL(SUM(CASE WHEN endpoint<>"" THEN 1 ELSE 0 END),0) AS "endpoint",
+        IFNULL(SUM(CASE WHEN hipdata_code="OFC" THEN 1 ELSE 0 END),0) AS "ofc",
+        IFNULL(SUM(CASE WHEN hipdata_code="OFC" AND edc_approve_list_text <> "" THEN 1 ELSE 0 END),0) AS "ofc_edc",
+        IFNULL(SUM(CASE WHEN auth_code="" AND cid NOT LIKE "0%" AND pttype NOT IN ("10","11","12","13") THEN 1 ELSE 0 END),0) AS "non_authen",
+        IFNULL(SUM(CASE WHEN hipdata_code IN ("UCS","SSS","STP") AND hospmain="" THEN 1 ELSE 0 END),0) AS "non_hospmain",
+        IFNULL(SUM(CASE WHEN tb="Y" AND paidst = "02" AND income-paid_money <> 0 THEN 1 ELSE 0 END),0) AS "tb",
+        IFNULL(SUM(CASE WHEN tb="Y" AND paidst = "02" AND income-paid_money <> 0 AND endpoint ="Y" THEN 1 ELSE 0 END),0) AS "tb_endpoint",
+        IFNULL(SUM(CASE WHEN hipdata_code="UCS" AND hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province ="Y")
+            AND income-paid_money <> 0 THEN 1 ELSE 0 END),0) AS "op_anywhere",
+        IFNULL(SUM(CASE WHEN hipdata_code="UCS" AND hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province ="Y")
+            AND income-paid_money <> 0 AND endpoint ="Y" THEN 1 ELSE 0 END),0) AS "op_anywhere_endpoint",
+        IFNULL(SUM(CASE WHEN hipdata_code="UCS" AND kidney<>"" THEN 1 ELSE 0 END),0) AS "kidney",
+        IFNULL(SUM(CASE WHEN hipdata_code="UCS" AND kidney<>"" AND endpoint ="Y" THEN 1 ELSE 0 END),0) AS "kidney_endpoint",
+        IFNULL(SUM(CASE WHEN hipdata_code="UCS" AND hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province ="Y") 
+            AND uc_cr<>"" THEN 1 ELSE 0 END),0) AS "ucop_cr",
+        IFNULL(SUM(CASE WHEN hipdata_code="UCS" AND hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province ="Y") 
+            AND uc_cr<>"" AND endpoint ="Y" THEN 1 ELSE 0 END),0) AS "ucop_cr_endpoint",
+        IFNULL(SUM(CASE WHEN hipdata_code = "UCS" AND hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province ="Y") 
+            AND herb<>"" THEN 1 ELSE 0 END),0) AS "uc_herb",
+        IFNULL(SUM(CASE WHEN hipdata_code = "UCS" AND hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province ="Y") 
+            AND herb<>"" AND endpoint ="Y" THEN 1 ELSE 0 END),0) AS "uc_herb_endpoint",
+        IFNULL(SUM(CASE WHEN ppfs<>"" THEN 1 ELSE 0 END),0) AS "ppfs",
+        IFNULL(SUM(CASE WHEN ppfs<>"" AND endpoint ="Y" THEN 1 ELSE 0 END),0) AS "ppfs_endpoint",
+        IFNULL(SUM(CASE WHEN hipdata_code = "UCS" AND healthmed<>"" THEN 1 ELSE 0 END),0) AS "healthmed",
+        IFNULL(SUM(CASE WHEN hipdata_code = "UCS" AND healthmed<>"" AND endpoint ="Y" THEN 1 ELSE 0 END),0) AS "healthmed_endpoint"
+        FROM(SELECT o.vn,pt.cid,pt.nationality,vp.auth_code,p.pttype,p.paidst,p.hipdata_code,vp.hospmain,os.edc_approve_list_text,
+        IF((x.vn <>"" OR l.vn<>""),"Y",NULL) AS tb,kidney.vn AS kidney,uc_cr.vn AS uc_cr,herb.vn AS herb,ppfs.vn AS ppfs,
+        healthmed.vn AS healthmed,IF((vp.auth_code LIKE "EP%" OR ep.claimCode LIKE "EP%"),"Y",NULL) AS endpoint,v.income,v.paid_money
         FROM ovst o
+        LEFT JOIN patient pt ON pt.hn=o.hn
         LEFT JOIN visit_pttype vp ON vp.vn=o.vn
         LEFT JOIN pttype p ON p.pttype=vp.pttype
-        LEFT JOIN xray_report x ON x.vn=o.vn AND x.xray_items_code IN ("10","46","70","71")
-        LEFT JOIN (SELECT vn,lab_items_code 
-            FROM lab_head lh
-            LEFT JOIN lab_order lo ON lo.lab_order_number=lh.lab_order_number 
-            WHERE lo.lab_items_code IN ("167","169")) l ON l.vn=o.vn
-        LEFT JOIN opitemrece o1 ON o1.vn=o.vn AND o1.icode IN ("3003375","3004035")
-		LEFT JOIN opitemrece o2 ON o2.vn=o.vn AND o2.icode IN (SELECT icode FROM htp_report.finance_lookup_icode 
-			WHERE debtor_code = "1102050101.216" AND icode_type <> "kidney")
-		LEFT JOIN opitemrece o3 ON o3.vn=o.vn AND o3.icode IN (SELECT icode FROM htp_report.finance_lookup_icode 
-			WHERE debtor_code = "1102050101.209")
-		LEFT JOIN opitemrece o4 ON o4.vn=o.vn AND (o4.icode IN (SELECT icode FROM drugitems WHERE nhso_adp_code LIKE "HERB%")
-            OR o4.icode IN (SELECT icode FROM drugitems_property_list WHERE drugitems_property_id IN ("12","13")))
+        LEFT JOIN ovst_seq os ON os.vn=o.vn
         LEFT JOIN vn_stat v ON v.vn=o.vn
-		LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
-		LEFT JOIN ipt i ON i.an=o.an AND i.ward = "06" 	
-		LEFT JOIN health_med_service hm ON hm.vn=o.vn
-        LEFT JOIN htp_report.nhso_endpoint ep ON ep.personalId=v.cid AND DATE(ep.claimDate)=o.vstdate AND ep.claimStatus="E"
-        LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate AND epi.claimCode LIKE "EP%"
-        LEFT JOIN htp_report.nhso_endpoint_indiv epi_homeward ON epi_homeward.cid=v.cid 
-            AND DATE(epi_homeward.serviceDateTime)=o.vstdate AND epi_homeward.claimType = "PG0140001" 
-        WHERE o.vstdate = DATE(NOW()) GROUP BY o.vn) AS a');
+        LEFT JOIN xray_report x ON x.vn=o.vn AND x.xray_items_code IN ("10","46","70","71")
+        LEFT JOIN (SELECT vn,lab_items_code FROM lab_head lh LEFT JOIN lab_order lo ON lo.lab_order_number=lh.lab_order_number 
+        WHERE lo.lab_items_code IN ("167","169")) l ON l.vn=o.vn
+        LEFT JOIN opitemrece kidney ON kidney.vn=o.vn AND kidney.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE kidney = "Y")
+        LEFT JOIN opitemrece ppfs ON ppfs.vn=o.vn AND ppfs.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE ppfs = "Y")
+        LEFT JOIN opitemrece uc_cr ON uc_cr.vn=o.vn AND uc_cr.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE uc_cr = "Y")
+        LEFT JOIN opitemrece herb ON herb.vn=o.vn AND herb.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE herb32 = "Y")
+        LEFT JOIN health_med_service healthmed ON healthmed.vn=o.vn
+        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND DATE(ep.serviceDateTime)=o.vstdate AND ep.claimCode LIKE "EP%"
+        WHERE o.vstdate = DATE(NOW()) AND o.an IS NULL GROUP BY o.vn) AS a');
 
-    foreach ($nhso_monitor as $row){
+    foreach ($monitor as $row){
         $total = $row->total;
-        $ucs_all = $row->ucs_all;
         $endpoint =$row->endpoint;
+        $ofc = $row->ofc;
+        $ofc_edc = $row->ofc_edc;        
         $non_authen = $row->non_authen;
         $non_hospmain =$row->non_hospmain;
+        $tb =$row->tb;
+        $tb_endpoint =$row->tb_endpoint;
         $op_anywhere =$row->op_anywhere;
         $op_anywhere_endpoint =$row->op_anywhere_endpoint;
-        $op_anywhere_fdh =$row->op_anywhere_fdh;
-        $cxr =$row->cxr;
-        $cxr_endpoint =$row->cxr_endpoint;
         $kidney =$row->kidney;
         $kidney_endpoint =$row->kidney_endpoint;
         $ucop_cr =$row->ucop_cr;
         $ucop_cr_endpoint =$row->ucop_cr_endpoint;
-        $ucop_cr_fdh =$row->ucop_cr_fdh;
-        $uc_ppfs =$row->uc_ppfs;
-        $uc_ppfs_endpoint =$row->uc_ppfs_endpoint;
-        $uc_ppfs_fdh =$row->uc_ppfs_fdh;
-        $homeward =$row->homeward;
-        $homeward_auth =$row->homeward_auth;
+        $ppfs =$row->ppfs;
+        $ppfs_endpoint =$row->ppfs_endpoint;
         $healthmed =$row->healthmed;
         $healthmed_endpoint =$row->healthmed_endpoint;
-        $ct =$row->ct;
-        $ct_price =$row->ct_price;
+        $uc_herb =$row->uc_herb;
+        $uc_herb_endpoint =$row->uc_herb_endpoint;
+    }
+
+    $admit_homeward = DB::connection('hosxp')->select('
+        SELECT COUNT(DISTINCT o.an) AS homeward,COUNT(ep.claimCode) AS homeward_auth
+        FROM ovst o INNER JOIN ipt i ON i.an = o.an 
+        LEFT JOIN patient pt ON pt.hn=o.hn
+        LEFT JOIN hrims.nhso_endpoint ep ON ep.cid=pt.cid AND DATE(ep.serviceDateTime)=o.vstdate AND ep.claimType = "PG0140001"
+        WHERE o.vstdate = DATE(NOW())
+        AND i.ward IN (SELECT ward FROM hrims.lookup_ward WHERE ward_homeward = "Y")');
+    foreach($admit_homeward as $row){
+        $homeward = $row->homeward;
+        $homeward_auth = $row->homeward_auth;
     }
 
     $op_visit_hour=DB::connection('hosxp')->select('
@@ -423,14 +408,44 @@ public function opd_mornitor(Request $request )
         $operation_a =$row->operation;       
     }    
 
-    return view('dashboard.opd_mornitor',compact('total','ucs_all','endpoint','non_authen','non_hospmain','op_anywhere',
-            'op_anywhere_endpoint','op_anywhere_fdh','cxr','cxr_endpoint','kidney','kidney_endpoint','ucop_cr','ucop_cr_endpoint',
-            'ucop_cr_fdh','uc_ppfs','uc_ppfs_endpoint','uc_ppfs_fdh','homeward','homeward_auth','healthmed','healthmed_endpoint',
-            'ct','ct_price','vstdate','op_visit','opd_n','opd_m','opd_a','er_n','er_m','er_a','physic_n','physic_m','physic_a',
+    return view('dashboard.opd_mornitor',compact('total','ofc','ofc_edc','endpoint','non_authen','non_hospmain','op_anywhere',
+            'op_anywhere_endpoint','tb','tb_endpoint','kidney','kidney_endpoint','ucop_cr','ucop_cr_endpoint','ppfs',
+            'ppfs_endpoint','homeward','homeward_auth','healthmed','healthmed_endpoint','uc_herb','uc_herb_endpoint',
+            'vstdate','op_visit','opd_n','opd_m','opd_a','er_n','er_m','er_a','physic_n','physic_m','physic_a',
             'health_med_n','health_med_m','health_med_a','dent_n','dent_m','dent_a','kidney_hos_n','kidney_hos_m','kidney_hos_a',
             'kidney_os_n','kidney_os_m','kidney_os_a','anc_n','anc_m','anc_a','admit_n','admit_m','admit_a','refer_n','refer_m',
             'refer_a','operation_n','operation_m','operation_a'));}
 
+#####################################################################################################################################
+public function opd_mornitor_ofc(Request $request )
+{
+    $start_date = $request->start_date;
+    $end_date = $request->end_date;
+    if($start_date == '' || $end_date == null)
+    {$start_date = date('Y-m-d');}else{$start_date =$request->start_date;}
+    if($end_date == '' || $end_date == null)
+    {$end_date = date('Y-m-d');}else{$end_date =$request->end_date;}
+
+    $sql=DB::connection('hosxp')->select('
+        SELECT o.vstdate,o.vsttime,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,
+        pt.cid,pt.mobile_phone_number,p.`name` AS pttype,vp.hospmain,v.income-v.paid_money AS debtor,
+        v.pdx,IF((vp.auth_code IS NOT NULL OR vp.auth_code <> ""),"Y",NULL) AS auth_code,
+        IF((vp.auth_code LIKE "EP%" OR ep.claimCode LIKE "EP%"),"Y",NULL) AS endpoint,
+        IFNULL(vp.Claim_Code,os.edc_approve_list_text) AS edc,IF(ppfs.vn <>"","Y",NULL) AS ppfs
+        FROM ovst o
+        LEFT JOIN patient pt ON pt.hn=o.hn
+        LEFT JOIN visit_pttype vp ON vp.vn=o.vn
+		LEFT JOIN pttype p ON p.pttype=vp.pttype
+        LEFT JOIN ovst_seq os ON os.vn = o.vn
+        LEFT JOIN vn_stat v ON v.vn = o.vn
+		LEFT JOIN opitemrece ppfs ON ppfs.vn=o.vn AND ppfs.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE ppfs = "Y")
+        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=v.cid AND DATE(ep.serviceDateTime)=o.vstdate AND ep.claimCode LIKE "EP%"
+        WHERE o.vstdate  BETWEEN ? AND ? AND p.hipdata_code = "OFC"
+        GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date]);
+
+    return view('dashboard.opd_mornitor_ofc',compact('start_date','end_date','sql'));
+}
+//----------------------------------------------------------------------------------------------------------------------------------
 public function opd_mornitor_non_authen(Request $request )
 {
     $start_date = $request->start_date;
@@ -449,11 +464,10 @@ public function opd_mornitor_non_authen(Request $request )
         LEFT JOIN visit_pttype vp ON vp.vn=o.vn
         LEFT JOIN pttype p1 ON p1.pttype=vp.pttype
         LEFT JOIN kskdepartment k ON k.depcode=o.main_dep
-        WHERE o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
+        WHERE o.vstdate BETWEEN ? AND ?
         AND vp.pttype NOT IN ("10","11","12","13")
-        AND p.cid NOT LIKE "0%"
-        AND (vp.auth_code IS NULL OR vp.auth_code ="")           
-        GROUP BY o.vn ORDER BY o.vsttime');
+        AND p.cid NOT LIKE "0%" AND vp.auth_code =""       
+        GROUP BY o.vn ORDER BY o.vsttime',[$start_date,$end_date]);
 
     return view('dashboard.opd_mornitor_non_authen',compact('start_date','end_date','sql'));
 }
@@ -468,25 +482,21 @@ public function opd_mornitor_non_hospmain(Request $request )
     {$end_date = date('Y-m-d');}else{$end_date =$request->end_date;}
 
     $sql=DB::connection('hosxp')->select('
-        SELECT o.vstdate,o.vsttime,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,
-        pt.cid,pt.informtel,p.`name` AS pttype,vp.hospmain,v.income-v.paid_money AS debtor,
-        IF((vp.auth_code IS NOT NULL OR vp.auth_code <> ""),"Y",NULL) AS auth_code,
-        IF((ep.sourceChannel IS NOT NULL OR ep.sourceChannel <> ""),"Y",NULL) AS endpoint
+        SELECT IF((vp.auth_code IS NOT NULL OR vp.auth_code <> ""),"Y",NULL) AS auth_code,
+        o.vstdate,o.vsttime,o.oqueue,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,
+        pt.cid,pt.mobile_phone_number,p.`name` AS pttype,vp.hospmain        
         FROM ovst o
         LEFT JOIN patient pt ON pt.hn=o.hn
         LEFT JOIN visit_pttype vp ON vp.vn=o.vn
         LEFT JOIN pttype p ON p.pttype=vp.pttype
-        LEFT JOIN xray_report x ON x.vn=o.vn
-        LEFT JOIN vn_stat v ON v.vn = o.vn
-        LEFT JOIN htp_report.nhso_endpoint ep ON ep.personalId=v.cid AND DATE(ep.claimDate)=o.vstdate AND ep.claimStatus="E"
-        WHERE o.vstdate  BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-        AND (p.hipdata_code = "UCS" OR p.hipdata_code ="SSS") AND (vp.hospmain="" OR vp.hospmain IS NULL)
-        GROUP BY o.vn ORDER BY o.vstdate,o.vsttime');
+        WHERE o.vstdate BETWEEN ? AND ?
+        AND p.hipdata_code IN ("UCS","SSS","STP") AND (vp.hospmain="" OR vp.hospmain IS NULL)
+        GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date]);
 
     return view('dashboard.opd_mornitor_non_hospmain',compact('start_date','end_date','sql'));
 }
 
-public function opd_mornitor_xray_chest(Request $request )
+public function opd_mornitor_tb(Request $request )
 {
     $start_date = $request->start_date;
     $end_date = $request->end_date;
@@ -496,27 +506,25 @@ public function opd_mornitor_xray_chest(Request $request )
     {$end_date = date('Y-m-d');}else{$end_date =$request->end_date;}
     
     $sql=DB::connection('hosxp')->select('
-        SELECT o.vstdate,o.vsttime,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,
-        pt.cid,pt.informtel,p.`name` AS pttype,vp.hospmain,v.income-v.paid_money AS debtor,
-        IF((vp.auth_code IS NOT NULL OR vp.auth_code <> ""),"Y",NULL) AS auth_code,k.department,
-        IF((vp.auth_code LIKE "EP%" OR ep.claimCode LIKE "EP%" OR epi.claimCode LIKE "EP%"),"Y",NULL) AS endpoint
+        SELECT IF((vp.auth_code IS NOT NULL OR vp.auth_code <> ""),"Y",NULL) AS auth_code,
+        IF((vp.auth_code LIKE "EP%" OR ep.claimCode LIKE "EP%"),"Y",NULL) AS endpoint,o.vstdate,o.vsttime,
+        o.oqueue,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,pt.cid,pt.mobile_phone_number,
+        p.`name` AS pttype,vp.hospmain,v.income-v.paid_money AS debtor,k.department        
         FROM ovst o
         LEFT JOIN patient pt ON pt.hn=o.hn
         LEFT JOIN visit_pttype vp ON vp.vn=o.vn
         LEFT JOIN pttype p ON p.pttype=vp.pttype
         LEFT JOIN xray_report x ON x.vn=o.vn
         LEFT JOIN lab_head lh ON lh.vn=o.vn
-		LEFT JOIN lab_order lo ON lo.lab_order_number=lh.lab_order_number 
+		LEFT JOIN lab_order lo ON lo.lab_order_number=lh.lab_order_number
+	    LEFT JOIN vn_stat v ON v.vn=o.vn	
         LEFT JOIN kskdepartment k ON k.depcode = o.cur_dep
-        LEFT JOIN vn_stat v ON v.vn = o.vn
-        LEFT JOIN htp_report.nhso_endpoint ep ON ep.personalId=v.cid AND DATE(ep.claimDate)=o.vstdate AND ep.claimStatus="E"
-        LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate AND epi.claimCode LIKE "EP%"
-        WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate  BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-        AND (x.xray_items_code IN ("10","46","70","71") OR lo.lab_items_code IN ("167","169")) AND p.paidst = "02"   
-        AND v.income-v.paid_money <> 0
-        GROUP BY o.vn ORDER BY ep.sourceChannel,o.vstdate,o.vsttime');
+        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND DATE(ep.serviceDateTime)=o.vstdate AND ep.claimCode LIKE "EP%"
+        WHERE (o.an ="" OR o.an IS NULL) AND v.income-v.paid_money <> 0 AND o.vstdate  BETWEEN ? AND ?
+        AND (x.xray_items_code IN ("10","46","70","71") OR lo.lab_items_code IN ("167","169")) AND p.paidst = "02"
+        GROUP BY o.vn ORDER BY ep.claimCode DESC,o.vstdate,o.vsttime',[$start_date,$end_date]);
 
-    return view('dashboard.opd_mornitor_xray_chest',compact('start_date','end_date','sql'));
+    return view('dashboard.opd_mornitor_tb',compact('start_date','end_date','sql'));
 }
 
 public function opd_mornitor_opanywhere(Request $request )
@@ -529,24 +537,20 @@ public function opd_mornitor_opanywhere(Request $request )
     {$end_date = date('Y-m-d');}else{$end_date =$request->end_date;}
 
     $sql=DB::connection('hosxp')->select('
-        SELECT o.vstdate,o.vsttime,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,
-        pt.cid,pt.informtel,p.`name` AS pttype,vp.hospmain,v.income-v.paid_money AS debtor,
-        IF((vp.auth_code IS NOT NULL OR vp.auth_code <> ""),"Y",NULL) AS auth_code,
-        IF((vp.auth_code LIKE "EP%" OR ep.claimCode LIKE "EP%" OR epi.claimCode LIKE "EP%"),"Y",NULL) AS endpoint,
-        vp.confirm_and_locked,vp.request_funds,oe.moph_finance_upload_datetime AS fdh,k.department
+        SELECT IF((vp.auth_code IS NOT NULL OR vp.auth_code <> ""),"Y",NULL) AS auth_code,
+        IF((vp.auth_code LIKE "EP%" OR ep.claimCode LIKE "EP%"),"Y",NULL) AS endpoint,o.vstdate,o.vsttime,
+        o.oqueue,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,pt.cid,pt.mobile_phone_number,
+        p.`name` AS pttype,vp.hospmain,v.income-v.paid_money AS debtor,k.department 
         FROM ovst o
         LEFT JOIN patient pt ON pt.hn=o.hn
         LEFT JOIN visit_pttype vp ON vp.vn=o.vn
         LEFT JOIN pttype p ON p.pttype=vp.pttype
         LEFT JOIN kskdepartment k ON k.depcode = o.cur_dep
         LEFT JOIN vn_stat v ON v.vn = o.vn
-        LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
-        LEFT JOIN htp_report.nhso_endpoint ep ON ep.personalId=v.cid AND DATE(ep.claimDate)=o.vstdate AND ep.claimStatus="E"
-        LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate AND epi.claimCode LIKE "EP%"
-        WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-        AND p.hipdata_code = "UCS" AND vp.hospmain NOT IN (SELECT hospcode FROM hrims.lookup_hospcode WHERE in_province ="Y")
-        AND v.income-v.paid_money <> 0
-        GROUP BY o.vn ORDER BY ep.sourceChannel,o.vstdate,o.vsttime');
+		LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND DATE(ep.serviceDateTime)=o.vstdate AND ep.claimCode LIKE "EP%"
+        WHERE (o.an ="" OR o.an IS NULL) AND v.income-v.paid_money <> 0 AND o.vstdate BETWEEN ? AND ?
+        AND p.hipdata_code = "UCS" AND vp.hospmain NOT IN (SELECT hospcode FROM hrims.lookup_hospcode WHERE in_province ="Y")        
+        GROUP BY o.vn ORDER BY ep.claimCode DESC,o.vstdate,o.vsttime',[$start_date,$end_date]);
 
     return view('dashboard.opd_mornitor_opanywhere',compact('start_date','end_date','sql'));
 }
@@ -561,22 +565,21 @@ public function opd_mornitor_kidney(Request $request )
     {$end_date = date('Y-m-d');}else{$end_date =$request->end_date;}
 
     $sql=DB::connection('hosxp')->select('
-        SELECT o.vstdate,o.vsttime,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,
-        pt.cid,pt.informtel,p.`name` AS pttype,vp.hospmain,v.income-v.paid_money AS debtor,
-        IF((vp.auth_code IS NOT NULL OR vp.auth_code <> ""),"Y",NULL) AS auth_code,k.department,
-        IF((vp.auth_code LIKE "EP%" OR ep.claimCode LIKE "EP%" OR epi.claimCode LIKE "EP%"),"Y",NULL) AS endpoint
+        SELECT IF((vp.auth_code IS NOT NULL OR vp.auth_code <> ""),"Y",NULL) AS auth_code,
+        IF((vp.auth_code LIKE "EP%" OR ep.claimCode LIKE "EP%"),"Y",NULL) AS endpoint,o.vstdate,o.vsttime,
+        o.oqueue,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,pt.cid,pt.mobile_phone_number,
+        p.`name` AS pttype,vp.hospmain,v.income-v.paid_money AS debtor,k.department 
         FROM ovst o
         LEFT JOIN patient pt ON pt.hn=o.hn
         LEFT JOIN visit_pttype vp ON vp.vn=o.vn
         LEFT JOIN pttype p ON p.pttype=vp.pttype
-        LEFT OUTER JOIN kskdepartment k ON k.depcode = o.cur_dep
-		LEFT JOIN opitemrece o1 ON o1.vn=o.vn
+        LEFT JOIN kskdepartment k ON k.depcode = o.cur_dep				
         LEFT JOIN vn_stat v ON v.vn = o.vn
-        LEFT JOIN htp_report.nhso_endpoint ep ON ep.personalId=v.cid AND DATE(ep.claimDate)=o.vstdate AND ep.claimStatus="E"
-        LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate AND epi.claimCode LIKE "EP%"
-        WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-        AND p.hipdata_code = "UCS" AND o1.icode IN ("3003375","3004035")
-        GROUP BY o.vn ORDER BY ep.sourceChannel,o.vstdate,o.vsttime');
+		LEFT JOIN opitemrece kidney ON kidney.vn=o.vn AND kidney.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE kidney = "Y")
+        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND DATE(ep.serviceDateTime)=o.vstdate AND ep.claimCode LIKE "EP%"
+        WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN ? AND ?
+        AND p.hipdata_code = "UCS" AND kidney.vn <>""
+        GROUP BY o.vn ORDER BY ep.claimCode DESC,o.vstdate,o.vsttime',[$start_date,$end_date]);
 
     return view('dashboard.opd_mornitor_kidney',compact('start_date','end_date','sql'));
 }
@@ -591,35 +594,26 @@ public function opd_mornitor_ucop_cr(Request $request )
     {$end_date = date('Y-m-d');}else{$end_date =$request->end_date;}
 
     $sql=DB::connection('hosxp')->select('
-        SELECT o.vstdate,o.vsttime,o.oqueue,o.vn,o.hn,p.cid,CONCAT(p.pname,p.fname,SPACE(1),p.lname) AS ptname,
-        IF((vp.auth_code IS NOT NULL OR vp.auth_code <> ""),"Y",NULL) AS auth_code,v.income-v.paid_money AS debtor,
-        IF((vp.auth_code LIKE "EP%" OR ep.claimCode LIKE "EP%" OR epi.claimCode LIKE "EP%"),"Y",NULL) AS endpoint,p1.`name` AS pttype,		
-        vp.hospmain,p1.hipdata_code,v.pdx,v.income,v.rcpt_money,v.income-v.rcpt_money-IFNULL(SUM(o1.sum_price),0) AS other,
-        IFNULL(SUM(o1.sum_price),0) AS debtor1,GROUP_CONCAT(DISTINCT s.`name`) AS other_list,GROUP_CONCAT(DISTINCT n_proj.nhso_adp_code) AS project,
-        vp.confirm_and_locked,vp.request_funds,oe.moph_finance_upload_datetime AS fdh,p.informtel,k.department
-        FROM ovst o    
-        LEFT JOIN patient p ON p.hn=o.hn
-        LEFT JOIN vn_stat v ON v.vn=o.vn
+        SELECT IF((vp.auth_code IS NOT NULL OR vp.auth_code <> ""),"Y",NULL) AS auth_code,
+        IF((vp.auth_code LIKE "EP%" OR ep.claimCode LIKE "EP%"),"Y",NULL) AS endpoint,o.vstdate,o.vsttime,
+        o.oqueue,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,pt.cid,pt.mobile_phone_number,
+        p.`name` AS pttype,vp.hospmain,v.income-v.paid_money AS debtor,k.department 
+        FROM ovst o
+        LEFT JOIN patient pt ON pt.hn=o.hn
         LEFT JOIN visit_pttype vp ON vp.vn=o.vn
-        LEFT JOIN pttype p1 ON p1.pttype=vp.pttype
-        LEFT JOIN opitemrece proj ON proj.vn=o.vn AND proj.icode 
-            IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("WALKIN","UCEP24"))
-        LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
-        LEFT JOIN opitemrece o1 ON o1.vn = o.vn AND o1.icode 
-        IN (SELECT icode FROM htp_report.finance_lookup_icode WHERE debtor_code = "1102050101.216" AND icode_type <> "kidney") 
-        LEFT JOIN s_drugitems s ON s.icode = o1.icode		
-        LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn	
-        LEFT JOIN kskdepartment k ON k.depcode = o.cur_dep
-        LEFT JOIN htp_report.nhso_endpoint ep ON ep.personalId=v.cid AND DATE(ep.claimDate)=o.vstdate AND ep.claimStatus="E"
-        LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate AND epi.claimCode LIKE "EP%"
-        WHERE p1.hipdata_code = "UCS" AND vp.hospmain IN (SELECT hospcode FROM hrims.lookup_hospcode WHERE in_province ="Y")
-        AND (o.an IS NULL OR o.an ="") AND o1.vn IS NOT NULL AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-        GROUP BY o.vn ORDER BY o.vstdate,o.oqueue');
+        LEFT JOIN pttype p ON p.pttype=vp.pttype
+        LEFT JOIN kskdepartment k ON k.depcode = o.cur_dep				
+        LEFT JOIN vn_stat v ON v.vn = o.vn
+		LEFT JOIN opitemrece uc_cr ON uc_cr.vn=o.vn AND uc_cr.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE uc_cr = "Y")
+        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND DATE(ep.serviceDateTime)=o.vstdate AND ep.claimCode LIKE "EP%"
+        WHERE (o.an ="" OR o.an IS NULL) AND uc_cr.vn <>"" AND o.vstdate BETWEEN ? AND ?
+        AND p.hipdata_code = "UCS" AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province ="Y") 
+        GROUP BY o.vn ORDER BY ep.claimCode DESC,o.vstdate,o.vsttime',[$start_date,$end_date]);
 
     return view('dashboard.opd_mornitor_ucop_cr',compact('start_date','end_date','sql'));
 }
 
-public function opd_mornitor_uc_ppfs(Request $request )
+public function opd_mornitor_ppfs(Request $request )
 {
     $start_date = $request->start_date;
     $end_date = $request->end_date;
@@ -629,31 +623,50 @@ public function opd_mornitor_uc_ppfs(Request $request )
     {$end_date = date('Y-m-d');}else{$end_date =$request->end_date;}
     
     $sql=DB::connection('hosxp')->select('
-        SELECT o.vstdate,o.vsttime,o.oqueue,o.vn,o.hn,p.cid,CONCAT(p.pname,p.fname,SPACE(1),p.lname) AS ptname,
-		IF((vp.auth_code IS NOT NULL OR vp.auth_code <> ""),"Y",NULL) AS auth_code,p1.`name` AS pttype,	
-        IF((vp.auth_code LIKE "EP%" OR ep.claimCode LIKE "EP%" OR epi.claimCode LIKE "EP%"),"Y",NULL) AS endpoint,v.income-v.paid_money AS debtor,
-		vp.hospmain,p1.hipdata_code,v.pdx,v.income,v.rcpt_money,v.income-v.rcpt_money-IFNULL(SUM(o1.sum_price),0) AS other,
-		IFNULL(SUM(o1.sum_price),0) AS debtor1,GROUP_CONCAT(DISTINCT s.`name`) AS other_list,GROUP_CONCAT(DISTINCT n_proj.nhso_adp_code) AS project,
-		vp.confirm_and_locked,vp.request_funds,oe.moph_finance_upload_datetime AS fdh,p.informtel,k.department
-        FROM ovst o    
-        LEFT JOIN patient p ON p.hn=o.hn
-        LEFT JOIN vn_stat v ON v.vn=o.vn
+        SELECT IF((vp.auth_code IS NOT NULL OR vp.auth_code <> ""),"Y",NULL) AS auth_code,
+        IF((vp.auth_code LIKE "EP%" OR ep.claimCode LIKE "EP%"),"Y",NULL) AS endpoint,o.vstdate,o.vsttime,
+        o.oqueue,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,pt.cid,pt.mobile_phone_number,
+        p.`name` AS pttype,vp.hospmain,v.income-v.paid_money AS debtor,k.department 
+        FROM ovst o
+        LEFT JOIN patient pt ON pt.hn=o.hn
         LEFT JOIN visit_pttype vp ON vp.vn=o.vn
-        LEFT JOIN pttype p1 ON p1.pttype=vp.pttype
-        LEFT JOIN opitemrece proj ON proj.vn=o.vn AND proj.icode 
-            IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("WALKIN","UCEP24"))
-		LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
-        LEFT JOIN opitemrece o1 ON o1.vn = o.vn AND o1.icode 
-            IN (SELECT icode FROM htp_report.finance_lookup_icode WHERE debtor_code = "1102050101.209" ) 
-		LEFT JOIN s_drugitems s ON s.icode = o1.icode		
-		LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn	
-        LEFT JOIN kskdepartment k ON k.depcode = o.cur_dep
-        LEFT JOIN htp_report.nhso_endpoint ep ON ep.personalId=v.cid AND DATE(ep.claimDate)=o.vstdate AND ep.claimStatus="E"
-        LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate AND epi.claimCode LIKE "EP%"
-        WHERE (o.an ="" OR o.an IS NULL) AND o1.vn IS NOT NULL AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"		
-        GROUP BY o.vn ORDER BY o.vstdate,o.oqueue');
+        LEFT JOIN pttype p ON p.pttype=vp.pttype
+        LEFT JOIN kskdepartment k ON k.depcode = o.cur_dep				
+        LEFT JOIN vn_stat v ON v.vn = o.vn
+		LEFT JOIN opitemrece ppfs ON ppfs.vn=o.vn AND ppfs.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE ppfs = "Y")
+        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND DATE(ep.serviceDateTime)=o.vstdate AND ep.claimCode LIKE "EP%"
+        WHERE (o.an ="" OR o.an IS NULL) AND ppfs.vn <>"" AND o.vstdate BETWEEN ? AND ?         
+        GROUP BY o.vn ORDER BY ep.claimCode DESC,o.vstdate,o.vsttime',[$start_date,$end_date]);
+    return view('dashboard.opd_mornitor_ppfs',compact('start_date','end_date','sql'));
+}
 
-    return view('dashboard.opd_mornitor_uc_ppfs',compact('start_date','end_date','sql'));
+public function opd_mornitor_ucherb(Request $request )
+{
+    $start_date = $request->start_date;
+    $end_date = $request->end_date;
+    if($start_date == '' || $end_date == null)
+    {$start_date = date('Y-m-d');}else{$start_date =$request->start_date;}
+    if($end_date == '' || $end_date == null)
+    {$end_date = date('Y-m-d');}else{$end_date =$request->end_date;}
+    
+    $sql=DB::connection('hosxp')->select('
+        SELECT IF((vp.auth_code IS NOT NULL OR vp.auth_code <> ""),"Y",NULL) AS auth_code,
+        IF((vp.auth_code LIKE "EP%" OR ep.claimCode LIKE "EP%"),"Y",NULL) AS endpoint,o.vstdate,o.vsttime,
+        o.oqueue,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,pt.cid,pt.mobile_phone_number,
+        p.`name` AS pttype,vp.hospmain,v.income-v.paid_money AS debtor,k.department 
+        FROM ovst o
+        LEFT JOIN patient pt ON pt.hn=o.hn
+        LEFT JOIN visit_pttype vp ON vp.vn=o.vn
+        LEFT JOIN pttype p ON p.pttype=vp.pttype
+        LEFT JOIN kskdepartment k ON k.depcode = o.cur_dep				
+        LEFT JOIN vn_stat v ON v.vn = o.vn
+		LEFT JOIN opitemrece herb ON herb.vn=o.vn AND herb.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE herb32 = "Y")
+        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND DATE(ep.serviceDateTime)=o.vstdate AND ep.claimCode LIKE "EP%"
+        WHERE (o.an ="" OR o.an IS NULL) AND herb.vn <>"" AND o.vstdate BETWEEN ? AND ?
+        AND p.hipdata_code = "UCS" AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province ="Y")          
+        GROUP BY o.vn ORDER BY ep.claimCode DESC,o.vstdate,o.vsttime',[$start_date,$end_date]);
+
+    return view('dashboard.opd_mornitor_ucherb',compact('start_date','end_date','sql'));
 }
 
 public function opd_mornitor_homeward(Request $request )
@@ -666,19 +679,18 @@ public function opd_mornitor_homeward(Request $request )
     {$end_date = date('Y-m-d');}else{$end_date =$request->end_date;}
 
     $sql=DB::connection('hosxp')->select('
-        SELECT IFNULL(ep.claimCode,epi.claimCode) AS claimCode,o.vstdate,o.vsttime,o.oqueue,o.hn,p.cid,p.mobile_phone_number,
-        p.hometel,p1.`name` AS pttype,vp.hospmain,k.department,CONCAT(p.pname,p.fname,SPACE(1),p.lname) AS ptname,v.age_y
+        SELECT IF((vp.auth_code IS NOT NULL OR vp.auth_code <> ""),"Y",NULL) AS auth_code,o.vstdate,o.vsttime,
+        o.oqueue,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,pt.cid,pt.mobile_phone_number,
+        p.`name` AS pttype,vp.hospmain,k.department 
         FROM ovst o
-        LEFT JOIN vn_stat v ON v.vn=o.vn
-        LEFT JOIN patient p ON p.hn=o.hn
+        LEFT JOIN patient pt ON pt.hn=o.hn
         LEFT JOIN visit_pttype vp ON vp.vn=o.vn
-        LEFT JOIN pttype p1 ON p1.pttype=vp.pttype				
-        LEFT JOIN kskdepartment k ON k.depcode=o.main_dep
-		LEFT JOIN ipt i ON i.an=o.an AND i.ward = "06"
-		LEFT JOIN htp_report.nhso_endpoint ep ON ep.personalId=p.cid AND DATE(ep.claimDate)=o.vstdate AND ep.claimType = "PG0140001"
-        LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=p.cid AND DATE(epi.serviceDateTime)=o.vstdate AND epi.claimType = "PG0140001" 
-        WHERE (i.an IS NOT NULL OR i.an <>"") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-		GROUP BY o.vn ORDER BY o.vsttime');
+        LEFT JOIN pttype p ON p.pttype=vp.pttype
+        LEFT JOIN kskdepartment k ON k.depcode = o.cur_dep
+		LEFT JOIN ipt i ON i.an=o.an AND i.ward IN (SELECT ward FROM htp_report.lookup_ward WHERE ward_homeward="Y")
+        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND DATE(ep.serviceDateTime)=o.vstdate AND ep.claimType = "PG0140001" 
+        WHERE o.an <>"" AND o.vstdate BETWEEN ? AND ?
+		GROUP BY o.vn ORDER BY o.vsttime',[$start_date,$end_date]);
 
     return view('dashboard.opd_mornitor_homeward',compact('start_date','end_date','sql'));
 }

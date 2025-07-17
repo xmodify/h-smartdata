@@ -71,62 +71,48 @@
       <div class="col-md-12"> 
         <div style="overflow-x:auto;">            
           <table id="list" class="table table-striped table-bordered" width = "100%">
-            <thead>
-              <tr class="table-primary"> 
-                <th class="text-center">ลำดับ</th>
-                <th class="text-center">Authen</th>
-                <th class="text-center">ปิดสิทธิ</th>
-                <th class="text-center" width="6%">Action</th>                 
-                <th class="text-center">Q</th>              
-                <th class="text-center">ชื่อ-สกุล</th>
-                <th class="text-center">CID</th>
-                <th class="text-center" width="5%">วันที่</th>
-                <th class="text-center">เวลา</th>
-                <th class="text-center">เบอร์โทร</th>
-                <th class="text-center">ค่าบริการที่เบิกได้</th> 
-                <th class="text-center">สิทธิ</th>
-                <th class="text-center">ICD10</th>
-                <th class="text-center">Project</th>
-                <th class="text-center">เรียกเก็บ</th>   
-                <th class="text-center">รายการเรียกเก็บ</th> 
-                <th class="text-center">Department</th>                 
-                <th class="text-center text-success" width="4%">พร้อมส่ง</th>
-                <th class="text-center text-success" width="4%">ประสงค์เบิก</th>
-                <th class="text-center text-success" width="6%">Upload DateTime</th>
-            </tr>
+            <thead>            
+              <tr class="table-primary">
+                  <th class="text-center">ลำดับ</th>
+                  <th class="text-center" width="6%">Action</th>
+                  <th class="text-center">Authen</th>  
+                  <th class="text-center">ปิดสิทธิ</th>
+                  <th class="text-center">Queue</th>                    
+                  <th class="text-center">ชื่อ-สกุล</th>    
+                  <th class="text-center">CID</th>           
+                  <th class="text-center">วันที่รับบริการ</th> 
+                  <th class="text-center">เวลา</th>                                      
+                  <th class="text-center">เบอร์โทร</th>
+                  <th class="text-center">ค่าบริการที่เบิกได้</th>
+                  <th class="text-center">สิทธิการรักษา</th> 
+                  <th class="text-center">Department</th>   
+              </tr>
             </thead> 
             <tbody> 
               <?php $count = 1 ; ?>
               @foreach($sql as $row) 
-              <tr>                
-                <td align="center">{{ $count }}</td> 
-                <td align="center" @if($row->auth_code == 'Y') style="color:green"
-                  @elseif($row->auth_code == 'N') style="color:red" @endif>
-                  <strong>{{ $row->auth_code }}</strong></td> 
-                <td align="center" @if($row->endpoint == 'Y') style="color:green"
-                  @elseif($row->endpoint == 'N') style="color:red" @endif>
-                  <strong>{{ $row->endpoint }}</strong></td> 
+              <tr>
+                <td align="center">{{ $count }}</td>
                 <td align="center" width="6%">                  
                   <button onclick="pullNhsoData('{{ $row->vstdate }}', '{{ $row->cid }}')" class="btn btn-outline-info btn-sm w-100">
                       ดึงปิดสิทธิ
                   </button>
-                </td>  
-                <td align="center">{{ $row->oqueue }}</td>                
-                <td align="left">{{ $row->ptname }}</td>
-                <td align="center">{{ $row->cid }}</td>
-                <td align="center">{{ DateThai($row->vstdate) }}</td>
-                <td align="center">{{ $row->vsttime }}</td>
-                <td align="center">{{ $row->informtel }}</td>
+                </td> 
+                <td align="center" @if($row->auth_code == 'Y') style="color:green"
+                  @elseif($row->auth_code == 'N') style="color:red" @endif>
+                  <strong>{{ $row->auth_code }}</strong></td>               
+                <td align="center" @if($row->endpoint == 'Y') style="color:green"
+                  @elseif($row->endpoint == 'N') style="color:red" @endif>
+                  <strong>{{ $row->endpoint }}</strong></td>
+                <td align="left">{{$row->oqueue}}</td>
+                <td align="left">{{$row->ptname}}</td> 
+                <td align="center">{{$row->cid}}</td> 
+                <td align="left">{{ DateThai($row->vstdate) }}</td>             
+                <td align="rigth">{{$row->vsttime}}</td>                
+                <td align="center">{{$row->mobile_phone_number}}</td> 
                 <td align="right">{{ number_format($row->debtor,2) }}</td>
-                <td align="left">{{ $row->pttype }} [{{ $row->hospmain }}]</td>
-                <td align="right">{{ $row->pdx }}</td>     
-                <td align="right">{{ $row->project }}</td>  
-                <td align="right">{{ number_format($row->debtor1,2) }}</td>               
-                <td align="left">{{ $row->other_list }}</td>
-                <td align="left">{{ $row->department }}</td>                    
-                <td align="center">{{ $row->confirm_and_locked }}</td> 
-                <td align="center">{{ $row->request_funds }}</td> 
-                <td align="center">{{ DateTimeThai($row->fdh) }}</td> 
+                <td align="left">{{$row->pttype}} [{{$row->hospmain}}]</td>
+                <td align="left">{{$row->department}}</td>                  
               </tr>
               <?php $count++; ?>
               @endforeach                 
