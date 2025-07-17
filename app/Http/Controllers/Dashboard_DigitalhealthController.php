@@ -705,34 +705,27 @@ public function opd_mornitor_healthmed(Request $request )
     {$end_date = date('Y-m-d');}else{$end_date =$request->end_date;}
 
     $sql=DB::connection('hosxp')->select('
-        SELECT  IF((vp.auth_code IS NOT NULL OR vp.auth_code <> ""),"Y",NULL) AS auth_code,
-        IF((vp.auth_code LIKE "EP%" OR ep.claimCode LIKE "EP%" OR epi.claimCode LIKE "EP%"),"Y",NULL) AS endpoint,
-        o.vstdate,o.vsttime,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,vp.hospmain,
-        pt.cid,pt.informtel,p.`name` AS pttype,v.income-v.paid_money AS debtor,GROUP_CONCAT(DISTINCT d.`name`) AS drug ,
-		GROUP_CONCAT(DISTINCT hm.health_med_operation) AS operation,k.department				
+        SELECT IF((vp.auth_code IS NOT NULL OR vp.auth_code <> ""),"Y",NULL) AS auth_code,
+        IF((vp.auth_code LIKE "EP%" OR ep.claimCode LIKE "EP%"),"Y",NULL) AS endpoint,o.vstdate,o.vsttime,
+        o.oqueue,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,pt.cid,pt.mobile_phone_number,
+        p.`name` AS pttype,vp.hospmain,v.income-v.paid_money AS debtor,k.department ,
+				GROUP_CONCAT(DISTINCT healthmed.health_med_operation) AS operation
         FROM ovst o
         LEFT JOIN patient pt ON pt.hn=o.hn
         LEFT JOIN visit_pttype vp ON vp.vn=o.vn
         LEFT JOIN pttype p ON p.pttype=vp.pttype
-        LEFT JOIN opitemrece o1 ON o1.vn=o.vn  AND (o1.icode IN (SELECT icode FROM drugitems WHERE nhso_adp_code LIKE "HERB%")	
-			OR o1.icode IN (SELECT icode FROM drugitems_property_list WHERE drugitems_property_id IN ("12","13")))
-		LEFT JOIN drugitems d ON d.icode=o1.icode
-        LEFT OUTER JOIN kskdepartment k ON k.depcode = o.cur_dep
+        LEFT JOIN kskdepartment k ON k.depcode = o.cur_dep				
         LEFT JOIN vn_stat v ON v.vn = o.vn
-		LEFT JOIN (SELECT h.vn,CONCAT(h2.health_med_operation_item_name," [",h2.icd10tm,"]") AS health_med_operation 
-			FROM health_med_service h
-			LEFT JOIN health_med_service_operation h1 ON h1.health_med_service_id=h.health_med_service_id
-			LEFT JOIN health_med_operation_item h2 ON h2.health_med_operation_item_id=h1.health_med_operation_item_id
-			WHERE h.service_date BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-			GROUP BY h1.health_med_service_id,h1.health_med_operation_item_id) hm ON hm.vn=o.vn
-        LEFT JOIN htp_report.nhso_endpoint ep ON ep.personalId=v.cid AND DATE(ep.claimDate)=o.vstdate AND ep.claimStatus="E"
-        LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate AND epi.claimCode LIKE "EP%"
-        WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" AND p.hipdata_code = "UCS"
-        AND (o1.icode IN (SELECT icode FROM drugitems WHERE nhso_adp_code LIKE "HERB%")	
-            OR o1.icode IN (SELECT icode FROM drugitems_property_list WHERE drugitems_property_id IN ("12","13"))	
-            OR hm.vn IS NOT NULL OR hm.vn <>"")
-        AND v.income-v.paid_money <> 0
-        GROUP BY o.vn ORDER BY ep.sourceChannel,hm.health_med_operation DESC,o.vstdate,o.vsttime');
+        LEFT JOIN (SELECT h.vn,CONCAT(h2.health_med_operation_item_name," [",h2.icd10tm,"]") AS health_med_operation 
+            FROM health_med_service h
+            LEFT JOIN health_med_service_operation h1 ON h1.health_med_service_id=h.health_med_service_id
+            LEFT JOIN health_med_operation_item h2 ON h2.health_med_operation_item_id=h1.health_med_operation_item_id
+            WHERE h.service_date BETWEEN ? AND ?
+            GROUP BY h1.health_med_service_id,h1.health_med_operation_item_id) healthmed ON healthmed.vn=o.vn
+        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND DATE(ep.serviceDateTime)=o.vstdate AND ep.claimCode LIKE "EP%"
+        WHERE (o.an ="" OR o.an IS NULL) AND healthmed.vn <>"" AND o.vstdate BETWEEN ? AND ?
+        AND p.hipdata_code = "UCS" AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province ="Y")          
+        GROUP BY o.vn ORDER BY ep.claimCode DESC,o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
 
     return view('dashboard.opd_mornitor_healthmed',compact('start_date','end_date','sql'));
 }
