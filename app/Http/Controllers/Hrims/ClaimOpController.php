@@ -30,7 +30,7 @@ class ClaimOpController extends Controller
             IF((vp.auth_code LIKE "EP%" OR ep.claimCode LIKE "EP%"),"Y",NULL) AS endpoint,
             vp.confirm_and_locked,vp.request_funds,o.vstdate,o.vsttime,o.oqueue,pt.hn,
             CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,p.`name` AS pttype,vp.hospmain,
-            os.cc,v.pdx,GROUP_CONCAT(DISTINCT od.icd10) AS icd9,GROUP_CONCAT(DISTINCT IFNULL(n.`name`,d.`name`)) AS claim_list,
+            os.cc,v.pdx,GROUP_CONCAT(DISTINCT od.icd10) AS icd9,GROUP_CONCAT(DISTINCT s.`name`) AS claim_list,
             v.income,v.rcpt_money,COALESCE(o2.claim_price, 0) AS claim_price,GROUP_CONCAT(DISTINCT n_proj.nhso_adp_code) AS project
             FROM ovst o
             LEFT JOIN patient pt ON pt.hn=o.hn
@@ -40,13 +40,13 @@ class ClaimOpController extends Controller
             LEFT JOIN ovstdiag od ON od.vn = o.vn AND od.hn=o.hn AND od.diagtype = "2"
             LEFT JOIN vn_stat v ON v.vn = o.vn
             LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
-            LEFT JOIN opitemrece o1 ON o1.vn=o.vn AND o1.icode JOIN htp_report.lookup_icode li 
-                ON o1.icode = li.icode AND (li.kidney IS NULL OR li.kidney = "")
-            LEFT JOIN nondrugitems n ON n.icode=o1.icode
-            LEFT JOIN drugitems d ON d.icode=o1.icode
+            INNER JOIN opitemrece o1 ON o1.vn=o.vn
+            INNER JOIN htp_report.lookup_icode li ON o1.icode = li.icode AND (li.uc_cr = "Y" OR li.ppfs = "Y" OR li.herb32 = "Y")
+            LEFT JOIN s_drugitems s ON s.icode=o1.icode
             LEFT JOIN (SELECT op.vn, SUM(op.sum_price) AS claim_price FROM opitemrece op
                 INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
-	            WHERE op.vstdate BETWEEN ? AND ? AND (li.kidney = "" OR li.kidney IS NULL) GROUP BY op.vn) o2 ON o2.vn=o.vn
+	            WHERE op.vstdate BETWEEN ? AND ? AND (li.uc_cr = "Y" OR li.ppfs = "Y" OR li.herb32 = "Y") 
+                GROUP BY op.vn) o2 ON o2.vn=o.vn
             LEFT JOIN opitemrece proj ON proj.vn=o.vn AND proj.icode 
                 IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("WALKIN","UCEP24"))
             LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
@@ -56,12 +56,12 @@ class ClaimOpController extends Controller
                 AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN ? AND ?
             AND p.hipdata_code = "UCS" AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
-            AND o1.vn IS NOT NULL AND oe.moph_finance_upload_status IS NULL AND rep.vn IS NULL AND stm.cid IS NULL 
+            AND oe.moph_finance_upload_status IS NULL AND rep.vn IS NULL AND stm.cid IS NULL 
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
 
         $claim=DB::connection('hosxp')->select('
             SELECT o.vstdate,o.vsttime,o.oqueue,pt.hn,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,p.`name` AS pttype,vp.hospmain,os.cc,
-            v.pdx,GROUP_CONCAT(DISTINCT od.icd10) AS icd9,v.income,v.rcpt_money,GROUP_CONCAT(DISTINCT IFNULL(n.`name`,d.`name`)) AS claim_list,
+            v.pdx,GROUP_CONCAT(DISTINCT od.icd10) AS icd9,v.income,v.rcpt_money,GROUP_CONCAT(DISTINCT s.`name`) AS claim_list,
             COALESCE(uc_cr.claim_price, 0) AS uc_cr,COALESCE(ppfs.claim_price, 0) AS ppfs,COALESCE(herb.claim_price, 0) AS herb,
             GROUP_CONCAT(DISTINCT n_proj.nhso_adp_code) AS project,rep.rep_eclaim_detail_nhso AS rep_nhso,rep.rep_eclaim_detail_error_code AS rep_error,
             stm.receive_total,stm.repno
@@ -73,10 +73,9 @@ class ClaimOpController extends Controller
             LEFT JOIN ovstdiag od ON od.vn = o.vn AND od.hn=o.hn AND od.diagtype = "2"
             LEFT JOIN vn_stat v ON v.vn = o.vn
             LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn        
-            LEFT JOIN opitemrece o1 ON o1.vn=o.vn AND o1.icode JOIN htp_report.lookup_icode li 
-                ON o1.icode = li.icode AND (li.kidney IS NULL OR li.kidney = "")
-            LEFT JOIN nondrugitems n ON n.icode=o1.icode
-            LEFT JOIN drugitems d ON d.icode=o1.icode
+            INNER JOIN opitemrece o1 ON o1.vn=o.vn
+            INNER JOIN htp_report.lookup_icode li ON o1.icode = li.icode AND (li.uc_cr = "Y" OR li.ppfs = "Y" OR li.herb32 = "Y")
+            LEFT JOIN s_drugitems s ON s.icode=o1.icode
             LEFT JOIN (SELECT op.vn, SUM(op.sum_price) AS claim_price	FROM opitemrece op
                 INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
 	            WHERE op.vstdate BETWEEN ? AND ? AND li.uc_cr = "Y" GROUP BY op.vn) uc_cr ON uc_cr.vn=o.vn
@@ -95,7 +94,7 @@ class ClaimOpController extends Controller
                 AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN ? AND ?
             AND p.hipdata_code = "UCS" AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
-            AND o1.vn IS NOT NULL AND (oe.moph_finance_upload_status IS NOT NULL OR rep.vn IS NOT NULL OR stm.cid IS NOT NULL )
+            AND (oe.moph_finance_upload_status IS NOT NULL OR rep.vn IS NOT NULL OR stm.cid IS NOT NULL )
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]);
 
         return view('hrims.claim_op.ucs_incup',compact('start_date','end_date','search','claim'));
