@@ -242,7 +242,7 @@
           <div class="card-body">
             <h1 class="card-title text-center">{{$uc_herb}} : {{number_format($uc_herb_endpoint)}}</h1>
             <p class="card-text">
-              <a href="{{ url('/dashboard/opd_mornitor_herb') }}"  target="_blank" class="text-white" style="text-decoration: none; "> more detail...</a>
+              <a href="{{ url('/dashboard/opd_mornitor_ucherb') }}"  target="_blank" class="text-white" style="text-decoration: none; "> more detail...</a>
             </p>
           </div>
         </div>
