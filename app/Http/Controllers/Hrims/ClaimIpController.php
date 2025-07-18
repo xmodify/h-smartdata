@@ -44,7 +44,7 @@ class ClaimIpController extends Controller
             LEFT JOIN htp_report.finance_stm_ucs stm ON stm.an=i.an
             WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN ? AND ?
             AND p.hipdata_code = "UCS" AND ip.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
-            AND (i.data_exp_date IS NULL OR rep.vn IS NULL OR stm.an IS NULL)
+            AND i.data_exp_date IS NULL 
             GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date]);
 
         $claim=DB::connection('hosxp')->select('
@@ -66,7 +66,7 @@ class ClaimIpController extends Controller
             LEFT JOIN htp_report.finance_stm_ucs stm ON stm.an=i.an
             WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN ? AND ?
             AND p.hipdata_code = "UCS" AND ip.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
-            AND (i.data_exp_date IS NOT NULL OR rep.vn IS NOT NULL OR stm.an IS NOT NULL)
+            AND i.data_exp_date IS NOT NULL 
             GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date]);
 
         return view('hrims.claim_ip.ucs_incup',compact('start_date','end_date','search','claim'));
@@ -102,7 +102,7 @@ class ClaimIpController extends Controller
             LEFT JOIN htp_report.finance_stm_ucs stm ON stm.an=i.an
             WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN ? AND ?
             AND p.hipdata_code = "UCS" AND ip.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
-            AND (i.data_exp_date IS NULL OR rep.vn IS NULL OR stm.an IS NULL)
+            AND i.data_exp_date IS NULL
             GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date]);
 
         $claim=DB::connection('hosxp')->select('
@@ -124,7 +124,7 @@ class ClaimIpController extends Controller
             LEFT JOIN htp_report.finance_stm_ucs stm ON stm.an=i.an
             WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN ? AND ?
             AND p.hipdata_code = "UCS" AND ip.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
-            AND (i.data_exp_date IS NOT NULL OR rep.vn IS NOT NULL OR stm.an IS NOT NULL)
+            AND i.data_exp_date IS NOT NULL 
             GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date]);
 
         return view('hrims.claim_ip.ucs_outcup',compact('start_date','end_date','search','claim'));
