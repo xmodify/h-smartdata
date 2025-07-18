@@ -420,7 +420,7 @@ public function opd_mornitor(Request $request )
 public function opd_mornitor_ofc(Request $request )
 {
     $start_date = $request->start_date;
-    $end_date = $request->end_date;
+    $end_date = $request->end_date; 
     if($start_date == '' || $end_date == null)
     {$start_date = date('Y-m-d');}else{$start_date =$request->start_date;}
     if($end_date == '' || $end_date == null)
@@ -709,7 +709,7 @@ public function opd_mornitor_healthmed(Request $request )
         IF((vp.auth_code LIKE "EP%" OR ep.claimCode LIKE "EP%"),"Y",NULL) AS endpoint,o.vstdate,o.vsttime,
         o.oqueue,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,pt.cid,pt.mobile_phone_number,
         p.`name` AS pttype,vp.hospmain,v.income-v.paid_money AS debtor,k.department ,
-				GROUP_CONCAT(DISTINCT healthmed.health_med_operation) AS operation
+			GROUP_CONCAT(DISTINCT healthmed.health_med_operation) AS operation
         FROM ovst o
         LEFT JOIN patient pt ON pt.hn=o.hn
         LEFT JOIN visit_pttype vp ON vp.vn=o.vn
