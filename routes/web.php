@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\LookupHospcodeController;
 use App\Http\Controllers\Admin\User_AccessController;
 use App\Http\Controllers\Hrims\HrimsController;
 use App\Http\Controllers\Hrims\ImportStmController;
+use App\Http\Controllers\Hrims\ClaimIpController;
 use App\Http\Controllers\Hrims\ClaimOpController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Backoffice_AssetController;
@@ -765,5 +766,8 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
     Route::match(['get','post'],'claim_op/ucs_inprovince',[ClaimOpController::class,'ucs_inprovince']);
     Route::match(['get','post'],'claim_op/ucs_outprovince',[ClaimOpController::class,'ucs_outprovince']);
     Route::match(['get','post'],'claim_op/ucs_kidney',[ClaimOpController::class,'ucs_kidney']);
+    // Claim_IP -------------------------------------------------------------------------------------------------------------------------
+    Route::match(['get','post'],'claim_ip/ucs_incup',[ClaimIpController::class,'ucs_incup']);
+    Route::match(['get','post'],'claim_ip/ucs_outcup',[ClaimIpController::class,'ucs_outcup']);
 
 });
