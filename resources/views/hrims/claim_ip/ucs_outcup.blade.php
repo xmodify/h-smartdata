@@ -170,7 +170,7 @@
                   <td align="right">{{ number_format($row->claim_price,2) }}</td> 
                   <td align="right">{{ $row->refer }}</td>
                   <td align="center">{{ $row->adjrw }}</td>
-                  <td align="center">{{ $row->fdh }}</td>
+                  <td align="center">{{ DateThai($row->fdh) }}</td>
                   <td align="center">{{ $row->rep_error }}</td>
                   <td align="right">{{ number_format($row->fund_ip_payrate,2) }}</td>
                   <td align="right">{{ number_format($row->receive_ip_compensate_pay,2) }}</td>
