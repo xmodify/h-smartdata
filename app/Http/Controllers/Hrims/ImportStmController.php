@@ -143,7 +143,11 @@ public function ofc_save(Request $request)
                 if ($check > 0) {
                     Finance_stm_ofc::where('repno','=',$value->repno)->where('no','=',$value->no)->update([
                         'datetimeadm'           => $value->datetimeadm,
+                        'vstdate'               => $value->vstdate,
+                        'vsttime'               => $value->vsttime,
                         'datetimedch'           => $value->datetimedch,
+                        'dchdate'               => $value->dchdate,
+                        'dchtime'               => $value->dchtime,
                         'charge'                => $value->charge,
                         'receive_room'          => $value->receive_room,
                         'receive_instument'     => $value->receive_instument,
@@ -164,7 +168,11 @@ public function ofc_save(Request $request)
                     $add->cid                   = $value->cid;
                     $add->pt_name               = $value->pt_name;
                     $add->datetimeadm           = $value->datetimeadm;
+                    $add->vstdate               = $value->vstdate;
+                    $add->vsttime               = $value->vsttime;
                     $add->datetimedch           = $value->datetimedch;
+                    $add->dchdate               = $value->dchdate;
+                    $add->dchtime               = $value->dchtime;
                     $add->projcode              = $value->projcode;
                     $add->adjrw                 = $value->adjrw;
                     $add->charge                = $value->charge;
@@ -456,7 +464,11 @@ public function lgo_save(Request $request)
             if ($check > 0) {
                 Finance_stm_lgo::where('repno','=',$value->repno)->where('no','=',$value->no)->update([
                         'datetimeadm'                   => $value->datetimeadm,
+                        'vstdate'                       => $value->vstdate,
+                        'vsttime'                       => $value->vsttime,
                         'datetimedch'                   => $value->datetimedch,
+                        'dchdate'                       => $value->dchdate,
+                        'dchtime'                       => $value->dchtime,
                         'compensate_treatment'          => $value->compensate_treatment,
                         'compensate_nhso'               => $value->compensate_nhso,
                         'charge_treatment'              => $value->charge_treatment,
@@ -482,7 +494,11 @@ public function lgo_save(Request $request)
                     $add->pt_name               = $value->pt_name;
                     $add->dep                   = $value->dep;
                     $add->datetimeadm           = $value->datetimeadm;
+                    $add->vstdate               = $value->vstdate;
+                    $add->vsttime               = $value->vsttime;
                     $add->datetimedch           = $value->datetimedch;
+                    $add->dchdate               = $value->dchdate;
+                    $add->dchtime               = $value->dchtime;
                     $add->compensate_treatment  = $value->compensate_treatment;
                     $add->compensate_nhso       = $value->compensate_nhso;
                     $add->error_code            = $value->error_code;
@@ -977,7 +993,11 @@ public function ucs_save(Request $request)
             if ($check > 0) {
                 Finance_stm_ucs::where('repno','=',$value->repno)->where('no','=',$value->no)->update([
                         'datetimeadm'                   => $value->datetimeadm,
+                        'vstdate'                       => $value->vstdate,
+                        'vsttime'                       => $value->vsttime,
                         'datetimedch'                   => $value->datetimedch,
+                        'dchdate'                       => $value->dchdate,
+                        'dchtime'                       => $value->dchtime,
                         'charge'                        => $value->charge,
                         'receive_op'                    => $value->receive_op,
                         'receive_ip_compensate_pay'     => $value->receive_ip_compensate_pay,
@@ -1004,7 +1024,11 @@ public function ucs_save(Request $request)
                     $add->cid                           = $value->cid;
                     $add->pt_name                       = $value->pt_name;                   
                     $add->datetimeadm                   = $value->datetimeadm;
+                    $add->vstdate                       = $value->vstdate;
+                    $add->vsttime                       = $value->vsttime;
                     $add->datetimedch                   = $value->datetimedch;
+                    $add->dchdate                       = $value->dchdate;
+                    $add->dchtime                       = $value->dchtime;
                     $add->maininscl                     = $value->maininscl;
                     $add->projcode                      = $value->projcode;
                     $add->charge                        = $value->charge;
