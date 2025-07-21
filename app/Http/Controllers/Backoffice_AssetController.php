@@ -534,18 +534,19 @@ public function computer(Request $request)
     $asset_7440_001=DB::connection('backoffice')->select('
         SELECT a.SUP_FSN,s.SUP_NAME,a.ARTICLE_NUM,a.ARTICLE_NAME,sb.BRAND_NAME,sm.MODEL_NAME,sv.VENDOR_NAME,
         a.ARTICLE_PROP,a.RECEIVE_DATE,PRICE_PER_UNIT,st.METHOD_NAME,sbg.BUDGET_NAME,ds.HR_DEPARTMENT_SUB_SUB_NAME,
-        CONCAT(hr.HR_FNAME,SPACE(1),hr.HR_LNAME) AS hr_name
+        CONCAT(hr.HR_FNAME,SPACE(1),hr.HR_LNAME) AS hr_name,a.ARTICLE_ID
         FROM asset_article a
         LEFT JOIN supplies s ON s.SUP_FSN_NUM=a.SUP_FSN
         LEFT JOIN supplies_brand sb ON sb.BRAND_ID=a.BRAND_ID
         LEFT JOIN supplies_model sm ON sm.MODEL_ID=a.MODEL_ID
         LEFT JOIN supplies_vendor sv ON sv.VENDOR_ID=a.VENDOR_ID
-        LEFT JOIN supplies_method st ON st.METHOD_ID=a.METHOD_ID
+        LEFT JOIN supplies_method st ON st.METHOD_ID=a.METHOD_ID 
         LEFT JOIN supplies_budget sbg ON sbg.BUDGET_ID=a.BUDGET_ID
         LEFT JOIN hrd_department_sub_sub ds ON ds.HR_DEPARTMENT_SUB_SUB_ID=a.DEP_ID
         LEFT JOIN hrd_person hr ON hr.ID=a.PERSON_ID
         WHERE a.SUP_FSN LIKE "7440-001%" AND a.STATUS_ID = 1
         GROUP BY a.ARTICLE_ID ORDER BY a.SUP_FSN,a.ARTICLE_NUM +0 ');
+
     $server=DB::connection('backoffice')->select('select COUNT(*) AS sum FROM asset_article WHERE SUP_FSN BETWEEN "7440-001-0001" AND "7440-001-0002" AND STATUS_ID =1');        
     $client_pc=DB::connection('backoffice')->select('select COUNT(*) AS sum ,SUM(CASE WHEN ARTICLE_PROP LIKE "WindowLicense" THEN 1 ELSE 0 END) AS window,
         SUM(CASE WHEN ARTICLE_PROP LIKE "AntiVirus" THEN 1 ELSE 0 END) AS antivirus 
@@ -669,6 +670,17 @@ public function computer_7440_001_excel(Request $request)
         $asset_7440_001 = Session::get('asset_7440_001');  
         return view('backoffice_asset.computer_7440_001_excel',compact('asset_7440_001'));
   }
+public function computer_7440_001_software($ARTICLE_ID)
+{
+    $data = DB::connection('backoffice')->select('
+        SELECT a.ARTICLE_NUM,a.ARTICLE_NAME,al.CARE_LIST_NAME
+        FROM asset_article a
+        INNER JOIN asset_care_list al ON al.ARTICLE_ID=a.ARTICLE_ID
+        WHERE al.ARTICLE_ID = ? 
+        GROUP BY a.ARTICLE_NUM,al.CARE_LIST_ID
+        ORDER BY al.CARE_LIST_NAME',[$ARTICLE_ID]);
+    return response()->json($data);
+}
 //computer_7440_003_excel
 public function computer_7440_003_excel(Request $request)
 {

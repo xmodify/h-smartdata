@@ -129,7 +129,7 @@
                                 <th class="text-center">วิธีได้มา</th>     
                                 <th class="text-center">งบที่ใช้</th>   
                                 <th class="text-center">ประจำหน่วยงาน</th> 
-                                <th class="text-center">ผู้รับผิดชอบ</th>                                                 
+                                <th class="text-center">Action</th>                                                 
                             </thead>                          
                             @foreach($asset_7440_001 as $row)          
                             <tr>                          
@@ -145,7 +145,14 @@
                                 <td align="left">{{ $row->METHOD_NAME }}</td>
                                 <td align="left">{{ $row->BUDGET_NAME }}</td>
                                 <td align="left">{{ $row->HR_DEPARTMENT_SUB_SUB_NAME }}</td>
-                                <td align="left">{{ $row->hr_name }}</td>
+                                <td>
+                                    <button type="button" class="btn btn-info btn-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#SoftwareModal"
+                                            data-article="{{ $row->ARTICLE_ID }}">
+                                        ทะเบียน Software
+                                    </button>
+                                </td>
                             @endforeach 
                         </table> 
                     </div> 
@@ -154,6 +161,48 @@
         </div>
     </div>
 </div>
+    <!-- Software Modal -->
+    <div class="modal fade" id="SoftwareModal" tabindex="-1" aria-labelledby="SoftewareModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">ทะเบียน Software</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ปิด"></button>
+        </div>
+        <div class="modal-body">
+            <table class="table table-bordered" id="softwareTable">
+            <tbody>
+                <!-- เติมข้อมูลด้วย JS -->
+            </tbody>
+            </table>
+        </div>
+        </div>
+    </div>
+    </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const softwareModal = document.getElementById('SoftwareModal');
+
+        softwareModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const articleNum = button.getAttribute('data-article');
+
+            fetch(`/backoffice_asset/computer_7440_001_software/${articleNum}`)
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.querySelector('#softwareTable tbody');
+                    tbody.innerHTML = ''; // ล้างข้อมูลเก่า
+
+                    data.forEach(item => {
+                        const row = `<tr>  
+                            <td>${item.CARE_LIST_NAME}</td>
+                        </tr>`;
+                        tbody.insertAdjacentHTML('beforeend', row);
+                    });
+                });
+        });
+    });
+</script>
 <br>
 <div class="container-fluid">
     <div class="card">

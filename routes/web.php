@@ -118,10 +118,11 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::match(['get','post'],'backoffice_asset/physical',[Backoffice_AssetController::class,'physical']);
     Route::get('backoffice_asset/physical_excel',[Backoffice_AssetController::class,'physical_excel']);
     Route::get('backoffice_asset/physical_pdf',[Backoffice_AssetController::class,'physical_pdf']);
-    Route::match(['get','post'],'backoffice_asset/computer',[Backoffice_AssetController::class,'computer']);
+    Route::match(['get','post'],'backoffice_asset/computer',[Backoffice_AssetController::class,'computer']);    
     Route::get('backoffice_asset/computer_excel',[Backoffice_AssetController::class,'computer_excel']);
     Route::get('backoffice_asset/computer_pdf',[Backoffice_AssetController::class,'computer_pdf']);
     Route::get('backoffice_asset/computer_7440_001_excel',[Backoffice_AssetController::class,'computer_7440_001_excel']);
+    Route::get('backoffice_asset/computer_7440_001_software/{ARTICLE_ID}',[Backoffice_AssetController::class,'computer_7440_001_software']);
     Route::get('backoffice_asset/computer_7440_003_excel',[Backoffice_AssetController::class,'computer_7440_003_excel']);
     Route::get('backoffice_asset/computer_7440_005_excel',[Backoffice_AssetController::class,'computer_7440_005_excel']);
     Route::get('backoffice_asset/computer_7440_006_excel',[Backoffice_AssetController::class,'computer_7440_006_excel']);
