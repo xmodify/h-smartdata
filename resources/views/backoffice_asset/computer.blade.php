@@ -186,8 +186,8 @@
         softwareModal.addEventListener('show.bs.modal', function (event) {
             const button = event.relatedTarget;
             const articleNum = button.getAttribute('data-article');
-
-            fetch(`/backoffice_asset/computer_7440_001_software/${articleNum}`)
+            
+            fetch("{{ url('backoffice_asset/computer_7440_001_software') }}/" + articleNum)
                 .then(response => response.json())
                 .then(data => {
                     const tbody = document.querySelector('#softwareTable tbody');

@@ -122,7 +122,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::get('backoffice_asset/computer_excel',[Backoffice_AssetController::class,'computer_excel']);
     Route::get('backoffice_asset/computer_pdf',[Backoffice_AssetController::class,'computer_pdf']);
     Route::get('backoffice_asset/computer_7440_001_excel',[Backoffice_AssetController::class,'computer_7440_001_excel']);
-    Route::get('backoffice_asset/computer_7440_001_software/{ARTICLE_ID}',[Backoffice_AssetController::class,'computer_7440_001_software']);
+    Route::get('backoffice_asset/computer_7440_001_software/{ARTICLE_ID}',[Backoffice_AssetController::class,'computer_7440_001_software'])->name('asset.computer_7440_001_software');;
     Route::get('backoffice_asset/computer_7440_003_excel',[Backoffice_AssetController::class,'computer_7440_003_excel']);
     Route::get('backoffice_asset/computer_7440_005_excel',[Backoffice_AssetController::class,'computer_7440_005_excel']);
     Route::get('backoffice_asset/computer_7440_006_excel',[Backoffice_AssetController::class,'computer_7440_006_excel']);
