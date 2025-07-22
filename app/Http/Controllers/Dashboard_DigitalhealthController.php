@@ -439,7 +439,7 @@ public function opd_mornitor_ofc(Request $request )
         LEFT JOIN ovst_seq os ON os.vn = o.vn
         LEFT JOIN vn_stat v ON v.vn = o.vn
 		LEFT JOIN opitemrece ppfs ON ppfs.vn=o.vn AND ppfs.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE ppfs = "Y")
-        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=v.cid AND DATE(ep.serviceDateTime)=o.vstdate AND ep.claimCode LIKE "EP%"
+        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
         WHERE o.vstdate  BETWEEN ? AND ? AND p.hipdata_code = "OFC"
         GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date]);
 
@@ -519,7 +519,7 @@ public function opd_mornitor_tb(Request $request )
 		LEFT JOIN lab_order lo ON lo.lab_order_number=lh.lab_order_number
 	    LEFT JOIN vn_stat v ON v.vn=o.vn	
         LEFT JOIN kskdepartment k ON k.depcode = o.cur_dep
-        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND DATE(ep.serviceDateTime)=o.vstdate AND ep.claimCode LIKE "EP%"
+        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
         WHERE (o.an ="" OR o.an IS NULL) AND v.income-v.paid_money <> 0 AND o.vstdate  BETWEEN ? AND ?
         AND (x.xray_items_code IN ("10","46","70","71") OR lo.lab_items_code IN ("167","169")) AND p.paidst = "02"
         GROUP BY o.vn ORDER BY ep.claimCode DESC,o.vstdate,o.vsttime',[$start_date,$end_date]);
@@ -547,7 +547,7 @@ public function opd_mornitor_opanywhere(Request $request )
         LEFT JOIN pttype p ON p.pttype=vp.pttype
         LEFT JOIN kskdepartment k ON k.depcode = o.cur_dep
         LEFT JOIN vn_stat v ON v.vn = o.vn
-		LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND DATE(ep.serviceDateTime)=o.vstdate AND ep.claimCode LIKE "EP%"
+		LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
         WHERE (o.an ="" OR o.an IS NULL) AND v.income-v.paid_money <> 0 AND o.vstdate BETWEEN ? AND ?
         AND p.hipdata_code = "UCS" AND vp.hospmain NOT IN (SELECT hospcode FROM hrims.lookup_hospcode WHERE in_province ="Y")        
         GROUP BY o.vn ORDER BY ep.claimCode DESC,o.vstdate,o.vsttime',[$start_date,$end_date]);
@@ -576,7 +576,7 @@ public function opd_mornitor_kidney(Request $request )
         LEFT JOIN kskdepartment k ON k.depcode = o.cur_dep				
         LEFT JOIN vn_stat v ON v.vn = o.vn
 		LEFT JOIN opitemrece kidney ON kidney.vn=o.vn AND kidney.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE kidney = "Y")
-        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND DATE(ep.serviceDateTime)=o.vstdate AND ep.claimCode LIKE "EP%"
+        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
         WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN ? AND ?
         AND p.hipdata_code = "UCS" AND kidney.vn <>""
         GROUP BY o.vn ORDER BY ep.claimCode DESC,o.vstdate,o.vsttime',[$start_date,$end_date]);
@@ -605,7 +605,7 @@ public function opd_mornitor_ucop_cr(Request $request )
         LEFT JOIN kskdepartment k ON k.depcode = o.cur_dep				
         LEFT JOIN vn_stat v ON v.vn = o.vn
 		LEFT JOIN opitemrece uc_cr ON uc_cr.vn=o.vn AND uc_cr.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE uc_cr = "Y")
-        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND DATE(ep.serviceDateTime)=o.vstdate AND ep.claimCode LIKE "EP%"
+        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
         WHERE (o.an ="" OR o.an IS NULL) AND uc_cr.vn <>"" AND o.vstdate BETWEEN ? AND ?
         AND p.hipdata_code = "UCS" AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province ="Y") 
         GROUP BY o.vn ORDER BY ep.claimCode DESC,o.vstdate,o.vsttime',[$start_date,$end_date]);
@@ -634,7 +634,7 @@ public function opd_mornitor_ppfs(Request $request )
         LEFT JOIN kskdepartment k ON k.depcode = o.cur_dep				
         LEFT JOIN vn_stat v ON v.vn = o.vn
 		LEFT JOIN opitemrece ppfs ON ppfs.vn=o.vn AND ppfs.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE ppfs = "Y")
-        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND DATE(ep.serviceDateTime)=o.vstdate AND ep.claimCode LIKE "EP%"
+        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
         WHERE (o.an ="" OR o.an IS NULL) AND ppfs.vn <>"" AND o.vstdate BETWEEN ? AND ?         
         GROUP BY o.vn ORDER BY ep.claimCode DESC,o.vstdate,o.vsttime',[$start_date,$end_date]);
     return view('dashboard.opd_mornitor_ppfs',compact('start_date','end_date','sql'));
@@ -661,7 +661,7 @@ public function opd_mornitor_ucherb(Request $request )
         LEFT JOIN kskdepartment k ON k.depcode = o.cur_dep				
         LEFT JOIN vn_stat v ON v.vn = o.vn
 		LEFT JOIN opitemrece herb ON herb.vn=o.vn AND herb.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE herb32 = "Y")
-        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND DATE(ep.serviceDateTime)=o.vstdate AND ep.claimCode LIKE "EP%"
+        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
         WHERE (o.an ="" OR o.an IS NULL) AND herb.vn <>"" AND o.vstdate BETWEEN ? AND ?
         AND p.hipdata_code = "UCS" AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province ="Y")          
         GROUP BY o.vn ORDER BY ep.claimCode DESC,o.vstdate,o.vsttime',[$start_date,$end_date]);
@@ -688,7 +688,7 @@ public function opd_mornitor_homeward(Request $request )
         LEFT JOIN pttype p ON p.pttype=vp.pttype
         LEFT JOIN kskdepartment k ON k.depcode = o.cur_dep
 		LEFT JOIN ipt i ON i.an=o.an AND i.ward IN (SELECT ward FROM htp_report.lookup_ward WHERE ward_homeward="Y")
-        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND DATE(ep.serviceDateTime)=o.vstdate AND ep.claimType = "PG0140001" 
+        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimType = "PG0140001" 
         WHERE o.an <>"" AND o.vstdate BETWEEN ? AND ?
 		GROUP BY o.vn ORDER BY o.vsttime',[$start_date,$end_date]);
 
@@ -722,7 +722,7 @@ public function opd_mornitor_healthmed(Request $request )
             LEFT JOIN health_med_operation_item h2 ON h2.health_med_operation_item_id=h1.health_med_operation_item_id
             WHERE h.service_date BETWEEN ? AND ?
             GROUP BY h1.health_med_service_id,h1.health_med_operation_item_id) healthmed ON healthmed.vn=o.vn
-        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND DATE(ep.serviceDateTime)=o.vstdate AND ep.claimCode LIKE "EP%"
+        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
         WHERE (o.an ="" OR o.an IS NULL) AND healthmed.vn <>"" AND o.vstdate BETWEEN ? AND ?
         AND p.hipdata_code = "UCS" AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province ="Y")          
         GROUP BY o.vn ORDER BY ep.claimCode DESC,o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
