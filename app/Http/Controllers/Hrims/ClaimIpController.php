@@ -28,8 +28,8 @@ class ClaimIpController extends Controller
         $search=DB::connection('hosxp')->select('
             SELECT w.`name` AS ward,i.regdate,i.dchdate,i.hn,i.an,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,a.age_y,
             p.`name` AS pttype,a.diag_text_list,id.icd10,idx.icd9,a.income,a.rcpt_money,a.income-a.rcpt_money AS claim_price,
-            CONCAT(r.refer_hospcode,"[ucae=",ia.ac_ae,"]") AS refer,i.adjrw,IF(ip.auth_code <> "","Y",NULL) AS auth_code,
-            IF(id.an <> "","Y",NULL) AS dch_sum,i.data_ok 
+            CONCAT(r.refer_hospcode,"[ucae=",ia.ac_ae,"]") AS refer,i.adjrw,ict.ipt_coll_status_type_name,
+            IF(ip.auth_code <> "","Y",NULL) AS auth_code,IF(id.an <> "","Y",NULL) AS dch_sum,i.data_ok 
             FROM ipt i 
             LEFT JOIN patient pt ON pt.hn=i.hn
             LEFT JOIN ipt_pttype ip ON ip.an=i.an
@@ -40,6 +40,8 @@ class ClaimIpController extends Controller
             LEFT JOIN referout r ON r.vn=i.an
             LEFT JOIN iptdiag id ON id.an=a.an AND id.diagtype = 1
             LEFT JOIN iptoprt idx ON idx.an=i.an
+            LEFT JOIN ipt_coll_stat ic ON ic.an=i.an
+            LEFT JOIN ipt_coll_status_type ict ON ict.ipt_coll_status_type_id=ic.ipt_coll_status_type_id
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=i.vn
             LEFT JOIN htp_report.finance_stm_ucs stm ON stm.an=i.an
             WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN ? AND ?
@@ -50,7 +52,7 @@ class ClaimIpController extends Controller
         $claim=DB::connection('hosxp')->select('
             SELECT w.`name` AS ward,i.regdate,i.dchdate,i.hn,i.an,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,a.age_y,
             p.`name` AS pttype,a.diag_text_list,id.icd10,idx.icd9,a.income,a.rcpt_money,a.income-a.rcpt_money AS claim_price,
-            CONCAT(r.refer_hospcode,"[ucae=",ia.ac_ae,"]") AS refer,i.adjrw,i.data_exp_date AS fdh,
+            CONCAT(r.refer_hospcode,"[ucae=",ia.ac_ae,"]") AS refer,i.adjrw,ict.ipt_coll_status_type_name,i.data_exp_date AS fdh,
             rep.rep_eclaim_detail_error_code AS rep_error,stm.fund_ip_payrate,stm.receive_ip_compensate_pay,stm.receive_total,stm.repno
             FROM ipt i 
             LEFT JOIN patient pt ON pt.hn=i.hn
@@ -62,6 +64,8 @@ class ClaimIpController extends Controller
             LEFT JOIN referout r ON r.vn=i.an
             LEFT JOIN iptdiag id ON id.an=a.an AND id.diagtype = 1
             LEFT JOIN iptoprt idx ON idx.an=i.an
+            LEFT JOIN ipt_coll_stat ic ON ic.an=i.an
+            LEFT JOIN ipt_coll_status_type ict ON ict.ipt_coll_status_type_id=ic.ipt_coll_status_type_id
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=i.vn
             LEFT JOIN htp_report.finance_stm_ucs stm ON stm.an=i.an
             WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN ? AND ?
@@ -86,8 +90,8 @@ class ClaimIpController extends Controller
         $search=DB::connection('hosxp')->select('
             SELECT w.`name` AS ward,i.regdate,i.dchdate,i.hn,i.an,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,a.age_y,
             p.`name` AS pttype,ip.hospmain,a.diag_text_list,id.icd10,idx.icd9,a.income,a.rcpt_money,a.income-a.rcpt_money AS claim_price,
-            CONCAT(r.refer_hospcode,"[ucae=",ia.ac_ae,"]") AS refer,i.adjrw,IF(ip.auth_code <> "","Y",NULL) AS auth_code,
-            IF(id.an <> "","Y",NULL) AS dch_sum,i.data_ok 
+            CONCAT(r.refer_hospcode,"[ucae=",ia.ac_ae,"]") AS refer,i.adjrw,ict.ipt_coll_status_type_name,
+            IF(ip.auth_code <> "","Y",NULL) AS auth_code,IF(id.an <> "","Y",NULL) AS dch_sum,i.data_ok 
             FROM ipt i 
             LEFT JOIN patient pt ON pt.hn=i.hn
             LEFT JOIN ipt_pttype ip ON ip.an=i.an
@@ -98,6 +102,8 @@ class ClaimIpController extends Controller
             LEFT JOIN referout r ON r.vn=i.an
             LEFT JOIN iptdiag id ON id.an=a.an AND id.diagtype = 1
             LEFT JOIN iptoprt idx ON idx.an=i.an
+            LEFT JOIN ipt_coll_stat ic ON ic.an=i.an
+            LEFT JOIN ipt_coll_status_type ict ON ict.ipt_coll_status_type_id=ic.ipt_coll_status_type_id
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=i.vn
             LEFT JOIN htp_report.finance_stm_ucs stm ON stm.an=i.an
             WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN ? AND ?
@@ -108,7 +114,7 @@ class ClaimIpController extends Controller
         $claim=DB::connection('hosxp')->select('
             SELECT w.`name` AS ward,i.regdate,i.dchdate,i.hn,i.an,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,a.age_y,
             p.`name` AS pttype,ip.hospmain,a.diag_text_list,id.icd10,idx.icd9,a.income,a.rcpt_money,a.income-a.rcpt_money AS claim_price,
-            CONCAT(r.refer_hospcode,"[ucae=",ia.ac_ae,"]") AS refer,i.adjrw,i.data_exp_date AS fdh,
+            CONCAT(r.refer_hospcode,"[ucae=",ia.ac_ae,"]") AS refer,i.adjrw,ict.ipt_coll_status_type_name,i.data_exp_date AS fdh,
             rep.rep_eclaim_detail_error_code AS rep_error,stm.fund_ip_payrate,stm.receive_ip_compensate_pay,stm.receive_total,stm.repno
             FROM ipt i 
             LEFT JOIN patient pt ON pt.hn=i.hn
@@ -120,6 +126,8 @@ class ClaimIpController extends Controller
             LEFT JOIN referout r ON r.vn=i.an
             LEFT JOIN iptdiag id ON id.an=a.an AND id.diagtype = 1
             LEFT JOIN iptoprt idx ON idx.an=i.an
+            LEFT JOIN ipt_coll_stat ic ON ic.an=i.an
+            LEFT JOIN ipt_coll_status_type ict ON ict.ipt_coll_status_type_id=ic.ipt_coll_status_type_id
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=i.vn
             LEFT JOIN htp_report.finance_stm_ucs stm ON stm.an=i.an
             WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN ? AND ?
