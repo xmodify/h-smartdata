@@ -3908,8 +3908,8 @@ public function _1102050101_202(Request $request )
     GROUP_CONCAT(DISTINCT stm.repno) AS repno
     FROM finance_debtor_1102050101_202 d
     LEFT JOIN finance_stm_ucs stm ON stm.an=d.an
-    WHERE dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-		GROUP BY d.an');
+    WHERE d.dchdate BETWEEN ? AND ?
+		GROUP BY d.an',[$start_date,$end_date]);
 
   $debtor_search = DB::connection('hosxp')->select('
     SELECT w.`name` AS ward,i.regdate,i.regtime,i.dchdate,i.dchtime,i.vn,i.hn,i.an,
