@@ -92,7 +92,7 @@
                 <td align="center">{{ $count }}</td>
                 <td align="center" width="6%">                  
                   <button onclick="pullNhsoData('{{ $row->vstdate }}', '{{ $row->cid }}')" class="btn btn-outline-info btn-sm w-100">
-                      ดึงปิดสิทธิ
+                      ดึง Authen
                   </button>
                 </td> 
                 <td align="center" @if($row->auth_code == 'Y') style="color:green"

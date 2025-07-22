@@ -241,7 +241,7 @@ public function opd_mornitor(Request $request )
         LEFT JOIN opitemrece uc_cr ON uc_cr.vn=o.vn AND uc_cr.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE uc_cr = "Y")
         LEFT JOIN opitemrece herb ON herb.vn=o.vn AND herb.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE herb32 = "Y")
         LEFT JOIN health_med_service healthmed ON healthmed.vn=o.vn
-        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND DATE(ep.serviceDateTime)=o.vstdate AND ep.claimCode LIKE "EP%"
+        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
         WHERE o.vstdate = DATE(NOW()) AND o.an IS NULL GROUP BY o.vn) AS a');
 
     foreach ($monitor as $row){
@@ -271,7 +271,7 @@ public function opd_mornitor(Request $request )
         SELECT COUNT(DISTINCT o.an) AS homeward,COUNT(ep.claimCode) AS homeward_auth
         FROM ovst o INNER JOIN ipt i ON i.an = o.an 
         LEFT JOIN patient pt ON pt.hn=o.hn
-        LEFT JOIN hrims.nhso_endpoint ep ON ep.cid=pt.cid AND DATE(ep.serviceDateTime)=o.vstdate AND ep.claimType = "PG0140001"
+        LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimType = "PG0140001"
         WHERE o.vstdate = DATE(NOW())
         AND i.ward IN (SELECT ward FROM hrims.lookup_ward WHERE ward_homeward = "Y")');
     foreach($admit_homeward as $row){
