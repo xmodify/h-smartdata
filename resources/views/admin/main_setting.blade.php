@@ -6,7 +6,12 @@
     <form id="structureForm" method="POST" action="{{ route('admin.up_structure') }}" style="display: inline;">
         @csrf
         <button type="submit" class="btn btn-primary" onclick="confirmAction(event)">Upgrade Structure</button>
+    </form>    
+    <form id="clearCacheForm" method="POST" action="{{ route('admin.clear_cache') }}" style="display: inline;">
+        @csrf
+        <button type="button" class="btn btn-warning text-primary" onclick="confirmClearCache()">🧹 ล้าง Cache</button>
     </form>
+
     <pre id="gitOutput" style="background: #eeee; padding: 1rem; margin-top: 1rem;"></pre>
 
     <h3 class="text-primary">Main Setting</h3>  
@@ -109,6 +114,26 @@
                     document.getElementById('structureForm').submit(); // submit ฟอร์ม
                 }
             });
+        }
+    </script>
+
+    <!-- SweetAlert สำหรับ ClearCache -->
+    <script>
+        function confirmClearCache() {
+            Swal.fire({
+                title: 'แน่ใจหรือไม่?',
+                text: "ต้องการล้าง Cache ของระบบทั้งหมด!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'ใช่, ล้างเลย!',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('clearCacheForm').submit();
+                }
+            })
         }
     </script>
 

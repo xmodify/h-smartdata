@@ -46,24 +46,21 @@ use App\Http\Controllers\Service_XrayController;
 use App\Http\Controllers\Service_LabController;
 use App\Http\Controllers\SkpcardController;
 
-// Clear-cache ------------------------------------------------------------------------------------------------------------------
-Route::get('/clear-cache', function() {
-    $exitCode = Artisan::call('config:clear');
-    $exitCode = Artisan::call('cache:clear');
-    $exitCode = Artisan::call('route:clear');
-    $exitCode = Artisan::call('view:clear');
-    $exitCode = Artisan::call('config:cache');
-    return 'DONE'; //Return anything
-    });
+
+
  Auth::routes();
  
 // H-SmartData ###########################################################################################################################
 // IsAdmin --------------------------------------------------------------------------------------------------------------------------
-Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(function () {    
+Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(function () {
+    // Clear-cache --------------------------------------------------------------------------------------------------
+    Route::post('clear-cache', [MainSettingController::class, 'clearCache'])->name('clear_cache');
+    // Git Pull-----------------------------------------------------------------------------------------------------   
     Route::post('/git-pull', function () {
         try { $output = shell_exec('cd ' . base_path() . ' && git pull origin main 2>&1');
             return response()->json(['output' => $output]);
         } catch (\Exception $e) { return response()->json(['error' => $e->getMessage()], 500);}})->name('git.pull');
+    //---------------------------------------------------------------------------------------------------
     Route::resource('user_access', User_AccessController::class)->parameters(['user_access' => 'user']);
     Route::get('main_setting', [MainSettingController::class, 'index'])->name('main_setting');
     Route::put('main_setting/{id}', [MainSettingController::class, 'update']);
@@ -767,8 +764,11 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
     Route::match(['get','post'],'claim_op/ucs_inprovince',[ClaimOpController::class,'ucs_inprovince']);
     Route::match(['get','post'],'claim_op/ucs_outprovince',[ClaimOpController::class,'ucs_outprovince']);
     Route::match(['get','post'],'claim_op/ucs_kidney',[ClaimOpController::class,'ucs_kidney']);
+    Route::match(['get','post'],'claim_op/stp_incup',[ClaimOpController::class,'stp_incup']);
+    Route::match(['get','post'],'claim_op/stp_outcup',[ClaimOpController::class,'stp_outcup']);
     // Claim_IP -------------------------------------------------------------------------------------------------------------------------
     Route::match(['get','post'],'claim_ip/ucs_incup',[ClaimIpController::class,'ucs_incup']);
     Route::match(['get','post'],'claim_ip/ucs_outcup',[ClaimIpController::class,'ucs_outcup']);
+    Route::match(['get','post'],'claim_ip/stp',[ClaimIpController::class,'stp']);
 
 });

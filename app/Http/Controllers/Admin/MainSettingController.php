@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\MainSetting;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Artisan;
 
 class MainSettingController extends Controller
 {
@@ -15,7 +16,17 @@ class MainSettingController extends Controller
         $data = MainSetting::all();
         return view('admin.main_setting', compact('data'));
     }
+// clearCache ------------------------------------------------------------------------------------------------------------
+    public function clearCache()
+    {
+        Artisan::call('config:clear');
+        Artisan::call('cache:clear');
+        Artisan::call('route:clear');
+        Artisan::call('view:clear');
 
+        return back()->with('success', 'ล้าง Cache เรียบร้อยแล้ว!');
+    }
+//-----------------------------------------------------------------------------------------------------------------------------
     public function update(Request $request, $id)
     {
         $request->validate([           
