@@ -105,11 +105,21 @@
                                         </li>
                                     </ul>
                                 </li>
+                                <li class="dropend">
+                                    <a class="link-primary dropdown-item dropdown-toggle text-white" href="#" data-bs-toggle="dropdown">
+                                        OP-OFC กรมบัญชีกลาง
+                                    </a>
+                                    <ul class="bg-success dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/claim_op/ofc') }}"> OFC-OP กรมบัญชีกลาง</a>
+                                        </li> 
+                                        <li>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/claim_op/ofc_kidney') }}">OFC-OP กรมบัญชีกลาง ฟอกไต </a>
+                                        </li>
+                                    </ul>
+                                </li>
                                 <!-- เมนูอื่น -->
                                 <li>
-                                    <a class="dropdown-item link-primary text-white " href="#" >
-                                        OP-OFC กรมบัญชีกลาง
-                                    </a>   
                                     <a class="dropdown-item link-primary text-white " href="#" >
                                         OP-LGO อปท.
                                     </a>       
@@ -155,7 +165,7 @@
                                     <a class="dropdown-item link-primary text-white " href="{{ url('hrims/claim_ip/stp') }}" > 
                                         IP-STP บุคคลที่มีปัญหาสถานะและสิทธิ 
                                     </a> 
-                                    <a class="dropdown-item link-primary text-white " href="#" >
+                                    <a class="dropdown-item link-primary text-white " href="{{ url('hrims/claim_ip/ofc') }}" >
                                         IP-OFC กรมบัญชีกลาง
                                     </a>   
                                     <a class="dropdown-item link-primary text-white " href="#" >

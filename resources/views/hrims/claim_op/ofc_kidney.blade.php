@@ -19,7 +19,7 @@
           </div>
       </div>
   </form> 
-  <div class="alert alert-success text-primary" role="alert"><strong>รายชื่อผู้มารับบริการ UC-OP ฟอกไต วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</strong></div>
+  <div class="alert alert-success text-primary" role="alert"><strong>รายชื่อผู้มารับบริการ OFC-OP ฟอกไต วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</strong></div>
   
   <div class="card-body">
     <div style="overflow-x:auto;">            
@@ -57,7 +57,7 @@
               <td align="center">{{ $row->oqueue }}</td>   
               <td align="left" width = "10%">{{$row->ptname}}</td> 
               <td align="center">{{$row->hn}}</td>
-              <td align="left" width = "10%">{{$row->pttype}} [{{$row->hospmain}}]</td> 
+              <td align="left" width = "10%">{{$row->pttype}}</td> 
               <td align="left" width = "10%">{{ $row->cc }}</td>
               <td align="right">{{ $row->pdx }}</td>                  
               <td align="right" width = "5%">{{$row->icd9}}</td> 
@@ -134,7 +134,7 @@
               extend: 'excelHtml5',
               text: 'Excel',
               className: 'btn btn-success',
-              title: 'รายชื่อผู้มารับบริการ UC-OP ฟอกไต วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}'
+              title: 'รายชื่อผู้มารับบริการ OFC-OP ฟอกไต วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}'
             }
         ],
         language: {
