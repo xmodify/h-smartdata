@@ -168,22 +168,25 @@
                                     <a class="dropdown-item link-primary text-white " href="{{ url('hrims/claim_ip/ofc') }}" >
                                         IP-OFC กรมบัญชีกลาง
                                     </a>   
-                                    <a class="dropdown-item link-primary text-white " href="#" >
+                                    <a class="dropdown-item link-primary text-white " href="{{ url('hrims/claim_ip/lgo') }}" >
                                         IP-LGO อปท.
                                     </a>       
-                                    <a class="dropdown-item link-primary text-white " href="#" >
+                                    <a class="dropdown-item link-primary text-white " href="{{ url('hrims/claim_ip/bkk') }}" >
                                         IP-BKK อปท.รูปแบบพิเศษ กทม.
                                     </a>      
-                                    <a class="dropdown-item link-primary text-white " href="#" >
+                                    <a class="dropdown-item link-primary text-white " href="{{ url('hrims/claim_ip/bmt') }}" >
                                         IP-BMT อปท.รูปแบบพิเศษ ขสมก.
                                     </a>
-                                    <a class="dropdown-item link-primary text-white " href="#" >
+                                    <a class="dropdown-item link-primary text-white " href="{{ url('hrims/claim_ip/sss') }}" >
                                         IP-SSS ประกันสังคม
+                                    </a>   
+                                    <a class="dropdown-item link-primary text-white " href="{{ url('hrims/claim_ip/gof') }}" >
+                                        IP-GOF หน่วยงานรัฐ
                                     </a>    
-                                    <a class="dropdown-item link-primary text-white " href="#" >
+                                    <a class="dropdown-item link-primary text-white " href="{{ url('hrims/claim_ip/rcpt') }}" >
                                         IP-ชำระเงิน
                                     </a>   
-                                    <a class="dropdown-item link-primary text-white " href="#" >
+                                    <a class="dropdown-item link-primary text-white " href="{{ url('hrims/claim_ip/act') }}" >
                                         IP-พรบ.
                                     </a>   
                                 </li>
