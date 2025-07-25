@@ -23,13 +23,11 @@ public function index()
 
 //Create wait_doctor_dchsummary
 public function wait_doctor_dchsummary(Request $request)
-{      
-      $start_date = $request->start_date;
-      $end_date = $request->end_date;
-      if($start_date == '' || $end_date == null)
-      {$start_date = Session::get('start_date');}else{$start_date =$request->start_date;}
-      if($end_date == '' || $end_date == null)
-      {$end_date = Session::get('end_date');}else{$end_date =$request->end_date;}
+{     
+      ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
+
+      $start_date = $request->start_date ?: Session::get('start_date');
+      $end_date   = $request->end_date   ?: Session::get('end_date');
 
       $non_dchsummary=DB::connection('hosxp')->select('
             SELECT w.`name` AS ward,i.hn,i.an,iptdiag.icd10,a.diag_text_list,d.`name` AS owner_doctor_name,
@@ -73,12 +71,10 @@ public function wait_doctor_dchsummary(Request $request)
 //Create wait_icd_coder
 public function wait_icd_coder(Request $request)
 {      
-      $start_date = $request->start_date;
-      $end_date = $request->end_date;
-      if($start_date == '' || $end_date == null)
-      {$start_date = Session::get('start_date');}else{$start_date =$request->start_date;}
-      if($end_date == '' || $end_date == null)
-      {$end_date = Session::get('end_date');}else{$end_date =$request->end_date;}
+      ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
+       
+      $start_date = $request->start_date ?: Session::get('start_date');
+      $end_date   = $request->end_date   ?: Session::get('end_date');
 
       $sql=DB::connection('hosxp')->select('
             SELECT COUNT(an) AS sum_discharge,
@@ -208,14 +204,12 @@ public function wait_icd_coder(Request $request)
 //Create dchsummary
 public function dchsummary(Request $request)
 {      
-      $start_date = $request->start_date;
-        $end_date = $request->end_date;
-        if($start_date == '' || $end_date == null)
-        {$start_date = Session::get('start_date');}else{$start_date =$request->start_date;}
-        if($end_date == '' || $end_date == null)
-        {$end_date = Session::get('end_date');}else{$end_date =$request->end_date;}
+      ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
+       
+      $start_date = $request->start_date ?: Session::get('start_date');
+      $end_date   = $request->end_date   ?: Session::get('end_date');
 
-        $sql=DB::connection('hosxp')->select('
+      $sql=DB::connection('hosxp')->select('
             SELECT COUNT(an) AS sum_discharge,
             SUM(CASE WHEN (diag_text_list IS NULL OR diag_text_list ="") THEN 1 ELSE 0 END) AS sum_wait_dchsummary,
             SUM(CASE WHEN (dx1 IS NOT NULL OR dx1 <>"") AND (pdx ="" OR pdx IS NULL) THEN 1 ELSE 0 END) AS sum_wait_icd_coder,
@@ -236,7 +230,7 @@ public function dchsummary(Request $request)
             WHERE i.ward NOT IN (SELECT ward FROM hrims.lookup_ward WHERE ward_homeward = "Y")
             AND i.dchdate BETWEEN ? AND ?
             GROUP BY i.an) AS a',[$start_date,$end_date]); 
-        foreach ($sql as $row){
+      foreach ($sql as $row){
             $sum_discharge = $row->sum_discharge;
             $sum_wait_dchsummary = $row->sum_wait_dchsummary;
             $sum_wait_icd_coder = $row->sum_wait_icd_coder;
@@ -343,12 +337,10 @@ public function dchsummary(Request $request)
 //Create dchsummary_audit
 public function dchsummary_audit(Request $request) 
 {      
-$start_date = $request->start_date;
-        $end_date = $request->end_date;
-        if($start_date == '' || $end_date == null)
-        {$start_date = Session::get('start_date');}else{$start_date =$request->start_date;}
-        if($end_date == '' || $end_date == null)
-        {$end_date = Session::get('end_date');}else{$end_date =$request->end_date;}
+      ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
+       
+      $start_date = $request->start_date ?: Session::get('start_date');
+      $end_date   = $request->end_date   ?: Session::get('end_date');
 
       $sql=DB::connection('hosxp')->select('
             SELECT COUNT(an) AS sum_discharge,
@@ -482,11 +474,14 @@ $start_date = $request->start_date;
 //Create non_dchsummary
 public function non_dchsummary(Request $request)
 {      
-      $budget_year_last = DB::connection('backoffice')->table('budget_year')->where('DATE_END','>=',date('Y-m-d'))->where('DATE_BEGIN','<=',date('Y-m-d'))->value('LEAVE_YEAR_ID');
-      $budget_year = $request->budget_year;
-      if($budget_year == '' || $budget_year == null)
-      {$budget_year = $budget_year_last;}else{$budget_year =$request->budget_year;}       
-      $start_date = DB::connection('backoffice')->table('budget_year')->where('LEAVE_YEAR_ID',$budget_year)->value('DATE_BEGIN');
+      $budget_year_last = DB::connection('backoffice')->table('budget_year')
+            ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+            ->whereDate('DATE_END', '>=', date('Y-m-d'))
+            ->value('LEAVE_YEAR_ID');
+      $budget_year = $request->budget_year ?: $budget_year_last;
+            $start_date = DB::connection('backoffice')->table('budget_year')
+            ->where('LEAVE_YEAR_ID', $budget_year)
+            ->value('DATE_BEGIN');
 
       $non_dchsummary=DB::connection('hosxp')->select('
             SELECT w.`name` AS ward,i.hn,i.an,iptdiag.icd10,a.diag_text_list,d.`name` AS owner_doctor_name,

@@ -32,7 +32,7 @@ public function income()
         CONCAT(d.drg_chrgitem_id,"-",d.drg_chrgitem_name) AS eclaim
         FROM income i
         LEFT OUTER JOIN drg_chrgitem d ON d.drg_chrgitem_id = i.drg_chrgitem_id
-        LEFT JOIN htp_claim.lookup_nhso_adp_type n ON n.drg_chrgitem=d.drg_chrgitem_id
+        LEFT JOIN htp_report.lookup_nhso_adp_type n ON n.drg_chrgitem=d.drg_chrgitem_id
         ORDER BY i.income');
 
     return view('hosxp_setting.income',compact('income'));            
@@ -41,9 +41,7 @@ public function income()
 public function nondrug(Request $request)
 {
     $income_select = DB::connection('hosxp')->select('select * from income');          
-    $income = $request->income;
-    if($income = '' || $income == null)
-    {$income ='01';}else{$income =$request->income;} 
+    $income = $request->income ?: '01';
     $income_name = DB::connection('hosxp')->table('income')->where('income',$income)->value('name'); 
     $nondrug =  DB::connection('hosxp')->select('
         SELECT n.istatus,n.icode,n.`name`,n.income AS income,n.price AS price,n.ipd_price AS ipd_price,
@@ -56,25 +54,25 @@ public function nondrug(Request $request)
         LEFT OUTER JOIN paidst p3 ON p3.paidst = n.paidst
         LEFT OUTER JOIN nhso_adp_type nd1 ON nd1.nhso_adp_type_id = n.nhso_adp_type_id
         LEFT OUTER JOIN nhso_adp_code nd2 ON nd2.nhso_adp_code = n.nhso_adp_code 
-        LEFT OUTER JOIN htp_claim.lookup_nhso_adp_code nd3 ON nd3.nhso_adp_code = n.nhso_adp_code 
-        WHERE n.istatus = "Y" AND n.income =  "'.$income.'" ORDER BY n.income,n.NAME');
+        LEFT OUTER JOIN htp_report.lookup_nhso_adp_code nd3 ON nd3.nhso_adp_code = n.nhso_adp_code 
+        WHERE n.istatus = "Y" AND n.income = ? ORDER BY n.income,n.NAME',[$income]);
 
     return view('hosxp_setting.nondrug',compact('nondrug','income_select','income','income_name'));            
 }
 //ทะเบียน ADP Code (Eclaim)
 public function adp_code(Request $request)
 {
-    $adp_type_select = DB::connection('hosxp')->select('select * from htp_claim.lookup_nhso_adp_type');          
+    $adp_type_select = DB::connection('hosxp')->select('select * from htp_report.lookup_nhso_adp_type');          
     $adp_type = $request->adp_type;
     if($adp_type = '' || $adp_type == null)
     {$adp_type ='10';}else{$adp_type =$request->adp_type;} 
-    $adp_type_name = DB::connection('hosxp')->table('htp_claim.lookup_nhso_adp_type')->where('nhso_adp_type_id',$adp_type)->value('nhso_adp_type_name'); 
+    $adp_type_name = DB::connection('hosxp')->table('htp_report.lookup_nhso_adp_type')->where('nhso_adp_type_id',$adp_type)->value('nhso_adp_type_name'); 
     $adp_code =  DB::connection('hosxp')->select('
         SELECT c.nhso_adp_code,c.nhso_adp_code_name,c.ofc,c.lgo,c.sss,c.ucs,c.ucep,c.fs,c.ppfs,c.moph,
         ct.nhso_adp_type_name,d.drg_chrgitem_name,i.`name` AS income,
         IF((n.nhso_adp_code IS NOT NULL OR n.nhso_adp_code <>""),CONCAT(n.icode,"-",n.`name`,"[",ROUND(n.price,2),"]"),"") AS hosxp
-        FROM htp_claim.lookup_nhso_adp_code c
-        LEFT JOIN htp_claim.lookup_nhso_adp_type ct ON ct.nhso_adp_type_id=c.nhso_adp_type_id
+        FROM htp_report.lookup_nhso_adp_code c
+        LEFT JOIN htp_report.lookup_nhso_adp_type ct ON ct.nhso_adp_type_id=c.nhso_adp_type_id
         LEFT JOIN drg_chrgitem d ON d.drg_chrgitem_id=ct.drg_chrgitem
         LEFT JOIN nondrugitems n ON n.nhso_adp_code=c.nhso_adp_code
         LEFT JOIN income i ON i.income=n.income 

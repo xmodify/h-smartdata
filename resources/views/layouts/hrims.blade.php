@@ -118,15 +118,25 @@
                                         </li>
                                     </ul>
                                 </li>
-                                <!-- เมนูอื่น -->
-                                <li>
-                                    <a class="dropdown-item link-primary text-white " href="#" >
+                                <li class="dropend">
+                                    <a class="link-primary dropdown-item dropdown-toggle text-white" href="#" data-bs-toggle="dropdown">
                                         OP-LGO อปท.
-                                    </a>       
-                                    <a class="dropdown-item link-primary text-white " href="#" >
+                                    </a>
+                                    <ul class="bg-success dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/claim_op/lgo') }}"> LGO-OP อปท.</a>
+                                        </li> 
+                                        <li>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/claim_op/lgo_kidney') }}">LGO-OP อปท. ฟอกไต </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <!-- เมนูอื่น -->
+                                <li>     
+                                    <a class="dropdown-item link-primary text-white " href="{{ url('hrims/claim_op/bkk') }}" >
                                         OP-BKK อปท.รูปแบบพิเศษ กทม.
                                     </a>      
-                                    <a class="dropdown-item link-primary text-white " href="#" >
+                                    <a class="dropdown-item link-primary text-white " href="{{ url('hrims/claim_op/bmt') }}" >
                                         OP-BMT อปท.รูปแบบพิเศษ ขสมก.
                                     </a>
                                     <a class="dropdown-item link-primary text-white " href="#" >

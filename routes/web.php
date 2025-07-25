@@ -768,6 +768,13 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
     Route::match(['get','post'],'claim_op/stp_outcup',[ClaimOpController::class,'stp_outcup']);
     Route::match(['get','post'],'claim_op/ofc',[ClaimOpController::class,'ofc']);
     Route::match(['get','post'],'claim_op/ofc_kidney',[ClaimOpController::class,'ofc_kidney']);
+    Route::match(['get','post'],'claim_op/lgo',[ClaimOpController::class,'lgo']);
+    Route::match(['get','post'],'claim_op/lgo_kidney',[ClaimOpController::class,'lgo_kidney']);
+    Route::match(['get','post'],'claim_op/bkk',[ClaimOpController::class,'bkk']);
+    Route::match(['get','post'],'claim_op/bmt',[ClaimOpController::class,'bmt']);
+    Route::match(['get','post'],'claim_op/sss',[ClaimOpController::class,'sss']);
+    Route::match(['get','post'],'claim_op/rcpt',[ClaimOpController::class,'rcpt']);
+    Route::match(['get','post'],'claim_op/act',[ClaimOpController::class,'act']);
     // Claim_IP -------------------------------------------------------------------------------------------------------------------------
     Route::match(['get','post'],'claim_ip/ucs_incup',[ClaimIpController::class,'ucs_incup']);
     Route::match(['get','post'],'claim_ip/ucs_outcup',[ClaimIpController::class,'ucs_outcup']);

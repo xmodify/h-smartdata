@@ -17,12 +17,8 @@ public function __construct()
 
 public function index(Request $request)
     {
-        $start_date = $request->start_date;
-        $end_date = $request->end_date;
-        if($start_date == '' || $end_date == null)
-        {$start_date = date('Y-m-d', strtotime("first day of this month"));}else{$start_date =$request->start_date;}
-        if($end_date == '' || $end_date == null)
-        {$end_date = date('Y-m-d');}else{$end_date =$request->end_date;}
+        $start_date = $request->start_date ?: date('Y-m-d', strtotime('first day of this month'));
+        $end_date   = $request->end_date   ?: date('Y-m-d');
         
         $complain=Complain::whereBetween('created_at',[$start_date." 00:00:00", $end_date." 23:59:59"])
                             ->orderby('created_at','desc')->get(); 
@@ -52,39 +48,7 @@ public function store(Request $request)
         $complain->email = $request->email;
         $complain->save();
 
-        //แจ้งเตือน line    
-        $line_token_db = DB::select('select line_token FROM line_tokens WHERE line_token_id IN ("4")'); 
-        $line_token_array = array_column($line_token_db,'line_token'); 
-
-        $message = "ความคิดเห็น/เสนอแนะ".
-            "\n"."ประเภท : " . $complain->type .  
-            "\n"."รายละเอียด : " . $complain->detail . 
-            "\n"."ให้ติดต่อกลับ : " . $complain->call_back . 
-            "\n";  
-            
-        function notify_message($message,$token){           
-            if($token !== '' && $token !== null){
-            $chOne = curl_init();
-            curl_setopt( $chOne, CURLOPT_URL, "https://notify-api.line.me/api/notify");
-            curl_setopt( $chOne, CURLOPT_SSL_VERIFYHOST, 0);
-            curl_setopt( $chOne, CURLOPT_SSL_VERIFYPEER, 0);
-            curl_setopt( $chOne, CURLOPT_POST, 1);
-            curl_setopt( $chOne, CURLOPT_POSTFIELDS, $message);
-            curl_setopt( $chOne, CURLOPT_POSTFIELDS, "message=$message");
-            curl_setopt( $chOne, CURLOPT_FOLLOWLOCATION, 1);
-            $headers = array( 'Content-type: application/x-www-form-urlencoded', 'Authorization: Bearer '.$token.'', );
-            curl_setopt($chOne, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt( $chOne, CURLOPT_RETURNTRANSFER, 1);
-            $result = curl_exec( $chOne );
-            if(curl_error($chOne)) { echo 'error:' . curl_error($chOne); }
-            else { $result_ = json_decode($result, true);
-            echo "status : ".$result_['status']; echo "message : ". $result_['message']; }
-            curl_close( $chOne ); }
-        } 
-            foreach($line_token_array as $token){
-                    notify_message($message,$token);
-            }  
-//เปิดแจ้งเตือน Telegram
+//เปิดแจ้งเตือน Telegram---------------------
     $message = "ความคิดเห็น/เสนอแนะ" ."\n"
         ."ประเภท : " .$complain->type ."\n"  
         ."รายละเอียด : " .$complain->detail ."\n" 

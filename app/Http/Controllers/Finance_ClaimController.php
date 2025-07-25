@@ -361,7 +361,7 @@ public function lgo_claim_opd(Request $request )
     LEFT JOIN patient p ON p.hn=o.hn
     LEFT JOIN hospcode h ON h.hospcode=vp.hospmain		
     LEFT JOIN htp_report.finance_stm_lgo stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
-    LEFT JOIN htp_report.finance_stm_lgo_kidney stm1 ON stm1.hn=o.hn AND DATE(stm1.datetimeadm) = o.vstdate 
+    LEFT JOIN htp_report.finance_stm_lgo_kidney stm1 ON stm1.hn=o.hn AND stm1.datetimeadm = o.vstdate 
 		WHERE (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND (o2.icode IS NOT NULL OR o2.icode<>"") AND p1.pttype LIKE "L%" 
     AND v.income <>"0" GROUP BY o.vn ORDER BY o.vstdate,o.oqueue ');

@@ -24,12 +24,8 @@ public function index()
 //Create non_Authen
 public function non_authen(Request $request)
 {
-    $start_date = $request->start_date;
-    $end_date = $request->end_date;
-    if($start_date == '' || $end_date == null)
-    {$start_date = date('Y-m-d');}else{$start_date =$request->start_date;}
-    if($end_date == '' || $end_date == null)
-    {$end_date = date('Y-m-d');}else{$end_date =$request->end_date;}
+    $start_date = $request->start_date ?: date('Y-m-d');
+    $end_date = $request->end_date ?: date('Y-m-d');
       
     $ucs=DB::connection('hosxp')->select('
         SELECT o.vstdate,o.vsttime,o.oqueue,o.hn,p.cid,p.mobile_phone_number,p.hometel,
@@ -65,12 +61,8 @@ public function non_authen(Request $request)
 //Create non_hospmain
 public function non_hospmain(Request $request)
 {
-    $start_date = $request->start_date;
-    $end_date = $request->end_date;
-    if($start_date == '' || $end_date == null)
-    {$start_date = date('Y-m-d');}else{$start_date =$request->start_date;}
-    if($end_date == '' || $end_date == null)
-    {$end_date = date('Y-m-d');}else{$end_date =$request->end_date;}
+    $start_date = $request->start_date ?: date('Y-m-d');
+    $end_date = $request->end_date ?: date('Y-m-d');
       
     $ucs=DB::connection('hosxp')->select('
         SELECT o.vstdate,o.vsttime,o.oqueue,o.hn,p.cid,p.mobile_phone_number,p.hometel,v1.auth_code,

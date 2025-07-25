@@ -110,13 +110,23 @@ public function nhso_endpoint_pull_daily(Request $request)
 //Create Digitalhealth
 public function digitalhealth(Request $request )
 {
-    $budget_year_select = DB::connection('backoffice')->select('select LEAVE_YEAR_ID,LEAVE_YEAR_NAME FROM budget_year ORDER BY LEAVE_YEAR_ID DESC LIMIT 7');
-    $budget_year_last = DB::connection('backoffice')->table('budget_year')->where('DATE_END','>=',date('Y-m-d'))->where('DATE_BEGIN','<=',date('Y-m-d'))->value('LEAVE_YEAR_ID');
-    $budget_year = $request->budget_year;
-    if($budget_year == '' || $budget_year == null)
-    {$budget_year = $budget_year_last;}else{$budget_year =$request->budget_year;}   
-    $start_date = DB::connection('backoffice')->table('budget_year')->where('LEAVE_YEAR_ID',$budget_year)->value('DATE_BEGIN');
-    $end_date = DB::connection('backoffice')->table('budget_year')->where('LEAVE_YEAR_ID',$budget_year)->value('DATE_END');
+    ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
+
+    $budget_year_select = DB::connection('backoffice')->table('budget_year')
+        ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
+        ->orderByDesc('LEAVE_YEAR_ID')
+        ->limit(7)
+        ->get();
+    $budget_year_last = DB::connection('backoffice')->table('budget_year')
+        ->whereDate('DATE_BEGIN', '<=', now())
+        ->whereDate('DATE_END', '>=', now())
+        ->value('LEAVE_YEAR_ID');
+    $budget_year = $request->budget_year ?: $budget_year_last;
+    $year = DB::connection('backoffice')->table('budget_year')
+        ->where('LEAVE_YEAR_ID', $budget_year)
+        ->first(['DATE_BEGIN', 'DATE_END']);
+    $start_date = $year->DATE_BEGIN ?? null;
+    $end_date   = $year->DATE_END ?? null;
     
     $moph_appointment= DB::connection('hosxp')->select('
         SELECT CASE WHEN MONTH(confirm_date)="10" THEN CONCAT("ตุลาคม ",YEAR(confirm_date)+543)
@@ -141,9 +151,9 @@ public function digitalhealth(Request $request )
         FROM moph_appointment_list m
         LEFT JOIN vn_stat v ON v.cid = m.cid AND v.vstdate=m.appointment_date
         GROUP BY m.hospital_appointment_slot_id,m.cid) AS a
-        WHERE a.confirm_date BETWEEN "'.$start_date.'" AND "'.$end_date.'"
+        WHERE a.confirm_date BETWEEN ? AND ?
         GROUP BY MONTH(confirm_date)
-        ORDER BY YEAR(confirm_date),MONTH(confirm_date)');
+        ORDER BY YEAR(confirm_date),MONTH(confirm_date)',[$start_date,$end_date]);
 
     $telehealth= DB::connection('hosxp')->select('
         SELECT CASE WHEN MONTH(vstdate)="10" THEN CONCAT("ตุลาคม ",YEAR(vstdate)+543)
@@ -161,10 +171,10 @@ public function digitalhealth(Request $request )
         END AS "month",COUNT(DISTINCT vn) AS visit_op ,
         SUM(CASE WHEN ovstist = "12" THEN 1 ELSE 0 END) AS telehealth
         FROM ovst         		
-        WHERE vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
+        WHERE vstdate BETWEEN ? AND ?
         AND (an ="" OR an IS NULL)          
         GROUP BY MONTH(vstdate)  
-        ORDER BY YEAR(vstdate) , MONTH(vstdate)');
+        ORDER BY YEAR(vstdate) , MONTH(vstdate)',[$start_date,$end_date]);
 
     $opd_ucs= DB::connection('hosxp')->select('
         SELECT CASE WHEN MONTH(vstdate)="10" THEN CONCAT("ตุลาคม ",YEAR(vstdate)+543)
@@ -187,10 +197,10 @@ public function digitalhealth(Request $request )
         LEFT JOIN visit_pttype vp ON vp.vn=o.vn
         LEFT JOIN pttype p ON p.pttype=vp.pttype
         LEFT JOIN referin r ON r.vn=o.vn
-        WHERE o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
+        WHERE o.vstdate BETWEEN ? AND ?
         AND p.hipdata_code = "UCS" AND (o.an ="" OR o.an IS NULL) 
         GROUP BY MONTH(o.vstdate)
-        ORDER BY YEAR(o.vstdate),MONTH(o.vstdate)');
+        ORDER BY YEAR(o.vstdate),MONTH(o.vstdate)',[$start_date,$end_date]);
 
     return view('dashboard.digitalhealth',compact('budget_year_select','budget_year',
     'moph_appointment','telehealth','opd_ucs'));
@@ -419,12 +429,10 @@ public function opd_mornitor(Request $request )
 #####################################################################################################################################
 public function opd_mornitor_ofc(Request $request )
 {
-    $start_date = $request->start_date;
-    $end_date = $request->end_date; 
-    if($start_date == '' || $end_date == null)
-    {$start_date = date('Y-m-d');}else{$start_date =$request->start_date;}
-    if($end_date == '' || $end_date == null)
-    {$end_date = date('Y-m-d');}else{$end_date =$request->end_date;}
+    ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
+
+    $start_date = $request->start_date ?: date('Y-m-d');
+    $end_date = $request->end_date ?: date('Y-m-d');
 
     $sql=DB::connection('hosxp')->select('
         SELECT o.vstdate,o.vsttime,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,
@@ -448,12 +456,10 @@ public function opd_mornitor_ofc(Request $request )
 //----------------------------------------------------------------------------------------------------------------------------------
 public function opd_mornitor_non_authen(Request $request )
 {
-    $start_date = $request->start_date;
-    $end_date = $request->end_date;
-    if($start_date == '' || $end_date == null)
-    {$start_date = date('Y-m-d');}else{$start_date =$request->start_date;}
-    if($end_date == '' || $end_date == null)
-    {$end_date = date('Y-m-d');}else{$end_date =$request->end_date;}
+    ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
+
+    $start_date = $request->start_date ?: date('Y-m-d');
+    $end_date = $request->end_date ?: date('Y-m-d');
 
     $sql=DB::connection('hosxp')->select('
         SELECT o.vstdate,o.vsttime,o.oqueue,o.hn,p.cid,p.mobile_phone_number,p.hometel,p1.`name` AS pttype,
@@ -474,12 +480,10 @@ public function opd_mornitor_non_authen(Request $request )
 
 public function opd_mornitor_non_hospmain(Request $request )
 {
-    $start_date = $request->start_date;
-    $end_date = $request->end_date;
-    if($start_date == '' || $end_date == null)
-    {$start_date = date('Y-m-d');}else{$start_date =$request->start_date;}
-    if($end_date == '' || $end_date == null)
-    {$end_date = date('Y-m-d');}else{$end_date =$request->end_date;}
+    ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
+
+    $start_date = $request->start_date ?: date('Y-m-d');
+    $end_date = $request->end_date ?: date('Y-m-d');
 
     $sql=DB::connection('hosxp')->select('
         SELECT IF((vp.auth_code IS NOT NULL OR vp.auth_code <> ""),"Y",NULL) AS auth_code,
@@ -498,12 +502,10 @@ public function opd_mornitor_non_hospmain(Request $request )
 
 public function opd_mornitor_tb(Request $request )
 {
-    $start_date = $request->start_date;
-    $end_date = $request->end_date;
-    if($start_date == '' || $end_date == null)
-    {$start_date = date('Y-m-d');}else{$start_date =$request->start_date;}
-    if($end_date == '' || $end_date == null)
-    {$end_date = date('Y-m-d');}else{$end_date =$request->end_date;}
+    ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
+
+    $start_date = $request->start_date ?: date('Y-m-d');
+    $end_date = $request->end_date ?: date('Y-m-d');
     
     $sql=DB::connection('hosxp')->select('
         SELECT IF((vp.auth_code IS NOT NULL OR vp.auth_code <> ""),"Y",NULL) AS auth_code,
@@ -529,12 +531,10 @@ public function opd_mornitor_tb(Request $request )
 
 public function opd_mornitor_opanywhere(Request $request )
 {
-    $start_date = $request->start_date;
-    $end_date = $request->end_date;
-    if($start_date == '' || $end_date == null)
-    {$start_date = date('Y-m-d');}else{$start_date =$request->start_date;}
-    if($end_date == '' || $end_date == null)
-    {$end_date = date('Y-m-d');}else{$end_date =$request->end_date;}
+    ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
+
+    $start_date = $request->start_date ?: date('Y-m-d');
+    $end_date = $request->end_date ?: date('Y-m-d');
 
     $sql=DB::connection('hosxp')->select('
         SELECT IF((vp.auth_code IS NOT NULL OR vp.auth_code <> ""),"Y",NULL) AS auth_code,
@@ -557,12 +557,10 @@ public function opd_mornitor_opanywhere(Request $request )
 
 public function opd_mornitor_kidney(Request $request )
 {
-    $start_date = $request->start_date;
-    $end_date = $request->end_date;
-    if($start_date == '' || $end_date == null)
-    {$start_date = date('Y-m-d');}else{$start_date =$request->start_date;}
-    if($end_date == '' || $end_date == null)
-    {$end_date = date('Y-m-d');}else{$end_date =$request->end_date;}
+    ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
+
+    $start_date = $request->start_date ?: date('Y-m-d');
+    $end_date = $request->end_date ?: date('Y-m-d');
 
     $sql=DB::connection('hosxp')->select('
         SELECT IF((vp.auth_code IS NOT NULL OR vp.auth_code <> ""),"Y",NULL) AS auth_code,
@@ -586,12 +584,10 @@ public function opd_mornitor_kidney(Request $request )
 
 public function opd_mornitor_ucop_cr(Request $request )
 {
-    $start_date = $request->start_date;
-    $end_date = $request->end_date;
-    if($start_date == '' || $end_date == null)
-    {$start_date = date('Y-m-d');}else{$start_date =$request->start_date;}
-    if($end_date == '' || $end_date == null)
-    {$end_date = date('Y-m-d');}else{$end_date =$request->end_date;}
+    ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
+
+    $start_date = $request->start_date ?: date('Y-m-d');
+    $end_date = $request->end_date ?: date('Y-m-d');
 
     $sql=DB::connection('hosxp')->select('
         SELECT IF((vp.auth_code IS NOT NULL OR vp.auth_code <> ""),"Y",NULL) AS auth_code,
@@ -615,12 +611,10 @@ public function opd_mornitor_ucop_cr(Request $request )
 
 public function opd_mornitor_ppfs(Request $request )
 {
-    $start_date = $request->start_date;
-    $end_date = $request->end_date;
-    if($start_date == '' || $end_date == null)
-    {$start_date = date('Y-m-d');}else{$start_date =$request->start_date;}
-    if($end_date == '' || $end_date == null)
-    {$end_date = date('Y-m-d');}else{$end_date =$request->end_date;}
+    ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
+
+    $start_date = $request->start_date ?: date('Y-m-d');
+    $end_date = $request->end_date ?: date('Y-m-d');
     
     $sql=DB::connection('hosxp')->select('
         SELECT IF((vp.auth_code IS NOT NULL OR vp.auth_code <> ""),"Y",NULL) AS auth_code,
@@ -642,12 +636,10 @@ public function opd_mornitor_ppfs(Request $request )
 
 public function opd_mornitor_ucherb(Request $request )
 {
-    $start_date = $request->start_date;
-    $end_date = $request->end_date;
-    if($start_date == '' || $end_date == null)
-    {$start_date = date('Y-m-d');}else{$start_date =$request->start_date;}
-    if($end_date == '' || $end_date == null)
-    {$end_date = date('Y-m-d');}else{$end_date =$request->end_date;}
+    ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
+
+    $start_date = $request->start_date ?: date('Y-m-d');
+    $end_date = $request->end_date ?: date('Y-m-d');
     
     $sql=DB::connection('hosxp')->select('
         SELECT IF((vp.auth_code IS NOT NULL OR vp.auth_code <> ""),"Y",NULL) AS auth_code,
@@ -671,12 +663,10 @@ public function opd_mornitor_ucherb(Request $request )
 
 public function opd_mornitor_homeward(Request $request )
 {
-    $start_date = $request->start_date;
-    $end_date = $request->end_date;
-    if($start_date == '' || $end_date == null)
-    {$start_date = date('Y-m-d');}else{$start_date =$request->start_date;}
-    if($end_date == '' || $end_date == null)
-    {$end_date = date('Y-m-d');}else{$end_date =$request->end_date;}
+    ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
+
+    $start_date = $request->start_date ?: date('Y-m-d');
+    $end_date = $request->end_date ?: date('Y-m-d');
 
     $sql=DB::connection('hosxp')->select('
         SELECT IF((vp.auth_code IS NOT NULL OR vp.auth_code <> ""),"Y",NULL) AS auth_code,o.vstdate,o.vsttime,
@@ -697,12 +687,10 @@ public function opd_mornitor_homeward(Request $request )
 
 public function opd_mornitor_healthmed(Request $request )
 {
-    $start_date = $request->start_date;
-    $end_date = $request->end_date;
-    if($start_date == '' || $end_date == null)
-    {$start_date = date('Y-m-d');}else{$start_date =$request->start_date;}
-    if($end_date == '' || $end_date == null)
-    {$end_date = date('Y-m-d');}else{$end_date =$request->end_date;}
+    ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
+
+    $start_date = $request->start_date ?: date('Y-m-d');
+    $end_date = $request->end_date ?: date('Y-m-d');
 
     $sql=DB::connection('hosxp')->select('
         SELECT IF((vp.auth_code IS NOT NULL OR vp.auth_code <> ""),"Y",NULL) AS auth_code,
@@ -733,11 +721,14 @@ public function opd_mornitor_healthmed(Request $request )
 ###############################################################################################################################
 public function ipd_mornitor(Request $request )
 {
-    $budget_year_last = DB::connection('backoffice')->table('budget_year')->where('DATE_END','>=',date('Y-m-d'))->where('DATE_BEGIN','<=',date('Y-m-d'))->value('LEAVE_YEAR_ID');
-    $budget_year = $request->budget_year;
-    if($budget_year == '' || $budget_year == null)
-    {$budget_year = $budget_year_last;}else{$budget_year =$request->budget_year;}       
-    $start_date = DB::connection('backoffice')->table('budget_year')->where('LEAVE_YEAR_ID',$budget_year)->value('DATE_BEGIN');
+    $budget_year_last = DB::connection('backoffice')->table('budget_year')
+        ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+        ->whereDate('DATE_END', '>=', date('Y-m-d'))
+        ->value('LEAVE_YEAR_ID');
+    $budget_year = $request->budget_year ?: $budget_year_last;
+    $start_date = DB::connection('backoffice')->table('budget_year')
+        ->where('LEAVE_YEAR_ID', $budget_year)
+        ->value('DATE_BEGIN');
    
     $sql=DB::connection('hosxp')->select('
         SELECT COUNT(DISTINCT an) AS total,
@@ -808,10 +799,10 @@ public function ipd_mornitor(Request $request )
 		ROUND(SUM(i.adjrw)/COUNT(DISTINCT i.an),2) AS cmi,
         ROUND(SUM(i.adjrw),2) AS adjrw ,SUM(a.income-a.rcpt_money)/SUM(i.adjrw) AS "income_rw"  
         FROM an_stat a INNER JOIN ipt i ON a.an=i.an
-        WHERE i.dchdate BETWEEN "'.$start_date.'" AND DATE(NOW())
+        WHERE i.dchdate BETWEEN ? AND DATE(NOW())
         AND a.pdx NOT IN ("Z290","Z208")
         GROUP BY MONTH(i.dchdate)
-        ORDER BY YEAR(i.dchdate) , MONTH(i.dchdate)');
+        ORDER BY YEAR(i.dchdate) , MONTH(i.dchdate)',[$start_date]);
     $month = array_column($sql4,'month');  
     $bed_occupancy = array_column($sql4,'bed_occupancy');
 
@@ -834,10 +825,10 @@ public function ipd_mornitor(Request $request )
 		ROUND(SUM(i.adjrw)/COUNT(DISTINCT i.an),2) AS cmi,
         ROUND(SUM(i.adjrw),2) AS adjrw ,SUM(a.income-a.rcpt_money)/SUM(i.adjrw) AS "income_rw"  
         FROM an_stat a INNER JOIN ipt i ON a.an=i.an
-        WHERE i.dchdate BETWEEN "'.$start_date.'" AND DATE(NOW())
+        WHERE i.dchdate BETWEEN ? AND DATE(NOW())
         AND a.pdx NOT IN ("Z290","Z208") AND i.ward NOT IN (SELECT ward FROM htp_report.lookup_ward WHERE ward_homeward = "Y")
         GROUP BY MONTH(i.dchdate)
-        ORDER BY YEAR(i.dchdate) , MONTH(i.dchdate)');
+        ORDER BY YEAR(i.dchdate) , MONTH(i.dchdate)',[$start_date]);
 
     $ip_homeward = DB::connection('hosxp')->select('
         SELECT CASE WHEN MONTH(i.dchdate)="10" THEN CONCAT("ต.ค. ",YEAR(i.dchdate)+543)
@@ -858,10 +849,10 @@ public function ipd_mornitor(Request $request )
 		ROUND(SUM(i.adjrw)/COUNT(DISTINCT i.an),2) AS cmi,
         ROUND(SUM(i.adjrw),2) AS adjrw ,SUM(a.income-a.rcpt_money)/SUM(i.adjrw) AS "income_rw"  
         FROM an_stat a INNER JOIN ipt i ON a.an=i.an
-        WHERE i.dchdate BETWEEN "'.$start_date.'" AND DATE(NOW())
+        WHERE i.dchdate BETWEEN ? AND DATE(NOW())
         AND a.pdx NOT IN ("Z290","Z208") AND i.ward IN (SELECT ward FROM htp_report.lookup_ward WHERE ward_homeward = "Y")
         GROUP BY MONTH(i.dchdate)
-        ORDER BY YEAR(i.dchdate) , MONTH(i.dchdate)');
+        ORDER BY YEAR(i.dchdate) , MONTH(i.dchdate)',[$start_date]);
 
 
     return view('dashboard.ipd_mornitor',compact('total','ipd','vip','lr','homeward','non_diagtext','non_icd10','not_transfer',
