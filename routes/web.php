@@ -772,7 +772,8 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
     Route::match(['get','post'],'claim_op/lgo_kidney',[ClaimOpController::class,'lgo_kidney']);
     Route::match(['get','post'],'claim_op/bkk',[ClaimOpController::class,'bkk']);
     Route::match(['get','post'],'claim_op/bmt',[ClaimOpController::class,'bmt']);
-    Route::match(['get','post'],'claim_op/sss',[ClaimOpController::class,'sss']);
+    Route::match(['get','post'],'claim_op/sss_dent',[ClaimOpController::class,'sss_dent']);
+    Route::match(['get','post'],'claim_op/sss_kidney',[ClaimOpController::class,'sss_kidney']);
     Route::match(['get','post'],'claim_op/rcpt',[ClaimOpController::class,'rcpt']);
     Route::match(['get','post'],'claim_op/act',[ClaimOpController::class,'act']);
     // Claim_IP -------------------------------------------------------------------------------------------------------------------------
