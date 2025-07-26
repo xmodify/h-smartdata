@@ -150,10 +150,10 @@
                                     </a>
                                     <ul class="bg-success dropdown-menu">
                                         <li>
-                                            <a class="dropdown-item link-primary text-white" href="#"> SS-OP ประกันสังคม ทันตกรรม</a>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/claim_op/sss_fund') }}"> SS-OP ประกันสังคม กองทุนทดแทน</a>
                                         </li> 
                                         <li>
-                                            <a class="dropdown-item link-primary text-white" href="#">SS-OP ประกันสังคม ฟอกไต</a>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/claim_op/sss_kidney') }}">SS-OP ประกันสังคม ฟอกไต</a>
                                         </li>
                                     </ul>
                                 </li>
