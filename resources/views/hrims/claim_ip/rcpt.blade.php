@@ -88,7 +88,7 @@
                   {{ number_format($row->rcpt_money,2) }} [{{ $row->rcpno }}]
                 </td>
                 <td align="right" style="color:red">{{ number_format($row->claim_price,2) }}</td> 
-                <td align="right">{{ number_format($row->arrear_amount,2) }}</td>               
+                <td align="right" @if($row->arrear_amount >0) style="color:blue" @endif>{{ number_format($row->arrear_amount,2) }}</td>              
                 <td align="right">{{ number_format($row->deposit_amount,2) }}</td>    
                 <td align="right">{{ number_format($row->debit_amount,2) }}</td>   
                 <td align="left" width = "5%">{{ $row->ipt_coll_status_type_name }}</td>
@@ -166,7 +166,7 @@
                   <td align="right">{{ number_format($row->income,2) }}</td>
                   <td align="right">{{ number_format($row->paid_money,2) }}</td>
                   <td align="right" style="color:green">{{ number_format($row->rcpt_money,2) }} [{{ $row->rcpno }}]</td>
-                  <td align="right">{{ number_format($row->arrear_amount,2) }}</td>               
+                  <td align="right" @if($row->arrear_amount >0) style="color:blue" @endif>{{ number_format($row->arrear_amount,2) }}</td>               
                   <td align="right">{{ number_format($row->deposit_amount,2) }}</td>    
                   <td align="right">{{ number_format($row->debit_amount,2) }}</td>   
                   <td align="left" width = "5%">{{ $row->ipt_coll_status_type_name }}</td>
