@@ -159,10 +159,10 @@
                                 </li>
                                 <!-- เมนูอื่น -->
                                 <li>  
-                                    <a class="dropdown-item link-primary text-white " href="#" >
+                                    <a class="dropdown-item link-primary text-white " href="{{ url('hrims/claim_op/rcpt') }}" >
                                         OP-ชำระเงิน
                                     </a>   
-                                    <a class="dropdown-item link-primary text-white " href="#" >
+                                    <a class="dropdown-item link-primary text-white " href="{{ url('hrims/claim_op/act') }}" >
                                         OP-พรบ.
                                     </a>   
                                 </li>
