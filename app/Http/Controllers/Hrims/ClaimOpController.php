@@ -51,7 +51,7 @@ class ClaimOpController extends Controller
             LEFT JOIN htp_report.finance_stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN ? AND ?
             AND p.hipdata_code = "UCS" AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
-            AND oe.moph_finance_upload_status IS NULL AND rep.vn IS NULL AND stm.cid IS NULL 
+            AND oe.moph_finance_upload_status IS NULL 
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
 
         $claim=DB::connection('hosxp')->select('
@@ -88,7 +88,7 @@ class ClaimOpController extends Controller
             LEFT JOIN htp_report.finance_stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN ? AND ?
             AND p.hipdata_code = "UCS" AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
-            AND (oe.moph_finance_upload_status IS NOT NULL OR rep.vn IS NOT NULL OR stm.cid IS NOT NULL )
+            AND oe.moph_finance_upload_status IS NOT NULL 
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]);
 
         return view('hrims.claim_op.ucs_incup',compact('start_date','end_date','search','claim'));
@@ -132,7 +132,7 @@ class ClaimOpController extends Controller
             LEFT JOIN htp_report.finance_stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate	AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND p.hipdata_code = "UCS" AND o.vstdate BETWEEN ? AND ?             
             AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y"	AND (hmain_ucs IS NULL OR hmain_ucs =""))            
-            AND oe.moph_finance_upload_status IS NULL AND rep.vn IS NULL AND stm.cid IS NULL 
+            AND oe.moph_finance_upload_status IS NULL
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
 
         $claim=DB::connection('hosxp')->select('
@@ -170,7 +170,7 @@ class ClaimOpController extends Controller
             LEFT JOIN htp_report.finance_stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate	AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND p.hipdata_code = "UCS" AND o.vstdate BETWEEN ? AND ?            
             AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y"	AND (hmain_ucs IS NULL OR hmain_ucs ="")) 
-            AND o1.vn IS NOT NULL AND (oe.moph_finance_upload_status IS NOT NULL OR rep.vn IS NOT NULL OR stm.cid IS NOT NULL )
+            AND oe.moph_finance_upload_status IS NOT NULL 
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]);
 
         return view('hrims.claim_op.ucs_inprovince',compact('start_date','end_date','search','claim'));
@@ -212,7 +212,7 @@ class ClaimOpController extends Controller
             LEFT JOIN htp_report.finance_stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND p.hipdata_code = "UCS" AND o.vstdate BETWEEN ? AND ?
             AND vp.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y")
-            AND kidney.vn IS NULL AND oe.moph_finance_upload_status IS NULL AND rep.vn IS NULL AND stm.cid IS NULL 
+            AND kidney.vn IS NULL AND oe.moph_finance_upload_status IS NULL 
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date]);
 
         $claim=DB::connection('hosxp')->select('
@@ -244,7 +244,7 @@ class ClaimOpController extends Controller
             LEFT JOIN htp_report.finance_stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate	AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND p.hipdata_code = "UCS" AND o.vstdate BETWEEN ? AND ?
             AND vp.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y")
-            AND kidney.vn IS NULL AND (oe.moph_finance_upload_status IS NOT NULL OR rep.vn IS NOT NULL OR stm.cid IS NOT NULL )
+            AND kidney.vn IS NULL AND oe.moph_finance_upload_status IS NOT NULL 
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date]);
 
         return view('hrims.claim_op.ucs_outprovince',compact('start_date','end_date','search','claim'));
@@ -320,7 +320,7 @@ class ClaimOpController extends Controller
             LEFT JOIN htp_report.finance_stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN ? AND ?
             AND p.hipdata_code = "STP" AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
-            AND oe.moph_finance_upload_status IS NULL AND rep.vn IS NULL AND stm.cid IS NULL 
+            AND oe.moph_finance_upload_status IS NULL 
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
 
         $claim=DB::connection('hosxp')->select('
@@ -351,7 +351,7 @@ class ClaimOpController extends Controller
             LEFT JOIN htp_report.finance_stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN ? AND ?
             AND p.hipdata_code = "STP" AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
-            AND (oe.moph_finance_upload_status IS NOT NULL OR rep.vn IS NOT NULL OR stm.cid IS NOT NULL )
+            AND oe.moph_finance_upload_status IS NOT NULL
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
 
         return view('hrims.claim_op.stp_incup',compact('start_date','end_date','search','claim'));
@@ -392,7 +392,7 @@ class ClaimOpController extends Controller
             LEFT JOIN htp_report.finance_stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND p.hipdata_code = "STP" AND o.vstdate BETWEEN ? AND ?
             AND vp.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs = "Y")
-            AND kidney.vn IS NULL AND oe.moph_finance_upload_status IS NULL AND rep.vn IS NULL AND stm.cid IS NULL 
+            AND kidney.vn IS NULL AND oe.moph_finance_upload_status IS NULL  
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date]);
 
         $claim=DB::connection('hosxp')->select('
@@ -424,7 +424,7 @@ class ClaimOpController extends Controller
             LEFT JOIN htp_report.finance_stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND p.hipdata_code = "STP" AND o.vstdate BETWEEN ? AND ?
             AND vp.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs = "Y")
-            AND kidney.vn IS NULL AND (oe.moph_finance_upload_status IS NOT NULL OR rep.vn IS NOT NULL OR stm.cid IS NOT NULL )
+            AND kidney.vn IS NULL AND oe.moph_finance_upload_status IS NOT NULL 
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date]);
 
         return view('hrims.claim_op.stp_outcup',compact('start_date','end_date','search','claim'));
@@ -802,7 +802,7 @@ class ClaimOpController extends Controller
             LEFT JOIN htp_report.finance_stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN ? AND ?
             AND p.hipdata_code IN ("SSS","SSI") 
-            AND oe.moph_finance_upload_status IS NULL AND rep.vn IS NULL AND stm.cid IS NULL 
+            AND oe.moph_finance_upload_status IS NULL 
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
 
         $claim=DB::connection('hosxp')->select('
@@ -833,7 +833,7 @@ class ClaimOpController extends Controller
             LEFT JOIN htp_report.finance_stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN ? AND ?
             AND p.hipdata_code IN ("SSS","SSI") 
-            AND (oe.moph_finance_upload_status IS NOT NULL OR rep.vn IS NOT NULL OR stm.cid IS NOT NULL )
+            AND oe.moph_finance_upload_status IS NOT NULL 
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
 
         return view('hrims.claim_op.sss_ppfs',compact('start_date','end_date','search','claim'));

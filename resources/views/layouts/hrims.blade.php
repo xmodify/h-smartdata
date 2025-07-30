@@ -223,7 +223,7 @@
                             </ul> 
                         </li>  
                         <li >                            
-                            <a class="btn btn-outline-info text-white" href="#">
+                            <a class="btn btn-outline-info text-white" href="{{ url('hrims/debtor') }}">
                                 ลูกหนี้ค่ารักษาพยาบาล
                             </a>       
                         </li>     

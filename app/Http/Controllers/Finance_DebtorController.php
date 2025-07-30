@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\DB; 
 use App\Models\Finance_debtor_1102050101_103;
 use App\Models\Finance_debtor_1102050101_109;
 use App\Models\Finance_debtor_1102050101_201;
