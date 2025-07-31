@@ -103,7 +103,7 @@
                         <input type="checkbox" name="kidney" value="Y">
                         <label for="editkidney">kidney</label>
                         <br>
-                        <input type="checkbox" name="ens" value="Y">
+                        <input type="checkbox" name="ems" value="Y">
                         <label for="editems">ems</label>
                     </div>
                     <div class="modal-footer">

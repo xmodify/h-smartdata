@@ -7,8 +7,8 @@
 
       <div class="row">            
         <div class="col-md-12">
-          <a class="btn btn-outline-danger" href="{{ url('finance_debtor/check_income') }}" target="_blank">Check HOSxP</a> 
-          <a class="btn btn-outline-success" href="{{ url('finance_debtor/summary') }}" target="_blank">สรุปบัญชีลูกหนี้ค่ารักษาพยาบาลแยกตามผังบัญชี</a>  
+          <a class="btn btn-outline-danger" href="{{ url('hrims/debtor/check_income') }}" target="_blank">Check HOSxP</a> 
+          <a class="btn btn-outline-success" href="{{ url('hrims/debtor/summary') }}" target="_blank">สรุปบัญชีลูกหนี้ค่ารักษาพยาบาลแยกตามผังบัญชี</a>  
         </div>  
       </div>
       <br>
@@ -23,16 +23,16 @@
             </thead> 
             <tbody>   
               <tr>
-                <td><a href="#" target="_blank"><li>1102050101.103-ลูกหนี้ค่าตรวจสุขภาพ หน่วยงานภาครัฐ</li></a></td>
+                <td><a href="{{ url('hrims/debtor/1102050101_103') }}" target="_blank"><li>1102050101.103-ลูกหนี้ค่าตรวจสุขภาพ หน่วยงานภาครัฐ</li></a></td>
               </tr> 
               <tr>
-                <td><a href="#" target="_blank"><li>1102050101.109-ลูกหนี้-ระบบปฏิบัติการฉุกเฉิน</li></a></td>
+                <td><a href="{{ url('hrims/debtor/1102050101_109') }}" target="_blank"><li>1102050101.109-ลูกหนี้-ระบบปฏิบัติการฉุกเฉิน</li></a></td>
               </tr> 
               <tr>
-                <td><a href="#" target="_blank"><li>1102050101.201-ลูกหนี้ค่ารักษา UC-OP ใน CUP</li></a></td>
+                <td><a href="{{ url('hrims/debtor/1102050101_201') }}" target="_blank"><li>1102050101.201-ลูกหนี้ค่ารักษา UC-OP ใน CUP</li></a></td>
               </tr> 
               <tr>
-                <td><a href="#" target="_blank"><li>1102050101.203-ลูกหนี้ค่ารักษา UC-OP นอก CUP (ในจังหวัดสังกัด สธ.)</li></a></td>
+                <td><a href="{{ url('hrims/debtor/1102050101_203') }}" target="_blank"><li>1102050101.203-ลูกหนี้ค่ารักษา UC-OP นอก CUP (ในจังหวัดสังกัด สธ.)</li></a></td>
               </tr> 
               <tr>
                 <td class="text-danger"><li>1102050101.204-ลูกหนี้ค่ารักษา UC-OP นอก CUP (ต่างจังหวัดสังกัด สธ.)</li></td>
