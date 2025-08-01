@@ -579,7 +579,6 @@ class DebtorController extends Controller
                 'pdx'             => $row->pdx,  
                 'income'          => $row->income,  
                 'rcpt_money'      => $row->rcpt_money,
-                'other'           => $row->other,
                 'ppfs'            => $row->ppfs,
                 'debtor'          => $row->debtor,  
                 'status'          => $row->status,          
