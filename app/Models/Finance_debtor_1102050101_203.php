@@ -26,6 +26,7 @@ class Finance_debtor_1102050101_203 extends Model
         'income',
         'rcpt_money',
         'other',
+        'ppfs',
         'debtor',
         'status', 
         'receive',

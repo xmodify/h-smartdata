@@ -1,5 +1,5 @@
 <?php
-$files = "ลูกหนี้รายตัวผังบัญชี-1102050101.109-ลูกหนี้-ระบบปฏิบัติการฉุกเฉิน.xls";
+$files = "ลูกหนี้รายตัวผังบัญชี-1102050101.209-ลูกหนี้ค่ารักษา ด้านการสร้างเสริมสุขภาพและป้องกันโรค (P&P).xls";
 header("Content-Type: application/vnd.ms-excel");
 header("Content-Disposition: attachment; filename=".$files); //ชื่อไฟล์
 ?>
@@ -8,7 +8,7 @@ header("Content-Disposition: attachment; filename=".$files); //ชื่อไ�
     <strong>
         <p align=center> 
             แบบรายงานบัญชีลูกหนี้ค่ารักษาพยาบาลแยกแยกรายตัว<br>
-            รหัสผังบัญชี 1102050101.109-ลูกหนี้-ระบบปฏิบัติการฉุกเฉิน<br>
+            รหัสผังบัญชี 1102050101.209-ลูกหนี้ค่ารักษา ด้านการสร้างเสริมสุขภาพและป้องกันโรค (P&P)<br>
             วันที่ {{dateThaifromFull($start_date)}} ถึง {{dateThaifromFull($end_date)}} <br><br>
         </p>
     </strong>
@@ -26,9 +26,11 @@ header("Content-Disposition: attachment; filename=".$files); //ชื่อไ�
                 <th class="text-center">สิทธิ</th>
                 <th class="text-center">ICD10</th>
                 <th class="text-center">ค่ารักษาทั้งหมด</th>  
-                <th class="text-center">ชำระเอง</th>  
+                <th class="text-center">ชำระเอง</th> 
+                <th class="text-center">กองทุนอื่น</th> 
+                <th class="text-center">PPFS</th>  
                 <th class="text-center">ลูกหนี้</th>
-                <th class="text-center text-primary">ชดเชย</th> 
+                <th class="text-center text-primary">ชดเชย PPFS</th> 
                 <th class="text-center text-primary">ผลต่าง</th>  
                 <th class="text-center text-primary">REP</th>   
             </tr>     
@@ -36,6 +38,8 @@ header("Content-Disposition: attachment; filename=".$files); //ชื่อไ�
             <?php $count = 1 ; ?>
             <?php $sum_income = 0 ; ?>
             <?php $sum_rcpt_money = 0 ; ?>
+            <?php $sum_other = 0 ; ?>
+            <?php $sum_ppfs = 0 ; ?>
             <?php $sum_debtor = 0 ; ?>
             <?php $sum_receive = 0 ; ?>
             @foreach($debtor as $row)          
@@ -48,7 +52,9 @@ header("Content-Disposition: attachment; filename=".$files); //ชื่อไ�
                 <td align="right">{{ $row->pdx }}</td>                      
                 <td align="right">{{ number_format($row->income,2) }}</td>
                 <td align="right">{{ number_format($row->rcpt_money,2) }}</td>
-                 <td align="right">{{ number_format($row->debtor,2) }}</td>
+                <td align="right">{{ number_format($row->other,2) }}</td>
+                <td align="right">{{ number_format($row->ppfs,2) }}</td>
+                <td align="right">{{ number_format($row->debtor,2) }}</td>
                 <td align="right">{{ number_format($row->receive,2) }}</td>
                 <td align="right">{{ number_format($row->receive-$row->debtor,2) }}</td>
                 <td align="center">{{ $row->repno }}</td>
@@ -56,6 +62,8 @@ header("Content-Disposition: attachment; filename=".$files); //ชื่อไ�
             <?php $count++; ?>
             <?php $sum_income += $row->income ; ?>
             <?php $sum_rcpt_money += $row->rcpt_money ; ?>
+            <?php $sum_other += $row->other ; ?> 
+            <?php $sum_other += $row->ppfs ; ?> 
             <?php $sum_debtor += $row->debtor ; ?> 
             <?php $sum_receive += $row->receive ; ?>   
             @endforeach   
@@ -63,6 +71,8 @@ header("Content-Disposition: attachment; filename=".$files); //ชื่อไ�
                 <td align="right" colspan = "6"><strong>รวมค่ารักษาพยาบาลทั้งสิ้น &nbsp;</strong><br></td> 
                 <td align="right"><strong>{{number_format($sum_income,2)}}&nbsp;</strong></td>  
                 <td align="right"><strong>{{number_format($sum_rcpt_money,2)}}&nbsp;</strong></td>
+                <td align="right"><strong>{{number_format($sum_other,2)}}&nbsp;</strong></td>
+                <td align="right"><strong>{{number_format($sum_ppfs,2)}}&nbsp;</strong></td>
                 <td align="right"><strong>{{number_format($sum_debtor,2)}}&nbsp;</strong></td>
                 <td align="right"><strong>{{number_format($sum_receive,2)}}&nbsp;</strong></td> 
                 <td align="right"><strong>{{number_format($sum_receive-$sum_debtor,2)}}&nbsp;</strong></td>

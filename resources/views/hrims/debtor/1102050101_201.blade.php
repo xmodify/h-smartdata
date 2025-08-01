@@ -48,8 +48,8 @@
                         <th class="text-center">
                             <button type="button" class="btn btn-outline-danger btn-sm" onclick="confirmDelete()">ลบลูกหนี้</button>
                         </th>
-                        <th class="text-left text-primary" colspan = "8">1102050101.201-ลูกหนี้ค่ารักษา UC-OP ใน CUP วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</th> 
-                        <th class="text-center text-primary" colspan = "6">การชดเชย</th>                                                 
+                        <th class="text-left text-primary" colspan = "9">1102050101.201-ลูกหนี้ค่ารักษา UC-OP ใน CUP วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</th> 
+                        <th class="text-center text-primary" colspan = "7">การชดเชย</th>                                                 
                     </tr>
                     <tr class="table-success">
                         <th class="text-center"><input type="checkbox" onClick="toggle_d(this)"> All</th> 
@@ -60,11 +60,14 @@
                         <th class="text-center">ICD10</th>
                         <th class="text-center">ค่ารักษาทั้งหมด</th>  
                         <th class="text-center">ชำระเอง</th>  
-                        <th class="text-center">กองทุนอื่น</th>        
+                        <th class="text-center">กองทุนอื่น</th> 
+                        <th class="text-center">PPFS</th>       
                         <th class="text-center text-primary">ลูกหนี้</th>
-                        <th class="text-center text-primary">ชดเชย</th> 
+                        <th class="text-center text-primary">ชดเชย</th>
+                        <th class="text-center text-primary">ชดเชย PPFS</th>
+                        <th class="text-center text-primary">REP PPFS</th>  
                         <th class="text-center text-primary">ผลต่าง</th>                     
-                        <th class="text-center text-primary" width="9%">สถานะ</th>  
+                        <th class="text-center text-primary" width="5%">สถานะ</th>  
                         <th class="text-center text-primary">Lock</th>                                       
                     </tr>
                     </thead>
@@ -72,8 +75,10 @@
                     <?php $sum_income = 0 ; ?>
                     <?php $sum_rcpt_money = 0 ; ?>
                     <?php $sum_other = 0 ; ?>
+                    <?php $sum_ppfs = 0 ; ?>
                     <?php $sum_debtor = 0 ; ?>
                     <?php $sum_receive = 0 ; ?>
+                    <?php $sum_receive_pp = 0 ; ?>
                     @foreach($debtor as $row) 
                     <tr>
                         <td class="text-center"><input type="checkbox" name="checkbox_d[]" value="{{$row->vn}}"></td>   
@@ -85,11 +90,17 @@
                         <td align="right">{{ number_format($row->income,2) }}</td>
                         <td align="right">{{ number_format($row->rcpt_money,2) }}</td>
                         <td align="right">{{ number_format($row->other,2) }}</td>
-                        <td align="right" class="text-primary">{{ number_format($row->debtor,2) }}</td>  
+                        <td align="right">{{ number_format($row->ppfs,2) }}</td>
+                        <td align="right" class="text-primary">{{ number_format($row->debtor,2) }}</td> 
                         <td align="right" @if($row->receive > 0) style="color:green" 
                             @elseif($row->receive < 0) style="color:red" @endif>
                             {{ number_format($row->receive,2) }}
+                        </td> 
+                        <td align="right" @if($row->receive_pp > 0) style="color:green" 
+                            @elseif($row->receive_pp < 0) style="color:red" @endif>
+                            {{ number_format($row->receive_pp,2) }}
                         </td>
+                        <td align="right">{{ $row->repno_pp }}</td>
                         <td align="right" @if(($row->receive-$row->debtor) > 0) style="color:green"
                             @elseif(($row->receive-$row->debtor) < 0) style="color:red" @endif>
                             {{ number_format($row->receive-$row->debtor,2) }}
@@ -100,8 +111,10 @@
                     <?php $sum_income += $row->income ; ?>
                     <?php $sum_rcpt_money += $row->rcpt_money ; ?>
                     <?php $sum_other += $row->other ; ?> 
+                    <?php $sum_ppfs += $row->ppfs ; ?> 
                     <?php $sum_debtor += $row->debtor ; ?> 
-                    <?php $sum_receive += $row->receive ; ?>       
+                    <?php $sum_receive += $row->receive ; ?> 
+                    <?php $sum_receive_pp += $row->receive_pp ; ?>       
                     @endforeach 
                     </tr>   
                 </table>
@@ -114,8 +127,10 @@
                     <th class="text-center">ค่ารักษาพยาบาล</th>
                     <th class="text-center">ชำระเอง</th>
                     <th class="text-center">กองทุนอื่น</th>
-                    <th class="text-center">ลูกหนี้</th> 
-                    <th class="text-center">ชดเชย</th>   
+                    <th class="text-center">PPFS</th>
+                    <th class="text-center">ลูกหนี้</th>
+                    <th class="text-center">ชดเชย</th> 
+                    <th class="text-center">ชดเชย PPFS</th>   
                     <th class="text-center">ผลต่าง</th> 
                     <th class="text-center">รายงาน</th>                
                 </tr>
@@ -126,10 +141,15 @@
                     <td class="text-primary" align="right">{{ number_format($sum_income,2)}}</td>
                     <td class="text-primary" align="right">{{ number_format($sum_rcpt_money,2)}}</td>
                     <td class="text-primary" align="right">{{ number_format($sum_other,2)}}</td>
+                    <td class="text-primary" align="right">{{ number_format($sum_ppfs,2)}}</td>
                     <td class="text-primary" align="right"><strong>{{ number_format($sum_debtor,2)}}</strong></td>
                     <td align="right" @if($sum_receive > 0) style="color:green"
                         @elseif($sum_receive < 0) style="color:red" @endif>
                         <strong>{{ number_format($sum_receive,2)}}</strong>
+                    </td>
+                    <td align="right" @if($sum_receive_pp > 0) style="color:green"
+                        @elseif($sum_receive_pp < 0) style="color:red" @endif>
+                        <strong>{{ number_format($sum_receive_pp,2)}}</strong>
                     </td>
                     <td align="right" @if(($sum_receive-$sum_debtor) > 0) style="color:green"
                         @elseif(($sum_receive-$sum_debtor) < 0) style="color:red" @endif>
@@ -162,10 +182,11 @@
                         <th class="text-center">ICD10</th>
                         <th class="text-center">ค่ารักษาทั้งหมด</th>  
                         <th class="text-center">ชำระเอง</th>    
-                        <th class="text-center">กองทุนอื่น</th>                                       
+                        <th class="text-center">กองทุนอื่น</th>   
+                        <th class="text-center">PPFS</th>                                     
                         <th class="text-center">ลูกหนี้</th>
-                        <th class="text-center" width = "15%">รายการกองทุนอื่น</th> 
-                        
+                        <th class="text-center" width = "10%">รายการกองทุนอื่น</th> 
+                        <th class="text-center" width = "10%">รายการ PPFS</th>
                     </tr>
                     </thead>
                     <?php $count = 1 ; ?>
@@ -180,8 +201,10 @@
                         <td align="right">{{ number_format($row->income,2) }}</td>
                         <td align="right">{{ number_format($row->rcpt_money,2) }}</td>
                         <td align="right">{{ number_format($row->other,2) }}</td>
+                        <td align="right">{{ number_format($row->ppfs,2) }}</td>
                         <td align="right">{{ number_format($row->debtor,2) }}</td>
                         <td align="left" width = "15%">{{ $row->other_list }}</td>
+                        <td align="left" width = "15%">{{ $row->ppfs_list }}</td>
                     <?php $count++; ?>
                     @endforeach 
                 </tr>   
