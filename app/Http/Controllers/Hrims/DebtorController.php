@@ -516,9 +516,7 @@ class DebtorController extends Controller
 			LEFT JOIN (SELECT op.vn, SUM(op.sum_price) AS claim_price	FROM opitemrece op
 				INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
 				WHERE op.vstdate BETWEEN ? AND ? AND li.ems = "Y" GROUP BY op.vn) ems ON ems.vn=o.vn			
-            WHERE (o.an IS NULL OR o.an ="") 
-                AND v.income-v.rcpt_money <>"0" 
-                AND o.vstdate BETWEEN ? AND ?            
+            WHERE o.vstdate BETWEEN ? AND ?            
                 AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_109) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date]); 
 
@@ -559,9 +557,7 @@ class DebtorController extends Controller
 			LEFT JOIN (SELECT op.vn, SUM(op.sum_price) AS claim_price	FROM opitemrece op
 				INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
 				WHERE op.vstdate BETWEEN ? AND ? AND li.ems = "Y" GROUP BY op.vn) ems ON ems.vn=o.vn			
-            WHERE (o.an IS NULL OR o.an ="") 
-                AND v.income-v.rcpt_money <>"0" 
-                AND o.vstdate BETWEEN ? AND ?            
+            WHERE o.vstdate BETWEEN ? AND ?            
                 AND o.vn IN ('.$checkbox_string.') 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date]); 
         
