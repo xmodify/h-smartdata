@@ -64,11 +64,11 @@
                         <th class="text-center">PPFS</th>        
                         <th class="text-center text-primary">ลูกหนี้</th>
                         <th class="text-center text-primary">ชดเชย</th> 
-                        <th class="text-center text-primary">ชดเชย PPFS</th> 
-                        <th class="text-center text-primary">REP PPFS</th> 
+                        <th class="text-center text-primary">ชดเชย PPFS</th>
                         <th class="text-center text-primary">ผลต่าง</th>                     
-                        <th class="text-center text-primary" width="9%">สถานะ</th>
-                        <th class="text-center text-primary" width="6%">Action</th>  
+                        <th class="text-center text-primary" width="5%">สถานะ</th>
+                        <th class="text-center text-primary" width="5%">Action</th>
+                        <th class="text-center text-primary">REP</th>  
                         <th class="text-center text-primary">Lock</th>                                       
                     </tr>
                     </thead>
@@ -100,8 +100,7 @@
                         <td align="right" @if($row->receive_pp > 0) style="color:green" 
                             @elseif($row->receive_pp < 0) style="color:red" @endif>
                             {{ number_format($row->receive_pp,2) }}
-                        </td>
-                        <td align="right">{{ $row->repno_pp }}</td>
+                        </td>                        
                         <td align="right" @if(($row->receive-$row->debtor) > 0) style="color:green"
                             @elseif(($row->receive-$row->debtor) < 0) style="color:red" @endif>
                             {{ number_format($row->receive-$row->debtor,2) }}
@@ -111,7 +110,8 @@
                             <button type="button" class="btn btn-outline-warning btn-sm text-primary receive" data-toggle="modal" data-target="#receive-{{ $row->vn }}"  data-id="{{ $row->vn }}" > 
                                 บันทึกชดเชย
                             </button>                            
-                        </td>       
+                        </td> 
+                        <td align="right">{{ $row->repno_pp }}</td>      
                         <td align="center" style="color:blue">{{ $row->debtor_lock }}</td>                            
                     <?php $count++; ?>
                     <?php $sum_income += $row->income ; ?>
