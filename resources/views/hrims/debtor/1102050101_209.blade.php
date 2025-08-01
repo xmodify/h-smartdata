@@ -80,7 +80,7 @@
                     @foreach($debtor as $row) 
                     <tr>
                         <td class="text-center"><input type="checkbox" name="checkbox_d[]" value="{{$row->vn}}"></td>   
-                        <td align="right">{{ DateThai($row->vstdate) }} {{ $row->vsttime }}</td>
+                        <td align="left">{{ DateThai($row->vstdate) }} {{ $row->vsttime }}</td>
                         <td align="center">{{ $row->hn }}</td>
                         <td align="left">{{ $row->ptname }}</td>
                         <td align="left">{{ $row->pttype }} [{{ $row->hospmain }}]</td>
@@ -105,7 +105,7 @@
                     <?php $sum_income += $row->income ; ?>
                     <?php $sum_rcpt_money += $row->rcpt_money ; ?>
                     <?php $sum_other += $row->other ; ?> 
-                    <?php $sum_other += $row->ppfs ; ?> 
+                    <?php $sum_ppfs += $row->ppfs ; ?> 
                     <?php $sum_debtor += $row->debtor ; ?> 
                     <?php $sum_receive += $row->receive ; ?>       
                     @endforeach 
@@ -280,10 +280,6 @@
     </script>
 
 @endsection
-
-<!-- Modal -->
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 
 @push('scripts')
     <script>

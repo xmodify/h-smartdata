@@ -42,7 +42,7 @@
             <form action="{{ url('hrims/debtor/1102050101_201_delete') }}" method="POST" enctype="multipart/form-data">
                 @csrf   
                 @method('DELETE')
-                <table id="debtor" class="table table-bordered table-striped my-3">
+                <table id="debtor" class="table table-bordered table-striped my-3" width="100%">
                     <thead>
                     <tr class="table-success">
                         <th class="text-center">
@@ -164,7 +164,7 @@
         <div style="overflow-x:auto;">
             <form action="{{ url('hrims/debtor/1102050101_201_confirm') }}" method="POST" enctype="multipart/form-data">
                 @csrf                
-                <table id="debtor_search" class="table table-bordered table-striped my-3">
+                <table id="debtor_search" class="table table-bordered table-striped my-3" width="100%">
                     <thead>
                     <tr class="table-secondary">
                         <th class="text-center">
