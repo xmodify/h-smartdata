@@ -169,7 +169,7 @@
                 </thead>
                 <tr>
                     <td class="text-primary" align="right">1102050101.401</td>
-                    <td class="text-primary" align="left">1102050101.401-ลูกหนี้ค่ารักษา เบิกจ่ายตรงกรมบัญชีกลาง OP</td>
+                    <td class="text-primary" align="left">ลูกหนี้ค่ารักษา เบิกจ่ายตรงกรมบัญชีกลาง OP</td>
                     <td class="text-primary" align="right">{{ number_format($sum_income,2)}}</td>
                     <td class="text-primary" align="right">{{ number_format($sum_rcpt_money,2)}}</td>
                     <td class="text-primary" align="right">{{ number_format($sum_ofc,2)}}</td>

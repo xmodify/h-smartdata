@@ -122,7 +122,7 @@
                 </thead>
                 <tr>
                     <td class="text-primary" align="right">1102050101.309</td>
-                    <td class="text-primary" align="left">1102050101.309-ลูกหนี้ค่ารักษา ประกันสังคม-ค่าใช้จ่ายสูง/อุบัติเหตุ/ฉุกเฉิน OP</td>
+                    <td class="text-primary" align="left">ลูกหนี้ค่ารักษา ประกันสังคม-ค่าใช้จ่ายสูง/อุบัติเหตุ/ฉุกเฉิน OP</td>
                     <td class="text-primary" align="right">{{ number_format($sum_income,2)}}</td>
                     <td class="text-primary" align="right">{{ number_format($sum_rcpt_money,2)}}</td>
                     <td class="text-primary" align="right">{{ number_format($sum_kidney,2)}}</td>

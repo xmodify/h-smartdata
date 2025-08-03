@@ -143,7 +143,7 @@
                 </thead>
                 <tr>
                     <td class="text-primary" align="right">1102050101.307</td>
-                    <td class="text-primary" align="left">1102050101.307-ลูกหนี้ค่ารักษา ประกันสังคม-กองทุนทดแทน</td>
+                    <td class="text-primary" align="left">ลูกหนี้ค่ารักษา ประกันสังคม-กองทุนทดแทน</td>
                     <td class="text-primary" align="right">{{ number_format($sum_income,2)}}</td>
                     <td class="text-primary" align="right">{{ number_format($sum_rcpt_money,2)}}</td>
                     <td class="text-primary" align="right">{{ number_format($sum_other,2)}}</td>

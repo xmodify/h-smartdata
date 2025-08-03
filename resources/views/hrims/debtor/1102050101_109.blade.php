@@ -123,7 +123,7 @@
                 </thead>
                 <tr>
                     <td class="text-primary" align="right">1102050101.109</td>
-                    <td class="text-primary" align="left">1102050101.109-ลูกหนี้-ระบบปฏิบัติการฉุกเฉิน</td>
+                    <td class="text-primary" align="left">ลูกหนี้-ระบบปฏิบัติการฉุกเฉิน</td>
                     <td class="text-primary" align="right">{{ number_format($sum_income,2)}}</td>
                     <td class="text-primary" align="right">{{ number_format($sum_rcpt_money,2)}}</td>
                     <td class="text-primary" align="right"><strong>{{ number_format($sum_debtor,2)}}</strong></td>
