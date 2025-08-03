@@ -835,5 +835,28 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
     Route::delete('debtor/1102050101_216_delete',[DebtorController::class,'_1102050101_216_delete']);
     Route::get('debtor/1102050101_216_daily_pdf',[DebtorController::class,'_1102050101_216_daily_pdf']);
     Route::get('debtor/1102050101_216_indiv_excel',[DebtorController::class,'_1102050101_209_indiv_excel']);
+    Route::match(['get','post'],'debtor/1102050101_301',[DebtorController::class,'_1102050101_301']);
+    Route::post('debtor/1102050101_301_confirm',[DebtorController::class,'_1102050101_301_confirm']);
+    Route::delete('debtor/1102050101_301_delete',[DebtorController::class,'_1102050101_301_delete']);
+    Route::get('debtor/1102050101_301_daily_pdf',[DebtorController::class,'_1102050101_301_daily_pdf']);
+    Route::get('debtor/1102050101_301_indiv_excel',[DebtorController::class,'_1102050101_301_indiv_excel']);
+    Route::match(['get','post'],'debtor/1102050101_303',[DebtorController::class,'_1102050101_303']);
+    Route::post('debtor/1102050101_303_confirm',[DebtorController::class,'_1102050101_303_confirm']);
+    Route::delete('debtor/1102050101_303_delete',[DebtorController::class,'_1102050101_303_delete']);
+    Route::put('debtor/1102050101_303/update/{vn}',[DebtorController::class,'_1102050101_303_update']);
+    Route::get('debtor/1102050101_303_daily_pdf',[DebtorController::class,'_1102050101_303_daily_pdf']);
+    Route::get('debtor/1102050101_303_indiv_excel',[DebtorController::class,'_1102050101_303_indiv_excel']);
+    Route::match(['get','post'],'debtor/1102050101_307',[DebtorController::class,'_1102050101_307']);
+    Route::post('debtor/1102050101_307_confirm',[DebtorController::class,'_1102050101_307_confirm']);
+    Route::delete('debtor/1102050101_307_delete',[DebtorController::class,'_1102050101_307_delete']);
+    Route::put('debtor/1102050101_307/update/{vn}',[DebtorController::class,'_1102050101_307_update']);
+    Route::get('debtor/1102050101_307_daily_pdf',[DebtorController::class,'_1102050101_307_daily_pdf']);
+    Route::get('debtor/1102050101_307_indiv_excel',[DebtorController::class,'_1102050101_307_indiv_excel']);
+    Route::match(['get','post'],'debtor/1102050101_309',[DebtorController::class,'_1102050101_309']);
+    Route::post('debtor/1102050101_309_confirm',[DebtorController::class,'_1102050101_309_confirm']);
+    Route::delete('debtor/1102050101_309_delete',[DebtorController::class,'_1102050101_309_delete']);
+    Route::put('debtor/1102050101_309/update/{vn}',[DebtorController::class,'_1102050101_309_update']);
+    Route::get('debtor/1102050101_309_daily_pdf',[DebtorController::class,'_1102050101_309_daily_pdf']);
+    Route::get('debtor/1102050101_309_indiv_excel',[DebtorController::class,'_1102050101_309_indiv_excel']);
 
 });

@@ -987,7 +987,9 @@ public function _1102050101_209(Request $request )
 		LEFT JOIN s_drugitems s ON s.icode = o1.icode		
 		LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn	
     WHERE v.income-v.rcpt_money <>"0" AND (o.an IS NULL OR o.an ="")  		
-		AND p1.pttype NOT LIKE "O%" AND p1.pttype NOT LIKE "L%" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
+		AND p1.pttype NOT LIKE "O%" AND p1.pttype NOT LIKE "L%" 
+    AND p1.pttype NOT IN ("14","17")
+    AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND v.pdx IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
 		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_209)
     GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue'); 
