@@ -39,17 +39,17 @@
             </div>
         </form> 
         <div style="overflow-x:auto;">
-            <form action="{{ url('hrims/debtor/1102050101_103_delete') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ url('hrims/debtor/1102050101_401_delete') }}" method="POST" enctype="multipart/form-data">
                 @csrf   
                 @method('DELETE')
-                <table id="debtor" class="table table-bordered table-striped my-3">
+                <table id="debtor" class="table table-bordered table-striped my-3" width="100%">
                     <thead>
                     <tr class="table-success">
                         <th class="text-center">
                             <button type="button" class="btn btn-outline-danger btn-sm" onclick="confirmDelete()">ลบลูกหนี้</button>
                         </th>
-                        <th class="text-left text-primary" colspan = "7">1102050101.103-ลูกหนี้ค่าตรวจสุขภาพ หน่วยงานภาครัฐ วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</th> 
-                        <th class="text-center text-primary" colspan = "6">การชดเชย</th>                                                 
+                        <th class="text-left text-primary" colspan = "11">1102050101.401-ลูกหนี้ค่ารักษา เบิกจ่ายตรงกรมบัญชีกลาง OP วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</th> 
+                        <th class="text-center text-primary" colspan = "10">การชดเชย</th>                                                 
                     </tr>
                     <tr class="table-success">
                         <th class="text-center"><input type="checkbox" onClick="toggle_d(this)"> All</th> 
@@ -59,20 +59,35 @@
                         <th class="text-center">สิทธิ</th>
                         <th class="text-center">ICD10</th>
                         <th class="text-center">ค่ารักษาทั้งหมด</th>  
-                        <th class="text-center">ชำระเอง</th> 
+                        <th class="text-center">ชำระเอง</th>
+                        <th class="text-center">OFC</th>
+                        <th class="text-center">ฟอกไต</th>
+                        <th class="text-center">PPFS</th>
+                        <th class="text-center">กองทุนอื่น</th>       
                         <th class="text-center text-primary">ลูกหนี้</th>
-                        <th class="text-center text-primary">ชดเชย</th> 
-                        <th class="text-center text-primary">ผลต่าง</th>                     
-                        <th class="text-center text-primary" width="9%">สถานะ</th> 
-                        <th class="text-center text-primary" width="6%">Action</th>  
+                        <th class="text-center text-primary">ชดเชย OFC</th>
+                        <th class="text-center text-primary">ชดเชย ฟอกไต</th>                        
+                        <th class="text-center text-primary">ชดเชยรวม</th>                      
+                        <th class="text-center text-primary">ผลต่าง</th>
+                        <th class="text-center text-primary">ชดเชย PPFS</th>
+                        <th class="text-center text-primary" width="5%">สถานะ</th> 
+                        <th class="text-center text-primary" width="5%">Action</th>
+                        <th class="text-center text-primary">REP</th>  
                         <th class="text-center text-primary">Lock</th>                                       
                     </tr>
                     </thead>
                     <?php $count = 1 ; ?>
                     <?php $sum_income = 0 ; ?>
                     <?php $sum_rcpt_money = 0 ; ?>
+                    <?php $sum_ofc = 0 ; ?>
+                    <?php $sum_kidney = 0 ; ?>
+                    <?php $sum_ppfs = 0 ; ?>
+                    <?php $sum_other = 0 ; ?>
                     <?php $sum_debtor = 0 ; ?>
+                    <?php $sum_receive_ofc = 0 ; ?>
+                    <?php $sum_receive_kidney = 0 ; ?>                    
                     <?php $sum_receive = 0 ; ?>
+                    <?php $sum_receive_ppfs = 0 ; ?>
                     @foreach($debtor as $row) 
                     <tr>
                         <td class="text-center"><input type="checkbox" name="checkbox_d[]" value="{{$row->vn}}"></td>   
@@ -83,27 +98,51 @@
                         <td align="right">{{ $row->pdx }}</td>                      
                         <td align="right">{{ number_format($row->income,2) }}</td>
                         <td align="right">{{ number_format($row->rcpt_money,2) }}</td>
-                        <td align="right" class="text-primary">{{ number_format($row->debtor,2) }}</td>  
+                        <td align="right">{{ number_format($row->ofc,2) }}</td>
+                        <td align="right">{{ number_format($row->kidney,2) }}</td>
+                        <td align="right">{{ number_format($row->ppfs,2) }}</td>
+                        <td align="right">{{ number_format($row->other,2) }}</td>
+                        <td align="right" class="text-primary">{{ number_format($row->debtor,2) }}</td> 
+                        <td align="right" @if($row->receive_ofc > 0) style="color:green" 
+                            @elseif($row->receive_ofc < 0) style="color:red" @endif>
+                            {{ number_format($row->receive_ofc,2) }} 
+                        </td> 
+                        <td align="right" @if($row->receive_kidney > 0) style="color:green" 
+                            @elseif($row->receive_kidney < 0) style="color:red" @endif>
+                            {{ number_format($row->receive_kidney,2) }}
+                        </td> 
                         <td align="right" @if($row->receive > 0) style="color:green" 
                             @elseif($row->receive < 0) style="color:red" @endif>
                             {{ number_format($row->receive,2) }}
-                        </td>
+                        </td>                           
                         <td align="right" @if(($row->receive-$row->debtor) > 0) style="color:green"
                             @elseif(($row->receive-$row->debtor) < 0) style="color:red" @endif>
                             {{ number_format($row->receive-$row->debtor,2) }}
-                        </td>                    
+                        </td>
+                        <td align="right" @if($row->receive_ppfs > 0) style="color:green" 
+                            @elseif($row->receive_ppfs < 0) style="color:red" @endif>
+                            {{ number_format($row->receive_ppfs,2) }}
+                        </td>
                         <td align="right">{{ $row->status }}</td> 
                         <td align="center">         
                             <button type="button" class="btn btn-outline-warning btn-sm text-primary receive" data-toggle="modal" data-target="#receive-{{ $row->vn }}"  data-id="{{ $row->vn }}" > 
                                 บันทึกชดเชย
                             </button>                            
-                        </td>      
+                        </td>  
+                        <td align="right">{{ $row->repno }}</td>  
                         <td align="center" style="color:blue">{{ $row->debtor_lock }}</td>                            
                     <?php $count++; ?>
                     <?php $sum_income += $row->income ; ?>
                     <?php $sum_rcpt_money += $row->rcpt_money ; ?>
+                    <?php $sum_ofc += $row->ofc ; ?> 
+                    <?php $sum_kidney += $row->kidney ; ?> 
+                    <?php $sum_ppfs += $row->ppfs ; ?>
+                    <?php $sum_other += $row->other ; ?>  
                     <?php $sum_debtor += $row->debtor ; ?> 
-                    <?php $sum_receive += $row->receive ; ?>       
+                    <?php $sum_receive_ofc += $row->receive_ofc ; ?> 
+                    <?php $sum_receive_kidney += $row->receive_kidney ; ?>
+                    <?php $sum_receive += $row->receive ; ?>
+                    <?php $sum_receive_ppfs += $row->receive_ppfs ; ?>        
                     @endforeach 
                     </tr>   
                 </table>
@@ -115,43 +154,66 @@
                     <th class="text-center">ชื่อผังบัญชี</th>
                     <th class="text-center">ค่ารักษาพยาบาล</th>
                     <th class="text-center">ชำระเอง</th>
-                    <th class="text-center">ลูกหนี้</th> 
-                    <th class="text-center">ชดเชย</th>   
+                    <th class="text-center">OFC</th>
+                    <th class="text-center">ฟอกไต</th>
+                    <th class="text-center">PPFS</th>
+                    <th class="text-center">กองทุนอื่น</th>
+                    <th class="text-center">ลูกหนี้</th>
+                    <th class="text-center">ชดเชย OFC</th>
+                    <th class="text-center">ชดเชย ฟอกไต</th>
+                    <th class="text-center">ชดเชยรวม</th>                       
                     <th class="text-center">ผลต่าง</th> 
+                    <th class="text-center">ชดเชย PPFS</th>
                     <th class="text-center">รายงาน</th>                
                 </tr>
                 </thead>
                 <tr>
-                    <td class="text-primary" align="right">1102050101.103</td>
-                    <td class="text-primary" align="left">ลูกหนี้ค่าตรวจสุขภาพ หน่วยงานภาครัฐ</td>
+                    <td class="text-primary" align="right">1102050101.401</td>
+                    <td class="text-primary" align="left">1102050101.401-ลูกหนี้ค่ารักษา เบิกจ่ายตรงกรมบัญชีกลาง OP</td>
                     <td class="text-primary" align="right">{{ number_format($sum_income,2)}}</td>
                     <td class="text-primary" align="right">{{ number_format($sum_rcpt_money,2)}}</td>
+                    <td class="text-primary" align="right">{{ number_format($sum_ofc,2)}}</td>
+                    <td class="text-primary" align="right">{{ number_format($sum_kidney,2)}}</td>
+                    <td class="text-primary" align="right">{{ number_format($sum_ppfs,2)}}</td>
+                    <td class="text-primary" align="right">{{ number_format($sum_other,2)}}</td>
                     <td class="text-primary" align="right"><strong>{{ number_format($sum_debtor,2)}}</strong></td>
+                    <td align="right" @if($sum_receive_ofc > 0) style="color:green"
+                        @elseif($sum_receive_ofc < 0) style="color:red" @endif>
+                        <strong>{{ number_format($sum_receive_ofc,2)}}</strong>
+                    </td>
+                    <td align="right" @if($sum_receive_kidney > 0) style="color:green"
+                        @elseif($sum_receive_kidney < 0) style="color:red" @endif>
+                        <strong>{{ number_format($sum_receive_kidney,2)}}</strong>
+                    </td>
                     <td align="right" @if($sum_receive > 0) style="color:green"
                         @elseif($sum_receive < 0) style="color:red" @endif>
                         <strong>{{ number_format($sum_receive,2)}}</strong>
-                    </td>
+                    </td>                                        
                     <td align="right" @if(($sum_receive-$sum_debtor) > 0) style="color:green"
                         @elseif(($sum_receive-$sum_debtor) < 0) style="color:red" @endif>
                         <strong>{{ number_format($sum_receive-$sum_debtor,2)}}</strong>
                     </td>
+                    <td align="right" @if($sum_receive_ppfs > 0) style="color:green"
+                        @elseif($sum_receive_ppfs < 0) style="color:red" @endif>
+                        <strong>{{ number_format($sum_receive_ppfs,2)}}</strong>
+                    </td>
                     <td align="center">
-                        <a class="btn btn-outline-success btn-sm" href="{{ url('hrims/debtor/1102050101_103_indiv_excel')}}" target="_blank">ส่งออกรายตัว</a>                
-                        <a class="btn btn-outline-primary btn-sm" href="{{ url('hrims/debtor/1102050101_103_daily_pdf')}}" target="_blank">พิมพ์รายวัน</a> 
+                        <a class="btn btn-outline-success btn-sm" href="{{ url('hrims/debtor/1102050101_401_indiv_excel')}}" target="_blank">ส่งออกรายตัว</a>                
+                        <a class="btn btn-outline-primary btn-sm" href="{{ url('hrims/debtor/1102050101_401_daily_pdf')}}" target="_blank">พิมพ์รายวัน</a> 
                     </td>                    
                 </tr>
             </table>
         </div> 
         <hr>
         <div style="overflow-x:auto;">
-            <form action="{{ url('hrims/debtor/1102050101_103_confirm') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ url('hrims/debtor/1102050101_401_confirm') }}" method="POST" enctype="multipart/form-data">
                 @csrf                
-                <table id="debtor_search" class="table table-bordered table-striped my-3">
+                <table id="debtor_search" class="table table-bordered table-striped my-3" width="100%">
                     <thead>
                     <tr class="table-secondary">
                         <th class="text-center">
                             <button type="button" class="btn btn-outline-success btn-sm"  onclick="confirmSubmit()">ยืนยันลูกหนี้</button></th>
-                        <th class="text-left text-primary" colspan = "13">1102050101.103-ลูกหนี้ค่าตรวจสุขภาพ หน่วยงานภาครัฐ รอยืนยัน วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }} รอยืนยันลูกหนี้</th>                         
+                        <th class="text-left text-primary" colspan = "15">1102050101.401-ลูกหนี้ค่ารักษา เบิกจ่ายตรงกรมบัญชีกลาง OP รอยืนยัน วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }} รอยืนยันลูกหนี้</th>                         
                     </tr>
                     <tr class="table-secondary">
                         <th class="text-center"><input type="checkbox" onClick="toggle(this)"> All</th> 
@@ -161,8 +223,15 @@
                         <th class="text-center">สิทธิ</th>
                         <th class="text-center">ICD10</th>
                         <th class="text-center">ค่ารักษาทั้งหมด</th>  
-                        <th class="text-center">ชำระเอง</th>                     
-                        <th class="text-center">ลูกหนี้</th>
+                        <th class="text-center">ชำระเอง</th>
+                        <th class="text-center">OFC</th>
+                        <th class="text-center">ฟอกไต</th> 
+                        <th class="text-center">PPFS</th>
+                        <th class="text-center">กองทุนอื่น</th>                                     
+                        <th class="text-center">ลูกหนี้</th>                        
+                        <th class="text-center" width = "10%">รายการฟอกไต</th>
+                        <th class="text-center" width = "10%">รายการ PPFS</th>
+                        <th class="text-center" width = "10%">รายการกองทุนอื่น</th> 
                     </tr>
                     </thead>
                     <?php $count = 1 ; ?>
@@ -176,13 +245,20 @@
                         <td align="right">{{ $row->pdx }}</td>                  
                         <td align="right">{{ number_format($row->income,2) }}</td>
                         <td align="right">{{ number_format($row->rcpt_money,2) }}</td>
+                        <td align="right">{{ number_format($row->ofc,2) }}</td>
+                        <td align="right">{{ number_format($row->kidney,2) }}</td>
+                        <td align="right">{{ number_format($row->ppfs,2) }}</td>
+                        <td align="right">{{ number_format($row->other,2) }}</td>
                         <td align="right">{{ number_format($row->debtor,2) }}</td>
+                        <td align="left" width = "10%">{{ $row->kidney_list }}</td>
+                        <td align="left" width = "10%">{{ $row->ppfs_list }}</td>
+                        <td align="left" width = "10%">{{ $row->other_list }}</td>
                     <?php $count++; ?>
                     @endforeach 
                 </tr>   
                 </table>
             </form>
-        </div>  
+        </div> 
         <!-- Modal บันทึกชดเชย -->
         @foreach($debtor as $row)
             <div id="receive-{{ $row->vn }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="receive-{{ $row->vn }}" aria-hidden="true">
@@ -193,7 +269,7 @@
                     <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
                     </button>
                     </div>         
-                    <form action={{ url('hrims/debtor/1102050101_103/update', $row->vn) }} method="POST">
+                    <form action={{ url('hrims/debtor/1102050101_401/update', $row->vn) }} method="POST">
                         @csrf
                         @method('PUT')
                         <div class="modal-body">
@@ -263,7 +339,8 @@
                 </div>
             </div>
         @endforeach 
-        <!-- end modal -->
+        <!-- end modal --> 
+        
     </div>
 
 <!-- สำเร็จ -->
@@ -313,7 +390,7 @@
             cancelButtonText: 'ยกเลิก'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    document.querySelector("form[action='{{ url('hrims/debtor/1102050101_103_delete') }}']").submit();
+                    document.querySelector("form[action='{{ url('hrims/debtor/1102050101_401_delete') }}']").submit();
                 }
             });
         }
@@ -337,7 +414,7 @@
                 cancelButtonText: 'ยกเลิก'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    document.querySelector("form[action='{{ url('hrims/debtor/1102050101_103_confirm') }}']").submit();
+                    document.querySelector("form[action='{{ url('hrims/debtor/1102050101_401_confirm') }}']").submit();
                 }
             });
         }
@@ -389,7 +466,7 @@
                 extend: 'excelHtml5',
                 text: 'Excel',
                 className: 'btn btn-success btn-sm',
-                title: '1102050101.103-ลูกหนี้ค่าตรวจสุขภาพ หน่วยงานภาครัฐ รอยืนยัน วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}'
+                title: '1102050101.401-ลูกหนี้ค่ารักษา เบิกจ่ายตรงกรมบัญชีกลาง OP รอยืนยัน วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}'
                 }
             ],
             language: {

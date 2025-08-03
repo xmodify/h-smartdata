@@ -1554,13 +1554,15 @@ class DebtorController extends Controller
         $start_date = Session::get('start_date');
         $end_date = Session::get('end_date');
         $debtor = DB::select('
-            SELECT d.vstdate,COUNT(DISTINCT d.vn) AS anvn,
-            SUM(d.debtor) AS debtor,SUM(s.receive_pp) AS receive
+            SELECT vstdate,COUNT(DISTINCT vn) AS anvn,SUM(debtor) AS debtor,SUM(receive) AS receive
+            FROM (SELECT d.vn, d.vstdate, d.vsttime, d.hn, d.ptname, d.hipdata_code, d.pttype, d.hospmain,d.pdx, d.income,  
+            d.rcpt_money, d.kidney, d.cr,d.anywhere, d.debtor,IFNULL(s.receive_total,sk.receive_total) AS receive,
+            IFNULL(s.repno,sk.repno) AS repno, d.status, d.debtor_lock
             FROM finance_debtor_1102050101_216 d   
-            LEFT JOIN finance_stm_ucs s ON s.cid=d.cid AND s.vstdate = d.vstdate
-            AND LEFT(s.vsttime,5) =LEFT(d.vsttime,5)
-            WHERE d.vstdate BETWEEN ? AND ?
-            GROUP BY d.vstdate ORDER BY d.vstdate ',[$start_date,$end_date]);
+            LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+            LEFT JOIN (SELECT cid,datetimeadm AS vstdate,sum(receive_total) AS receive_total,repno
+            FROM finance_stm_ucs_kidney GROUP BY cid,datetimeadm) sk ON sk.cid=d.cid AND sk.vstdate = d.vstdate
+            WHERE d.vstdate BETWEEN ? AND ?) AS a GROUP BY vstdate ORDER BY vsttime ',[$start_date,$end_date]);
 
         $pdf = PDF::loadView('hrims.debtor.1102050101_216_daily_pdf', compact('start_date','end_date','debtor'))
                     ->setPaper('A4', 'portrait');
@@ -2328,11 +2330,13 @@ class DebtorController extends Controller
         $start_date = Session::get('start_date');
         $end_date = Session::get('end_date');
         $debtor = DB::select('
-            SELECT vstdate,COUNT(DISTINCT vn) AS anvn,
-            SUM(debtor) AS debtor,SUM(receive) AS receive
-            FROM finance_debtor_1102050101_309 
-            WHERE vstdate BETWEEN ? AND ?
-            GROUP BY vstdate ORDER BY vstdate',[$start_date,$end_date]);
+            SELECT vstdate,COUNT(DISTINCT vn) AS anvn,SUM(debtor) AS debtor,SUM(receive) AS receive
+            FROM (SELECT d.vstdate,d.vsttime,d.vn,d.hn,d.cid,d.ptname,d.hipdata_code,d.pttype,
+            d.pdx,d.hospmain,d.income,d.rcpt_money,d.kidney,d.debtor,
+            s.amount+s.epopay+s.epoadm AS receive,s.rid AS repno,d.debtor_lock
+            FROM finance_debtor_1102050101_309 d   
+            LEFT JOIN finance_stm_sss_kidney s ON s.cid=d.cid AND s.vstdate = d.vstdate
+            WHERE d.vstdate BETWEEN ? AND ?) AS a GROUP BY vstdate ORDER BY vsttime',[$start_date,$end_date]);
 
         $pdf = PDF::loadView('hrims.debtor.1102050101_309_daily_pdf', compact('start_date','end_date','debtor'))
                     ->setPaper('A4', 'portrait');
@@ -2347,5 +2351,231 @@ class DebtorController extends Controller
         
         return view('hrims.debtor.1102050101_309_indiv_excel',compact('start_date','end_date','debtor'));
     }   
+##############################################################################################################################################################
+//_1102050101_401--------------------------------------------------------------------------------------------------------------
+    public function _1102050101_401(Request $request )
+    {
+        $start_date = $request->start_date ?: Session::get('start_date');
+        $end_date = $request->end_date ?: Session::get('end_date');
+        $search  =  $request->search ?: Session::get('search');
+        $pttype_checkup = DB::table('main_setting')->where('name', 'pttype_checkup')->value('value');           
+
+        if ($search) {
+            $debtor = DB::select('
+                SELECT d.vn,d.vstdate,d.vsttime,d.hn,d.ptname,d.hipdata_code,d.pttype,d.hospmain,d.pdx,d.income,d.rcpt_money,  
+                    d.ofc,d.kidney,d.ppfs,d.other,d.debtor,d.charge_date,d.charge_no,d.charge,d.receive_date,d.receive_no,
+                    IFNULL(s.receive_total,0) AS receive_ofc,IFNULL(sk.receive_total,0) AS receive_kidney,IFNULL(su.receive_pp,0) AS receive_ppfs,
+                    IFNULL(d.receive,0)+IFNULL(s.receive_total,0)+IFNULL(sk.receive_total,0) AS receive,d.status,IFNULL(s.repno,sk.repno) AS repno,d.debtor_lock
+                FROM finance_debtor_1102050101_401 d   
+                LEFT JOIN finance_stm_ofc s ON s.hn = d.hn AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+				LEFT JOIN (SELECT hn,vstdate,sum(amount) AS receive_total,rid AS repno FROM htp_report.finance_stm_ofc_kidney
+				WHERE vstdate BETWEEN ? AND ? GROUP BY hn,vstdate) sk ON sk.hn=d.hn AND sk.vstdate = d.vstdate
+				LEFT JOIN finance_stm_ucs su ON su.hn = d.hn AND su.vstdate = d.vstdate AND LEFT(su.vsttime, 5) = LEFT(d.vsttime, 5)
+                WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%"))
+                AND d.vstdate BETWEEN ? AND ?', [$start_date,$end_date,$search, $search,$start_date,$end_date]);
+        } else {
+            $debtor = DB::select('
+                SELECT d.vn,d.vstdate,d.vsttime,d.hn,d.ptname,d.hipdata_code,d.pttype,d.hospmain,d.pdx,d.income,d.rcpt_money,  
+                    d.ofc,d.kidney,d.ppfs,d.other,d.debtor,d.charge_date,d.charge_no,d.charge,d.receive_date,d.receive_no,
+                    IFNULL(s.receive_total,0) AS receive_ofc,IFNULL(sk.receive_total,0) AS receive_kidney,IFNULL(su.receive_pp,0) AS receive_ppfs,
+                    IFNULL(d.receive,0)+IFNULL(s.receive_total,0)+IFNULL(sk.receive_total,0)AS receive,d.status,IFNULL(s.repno,sk.repno) AS repno,d.debtor_lock
+                FROM finance_debtor_1102050101_401 d   
+                LEFT JOIN finance_stm_ofc s ON s.hn = d.hn AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+				LEFT JOIN (SELECT hn,vstdate,sum(amount) AS receive_total,rid AS repno FROM htp_report.finance_stm_ofc_kidney
+				WHERE vstdate BETWEEN ? AND ? GROUP BY hn,vstdate) sk ON sk.hn=d.hn AND sk.vstdate = d.vstdate
+				LEFT JOIN finance_stm_ucs su ON su.hn = d.hn AND su.vstdate = d.vstdate AND LEFT(su.vsttime, 5) = LEFT(d.vsttime, 5)
+                WHERE d.vstdate BETWEEN ? AND ?', [$start_date,$end_date,$start_date, $end_date]);
+        }
+
+        $debtor_search = DB::connection('hosxp')->select('
+            SELECT o.vn,o.hn,o.an,pt.cid,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,o.vstdate,
+                o.vsttime,p.`name` AS pttype,vp.hospmain,p.hipdata_code,v.pdx,v.income,v.rcpt_money,								        
+                v.income-v.rcpt_money-COALESCE(o1.kidney_price, 0)-COALESCE(o2.ppfs_price, 0)-COALESCE(o3.other_price, 0) AS ofc,
+                COALESCE(o1.kidney_price, 0) AS kidney,COALESCE(o2.ppfs_price, 0) AS ppfs,COALESCE(o3.other_price, 0) AS other,
+                v.income-v.rcpt_money-COALESCE(o2.ppfs_price, 0)-COALESCE(o3.other_price, 0) AS debtor,GROUP_CONCAT(DISTINCT sd.`name`) AS kidney_list,
+                GROUP_CONCAT(DISTINCT sd1.`name`) AS ppfs_list,GROUP_CONCAT(DISTINCT sd2.`name`) AS other_list,"ยืนยันลูกหนี้" AS status  
+            FROM ovst o    
+            LEFT JOIN patient pt ON pt.hn=o.hn
+            LEFT JOIN vn_stat v ON v.vn=o.vn
+            LEFT JOIN visit_pttype vp ON vp.vn=o.vn
+            LEFT JOIN pttype p ON p.pttype=vp.pttype
+			LEFT JOIN (SELECT op.vn, SUM(op.sum_price) AS kidney_price FROM opitemrece op
+				INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode AND li.kidney ="Y"
+				WHERE op.vstdate BETWEEN ? AND ? GROUP BY op.vn) o1 ON o1.vn=o.vn				
+			LEFT JOIN (SELECT op.vn, SUM(op.sum_price) AS ppfs_price	FROM opitemrece op
+				INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode AND li.ppfs ="Y" 
+				WHERE op.vstdate BETWEEN ? AND ? GROUP BY op.vn) o2 ON o2.vn=o.vn
+			LEFT JOIN (SELECT op.vn, SUM(op.sum_price) AS other_price	FROM opitemrece op
+				INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode AND li.ems ="Y" 
+				WHERE op.vstdate BETWEEN ? AND ? GROUP BY op.vn) o3 ON o3.vn=o.vn				
+			LEFT JOIN opitemrece o4 ON o4.vn=o.vn AND o4.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE kidney ="Y")	
+			LEFT JOIN s_drugitems sd ON sd.icode=o4.icode	
+			LEFT JOIN opitemrece o5 ON o5.vn=o.vn AND o5.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE ppfs ="Y")	
+			LEFT JOIN s_drugitems sd1 ON sd1.icode=o5.icode
+			LEFT JOIN opitemrece o6 ON o6.vn=o.vn AND o6.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE ems ="Y")	
+			LEFT JOIN s_drugitems sd2 ON sd2.icode=o6.icode
+            WHERE (o.an IS NULL OR o.an ="")
+			    AND p.hipdata_code = "OFC"
+                AND v.income-v.rcpt_money <>"0"		
+			    AND v.income-v.rcpt_money-COALESCE(o3.other_price, 0) <>"0"				
+                AND o.vstdate BETWEEN ? AND ?
+                AND p.pttype NOT IN ('.$pttype_checkup.')
+                AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_401) 
+            GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+
+        $request->session()->put('start_date',$start_date);
+        $request->session()->put('end_date',$end_date);
+        $request->session()->put('search',$search);
+        $request->session()->put('debtor',$debtor);
+        $request->session()->save();
+
+        return view('hrims.debtor.1102050101_401',compact('start_date','end_date','search','debtor','debtor_search'));
+    }
+//_1102050101_401_confirm-------------------------------------------------------------------------------------------------------
+    public function _1102050101_401_confirm(Request $request )
+    {
+        $start_date = Session::get('start_date');
+        $end_date = Session::get('end_date');        
+        $pttype_checkup = DB::table('main_setting')->where('name', 'pttype_checkup')->value('value');
+        $request->validate([
+        'checkbox' => 'required|array',
+        ], [
+            'checkbox.required' => 'กรุณาเลือกรายการที่ต้องการยืนยันลูกหนี้'
+        ]);
+        $checkbox = $request->input('checkbox'); // รับ array
+        $checkbox_string = implode(",", $checkbox); // แปลงเป็น string สำหรับ SQL IN
+       
+        $debtor = DB::connection('hosxp')->select('
+            SELECT o.vn,o.hn,o.an,pt.cid,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,o.vstdate,
+                o.vsttime,p.`name` AS pttype,vp.hospmain,p.hipdata_code,v.pdx,v.income,v.rcpt_money,								        
+                v.income-v.rcpt_money-COALESCE(o1.kidney_price, 0)-COALESCE(o2.ppfs_price, 0)-COALESCE(o3.other_price, 0) AS ofc,
+                COALESCE(o1.kidney_price, 0) AS kidney,COALESCE(o2.ppfs_price, 0) AS ppfs,COALESCE(o3.other_price, 0) AS other,
+                v.income-v.rcpt_money-COALESCE(o2.ppfs_price, 0)-COALESCE(o3.other_price, 0) AS debtor,GROUP_CONCAT(DISTINCT sd.`name`) AS kidney_list,
+                GROUP_CONCAT(DISTINCT sd1.`name`) AS ppfs_list,GROUP_CONCAT(DISTINCT sd2.`name`) AS other_list,"ยืนยันลูกหนี้" AS status  
+            FROM ovst o    
+            LEFT JOIN patient pt ON pt.hn=o.hn
+            LEFT JOIN vn_stat v ON v.vn=o.vn
+            LEFT JOIN visit_pttype vp ON vp.vn=o.vn
+            LEFT JOIN pttype p ON p.pttype=vp.pttype
+			LEFT JOIN (SELECT op.vn, SUM(op.sum_price) AS kidney_price FROM opitemrece op
+				INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode AND li.kidney ="Y"
+				WHERE op.vstdate BETWEEN ? AND ? GROUP BY op.vn) o1 ON o1.vn=o.vn				
+			LEFT JOIN (SELECT op.vn, SUM(op.sum_price) AS ppfs_price	FROM opitemrece op
+				INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode AND li.ppfs ="Y" 
+				WHERE op.vstdate BETWEEN ? AND ? GROUP BY op.vn) o2 ON o2.vn=o.vn
+			LEFT JOIN (SELECT op.vn, SUM(op.sum_price) AS other_price	FROM opitemrece op
+				INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode AND li.ems ="Y" 
+				WHERE op.vstdate BETWEEN ? AND ? GROUP BY op.vn) o3 ON o3.vn=o.vn				
+			LEFT JOIN opitemrece o4 ON o4.vn=o.vn AND o4.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE kidney ="Y")	
+			LEFT JOIN s_drugitems sd ON sd.icode=o4.icode	
+			LEFT JOIN opitemrece o5 ON o5.vn=o.vn AND o5.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE ppfs ="Y")	
+			LEFT JOIN s_drugitems sd1 ON sd1.icode=o5.icode
+			LEFT JOIN opitemrece o6 ON o6.vn=o.vn AND o6.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE ems ="Y")	
+			LEFT JOIN s_drugitems sd2 ON sd2.icode=o6.icode
+            WHERE (o.an IS NULL OR o.an ="")
+			    AND p.hipdata_code = "OFC"
+                AND v.income-v.rcpt_money <>"0"		
+			    AND v.income-v.rcpt_money-COALESCE(o3.other_price, 0) <>"0"				
+                AND o.vstdate BETWEEN ? AND ?
+                AND p.pttype NOT IN ('.$pttype_checkup.')
+                AND o.vn IN ('.$checkbox_string.') 
+            GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+        
+        foreach ($debtor as $row) {
+            Finance_debtor_1102050101_401::insert([
+                'vn'              => $row->vn,
+                'hn'              => $row->hn,
+                'cid'             => $row->cid,
+                'ptname'          => $row->ptname,
+                'vstdate'         => $row->vstdate,
+                'vsttime'         => $row->vsttime,
+                'pttype'          => $row->pttype,    
+                'hospmain'        => $row->hospmain,    
+                'hipdata_code'    => $row->hipdata_code,   
+                'pdx'             => $row->pdx,  
+                'income'          => $row->income,  
+                'rcpt_money'      => $row->rcpt_money,
+                'ofc'             => $row->ofc,
+                'kidney'          => $row->kidney,
+                'ppfs'            => $row->ppfs,
+                'other'           => $row->other,
+                'debtor'          => $row->debtor,  
+                'status'          => $row->status,          
+            ]);            
+        }
+
+        if (empty($checkbox) || !is_array($checkbox)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'กรุณาเลือกรายการที่จะยืนยัน'
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'ยืนยันลูกหนี้สำเร็จ');
+    }
+//_1102050101_401_delete-------------------------------------------------------------------------------------------------------
+    public function _1102050101_401_delete(Request $request )
+    {
+        $checkbox = $request->input('checkbox_d');        
+
+        $deleted = Finance_debtor_1102050101_401::whereIn('vn', $checkbox)
+            ->whereNull('debtor_lock')
+            ->delete();
+
+        if (empty($checkbox) || !is_array($checkbox)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'กรุณาเลือกรายการที่จะลบ'
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'ลบลูกหนี้เรียบร้อย ');
+    }
+//_1102050101_401_update-------------------------------------------------------------------------------------------------------
+    public function _1102050101_401_update(Request $request, $vn)
+    {
+        $item = Finance_debtor_1102050101_401::findOrFail($vn);
+        $item->update([
+            'charge_date' => $request->input('charge_date'),
+            'charge_no' => $request->input('charge_no'),
+            'charge' => $request->input('charge'),
+            'receive_date' => $request->input('receive_date'),
+            'receive_no' => $request->input('receive_no'),
+            'receive' => $request->input('receive'),
+            'repno' => $request->input('repno'),
+            'status' => $request->input('status'),
+        ]);
+
+        return  redirect()->back()->with('success', 'บันทึกข้อมูลเรียบร้อย'); 
+    }
+//1102050101_401_daily_pdf-------------------------------------------------------------------------------------------------------
+    public function _1102050101_401_daily_pdf(Request $request)
+    {
+        $start_date = Session::get('start_date');
+        $end_date = Session::get('end_date');
+        $debtor = DB::select('
+            SELECT vstdate,COUNT(DISTINCT vn) AS anvn,SUM(debtor) AS debtor,
+                SUM(IFNULL(receive,0)+IFNULL(receive_s,0)+IFNULL(receive_sk,0)) AS receive
+            FROM (SELECT d.vstdate,d.vn,d.hn,d.debtor,d.receive,s.receive_total AS receive_s,sk.receive_sk ,su.receive_pp 
+            FROM finance_debtor_1102050101_401 d   
+            LEFT JOIN finance_stm_ofc s ON s.hn = d.hn AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+			LEFT JOIN (SELECT hn,vstdate,sum(amount) AS receive_sk,rid AS repno FROM htp_report.finance_stm_ofc_kidney
+				WHERE vstdate BETWEEN ? AND ? GROUP BY hn,vstdate) sk ON sk.hn=d.hn AND sk.vstdate = d.vstdate
+			LEFT JOIN finance_stm_ucs su ON su.hn = d.hn AND su.vstdate = d.vstdate AND LEFT(su.vsttime, 5) = LEFT(d.vsttime, 5)
+            WHERE d.vstdate BETWEEN ? AND ? GROUP BY d.vn ) AS a GROUP BY vstdate ORDER BY vstdate',[$start_date,$end_date,$start_date,$end_date]);
+
+        $pdf = PDF::loadView('hrims.debtor.1102050101_401_daily_pdf', compact('start_date','end_date','debtor'))
+                    ->setPaper('A4', 'portrait');
+        return @$pdf->stream();
+    }
+ //1102050101_401_indiv_excel-------------------------------------------------------------------------------------------------------   
+    public function _1102050101_401_indiv_excel(Request $request)
+        {
+        $start_date = Session::get('start_date');
+        $end_date = Session::get('end_date');
+        $debtor = Session::get('debtor');
+        
+        return view('hrims.debtor.1102050101_401_indiv_excel',compact('start_date','end_date','debtor'));
+    } 
 
 }

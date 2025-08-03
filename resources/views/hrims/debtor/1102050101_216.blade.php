@@ -141,7 +141,7 @@
                     <th class="text-center">บริการเฉพาะ</th>
                     <th class="text-center">OP Anywhere</th>
                     <th class="text-center">ลูกหนี้</th> 
-                    <th class="text-center">ชดเชย PPFS</th>   
+                    <th class="text-center">ชดเชย</th>   
                     <th class="text-center">ผลต่าง</th> 
                     <th class="text-center">รายงาน</th>                
                 </tr>

@@ -2163,7 +2163,7 @@ public function _1102050101_401(Request $request )
 
   $debtor = DB::select('
     SELECT d.vstdate,d.vsttime,d.vn,d.hn,d.cid,d.ptname,d.hipdata_code,d.pttype,d.pdx,d.hospmain,d.income,
-    d.rcpt_money,d.ofc,d.kidney,d.pp,d.other,d.debtor,IF(IFNULL(s1.rid,s.repno) <>"","กระทบยอดแล้ว",d.status) AS status,d.charge_date,
+    d.rcpt_money,d.ofc,d.kidney,d.ppfs,d.other,d.debtor,IF(IFNULL(s1.rid,s.repno) <>"","กระทบยอดแล้ว",d.status) AS status,d.charge_date,
     d.charge_no,d.charge,d.receive_date,d.receive_no,IFNULL(d.receive,0)+IFNULL(s.receive_total,0)+IFNULL(s1.amount,0) AS receive,     
 		IFNULL(s2.receive_pp,0) AS receive_pp,IFNULL(s1.rid,s.repno) AS repno,d.repno AS repno_chk,d.debtor_lock
     FROM finance_debtor_1102050101_401 d   
@@ -2178,7 +2178,7 @@ public function _1102050101_401(Request $request )
     SELECT * FROM (SELECT o.vn,o.oqueue,o.hn,o.an,p.cid,CONCAT(p.pname,p.fname,SPACE(1),p.lname) AS ptname,o.vstdate,
 		o.vsttime,p1.name AS pttype,vp.hospmain,p1.hipdata_code,v.pdx,v.income,v.rcpt_money,
 		v.income-v.rcpt_money-IFNULL(o1.sum_price,0)-IFNULL(SUM(o2.sum_price),0)-IFNULL(SUM(o3.sum_price),0) AS ofc,
-		IFNULL(o1.sum_price,0) AS kidney,IFNULL(SUM(o2.sum_price),0) AS pp,IFNULL(SUM(o3.sum_price),0) AS other,
+		IFNULL(o1.sum_price,0) AS kidney,IFNULL(SUM(o2.sum_price),0) AS ppfs,IFNULL(SUM(o3.sum_price),0) AS other,
 		v.income-v.rcpt_money-IFNULL(SUM(o2.sum_price),0)-IFNULL(o3.sum_price,0) AS debtor,oe.upload_datetime AS ecliam,
     GROUP_CONCAT(DISTINCT s.`name`) AS list
     FROM ovst o    
@@ -2203,7 +2203,7 @@ public function _1102050101_401(Request $request )
     SELECT * FROM (SELECT o.vn,o.oqueue,o.hn,o.an,p.cid,CONCAT(p.pname,p.fname,SPACE(1),p.lname) AS ptname,o.vstdate,
 		o.vsttime,p1.name AS pttype,vp.hospmain,p1.hipdata_code,v.pdx,v.income,v.rcpt_money,
 		v.income-v.rcpt_money-IFNULL(o1.sum_price,0)-IFNULL(SUM(o2.sum_price),0)-IFNULL(SUM(o3.sum_price),0) AS ofc,
-		IFNULL(o1.sum_price,0) AS kidney,IFNULL(SUM(o2.sum_price),0) AS pp,IFNULL(SUM(o3.sum_price),0) AS other,
+		IFNULL(o1.sum_price,0) AS kidney,IFNULL(SUM(o2.sum_price),0) AS ppfs,IFNULL(SUM(o3.sum_price),0) AS other,
 		v.income-v.rcpt_money-IFNULL(SUM(o2.sum_price),0)-IFNULL(o3.sum_price,0) AS debtor,oe.upload_datetime AS ecliam,GROUP_CONCAT(DISTINCT s.`name`) AS list
     FROM ovst o    
     LEFT JOIN patient p ON p.hn=o.hn
@@ -2274,7 +2274,7 @@ public function _1102050101_401_confirm(Request $request )
     SELECT * FROM (SELECT o.vn,o.oqueue,o.hn,o.an,p.cid,CONCAT(p.pname,p.fname,SPACE(1),p.lname) AS ptname,o.vstdate,
 		o.vsttime,p1.name AS pttype,vp.hospmain,p1.hipdata_code,v.pdx,v.income,v.rcpt_money,
 		v.income-v.rcpt_money-IFNULL(o1.sum_price,0)-IFNULL(SUM(o2.sum_price),0)-IFNULL(SUM(o3.sum_price),0) AS ofc,
-		IFNULL(o1.sum_price,0) AS kidney,IFNULL(SUM(o2.sum_price),0) AS pp,IFNULL(SUM(o3.sum_price),0) AS other,
+		IFNULL(o1.sum_price,0) AS kidney,IFNULL(SUM(o2.sum_price),0) AS ppfs,IFNULL(SUM(o3.sum_price),0) AS other,
 		v.income-v.rcpt_money-IFNULL(SUM(o2.sum_price),0)-IFNULL(o3.sum_price,0) AS debtor,oe.upload_datetime AS ecliam,
     GROUP_CONCAT(DISTINCT s.`name`) AS list
     FROM ovst o    
@@ -2313,11 +2313,11 @@ public function _1102050101_401_confirm(Request $request )
         'rcpt_money'      => $row->rcpt_money,
         'ofc'             => $row->ofc,
         'kidney'          => $row->kidney,
-        'pp'              => $row->pp,
+        'ppfs'            => $row->ppfs,
         'other'           => $row->other,
         'debtor'          => $row->debtor,            
     ]);
-    if ($row->pp != 0) {
+    if ($row->ppfs != 0) {
       Finance_debtor_1102050101_209::insert([
         'vn'              => $row->vn,
         'hn'              => $row->hn,

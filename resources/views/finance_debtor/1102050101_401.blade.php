@@ -96,7 +96,7 @@
                 <?php $sum_rcpt_money = 0 ; ?>
                 <?php $sum_ofc = 0 ; ?>  
                 <?php $sum_kidney = 0 ; ?>   
-                <?php $sum_pp = 0 ; ?> 
+                <?php $sum_ppfs = 0 ; ?> 
                 <?php $sum_other = 0 ; ?> 
                 <?php $sum_debtor = 0 ; ?>     
                 <?php $sum_receive = 0 ; ?>
@@ -113,7 +113,7 @@
                     <td align="right">{{ number_format($row->rcpt_money,2) }}</td>
                     <td align="right">{{ number_format($row->ofc,2) }}</td>
                     <td align="right">{{ number_format($row->kidney,2) }}</td>  
-                    <td align="right">{{ number_format($row->pp,2) }}</td>  
+                    <td align="right">{{ number_format($row->ppfs,2) }}</td>  
                     <td align="right">{{ number_format($row->other,2) }}</td>  
                     <td align="right" class="text-primary">{{ number_format($row->debtor,2) }}</td>  
                     <td align="right" @if($row->receive > 0) style="color:green" 
@@ -143,7 +143,7 @@
                 <?php $sum_rcpt_money += $row->rcpt_money ; ?>
                 <?php $sum_ofc += $row->ofc ; ?>
                 <?php $sum_kidney += $row->kidney ; ?>
-                <?php $sum_pp += $row->pp ; ?>
+                <?php $sum_ppfs += $row->ppfs ; ?>
                 <?php $sum_other += $row->other ; ?>
                 <?php $sum_debtor += $row->debtor ; ?>
                 <?php $sum_receive += $row->receive ; ?>      
@@ -176,7 +176,7 @@
                 <td class="text-primary" align="right">{{ number_format($sum_rcpt_money,2)}}</td>
                 <td class="text-primary" align="right">{{ number_format($sum_ofc,2)}}</td>
                 <td class="text-primary" align="right">{{ number_format($sum_kidney,2)}}</td>
-                <td class="text-primary" align="right">{{ number_format($sum_pp,2)}} | {{ number_format($sum_receive_pp,2)}}</td>
+                <td class="text-primary" align="right">{{ number_format($sum_ppfs,2)}} | {{ number_format($sum_receive_pp,2)}}</td>
                 <td class="text-primary" align="right">{{ number_format($sum_other,2)}}</td>
                 <td class="text-primary" align="right"><strong>{{ number_format($sum_debtor,2)}}</strong></td>
                 <td align="right" @if($sum_receive > 0) style="color:green"
@@ -249,7 +249,7 @@
                             <td align="right">{{ number_format($row->rcpt_money,2) }}</td>
                             <td align="right">{{ number_format($row->ofc,2) }}</td>
                             <td align="right">{{ number_format($row->kidney,2) }}</td>
-                            <td align="right">{{ number_format($row->pp,2) }}</td>
+                            <td align="right">{{ number_format($row->ppfs,2) }}</td>
                             <td align="right">{{ number_format($row->other,2) }}</td>
                             <td align="right">{{ number_format($row->debtor,2) }}</td>
                             <td align="right">{{ $row->ecliam }}</td> 
@@ -304,7 +304,7 @@
                             <td align="right">{{ number_format($row->rcpt_money,2) }}</td>
                             <td align="right">{{ number_format($row->ofc,2) }}</td>  
                             <td align="right">{{ number_format($row->kidney,2) }}</td>    
-                            <td align="right">{{ number_format($row->pp,2) }}</td>
+                            <td align="right">{{ number_format($row->ppfs,2) }}</td>
                             <td align="right">{{ number_format($row->other,2) }}</td>
                             <td align="right">{{ number_format($row->debtor,2) }}</td>
                             <td align="right">{{ $row->ecliam }}</td> 
