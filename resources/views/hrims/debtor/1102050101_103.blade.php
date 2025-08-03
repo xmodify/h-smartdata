@@ -17,7 +17,7 @@
     </script>    
 @section('content')
     <div class="container-fluid">        
-        <form method="POST" enctype="multipart/form-data">
+        <form method="POST" action="{{ url('hrims/debtor/1102050101_103') }}" enctype="multipart/form-data">
             @csrf
             <div class="row" >
                     <label class="col-md-2 col-form-label text-md-end my-1">{{ __('วันที่') }}</label>
