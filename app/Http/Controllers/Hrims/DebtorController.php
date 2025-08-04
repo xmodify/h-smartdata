@@ -1319,8 +1319,7 @@ class DebtorController extends Controller
                 AND o2.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE (uc_cr ="Y" OR herb32 = "Y"))	
 			LEFT JOIN s_drugitems sd ON sd.icode=o2.icode
             LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn 	
-            WHERE (o.an IS NULL OR o.an ="")
-                AND COALESCE(o1.claim_price, 0) <> "0"                
+            WHERE (o.an IS NULL OR o.an ="")                                
                 AND o.vstdate BETWEEN ? AND ?
                 AND p.hipdata_code = "UCS"
 				AND o1.vn IS NOT NULL 
@@ -1451,8 +1450,7 @@ class DebtorController extends Controller
 			LEFT JOIN opitemrece o2 ON o2.vn=o.vn 
                 AND o2.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE (uc_cr ="Y" OR herb32 = "Y"))	
 			LEFT JOIN s_drugitems sd ON sd.icode=o2.icode	
-            WHERE (o.an IS NULL OR o.an ="") 
-                AND COALESCE(o1.claim_price, 0) <> "0"                                    
+            WHERE (o.an IS NULL OR o.an ="")                                                     
                 AND o.vstdate BETWEEN ? AND ?
                 AND p.hipdata_code = "UCS"
 				AND o1.vn IS NOT NULL 
