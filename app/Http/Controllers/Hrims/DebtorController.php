@@ -3284,5 +3284,480 @@ class DebtorController extends Controller
         
         return view('hrims.debtor.1102050101_702_indiv_excel',compact('start_date','end_date','debtor'));
     }
+##############################################################################################################################################################
+//_1102050102_106--------------------------------------------------------------------------------------------------------------
+    public function _1102050102_106(Request $request )
+    {
+        $start_date = $request->start_date ?: Session::get('start_date');
+        $end_date = $request->end_date ?: Session::get('end_date');
+        $search  =  $request->search ?: Session::get('search'); 
+        $pttype_iclaim = DB::table('main_setting')->where('name', 'pttype_iclaim')->value('value');       
+
+        if ($search) {
+            $debtor = DB::connection('hosxp')->select('
+                SELECT d.vstdate,d.vsttime,d.hn,d.vn,d.ptname,d.mobile_phone_number,d.pttype,d.hospmain,d.pdx,d.income,
+                    d.paid_money,d.rcpt_money,d.debtor,d.debtor_lock,IF(r.bill_amount <>"","กระทบยอดแล้ว",d.status) AS status,
+                    d.charge_date,d.charge_no,d.charge,d.receive_date,d.receive_no,IFNULL(d.receive,r.bill_amount) AS receive,
+                    IFNULL(d.repno,r.rcpno) AS repno,r.bill_amount,IF(t.visit IS NULL,0,t.visit) AS visit
+                FROM htp_report.finance_debtor_1102050102_106 d
+                LEFT JOIN rcpt_print r ON r.vn = d.vn AND r.`status` ="OK" AND r.department="OPD" AND r.bill_date <> d.vstdate
+                LEFT JOIN (SELECT vn,COUNT(vn) AS visit FROM htp_report.finance_debtor_1102050102_106_tracking GROUP BY vn) t ON t.vn=d.vn
+                WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%"))
+                AND d.vstdate BETWEEN ? AND ?', [$search, $search, $start_date, $end_date]);
+        } else {
+            $debtor = DB::connection('hosxp')->select('
+                SELECT d.vstdate,d.vsttime,d.hn,d.vn,d.ptname,d.mobile_phone_number,d.pttype,d.hospmain,d.pdx,d.income,
+                    d.paid_money,d.rcpt_money,d.debtor,d.debtor_lock,IF(r.bill_amount <>"","กระทบยอดแล้ว",d.status) AS status,
+                    d.charge_date,d.charge_no,d.charge,d.receive_date,d.receive_no,IFNULL(d.receive,r.bill_amount) AS receive,
+                    IFNULL(d.repno,r.rcpno) AS repno,r.bill_amount,IF(t.visit IS NULL,0,t.visit) AS visit
+                FROM htp_report.finance_debtor_1102050102_106 d
+                LEFT JOIN rcpt_print r ON r.vn = d.vn AND r.`status` ="OK" AND r.department="OPD" AND r.bill_date <> d.vstdate
+                LEFT JOIN (SELECT vn,COUNT(vn) AS visit FROM htp_report.finance_debtor_1102050102_106_tracking GROUP BY vn) t ON t.vn=d.vn
+                WHERE d.vstdate BETWEEN ? AND ?', [$start_date, $end_date]);
+        }
+
+        $debtor_search = DB::connection('hosxp')->select('
+            SELECT o.vstdate,o.vsttime,o.oqueue,o.vn,o.an,o.hn,v.cid,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,
+                pt.mobile_phone_number,p.`name` AS pttype,vp.hospmain,p.hipdata_code,v.pdx,v.income,v.paid_money,
+                v.rcpt_money,v.paid_money-v.rcpt_money AS debtor,r.rcpno,p2.arrear_date,p2.amount AS arrear_amount,
+                r1.bill_amount AS paid_arrear,r1.rcpno AS rcpno_arrear,fd.deposit_amount,fd1.debit_amount
+            FROM ovst o 
+                LEFT JOIN patient pt ON pt.hn=o.hn		
+            LEFT JOIN visit_pttype vp ON vp.vn=o.vn
+            LEFT JOIN pttype p ON p.pttype=vp.pttype
+            LEFT JOIN patient_arrear p2 ON p2.vn=o.vn
+            LEFT JOIN patient_finance_deposit fd ON fd.anvn = o.vn
+            LEFT JOIN patient_finance_debit fd1 ON fd1.anvn = o.vn
+            LEFT JOIN rcpt_print r ON r.vn = o.vn AND r.`status` ="OK" AND r.department="OPD" AND r.bill_date=o.vstdate
+            LEFT JOIN rcpt_print r1 ON r1.vn = p2.vn AND r1.`status` ="OK" AND r1.department="OPD" 
+            LEFT JOIN vn_stat v ON v.vn=o.vn
+            LEFT JOIN hospcode h ON h.hospcode=vp.hospmain
+            WHERE (o.an IS NULL OR o.an ="")
+                AND v.paid_money <>"0" 
+                AND v.rcpt_money <> v.paid_money 
+                AND o.vstdate BETWEEN ? AND ?
+                AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050102_106)    
+            GROUP BY o.vn ORDER BY o.vstdate,o.oqueue ',[$start_date,$end_date]); 
+
+        $debtor_search_iclaim = DB::connection('hosxp')->select('
+            SELECT o.vn,o.hn,o.oqueue,o.an,pt.cid,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,o.vstdate,o.vsttime,
+                p.`name` AS pttype,vp.hospmain,p.hipdata_code,v.pdx,v.income,v.rcpt_money,GROUP_CONCAT(s.`name`) AS other_list,
+                IFNULL(SUM(o1.sum_price),0) AS other,v.income-v.rcpt_money-IFNULL(SUM(o1.sum_price),0) AS debtor
+            FROM ovst o    
+            LEFT JOIN patient pt ON pt.hn=o.hn
+            LEFT JOIN vn_stat v ON v.vn=o.vn
+            LEFT JOIN visit_pttype vp ON vp.vn=o.vn
+            LEFT JOIN pttype p ON p.pttype=vp.pttype
+            LEFT JOIN opitemrece o1 ON o1.vn=o.vn AND o1.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE ems ="Y")
+			LEFT JOIN s_drugitems s ON s.icode = o1.icode	
+            WHERE (o.an IS NULL OR o.an ="") 
+                AND vp.pttype = ?
+				AND o.vstdate BETWEEN ? AND ?
+				AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050102_106)
+            GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue',[$pttype_iclaim,$start_date,$end_date]);
+
+        $request->session()->put('start_date',$start_date);
+        $request->session()->put('end_date',$end_date);
+        $request->session()->put('search',$search);
+        $request->session()->put('debtor',$debtor);
+        $request->session()->save();
+
+        return view('hrims.debtor.1102050102_106',compact('start_date','end_date','search','debtor','debtor_search','debtor_search_iclaim'));
+    }
+//_1102050102_106_confirm-------------------------------------------------------------------------------------------------------
+    public function _1102050102_106_confirm(Request $request )
+    {
+        $start_date = Session::get('start_date');
+        $end_date = Session::get('end_date');
+        $request->validate([
+        'checkbox' => 'required|array',
+        ], [
+            'checkbox.required' => 'กรุณาเลือกรายการที่ต้องการยืนยันลูกหนี้'
+        ]);
+        $checkbox = $request->input('checkbox'); // รับ array
+        $checkbox_string = implode(",", $checkbox); // แปลงเป็น string สำหรับ SQL IN
+       
+        $debtor = DB::connection('hosxp')->select('
+            SELECT o.vstdate,o.vsttime,o.oqueue,o.vn,o.an,o.hn,v.cid,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,
+                pt.mobile_phone_number,p.`name` AS pttype,vp.hospmain,p.hipdata_code,v.pdx,v.income,v.paid_money,
+                v.rcpt_money,v.paid_money-v.rcpt_money AS debtor,r.rcpno,p2.arrear_date,p2.amount AS arrear_amount,
+                r1.bill_amount AS paid_arrear,r1.rcpno AS rcpno_arrear,fd.deposit_amount,fd1.debit_amount,"ยืนยันลูกหนี้" AS status  
+            FROM ovst o 
+                LEFT JOIN patient pt ON pt.hn=o.hn		
+            LEFT JOIN visit_pttype vp ON vp.vn=o.vn
+            LEFT JOIN pttype p ON p.pttype=vp.pttype
+            LEFT JOIN patient_arrear p2 ON p2.vn=o.vn
+            LEFT JOIN patient_finance_deposit fd ON fd.anvn = o.vn
+            LEFT JOIN patient_finance_debit fd1 ON fd1.anvn = o.vn
+            LEFT JOIN rcpt_print r ON r.vn = o.vn AND r.`status` ="OK" AND r.department="OPD" AND r.bill_date=o.vstdate
+            LEFT JOIN rcpt_print r1 ON r1.vn = p2.vn AND r1.`status` ="OK" AND r1.department="OPD" 
+            LEFT JOIN vn_stat v ON v.vn=o.vn
+            LEFT JOIN hospcode h ON h.hospcode=vp.hospmain
+            WHERE (o.an IS NULL OR o.an ="")
+                AND v.paid_money <>"0" 
+                AND v.rcpt_money <> v.paid_money 
+                AND o.vstdate BETWEEN ? AND ?  
+                AND o.vn IN ('.$checkbox_string.') 
+            GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date]); 
+        
+        foreach ($debtor as $row) {
+            Finance_debtor_1102050102_106::insert([
+                'vn'                  => $row->vn,
+                'hn'                  => $row->hn,
+                'an'                  => $row->an,
+                'cid'                 => $row->cid,
+                'ptname'              => $row->ptname,
+                'mobile_phone_number' => $row->mobile_phone_number,
+                'vstdate'             => $row->vstdate,
+                'vsttime'             => $row->vsttime,
+                'pttype'              => $row->pttype,    
+                'hospmain'            => $row->hospmain,    
+                'hipdata_code'        => $row->hipdata_code,   
+                'pdx'                 => $row->pdx,  
+                'income'              => $row->income,  
+                'paid_money'          => $row->paid_money,
+                'rcpt_money'          => $row->rcpt_money,
+                'debtor'              => $row->debtor,      
+                'status'              => $row->status,         
+                ]);            
+            }
+
+        if (empty($checkbox) || !is_array($checkbox)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'กรุณาเลือกรายการที่จะยืนยัน'
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'ยืนยันลูกหนี้สำเร็จ');
+    }
+//_1102050102_106_confirm_iclaim-------------------------------------------------------------------------------------------------------
+    public function _1102050102_106_confirm_iclaim(Request $request )
+    {
+        $start_date = Session::get('start_date');
+        $end_date = Session::get('end_date');
+        $pttype_iclaim = DB::table('main_setting')->where('name', 'pttype_iclaim')->value('value'); 
+        $request->validate([
+        'checkbox_iclaim' => 'required|array',
+        ], [
+            'checkbox_iclaim.required' => 'กรุณาเลือกรายการที่ต้องการยืนยันลูกหนี้'
+        ]);
+        $checkbox = $request->input('checkbox_iclaim'); // รับ array
+        $checkbox_string = implode(",", $checkbox); // แปลงเป็น string สำหรับ SQL IN
+       
+        $debtor = DB::connection('hosxp')->select('
+            SELECT o.vn,o.hn,o.oqueue,o.an,pt.cid,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,o.vstdate,o.vsttime,
+                pt.mobile_phone_number,p.`name` AS pttype,vp.hospmain,p.hipdata_code,v.pdx,v.income,v.paid_money,v.rcpt_money,
+                GROUP_CONCAT(s.`name`) AS other_list,IFNULL(SUM(o1.sum_price),0) AS other,
+                v.income-v.rcpt_money-IFNULL(SUM(o1.sum_price),0) AS debtor,"ยืนยันลูกหนี้" AS status
+            FROM ovst o    
+            LEFT JOIN patient pt ON pt.hn=o.hn
+            LEFT JOIN vn_stat v ON v.vn=o.vn
+            LEFT JOIN visit_pttype vp ON vp.vn=o.vn
+            LEFT JOIN pttype p ON p.pttype=vp.pttype
+            LEFT JOIN opitemrece o1 ON o1.vn=o.vn AND o1.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE ems ="Y")
+			LEFT JOIN s_drugitems s ON s.icode = o1.icode	
+            WHERE (o.an IS NULL OR o.an ="") 
+                AND vp.pttype = ?
+				AND o.vstdate BETWEEN ? AND ?  
+                AND o.vn IN ('.$checkbox_string.') 
+            GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$pttype_iclaim,$start_date,$end_date]); 
+        
+        foreach ($debtor as $row) {
+            Finance_debtor_1102050102_106::insert([
+                'vn'                  => $row->vn,
+                'hn'                  => $row->hn,
+                'an'                  => $row->an,
+                'cid'                 => $row->cid,
+                'ptname'              => $row->ptname,
+                'mobile_phone_number' => $row->mobile_phone_number,
+                'vstdate'             => $row->vstdate,
+                'vsttime'             => $row->vsttime,
+                'pttype'              => $row->pttype,    
+                'hospmain'            => $row->hospmain,    
+                'hipdata_code'        => $row->hipdata_code,   
+                'pdx'                 => $row->pdx,  
+                'income'              => $row->income,  
+                'paid_money'          => $row->paid_money,
+                'rcpt_money'          => $row->rcpt_money,
+                'debtor'              => $row->debtor,      
+                'status'              => $row->status,         
+                ]);            
+            }
+
+        if (empty($checkbox) || !is_array($checkbox)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'กรุณาเลือกรายการที่จะยืนยัน'
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'ยืนยันลูกหนี้สำเร็จ');
+    }
+//_1102050102_106_delete-------------------------------------------------------------------------------------------------------
+    public function _1102050102_106_delete(Request $request )
+    {
+        $checkbox = $request->input('checkbox_d');        
+
+        $deleted = Finance_debtor_1102050102_106::whereIn('vn', $checkbox)
+            ->whereNull('debtor_lock')
+            ->delete();
+
+        if (empty($checkbox) || !is_array($checkbox)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'กรุณาเลือกรายการที่จะลบ'
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'ลบลูกหนี้เรียบร้อย ');
+    }
+//_1102050102_106_update-------------------------------------------------------------------------------------------------------
+    public function _1102050102_106_update(Request $request, $vn)
+    {
+        $item = Finance_debtor_1102050102_106::findOrFail($vn);
+        $item->update([
+            'charge_date' => $request->input('charge_date'),
+            'charge_no' => $request->input('charge_no'),
+            'charge' => $request->input('charge'),
+            'receive_date' => $request->input('receive_date'),
+            'receive_no' => $request->input('receive_no'),
+            'receive' => $request->input('receive'),
+            'repno' => $request->input('repno'),
+            'status' => $request->input('status'),
+        ]);
+
+        return  redirect()->back()->with('success', 'บันทึกข้อมูลเรียบร้อย'); 
+    }
+//1102050102_106_daily_pdf-------------------------------------------------------------------------------------------------------
+    public function _1102050102_106_daily_pdf(Request $request)
+    {
+        $start_date = Session::get('start_date');
+        $end_date = Session::get('end_date');
+        $debtor = DB::select('
+            SELECT vstdate,COUNT(DISTINCT vn) AS anvn,
+            SUM(debtor) AS debtor,SUM(receive) AS receive
+            FROM finance_debtor_1102050102_106  
+            WHERE vstdate BETWEEN ? AND ?
+            GROUP BY vstdate ORDER BY vstdate',[$start_date,$end_date]);
+
+        $pdf = PDF::loadView('hrims.debtor.1102050102_106_daily_pdf', compact('start_date','end_date','debtor'))
+                    ->setPaper('A4', 'portrait');
+        return @$pdf->stream();
+    }
+//1102050102_106_indiv_excel-------------------------------------------------------------------------------------------------------   
+    public function _1102050102_106_indiv_excel(Request $request)
+        {
+        $start_date = Session::get('start_date');
+        $end_date = Session::get('end_date');
+        $debtor = Session::get('debtor');
+        
+        return view('hrims.debtor.1102050102_106_indiv_excel',compact('start_date','end_date','debtor'));
+    }
+//_1102050102_106_tracking-------------------------------------------------------------------------------------------------------   
+    public function _1102050102_106_tracking(Request $request, $vn )
+    {
+        $debtor = DB::select('
+            SELECT * FROM finance_debtor_1102050102_106 WHERE vn = "'.$vn.'"');
+
+        $tracking = DB::select('
+            SELECT * FROM finance_debtor_1102050102_106_tracking WHERE vn = "'.$vn.'"');
+
+        return view('finance_debtor.1102050102_106_tracking',compact('debtor','tracking'));
+    }
+//_1102050102_106_tracking_insert--------------------------------------------------------------------------------------------------
+    public function _1102050102_106_tracking_insert(Request $request)
+    {
+        $item = new Finance_debtor_1102050102_106_tracking;
+        $item->vn = $request->input('vn');
+        $item->tracking_date = $request->input('tracking_date');
+        $item->tracking_type = $request->input('tracking_type');
+        $item->tracking_no = $request->input('tracking_no');
+        $item->tracking_officer = $request->input('tracking_officer');
+        $item->tracking_note = $request->input('tracking_note');  
+        $item->save();  
+
+        return redirect()->back()->with('success', 'บันทึกข้อมูลเรียบร้อย'); 
+    }
+//_1102050102_106_tracking_update-------------------------------------------------------------------------------------------------
+    public function _1102050102_106_tracking_update(Request $request, $tracking_id)
+    {
+    Finance_debtor_1102050102_106_tracking::where('tracking_id', $tracking_id)
+        ->update([
+        'tracking_date' => $request->input('tracking_date'),
+        'tracking_type' => $request->input('tracking_type'),
+        'tracking_no' => $request->input('tracking_no'),
+        'tracking_officer' => $request->input('tracking_officer'),
+        'tracking_note' => $request->input('tracking_note')
+        ]);
+
+    return redirect()->back()->with('success', 'บันทึกข้อมูลเรียบร้อย');  
+    }
+##############################################################################################################################################################
+//_1102050102_108--------------------------------------------------------------------------------------------------------------
+    public function _1102050102_108(Request $request )
+    {
+        $start_date = $request->start_date ?: Session::get('start_date');
+        $end_date = $request->end_date ?: Session::get('end_date');
+        $search  =  $request->search ?: Session::get('search');        
+
+        $debtor =  Finance_debtor_1102050102_108::whereBetween('vstdate', [$start_date,$end_date])
+                    ->where(function ($query) use ($search){
+                        $query->where('ptname','like','%'.$search.'%');
+                        $query->orwhere('hn','like','%'.$search.'%');
+                        })
+                    ->orderBy('vstdate')->get();
+
+        $debtor_search = DB::connection('hosxp')->select('
+            SELECT o.vn,o.hn,o.an,pt.cid,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,o.vstdate,
+                o.vsttime,p.`name` AS pttype,vp.hospmain,p.hipdata_code,v.pdx,v.income,v.rcpt_money,
+                IFNULL(SUM(o1.sum_price),0) AS other,GROUP_CONCAT(s.`name`) AS other_list,
+                v.income-v.rcpt_money-IFNULL(o1.sum_price,0) AS debtor ,"ยืนยันลูกหนี้" AS status  
+            FROM ovst o    
+            LEFT JOIN patient pt ON pt.hn=o.hn
+            LEFT JOIN vn_stat v ON v.vn=o.vn
+            LEFT JOIN visit_pttype vp ON vp.vn=o.vn
+            LEFT JOIN pttype p ON p.pttype=vp.pttype
+            LEFT JOIN opitemrece o1 ON o1.vn=o.vn AND o1.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE ems ="Y") 
+            LEFT JOIN s_drugitems s ON s.icode = o1.icode   
+            WHERE (o.an IS NULL OR o.an ="") 
+                AND o.vstdate BETWEEN ? AND ?
+                AND v.income <> "0" 
+                AND v.paid_money = "0" 
+                AND p.hipdata_code IN ("BFC","GOF","PVT","WVO")
+                AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
+                AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050102_108) 
+            GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date]); 
+
+        $request->session()->put('start_date',$start_date);
+        $request->session()->put('end_date',$end_date);
+        $request->session()->put('search',$search);
+        $request->session()->put('debtor',$debtor);
+        $request->session()->save();
+
+        return view('hrims.debtor.1102050102_108',compact('start_date','end_date','search','debtor','debtor_search'));
+    }
+//_1102050102_108_confirm-------------------------------------------------------------------------------------------------------
+    public function _1102050108_108_confirm(Request $request )
+    {
+        $start_date = Session::get('start_date');
+        $end_date = Session::get('end_date');
+        $request->validate([
+        'checkbox' => 'required|array',
+        ], [
+            'checkbox.required' => 'กรุณาเลือกรายการที่ต้องการยืนยันลูกหนี้'
+        ]);
+        $checkbox = $request->input('checkbox'); // รับ array
+        $checkbox_string = implode(",", $checkbox); // แปลงเป็น string สำหรับ SQL IN
+       
+        $debtor = DB::connection('hosxp')->select('
+            SELECT o.vn,o.hn,o.an,pt.cid,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,o.vstdate,
+                o.vsttime,p.`name` AS pttype,vp.hospmain,p.hipdata_code,v.pdx,v.income,v.rcpt_money,
+                IFNULL(SUM(o1.sum_price),0) AS other,GROUP_CONCAT(s.`name`) AS other_list,
+                v.income-v.rcpt_money-IFNULL(o1.sum_price,0) AS debtor ,"ยืนยันลูกหนี้" AS status    
+            FROM ovst o    
+            LEFT JOIN patient pt ON pt.hn=o.hn
+            LEFT JOIN vn_stat v ON v.vn=o.vn
+            LEFT JOIN visit_pttype vp ON vp.vn=o.vn
+            LEFT JOIN pttype p ON p.pttype=vp.pttype 
+            LEFT JOIN opitemrece o1 ON o1.vn=o.vn AND o1.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE ems ="Y") 
+            LEFT JOIN s_drugitems s ON s.icode = o1.icode      
+            WHERE (o.an IS NULL OR o.an ="") 
+                AND o.vstdate BETWEEN ? AND ?
+                AND v.income <> "0" 
+                AND v.paid_money = "0" 
+                AND p.hipdata_code IN ("BFC","GOF","PVT","WVO")
+                AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
+                AND o.vn IN ('.$checkbox_string.') 
+            GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date]); 
+        
+        foreach ($debtor as $row) {
+            Finance_debtor_1102050102_108::insert([
+                'vn'              => $row->vn,
+                'hn'              => $row->hn,
+                'cid'             => $row->cid,
+                'ptname'          => $row->ptname,
+                'vstdate'         => $row->vstdate,
+                'vsttime'         => $row->vsttime,
+                'pttype'          => $row->pttype,    
+                'hospmain'        => $row->hospmain,    
+                'hipdata_code'    => $row->hipdata_code,   
+                'pdx'             => $row->pdx,  
+                'income'          => $row->income,  
+                'rcpt_money'      => $row->rcpt_money,
+                'debtor'          => $row->debtor,  
+                'status'          => $row->status,          
+            ]);            
+        }
+
+        if (empty($checkbox) || !is_array($checkbox)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'กรุณาเลือกรายการที่จะยืนยัน'
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'ยืนยันลูกหนี้สำเร็จ');
+    }
+//_1102050102_108_delete-------------------------------------------------------------------------------------------------------
+    public function _1102050102_108_delete(Request $request )
+    {
+        $checkbox = $request->input('checkbox_d');        
+
+        $deleted = Finance_debtor_1102050102_108::whereIn('vn', $checkbox)
+            ->whereNull('debtor_lock')
+            ->delete();
+
+        if (empty($checkbox) || !is_array($checkbox)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'กรุณาเลือกรายการที่จะลบ'
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'ลบลูกหนี้เรียบร้อย ');
+    }
+//_1102050102_108_update-------------------------------------------------------------------------------------------------------
+    public function _1102050102_108_update(Request $request, $vn)
+    {
+        $item = Finance_debtor_1102050102_108::findOrFail($vn);
+        $item->update([
+            'charge_date' => $request->input('charge_date'),
+            'charge_no' => $request->input('charge_no'),
+            'charge' => $request->input('charge'),
+            'receive_date' => $request->input('receive_date'),
+            'receive_no' => $request->input('receive_no'),
+            'receive' => $request->input('receive'),
+            'repno' => $request->input('repno'),
+            'status' => $request->input('status'),
+        ]);
+
+        return  redirect()->back()->with('success', 'บันทึกข้อมูลเรียบร้อย'); 
+    }
+//1102050102_108_daily_pdf-------------------------------------------------------------------------------------------------------
+    public function _1102050102_108_daily_pdf(Request $request)
+    {
+        $start_date = Session::get('start_date');
+        $end_date = Session::get('end_date');
+        $debtor = DB::select('
+            SELECT vstdate,COUNT(DISTINCT vn) AS anvn,
+            SUM(debtor) AS debtor,SUM(receive) AS receive
+            FROM finance_debtor_1102050102_108  
+            WHERE vstdate BETWEEN ? AND ?
+            GROUP BY vstdate ORDER BY vstdate',[$start_date,$end_date]);
+
+        $pdf = PDF::loadView('hrims.debtor.1102050102_108_daily_pdf', compact('start_date','end_date','debtor'))
+                    ->setPaper('A4', 'portrait');
+        return @$pdf->stream();
+    }
+ //1102050102_108_indiv_excel-------------------------------------------------------------------------------------------------------   
+    public function _1102050102_108_indiv_excel(Request $request)
+        {
+        $start_date = Session::get('start_date');
+        $end_date = Session::get('end_date');
+        $debtor = Session::get('debtor');
+        
+        return view('hrims.debtor.1102050102_108_indiv_excel',compact('start_date','end_date','debtor'));
+    }
 
 }

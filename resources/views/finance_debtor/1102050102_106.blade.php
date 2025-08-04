@@ -70,7 +70,7 @@
                 <tr class="table-success">
                     <th class="text-center"><input type="checkbox" onClick="toggle_d(this)"> All</th> 
                     <th class="text-center"width="6%" >วันที่</th>
-                    <th class="text-center">HN</th>
+                    <th class="text-center">HN</th> 
                     <th class="text-center">ชื่อ-สกุล</th>
                     <th class="text-center">เบอร์โทร</th>
                     <th class="text-center">สิทธิ</th>
@@ -132,7 +132,7 @@
                 <?php $sum_debtor += $row->debtor ; ?> 
                 <?php $sum_receive += $row->receive ; ?>       
                 @endforeach 
-            </tr>   
+                </tr>   
             </table>
         </form>
         <table class="table table-bordered ">
