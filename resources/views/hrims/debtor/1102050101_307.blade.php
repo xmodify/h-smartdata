@@ -86,7 +86,7 @@
                         <td align="right">{{ DateThai($row->vstdate) }} {{ $row->vsttime }}</td>
                         <td align="center">{{ $row->hn }}</td>
                         <td align="left">{{ $row->ptname }}</td>
-                        <td align="left">{{ $row->pttype }} [{{ $row->hospmain }}]</td>
+                        <td align="left">{{ $row->pttype }} </td>
                         <td align="right">{{ $row->pdx }}</td>                      
                         <td align="right">{{ number_format($row->income,2) }}</td>
                         <td align="right">{{ number_format($row->rcpt_money,2) }}</td>
@@ -202,7 +202,7 @@
                         <td align="right">{{ DateThai($row->vstdate) }} {{ $row->vsttime }}</td>
                         <td align="center">{{ $row->hn }}</td>
                         <td align="left">{{ $row->ptname }}</td>
-                        <td align="left">{{ $row->pttype }} [{{ $row->hospmain }}]</td>
+                        <td align="left">{{ $row->pttype }} </td>
                         <td align="right">{{ $row->pdx }}</td>                  
                         <td align="right">{{ number_format($row->income,2) }}</td>
                         <td align="right">{{ number_format($row->rcpt_money,2) }}</td>
