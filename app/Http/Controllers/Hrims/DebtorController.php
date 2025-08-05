@@ -2409,7 +2409,7 @@ class DebtorController extends Controller
 
         $debtor_search = DB::connection('hosxp')->select('
             SELECT o.vn,o.hn,o.an,pt.cid,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,o.vstdate,
-                o.vsttime,p.`name` AS pttype,vp.hospmain,p.hipdata_code,v.pdx,v.income,v.rcpt_money,								        
+                o.vsttime,p.`name` AS pttype,vp.hospmain,p.hipdata_code,v.pdx,v.income,v.rcpt_money,oe.upload_datetime AS claim,								        
                 v.income-v.rcpt_money-COALESCE(o1.kidney_price, 0)-COALESCE(o2.ppfs_price, 0)-COALESCE(o3.other_price, 0) AS ofc,
                 COALESCE(o1.kidney_price, 0) AS kidney,COALESCE(o2.ppfs_price, 0) AS ppfs,COALESCE(o3.other_price, 0) AS other,
                 v.income-v.rcpt_money-COALESCE(o2.ppfs_price, 0)-COALESCE(o3.other_price, 0) AS debtor,GROUP_CONCAT(DISTINCT sd.`name`) AS kidney_list,
@@ -2434,6 +2434,7 @@ class DebtorController extends Controller
 			LEFT JOIN s_drugitems sd1 ON sd1.icode=o5.icode
 			LEFT JOIN opitemrece o6 ON o6.vn=o.vn AND o6.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE ems ="Y")	
 			LEFT JOIN s_drugitems sd2 ON sd2.icode=o6.icode
+            LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
             WHERE (o.an IS NULL OR o.an ="")
 			    AND p.hipdata_code = "OFC"
                 AND v.income-v.rcpt_money <>"0"		
@@ -3963,7 +3964,7 @@ class DebtorController extends Controller
 
         $debtor_search = DB::connection('hosxp')->select('
             SELECT o.vn,o.hn,o.an,pt.cid,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,o.vstdate,
-                o.vsttime,p.`name` AS pttype,vp.hospmain,p.hipdata_code,v.pdx,v.income,v.rcpt_money,								        
+                o.vsttime,p.`name` AS pttype,vp.hospmain,p.hipdata_code,v.pdx,v.income,v.rcpt_money,oe.upload_datetime AS claim,								        
                 v.income-v.rcpt_money-COALESCE(o1.kidney_price, 0)-COALESCE(o2.ppfs_price, 0)-COALESCE(o3.other_price, 0) AS lgo,
                 COALESCE(o1.kidney_price, 0) AS kidney,COALESCE(o2.ppfs_price, 0) AS ppfs,COALESCE(o3.other_price, 0) AS other,
                 v.income-v.rcpt_money-COALESCE(o2.ppfs_price, 0)-COALESCE(o3.other_price, 0) AS debtor,GROUP_CONCAT(DISTINCT sd.`name`) AS kidney_list,
@@ -3988,6 +3989,7 @@ class DebtorController extends Controller
 			LEFT JOIN s_drugitems sd1 ON sd1.icode=o5.icode
 			LEFT JOIN opitemrece o6 ON o6.vn=o.vn AND o6.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE ems ="Y")	
 			LEFT JOIN s_drugitems sd2 ON sd2.icode=o6.icode
+            LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
             WHERE (o.an IS NULL OR o.an ="")
 			    AND p.hipdata_code = "LGO"
                 AND v.income-v.rcpt_money <>"0"		
@@ -4160,7 +4162,7 @@ class DebtorController extends Controller
         $end_date = $request->end_date ?: Session::get('end_date');
         $search  =  $request->search ?: Session::get('search');
         $pttype_checkup = DB::table('main_setting')->where('name', 'pttype_checkup')->value('value');           
-
+ 
         if ($search) {
             $debtor = DB::select('
                 SELECT d.vn,d.vstdate,d.vsttime,d.hn,d.ptname,d.hipdata_code,d.pttype,d.hospmain,d.pdx,d.income,d.rcpt_money,  
@@ -4190,7 +4192,7 @@ class DebtorController extends Controller
 
         $debtor_search = DB::connection('hosxp')->select('
             SELECT o.vn,o.hn,o.an,pt.cid,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,o.vstdate,
-                o.vsttime,p.`name` AS pttype,vp.hospmain,p.hipdata_code,v.pdx,v.income,v.rcpt_money,								        
+                o.vsttime,p.`name` AS pttype,vp.hospmain,p.hipdata_code,v.pdx,v.income,v.rcpt_money,oe.upload_datetime AS claim,								        
                 v.income-v.rcpt_money-COALESCE(o1.kidney_price, 0)-COALESCE(o2.ppfs_price, 0)-COALESCE(o3.other_price, 0) AS ofc,
                 COALESCE(o1.kidney_price, 0) AS kidney,COALESCE(o2.ppfs_price, 0) AS ppfs,COALESCE(o3.other_price, 0) AS other,
                 v.income-v.rcpt_money-COALESCE(o2.ppfs_price, 0)-COALESCE(o3.other_price, 0) AS debtor,GROUP_CONCAT(DISTINCT sd.`name`) AS kidney_list,
@@ -4215,6 +4217,7 @@ class DebtorController extends Controller
 			LEFT JOIN s_drugitems sd1 ON sd1.icode=o5.icode
 			LEFT JOIN opitemrece o6 ON o6.vn=o.vn AND o6.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE ems ="Y")	
 			LEFT JOIN s_drugitems sd2 ON sd2.icode=o6.icode
+            LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
             WHERE (o.an IS NULL OR o.an ="")
 			    AND p.hipdata_code IN ("BKK","BMT")
                 AND v.income-v.rcpt_money <>"0"		
@@ -4371,12 +4374,383 @@ class DebtorController extends Controller
     }
 //1102050103_803_indiv_excel-------------------------------------------------------------------------------------------------------   
     public function _1102050102_803_indiv_excel(Request $request)
-        {
+    {
         $start_date = Session::get('start_date');
         $end_date = Session::get('end_date');
         $debtor = Session::get('debtor');
         
         return view('hrims.debtor.1102050102_803_indiv_excel',compact('start_date','end_date','debtor'));
+    } 
+##############################################################################################################################################################
+//_1102050101_202--------------------------------------------------------------------------------------------------------------
+    public function _1102050101_202(Request $request )
+    {
+        $start_date = $request->start_date ?: Session::get('start_date');
+        $end_date = $request->end_date ?: Session::get('end_date');
+        $search  =  $request->search ?: Session::get('search');        
+ 
+        if ($search) {
+            $debtor = DB::select('
+                SELECT d.*,stm.fund_ip_payrate,stm.receive_ip_compensate_pay,stm.receive_total,stm.repno
+                FROM finance_debtor_1102050101_202 d
+                LEFT JOIN finance_stm_ucs stm ON stm.an=d.an
+                WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%"))
+                AND d.dchdate BETWEEN ? AND ?
+                GROUP BY d.an', [$search, $search,$start_date,$end_date]);
+        } else {
+            $debtor = DB::select('
+                SELECT d.*,stm.fund_ip_payrate,stm.receive_ip_compensate_pay,stm.receive_total,stm.repno
+                FROM finance_debtor_1102050101_202 d
+                LEFT JOIN finance_stm_ucs stm ON stm.an=d.an
+                WHERE d.dchdate BETWEEN ? AND ?
+                GROUP BY d.an', [$start_date,$end_date]);
+        }
+
+        $debtor_search = DB::connection('hosxp')->select('
+            SELECT w.`name` AS ward,i.hn,pt.cid,i.vn,i.an,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,a.age_y,
+                p.`name` AS pttype,p.hipdata_code,ip.hospmain,i.regdate,i.regtime,i.dchdate,i.dchtime,a.pdx,i.adjrw,
+                a.income,a.rcpt_money,COALESCE(other.other_price,0) AS other,a.income-a.rcpt_money-COALESCE(other.other_price,0) AS debtor,
+                GROUP_CONCAT(DISTINCT s.`name`) AS other_list,ict.ipt_coll_status_type_name,i.data_ok 
+            FROM ipt i 
+            LEFT JOIN patient pt ON pt.hn=i.hn
+            LEFT JOIN ipt_pttype ip ON ip.an=i.an
+            LEFT JOIN pttype p ON p.pttype=ip.pttype
+            LEFT JOIN ward w ON w.ward=i.ward
+            LEFT JOIN an_stat a ON a.an=i.an
+            LEFT JOIN (SELECT op.an, SUM(op.sum_price) AS other_price	
+                FROM opitemrece op INNER JOIN ipt ON ipt.an=op.an
+            LEFT JOIN htp_report.lookup_icode li ON op.icode = li.icode
+                LEFT JOIN nondrugitems n ON n.icode=op.icode 
+                WHERE op.an IS NOT NULL AND ipt.dchdate BETWEEN ? AND ?
+                AND (li.kidney = "Y" OR li.ems="Y" OR li.uc_cr ="Y" OR n.nhso_adp_code IN ("S1801","S1802")) 
+                GROUP BY op.an) other ON other.an=i.an
+            LEFT JOIN opitemrece o ON o.an=i.an AND (o.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE kidney = "Y" OR uc_cr ="Y")
+                OR o.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("S1801","S1802")))
+            LEFT JOIN s_drugitems s ON s.icode=o.icode
+            LEFT JOIN ipt_coll_stat ic ON ic.an=i.an
+            LEFT JOIN ipt_coll_status_type ict ON ict.ipt_coll_status_type_id=ic.ipt_coll_status_type_id
+            WHERE i.confirm_discharge = "Y" 
+            AND p.hipdata_code = "UCS" 
+            AND i.dchdate BETWEEN ? AND ?
+            AND i.an NOT IN (SELECT an FROM htp_report.finance_debtor_1102050101_202) 
+            GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
+
+        $request->session()->put('start_date',$start_date);
+        $request->session()->put('end_date',$end_date);
+        $request->session()->put('search',$search);
+        $request->session()->put('debtor',$debtor);
+        $request->session()->save();
+
+        return view('hrims.debtor.1102050101_202',compact('start_date','end_date','search','debtor','debtor_search'));
+    }
+//_1102050101_202_confirm-------------------------------------------------------------------------------------------------------
+    public function _1102050101_202_confirm(Request $request )
+    {
+        $start_date = Session::get('start_date');
+        $end_date = Session::get('end_date'); 
+        $request->validate([
+        'checkbox' => 'required|array',
+        ], [
+            'checkbox.required' => 'กรุณาเลือกรายการที่ต้องการยืนยันลูกหนี้'
+        ]);
+        $checkbox = $request->input('checkbox'); // รับ array
+        $checkbox_string = implode(",", $checkbox); // แปลงเป็น string สำหรับ SQL IN
+       
+        $debtor = DB::connection('hosxp')->select('
+            SELECT w.`name` AS ward,i.hn,pt.cid,i.vn,i.an,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,a.age_y,
+                p.`name` AS pttype,p.hipdata_code,ip.hospmain,i.regdate,i.regtime,i.dchdate,i.dchtime,a.pdx,i.adjrw,
+                a.income,a.rcpt_money,COALESCE(other.other_price,0) AS other,a.income-a.rcpt_money-COALESCE(other.other_price,0) AS debtor,
+                GROUP_CONCAT(DISTINCT s.`name`) AS other_list,ict.ipt_coll_status_type_name,i.data_ok 
+            FROM ipt i 
+            LEFT JOIN patient pt ON pt.hn=i.hn
+            LEFT JOIN ipt_pttype ip ON ip.an=i.an
+            LEFT JOIN pttype p ON p.pttype=ip.pttype
+            LEFT JOIN ward w ON w.ward=i.ward
+            LEFT JOIN an_stat a ON a.an=i.an
+            LEFT JOIN (SELECT op.an, SUM(op.sum_price) AS other_price	
+                FROM opitemrece op INNER JOIN ipt ON ipt.an=op.an
+            LEFT JOIN htp_report.lookup_icode li ON op.icode = li.icode
+                LEFT JOIN nondrugitems n ON n.icode=op.icode 
+                WHERE op.an IS NOT NULL AND ipt.dchdate BETWEEN ? AND ?
+                AND (li.kidney = "Y" OR li.ems="Y" OR li.uc_cr ="Y" OR n.nhso_adp_code IN ("S1801","S1802")) 
+                GROUP BY op.an) other ON other.an=i.an
+            LEFT JOIN opitemrece o ON o.an=i.an AND (o.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE kidney = "Y" OR uc_cr ="Y")
+                OR o.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("S1801","S1802")))
+            LEFT JOIN s_drugitems s ON s.icode=o.icode
+            LEFT JOIN ipt_coll_stat ic ON ic.an=i.an
+            LEFT JOIN ipt_coll_status_type ict ON ict.ipt_coll_status_type_id=ic.ipt_coll_status_type_id
+            WHERE i.confirm_discharge = "Y" 
+            AND p.hipdata_code = "UCS" 
+            AND i.dchdate BETWEEN ? AND ?
+            AND i.an IN ('.$checkbox_string.') 
+            GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
+        
+        foreach ($debtor as $row) {
+            Finance_debtor_1102050101_202::insert([
+                'an'              => $row->an,
+                'vn'              => $row->vn,
+                'hn'              => $row->hn,
+                'cid'             => $row->cid,
+                'ptname'          => $row->ptname,
+                'regdate'         => $row->regdate,
+                'regtime'         => $row->regtime,
+                'dchdate'         => $row->dchdate,
+                'dchtime'         => $row->dchtime,    
+                'pttype'          => $row->pttype,    
+                'hospmain'        => $row->hospmain,    
+                'hipdata_code'    => $row->hipdata_code,   
+                'pdx'             => $row->pdx,  
+                'adjrw'           => $row->adjrw,  
+                'income'          => $row->income,  
+                'rcpt_money'      => $row->rcpt_money, 
+                'other'           => $row->other,  
+                'debtor'          => $row->debtor,           
+            ]);            
+        }
+
+        if (empty($checkbox) || !is_array($checkbox)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'กรุณาเลือกรายการที่จะยืนยัน'
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'ยืนยันลูกหนี้สำเร็จ');
+    }
+//_1102050101_202_delete-------------------------------------------------------------------------------------------------------
+    public function _1102050101_202_delete(Request $request )
+    {
+        $checkbox = $request->input('checkbox_d');        
+
+        $deleted = Finance_debtor_1102050101_202::whereIn('an', $checkbox)
+            ->whereNull('debtor_lock')
+            ->delete();
+
+        if (empty($checkbox) || !is_array($checkbox)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'กรุณาเลือกรายการที่จะลบ'
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'ลบลูกหนี้เรียบร้อย ');
+    }
+
+//1102050101_202_daily_pdf-------------------------------------------------------------------------------------------------------
+    public function _1102050101_202_daily_pdf(Request $request)
+    {
+        $start_date = Session::get('start_date');
+        $end_date = Session::get('end_date');
+        $debtor = DB::select('
+            SELECT dchdate AS vstdate,COUNT(DISTINCT an) AS anvn,
+            SUM(debtor) AS debtor,SUM(receive_ip_compensate_pay) AS receive
+            FROM (SELECT d.dchdate,d.an,d.debtor,stm.receive_ip_compensate_pay FROM finance_debtor_1102050101_202 d
+            LEFT JOIN finance_stm_ucs stm ON stm.an=d.an    
+            WHERE d.dchdate BETWEEN ? AND ?
+            GROUP BY d.an) AS a
+            GROUP BY dchdate ORDER BY dchdate',[$start_date,$end_date]);
+
+        $pdf = PDF::loadView('hrims.debtor.1102050101_202_daily_pdf', compact('start_date','end_date','debtor'))
+                    ->setPaper('A4', 'portrait');
+        return @$pdf->stream();
+    }
+//1102050101_202_indiv_excel-------------------------------------------------------------------------------------------------------   
+    public function _1102050101_202_indiv_excel(Request $request)
+    {
+        $start_date = Session::get('start_date');
+        $end_date = Session::get('end_date');
+        $debtor = Session::get('debtor');
+        
+        return view('hrims.debtor.1102050101_202_indiv_excel',compact('start_date','end_date','debtor'));
+    } 
+##############################################################################################################################################################
+//_1102050101_217--------------------------------------------------------------------------------------------------------------
+    public function _1102050101_217(Request $request )
+    {
+        $start_date = $request->start_date ?: Session::get('start_date');
+        $end_date = $request->end_date ?: Session::get('end_date');
+        $search  =  $request->search ?: Session::get('search');        
+ 
+        if ($search) {
+            $debtor = DB::select('
+                SELECT d.*,stm.fund_ip_payrate,(stm.receive_total-stm.receive_ip_compensate_pay)+sk.receive_total AS receive,
+						stm.repno,sk.repno AS repno_kidney
+                FROM finance_debtor_1102050101_217 d
+                LEFT JOIN finance_stm_ucs stm ON stm.an=d.an
+                LEFT JOIN finance_stm_ucs_kidney sk ON sk.cid=d.cid AND sk.datetimeadm BETWEEN d.regdate AND d.dchdate
+                WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%"))
+                AND d.dchdate BETWEEN ? AND ?
+                GROUP BY d.an', [$search, $search,$start_date,$end_date]);
+        } else {
+            $debtor = DB::select('
+                SELECT d.*,stm.fund_ip_payrate,(stm.receive_total-stm.receive_ip_compensate_pay)+sk.receive_total AS receive,
+						stm.repno,sk.repno AS repno_kidney
+                FROM finance_debtor_1102050101_217 d
+                LEFT JOIN finance_stm_ucs stm ON stm.an=d.an
+                LEFT JOIN finance_stm_ucs_kidney sk ON sk.cid=d.cid AND sk.datetimeadm BETWEEN d.regdate AND d.dchdate
+                WHERE d.dchdate BETWEEN ? AND ?
+                GROUP BY d.an', [$start_date,$end_date]);
+        }
+
+        $debtor_search = DB::connection('hosxp')->select('
+            SELECT w.`name` AS ward,i.hn,pt.cid,i.vn,i.an,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,a.age_y,
+                p.`name` AS pttype,p.hipdata_code,ip.hospmain,i.regdate,i.regtime,i.dchdate,i.dchtime,a.pdx,i.adjrw,
+                a.income,a.rcpt_money,COALESCE(cr.cr_price,0) AS cr,COALESCE(cr.cr_price,0) AS debtor,
+                GROUP_CONCAT(DISTINCT s.`name`) AS cr_list,ict.ipt_coll_status_type_name,i.data_ok 
+            FROM ipt i 
+            LEFT JOIN patient pt ON pt.hn=i.hn
+            LEFT JOIN ipt_pttype ip ON ip.an=i.an
+            LEFT JOIN pttype p ON p.pttype=ip.pttype
+            LEFT JOIN ward w ON w.ward=i.ward
+            LEFT JOIN an_stat a ON a.an=i.an
+            LEFT JOIN (SELECT op.an, SUM(op.sum_price) AS cr_price	
+                FROM opitemrece op INNER JOIN ipt ON ipt.an=op.an
+            LEFT JOIN htp_report.lookup_icode li ON op.icode = li.icode
+                LEFT JOIN nondrugitems n ON n.icode=op.icode 
+                WHERE op.an IS NOT NULL AND ipt.dchdate BETWEEN ? AND ?
+                AND (li.kidney = "Y" OR li.ems="Y" OR li.uc_cr ="Y" OR n.nhso_adp_code IN ("S1801","S1802")) 
+                GROUP BY op.an) cr ON cr.an=i.an
+            LEFT JOIN opitemrece o ON o.an=i.an AND (o.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE kidney = "Y" OR ems="Y" OR uc_cr ="Y")
+                OR o.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("S1801","S1802")))
+            LEFT JOIN s_drugitems s ON s.icode=o.icode
+            LEFT JOIN ipt_coll_stat ic ON ic.an=i.an
+            LEFT JOIN ipt_coll_status_type ict ON ict.ipt_coll_status_type_id=ic.ipt_coll_status_type_id
+            WHERE i.confirm_discharge = "Y" 
+                AND COALESCE(cr.cr_price,0) <> "0"
+                AND p.hipdata_code = "UCS" 
+                AND i.dchdate BETWEEN ? AND ?
+                AND i.an NOT IN (SELECT an FROM htp_report.finance_debtor_1102050101_217) 
+            GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
+
+        $request->session()->put('start_date',$start_date);
+        $request->session()->put('end_date',$end_date);
+        $request->session()->put('search',$search);
+        $request->session()->put('debtor',$debtor);
+        $request->session()->save();
+
+        return view('hrims.debtor.1102050101_217',compact('start_date','end_date','search','debtor','debtor_search'));
+    }
+//_1102050101_217_confirm-------------------------------------------------------------------------------------------------------
+    public function _1102050101_217_confirm(Request $request )
+    {
+        $start_date = Session::get('start_date');
+        $end_date = Session::get('end_date'); 
+        $request->validate([
+        'checkbox' => 'required|array',
+        ], [
+            'checkbox.required' => 'กรุณาเลือกรายการที่ต้องการยืนยันลูกหนี้'
+        ]);
+        $checkbox = $request->input('checkbox'); // รับ array
+        $checkbox_string = implode(",", $checkbox); // แปลงเป็น string สำหรับ SQL IN
+       
+        $debtor = DB::connection('hosxp')->select('
+            SELECT w.`name` AS ward,i.hn,pt.cid,i.vn,i.an,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,a.age_y,
+                p.`name` AS pttype,p.hipdata_code,ip.hospmain,i.regdate,i.regtime,i.dchdate,i.dchtime,a.pdx,i.adjrw,
+                a.income,a.rcpt_money,COALESCE(cr.cr_price,0) AS cr,COALESCE(cr.cr_price,0) AS debtor,
+                GROUP_CONCAT(DISTINCT s.`name`) AS cr_list,ict.ipt_coll_status_type_name,i.data_ok 
+            FROM ipt i 
+            LEFT JOIN patient pt ON pt.hn=i.hn
+            LEFT JOIN ipt_pttype ip ON ip.an=i.an
+            LEFT JOIN pttype p ON p.pttype=ip.pttype
+            LEFT JOIN ward w ON w.ward=i.ward
+            LEFT JOIN an_stat a ON a.an=i.an
+            LEFT JOIN (SELECT op.an, SUM(op.sum_price) AS cr_price	
+                FROM opitemrece op INNER JOIN ipt ON ipt.an=op.an
+            LEFT JOIN htp_report.lookup_icode li ON op.icode = li.icode
+                LEFT JOIN nondrugitems n ON n.icode=op.icode 
+                WHERE op.an IS NOT NULL AND ipt.dchdate BETWEEN ? AND ?
+                AND (li.kidney = "Y" OR li.ems="Y" OR li.uc_cr ="Y" OR n.nhso_adp_code IN ("S1801","S1802")) 
+                GROUP BY op.an) cr ON cr.an=i.an
+            LEFT JOIN opitemrece o ON o.an=i.an AND (o.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE kidney = "Y" OR ems="Y" OR uc_cr ="Y")
+                OR o.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("S1801","S1802")))
+            LEFT JOIN s_drugitems s ON s.icode=o.icode
+            LEFT JOIN ipt_coll_stat ic ON ic.an=i.an
+            LEFT JOIN ipt_coll_status_type ict ON ict.ipt_coll_status_type_id=ic.ipt_coll_status_type_id
+            WHERE i.confirm_discharge = "Y" 
+			AND COALESCE(cr.cr_price,0) <> "0"
+            AND p.hipdata_code = "UCS" 
+            AND i.dchdate BETWEEN ? AND ?
+            AND i.an IN ('.$checkbox_string.') 
+            GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
+        
+        foreach ($debtor as $row) {
+            Finance_debtor_1102050101_217::insert([
+                'an'              => $row->an,
+                'vn'              => $row->vn,
+                'hn'              => $row->hn,
+                'cid'             => $row->cid,
+                'ptname'          => $row->ptname,
+                'regdate'         => $row->regdate,
+                'regtime'         => $row->regtime,
+                'dchdate'         => $row->dchdate,
+                'dchtime'         => $row->dchtime,    
+                'pttype'          => $row->pttype,    
+                'hospmain'        => $row->hospmain,    
+                'hipdata_code'    => $row->hipdata_code,   
+                'pdx'             => $row->pdx,  
+                'adjrw'           => $row->adjrw,  
+                'income'          => $row->income,  
+                'rcpt_money'      => $row->rcpt_money, 
+                'cr'              => $row->cr,  
+                'debtor'          => $row->debtor,           
+            ]);            
+        }
+
+        if (empty($checkbox) || !is_array($checkbox)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'กรุณาเลือกรายการที่จะยืนยัน'
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'ยืนยันลูกหนี้สำเร็จ');
+    }
+//_1102050101_217_delete-------------------------------------------------------------------------------------------------------
+    public function _1102050101_217_delete(Request $request )
+    {
+        $checkbox = $request->input('checkbox_d');        
+
+        $deleted = Finance_debtor_1102050101_217::whereIn('an', $checkbox)
+            ->whereNull('debtor_lock')
+            ->delete();
+
+        if (empty($checkbox) || !is_array($checkbox)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'กรุณาเลือกรายการที่จะลบ'
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'ลบลูกหนี้เรียบร้อย ');
+    }
+
+//1102050101_217_daily_pdf-------------------------------------------------------------------------------------------------------
+    public function _1102050101_217_daily_pdf(Request $request)
+    {
+        $start_date = Session::get('start_date');
+        $end_date = Session::get('end_date');
+        $debtor = DB::select('
+            SELECT dchdate AS vstdate,COUNT(DISTINCT an) AS anvn,SUM(debtor) AS debtor,SUM(receive) AS receive
+            FROM (SELECT d.dchdate,d.an,d.debtor,(stm.receive_total-stm.receive_ip_compensate_pay)+IFNULL(SUM(sk.receive_total),0) AS receive
+            FROM finance_debtor_1102050101_217 d
+            LEFT JOIN finance_stm_ucs stm ON stm.an=d.an 
+			LEFT JOIN finance_stm_ucs_kidney sk ON sk.cid=d.cid AND sk.datetimeadm BETWEEN d.regdate AND d.dchdate			
+            WHERE d.dchdate BETWEEN ? AND ?
+            GROUP BY d.an) AS a
+            GROUP BY dchdate ORDER BY dchdate',[$start_date,$end_date]);
+
+        $pdf = PDF::loadView('hrims.debtor.1102050101_217_daily_pdf', compact('start_date','end_date','debtor'))
+                    ->setPaper('A4', 'portrait');
+        return @$pdf->stream();
+    }
+//1102050101_217_indiv_excel-------------------------------------------------------------------------------------------------------   
+    public function _1102050101_217_indiv_excel(Request $request)
+    {
+        $start_date = Session::get('start_date');
+        $end_date = Session::get('end_date');
+        $debtor = Session::get('debtor');
+        
+        return view('hrims.debtor.1102050101_217_indiv_excel',compact('start_date','end_date','debtor'));
     } 
 
 }

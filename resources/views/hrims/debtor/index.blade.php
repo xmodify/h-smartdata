@@ -115,10 +115,10 @@
             </thead> 
             <tbody>   
               <tr>
-                <td><a href="#" target="_blank"><li>1102050101.202-ลูกหนี้ค่ารักษา UC-IP</li></a></td>
+                <td><a href="{{ url('hrims/debtor/1102050101_202') }}" target="_blank"><li>1102050101.202-ลูกหนี้ค่ารักษา UC-IP</li></a></td>
               </tr>       
               <tr>
-                <td><a href="#" target="_blank"><li>1102050101.217-ลูกหนี้ค่ารักษา UC-IP บริการเฉพาะ (CR)</li></a></td>
+                <td><a href="{{ url('hrims/debtor/1102050101_217') }}" target="_blank"><li>1102050101.217-ลูกหนี้ค่ารักษา UC-IP บริการเฉพาะ (CR)</li></a></td>
               </tr>   
               <tr>
                 <td ><a href="#" target="_blank"><li>1102050101.302-ลูกหนี้ค่ารักษา ประกันสังคม IP เครือข่าย</li></a></td>

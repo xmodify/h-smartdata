@@ -213,7 +213,7 @@
                     <tr class="table-secondary">
                         <th class="text-center">
                             <button type="button" class="btn btn-outline-success btn-sm"  onclick="confirmSubmit()">ยืนยันลูกหนี้</button></th>
-                        <th class="text-left text-primary" colspan = "15">1102050102.803-ลูกหนี้ค่ารักษา เบิกจ่ายตรง อปท.รูปแบบพิเศษ OP รอยืนยัน วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }} รอยืนยันลูกหนี้</th>                         
+                        <th class="text-left text-primary" colspan = "16">1102050102.803-ลูกหนี้ค่ารักษา เบิกจ่ายตรง อปท.รูปแบบพิเศษ OP รอยืนยัน วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }} รอยืนยันลูกหนี้</th>                         
                     </tr>
                     <tr class="table-secondary">
                         <th class="text-center"><input type="checkbox" onClick="toggle(this)"> All</th> 
@@ -232,6 +232,7 @@
                         <th class="text-center" width = "10%">รายการฟอกไต</th>
                         <th class="text-center" width = "10%">รายการ PPFS</th>
                         <th class="text-center" width = "10%">รายการกองทุนอื่น</th> 
+                        <th class="text-center">ส่ง Claim</th>  
                     </tr>
                     </thead>
                     <?php $count = 1 ; ?>
@@ -253,6 +254,7 @@
                         <td align="left" width = "10%">{{ $row->kidney_list }}</td>
                         <td align="left" width = "10%">{{ $row->ppfs_list }}</td>
                         <td align="left" width = "10%">{{ $row->other_list }}</td>
+                        <td align="center" style="color: green">{{ $row->claim }}</td>
                     <?php $count++; ?>
                     @endforeach 
                 </tr>   

@@ -208,7 +208,7 @@
                     <td align="right">{{ number_format($row->debtor,2) }}</td>
                 <?php $count++; ?>
                 @endforeach 
-            </tr>   
+                </tr>   
             </table>
         </form>
     </div> 

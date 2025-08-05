@@ -39,104 +39,92 @@
             </div>
         </form> 
         <div style="overflow-x:auto;">
-            <form action="{{ url('hrims/debtor/1102050102_801_delete') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ url('hrims/debtor/1102050101_202_delete') }}" method="POST" enctype="multipart/form-data">
                 @csrf   
                 @method('DELETE')
-                <table id="debtor" class="table table-bordered table-striped my-3" width="100%">
+                <table id="debtor" class="table table-bordered table-striped my-3">
                     <thead>
                     <tr class="table-success">
-                        <th class="text-center">
+                        <th class="text-center" width="5%">
                             <button type="button" class="btn btn-outline-danger btn-sm" onclick="confirmDelete()">ลบลูกหนี้</button>
                         </th>
-                        <th class="text-left text-primary" colspan = "11">1102050102.801-ลูกหนี้ค่ารักษา เบิกจ่ายตรง อปท.OP วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</th> 
-                        <th class="text-center text-primary" colspan = "10">การชดเชย</th>                                                 
+                        <th class="text-center" colspan = "11">1102050101.202 ลูกหนี้ค่ารักษา UC - IP วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</th> 
+                        <th class="text-center text-primary" colspan = "8">การชดเชย</th>                                                 
                     </tr>
                     <tr class="table-success">
-                        <th class="text-center"><input type="checkbox" onClick="toggle_d(this)"> All</th> 
-                        <th class="text-center">วันที่</th>
+                        <th class="text-center"><input type="checkbox" onClick="toggle_d(this)"> All</th>
                         <th class="text-center">HN</th>
-                        <th class="text-center">ชื่อ-สกุล</th>
+                        <th class="text-center">AN</th>
+                        <th class="text-center">ชื่อ-สกุล</th>  
                         <th class="text-center">สิทธิ</th>
+                        <th class="text-center">Admit</th>
+                        <th class="text-center">Discharge</th>
                         <th class="text-center">ICD10</th>
+                        <th class="text-center">AdjRW</th>
                         <th class="text-center">ค่ารักษาทั้งหมด</th>  
                         <th class="text-center">ชำระเอง</th>
-                        <th class="text-center">LGO</th>
-                        <th class="text-center">ฟอกไต</th>
-                        <th class="text-center">PPFS</th>
-                        <th class="text-center">กองทุนอื่น</th>       
+                        <th class="text-center">บริการเฉพาะ</th>
                         <th class="text-center text-primary">ลูกหนี้</th>
-                        <th class="text-center text-primary">ชดเชย LGO</th>
-                        <th class="text-center text-primary">ชดเชย ฟอกไต</th>                        
-                        <th class="text-center text-primary">ชดเชยรวม</th>                      
+                        <th class="text-center text-primary">อัตราจ่าย/RW</th>
+                        <th class="text-center text-primary">ชดเชย RW</th> 
+                        <th class="text-center text-primary">ชดเชย CR</th>
+                        <th class="text-center text-primary">ชดเชย ทั้งหมด</th>
                         <th class="text-center text-primary">ผลต่าง</th>
-                        <th class="text-center text-primary">ชดเชย PPFS</th>
-                        <th class="text-center text-primary" width="5%">สถานะ</th> 
-                        <th class="text-center text-primary">REP</th>  
-                        <th class="text-center text-primary">Lock</th>                                       
+                        <th class="text-center text-primary">REP</th>               
+                        <th class="text-center text-primary">Lock</th> 
                     </tr>
                     </thead>
                     <?php $count = 1 ; ?>
                     <?php $sum_income = 0 ; ?>
                     <?php $sum_rcpt_money = 0 ; ?>
-                    <?php $sum_lgo = 0 ; ?>
-                    <?php $sum_kidney = 0 ; ?>
-                    <?php $sum_ppfs = 0 ; ?>
                     <?php $sum_other = 0 ; ?>
                     <?php $sum_debtor = 0 ; ?>
-                    <?php $sum_receive_lgo = 0 ; ?>
-                    <?php $sum_receive_kidney = 0 ; ?>                    
-                    <?php $sum_receive = 0 ; ?>
-                    <?php $sum_receive_ppfs = 0 ; ?>
-                    @foreach($debtor as $row) 
+                    <?php $sum_receive_ip_compensate_pay = 0 ; ?>
+                    <?php $sum_receive_total  = 0 ; ?>
+                    @foreach($debtor as $row)
                     <tr>
-                        <td class="text-center"><input type="checkbox" name="checkbox_d[]" value="{{$row->vn}}"></td>   
-                        <td align="right">{{ DateThai($row->vstdate) }} {{ $row->vsttime }}</td>
+                        <td class="text-center"><input type="checkbox" name="checkbox_d[]" value="{{$row->an}}"></td> 
                         <td align="center">{{ $row->hn }}</td>
+                        <td align="center">{{ $row->an }}</td>
                         <td align="left">{{ $row->ptname }}</td>
-                        <td align="left">{{ $row->pttype }}</td>
-                        <td align="right">{{ $row->pdx }}</td>                      
+                        <td align="left">{{ $row->pttype }} [{{ $row->hospmain }}]</td>
+                        <td align="right">{{ DateThai($row->regdate) }}</td>
+                        <td align="right">{{ DateThai($row->dchdate) }}</td>
+                        <td align="right">{{ $row->pdx }}</td>  
+                        <td align="right">{{ $row->adjrw }}</td>                        
                         <td align="right">{{ number_format($row->income,2) }}</td>
                         <td align="right">{{ number_format($row->rcpt_money,2) }}</td>
-                        <td align="right">{{ number_format($row->lgo,2) }}</td>
-                        <td align="right">{{ number_format($row->kidney,2) }}</td>
-                        <td align="right">{{ number_format($row->ppfs,2) }}</td>
                         <td align="right">{{ number_format($row->other,2) }}</td>
-                        <td align="right" class="text-primary">{{ number_format($row->debtor,2) }}</td> 
-                        <td align="right" @if($row->receive_lgo > 0) style="color:green" 
-                            @elseif($row->receive_lgo < 0) style="color:red" @endif>
-                            {{ number_format($row->receive_lgo,2) }} 
-                        </td> 
-                        <td align="right" @if($row->receive_kidney > 0) style="color:green" 
-                            @elseif($row->receive_kidney < 0) style="color:red" @endif>
-                            {{ number_format($row->receive_kidney,2) }}
-                        </td> 
-                        <td align="right" @if($row->receive > 0) style="color:green" 
-                            @elseif($row->receive < 0) style="color:red" @endif>
-                            {{ number_format($row->receive,2) }}
-                        </td>                           
-                        <td align="right" @if(($row->receive-$row->debtor) > 0) style="color:green"
-                            @elseif(($row->receive-$row->debtor) < 0) style="color:red" @endif>
-                            {{ number_format($row->receive-$row->debtor,2) }}
+                        <td align="right" class="text-primary">{{ number_format($row->debtor,2) }}</td>  
+                        <td align="right" @if($row->fund_ip_payrate > 0) style="color:green" 
+                            @elseif($row->fund_ip_payrate < 0) style="color:red" @endif>
+                            {{ number_format($row->fund_ip_payrate,2) }}
                         </td>
-                        <td align="right" @if($row->receive_ppfs > 0) style="color:green" 
-                            @elseif($row->receive_ppfs < 0) style="color:red" @endif>
-                            {{ number_format($row->receive_ppfs,2) }}
+                        <td align="right" @if($row->receive_ip_compensate_pay > 0) style="color:green" 
+                            @elseif($row->receive_ip_compensate_pay < 0) style="color:red" @endif>
+                            {{ number_format($row->receive_ip_compensate_pay,2) }}
                         </td>
-                        <td align="right">{{ $row->status }}</td>                         
-                        <td align="right">{{ $row->repno }}</td>  
-                        <td align="center" style="color:blue">{{ $row->debtor_lock }}</td>                            
+                        <td align="right" @if($row->receive_total-$row->receive_ip_compensate_pay > 0) style="color:green" 
+                            @elseif($row->receive_total-$row->receive_ip_compensate_pay < 0) style="color:red" @endif>
+                            {{ number_format($row->receive_total-$row->receive_ip_compensate_pay,2) }}
+                        </td>
+                        <td align="right" @if($row->receive_total > 0) style="color:green" 
+                            @elseif($row->receive_total < 0) style="color:red" @endif>
+                            {{ number_format($row->receive_total,2) }}
+                        </td>
+                        <td align="right" @if(($row->receive_ip_compensate_pay-$row->debtor) > 0) style="color:green" 
+                            @elseif(($row->receive_ip_compensate_pay-$row->debtor) < 0) style="color:red" @endif>
+                            {{ number_format($row->receive_ip_compensate_pay-$row->debtor,2) }}
+                        </td>                        
+                        <td align="center">{{ $row->repno }}</td>
+                        <td align="center" style="color:blue">{{ $row->debtor_lock }}</td>                          
                     <?php $count++; ?>
                     <?php $sum_income += $row->income ; ?>
                     <?php $sum_rcpt_money += $row->rcpt_money ; ?>
-                    <?php $sum_lgo += $row->lgo ; ?> 
-                    <?php $sum_kidney += $row->kidney ; ?> 
-                    <?php $sum_ppfs += $row->ppfs ; ?>
-                    <?php $sum_other += $row->other ; ?>  
+                    <?php $sum_other += $row->other ; ?> 
                     <?php $sum_debtor += $row->debtor ; ?> 
-                    <?php $sum_receive_lgo += $row->receive_lgo ; ?> 
-                    <?php $sum_receive_kidney += $row->receive_kidney ; ?>
-                    <?php $sum_receive += $row->receive ; ?>
-                    <?php $sum_receive_ppfs += $row->receive_ppfs ; ?>        
+                    <?php $sum_receive_ip_compensate_pay += $row->receive_ip_compensate_pay ; ?> 
+                    <?php $sum_receive_total += $row->receive_total ; ?>       
                     @endforeach 
                     </tr>   
                 </table>
@@ -148,110 +136,101 @@
                     <th class="text-center">ชื่อผังบัญชี</th>
                     <th class="text-center">ค่ารักษาพยาบาล</th>
                     <th class="text-center">ชำระเอง</th>
-                    <th class="text-center">LGO</th>
-                    <th class="text-center">ฟอกไต</th>
-                    <th class="text-center">PPFS</th>
-                    <th class="text-center">กองทุนอื่น</th>
-                    <th class="text-center">ลูกหนี้</th>
-                    <th class="text-center">ชดเชย LGO</th>
-                    <th class="text-center">ชดเชย ฟอกไต</th>
-                    <th class="text-center">ชดเชยรวม</th>                       
+                    <th class="text-center">บริการเฉพาะ</th>
+                    <th class="text-center">ลูกหนี้</th> 
+                    <th class="text-center">ชดเชย RW</th>  
+                    <th class="text-center">ชดเชย CR</th>  
+                    <th class="text-center">ชดเชย ทั้งหมด</th>   
                     <th class="text-center">ผลต่าง</th> 
-                    <th class="text-center">ชดเชย PPFS</th>
                     <th class="text-center">รายงาน</th>                
                 </tr>
                 </thead>
                 <tr>
-                    <td class="text-primary" align="right">1102050102.801</td>
-                    <td class="text-primary" align="left">ลูกหนี้ค่ารักษา เบิกจ่ายตรง อปท.OP</td>
+                    <td class="text-primary" align="right">1102050101.202</td>
+                    <td class="text-primary" align="left">ลูกหนี้ค่ารักษา UC - IP</td>
                     <td class="text-primary" align="right">{{ number_format($sum_income,2)}}</td>
                     <td class="text-primary" align="right">{{ number_format($sum_rcpt_money,2)}}</td>
-                    <td class="text-primary" align="right">{{ number_format($sum_lgo,2)}}</td>
-                    <td class="text-primary" align="right">{{ number_format($sum_kidney,2)}}</td>
-                    <td class="text-primary" align="right">{{ number_format($sum_ppfs,2)}}</td>
                     <td class="text-primary" align="right">{{ number_format($sum_other,2)}}</td>
                     <td class="text-primary" align="right"><strong>{{ number_format($sum_debtor,2)}}</strong></td>
-                    <td align="right" @if($sum_receive_lgo > 0) style="color:green"
-                        @elseif($sum_receive_lgo < 0) style="color:red" @endif>
-                        <strong>{{ number_format($sum_receive_lgo,2)}}</strong>
+                    <td align="right" @if($sum_receive_ip_compensate_pay > 0) style="color:green" 
+                        @elseif($sum_receive_ip_compensate_pay < 0) style="color:red" @endif>
+                        <strong>{{ number_format($sum_receive_ip_compensate_pay,2)}}</strong>
                     </td>
-                    <td align="right" @if($sum_receive_kidney > 0) style="color:green"
-                        @elseif($sum_receive_kidney < 0) style="color:red" @endif>
-                        <strong>{{ number_format($sum_receive_kidney,2)}}</strong>
+                    <td align="right" @if($sum_receive_total-$sum_receive_ip_compensate_pay > 0) style="color:green" 
+                        @elseif($sum_receive_total-$sum_receive_ip_compensate_pay < 0) style="color:red" @endif>
+                        <strong>{{ number_format($sum_receive_total-$sum_receive_ip_compensate_pay,2)}}</strong>
                     </td>
-                    <td align="right" @if($sum_receive > 0) style="color:green"
-                        @elseif($sum_receive < 0) style="color:red" @endif>
-                        <strong>{{ number_format($sum_receive,2)}}</strong>
-                    </td>                                        
-                    <td align="right" @if(($sum_receive-$sum_debtor) > 0) style="color:green"
-                        @elseif(($sum_receive-$sum_debtor) < 0) style="color:red" @endif>
-                        <strong>{{ number_format($sum_receive-$sum_debtor,2)}}</strong>
+                    <td align="right" @if($sum_receive_total > 0) style="color:green" 
+                        @elseif($sum_receive_total < 0) style="color:red" @endif>
+                        <strong>{{ number_format($sum_receive_total,2)}}</strong>
                     </td>
-                    <td align="right" @if($sum_receive_ppfs > 0) style="color:green"
-                        @elseif($sum_receive_ppfs < 0) style="color:red" @endif>
-                        <strong>{{ number_format($sum_receive_ppfs,2)}}</strong>
+                    <td align="right" @if(($sum_receive_ip_compensate_pay-$sum_debtor) > 0) style="color:green" 
+                        @elseif(($sum_receive_ip_compensate_pay-$sum_debtor) < 0) style="color:red" @endif>
+                        <strong>{{ number_format($sum_receive_ip_compensate_pay-$sum_debtor,2)}}</strong>
                     </td>
                     <td align="center">
-                        <a class="btn btn-outline-success btn-sm" href="{{ url('hrims/debtor/1102050102_801_indiv_excel')}}" target="_blank">ส่งออกรายตัว</a>                
-                        <a class="btn btn-outline-primary btn-sm" href="{{ url('hrims/debtor/1102050102_801_daily_pdf')}}" target="_blank">พิมพ์รายวัน</a> 
+                        <a class="btn btn-outline-success btn-sm" href="{{ url('hrims/debtor/1102050101_202_indiv_excel')}}" target="_blank">ส่งออกรายตัว</a>                
+                        <a class="btn btn-outline-primary btn-sm" href="{{ url('hrims/debtor/1102050101_202_daily_pdf')}}" target="_blank">พิมพ์รายวัน</a> 
                     </td>                    
                 </tr>
             </table>
         </div> 
         <hr>
         <div style="overflow-x:auto;">
-            <form action="{{ url('hrims/debtor/1102050102_801_confirm') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ url('hrims/debtor/1102050101_202_confirm') }}" method="POST" enctype="multipart/form-data">
                 @csrf                
                 <table id="debtor_search" class="table table-bordered table-striped my-3" width="100%">
                     <thead>
                     <tr class="table-secondary">
                         <th class="text-center">
                             <button type="button" class="btn btn-outline-success btn-sm"  onclick="confirmSubmit()">ยืนยันลูกหนี้</button></th>
-                        <th class="text-left text-primary" colspan = "16">1102050102.801-ลูกหนี้ค่ารักษา เบิกจ่ายตรง อปท.OP รอยืนยัน วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }} รอยืนยันลูกหนี้</th>                         
+                        <th class="text-left text-primary" colspan = "17">1102050101.202-ลูกหนี้ค่ารักษา UC-IP รอยืนยัน วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }} รอยืนยันลูกหนี้</th>                         
                     </tr>
                     <tr class="table-secondary">
-                        <th class="text-center"><input type="checkbox" onClick="toggle(this)"> All</th> 
-                        <th class="text-center">วันที่</th>
+                        <th class="text-center"><input type="checkbox" onClick="toggle(this)"> All</th>  
+                        <th class="text-center">ตึกผู้ป่วย</th>
                         <th class="text-center">HN</th>
-                        <th class="text-center">ชื่อ-สกุล</th>
+                        <th class="text-center">AN</th>
+                        <th class="text-center">ชื่อ-สกุล</th>              
+                        <th class="text-center">อายุ</th>
                         <th class="text-center">สิทธิ</th>
+                        <th class="text-center">Admit</th>
+                        <th class="text-center">Discharge</th>
                         <th class="text-center">ICD10</th>
+                        <th class="text-center">AdjRW</th>
                         <th class="text-center">ค่ารักษาทั้งหมด</th>  
                         <th class="text-center">ชำระเอง</th>
-                        <th class="text-center">LGO</th>
-                        <th class="text-center">ฟอกไต</th> 
-                        <th class="text-center">PPFS</th>
-                        <th class="text-center">กองทุนอื่น</th>                                     
-                        <th class="text-center">ลูกหนี้</th>                        
-                        <th class="text-center" width = "10%">รายการฟอกไต</th>
-                        <th class="text-center" width = "10%">รายการ PPFS</th>
-                        <th class="text-center" width = "10%">รายการกองทุนอื่น</th>
-                        <th class="text-center">ส่ง Claim</th>  
+                        <th class="text-center">บริการเฉพาะ</th>
+                        <th class="text-center">ลูกหนี้</th>
+                        <th class="text-center">รายการบริการเฉพาะ</th> 
+                        <th class="text-center">สถานะ</th>  
+                        <th class="text-center">ส่ง Claim</th>
                     </tr>
                     </thead>
                     <?php $count = 1 ; ?>
                     @foreach($debtor_search as $row)
                     <tr>
-                        <td class="text-center"><input type="checkbox" name="checkbox[]" value="{{$row->vn}}"></td> 
-                        <td align="right">{{ DateThai($row->vstdate) }} {{ $row->vsttime }}</td>
+                        <td class="text-center"><input type="checkbox" name="checkbox[]" value="{{$row->an}}"></td> 
+                        <td align="right">{{$row->ward}}</td>
                         <td align="center">{{ $row->hn }}</td>
+                        <td align="center">{{ $row->an }}</td>
                         <td align="left">{{ $row->ptname }}</td>
-                        <td align="left">{{ $row->pttype }}</td>
-                        <td align="right">{{ $row->pdx }}</td>                  
+                        <td align="center">{{ $row->age_y }}</td>
+                        <td align="left">{{ $row->pttype }} [{{ $row->hospmain }}]</td>
+                        <td align="right">{{ DateThai($row->regdate) }}</td>
+                        <td align="right">{{ DateThai($row->dchdate) }}</td>
+                        <td align="right">{{ $row->pdx }}</td>      
+                        <td align="right">{{ $row->adjrw }}</td>                        
                         <td align="right">{{ number_format($row->income,2) }}</td>
                         <td align="right">{{ number_format($row->rcpt_money,2) }}</td>
-                        <td align="right">{{ number_format($row->lgo,2) }}</td>
-                        <td align="right">{{ number_format($row->kidney,2) }}</td>
-                        <td align="right">{{ number_format($row->ppfs,2) }}</td>
                         <td align="right">{{ number_format($row->other,2) }}</td>
                         <td align="right">{{ number_format($row->debtor,2) }}</td>
-                        <td align="left" width = "10%">{{ $row->kidney_list }}</td>
-                        <td align="left" width = "10%">{{ $row->ppfs_list }}</td>
-                        <td align="left" width = "10%">{{ $row->other_list }}</td>
-                        <td align="center" style="color: green">{{ $row->claim }}</td>
+                        <td align="left">{{ $row->other_list }}</td>
+                        <td align="left">{{ $row->ipt_coll_status_type_name }}</td>
+                        <td align="center" style="color: green">{{ $row->data_ok }}</td>
                     <?php $count++; ?>
                     @endforeach 
-                </tr>   
+                    </tr> 
                 </table>
             </form>
         </div>         
@@ -305,7 +284,7 @@
             cancelButtonText: 'ยกเลิก'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    document.querySelector("form[action='{{ url('hrims/debtor/1102050102_801_delete') }}']").submit();
+                    document.querySelector("form[action='{{ url('hrims/debtor/1102050101_202_delete') }}']").submit();
                 }
             });
         }
@@ -329,17 +308,13 @@
                 cancelButtonText: 'ยกเลิก'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    document.querySelector("form[action='{{ url('hrims/debtor/1102050102_801_confirm') }}']").submit();
+                    document.querySelector("form[action='{{ url('hrims/debtor/1102050101_202_confirm') }}']").submit();
                 }
             });
         }
     </script>
 
 @endsection
-
-<!-- Modal -->
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 
 @push('scripts')
     <script>
@@ -381,7 +356,7 @@
                 extend: 'excelHtml5',
                 text: 'Excel',
                 className: 'btn btn-success btn-sm',
-                title: '1102050102.801-ลูกหนี้ค่ารักษา เบิกจ่ายตรง อปท.OP รอยืนยัน วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}'
+                title: '1102050101.202-ลูกหนี้ค่ารักษา UC-IP รอยืนยัน วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}'
                 }
             ],
             language: {
