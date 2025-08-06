@@ -161,7 +161,7 @@
                                 </li>
                             </ul>           
                         </li>
-                        <li class="nav-item dropdown">
+                        {{-- <li class="nav-item dropdown">
                             <a id="navbarDropdown" class="nav-link btn btn-info dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                 ศูนย์จัดเก็บรายได้
                             </a>
@@ -173,7 +173,7 @@
                                     ลูกหนี้ค่ารักษาพยาบาล
                                 </a>            
                             </div>                 
-                        </li>
+                        </li> --}}
                         <li class="nav-item dropdown">
                             <a id="navbarDropdown" class="nav-link btn btn-outline-info dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                 Dashboard

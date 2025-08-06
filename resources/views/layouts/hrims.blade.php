@@ -222,6 +222,83 @@
                                 </li>
                             </ul> 
                         </li>  
+                        <li class="nav-item dropdown">
+                            <a id="navbarDropdown" class="btn btn-outline-info dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                MIS Hospital
+                            </a>
+                            <ul class="bg-success dropdown-menu dropdown-menu-end"> 
+                                <!-- ชี้ขวา -->
+                                <li class="dropend">
+                                    <a class="link-primary dropdown-item dropdown-toggle text-white" href="#" data-bs-toggle="dropdown">
+                                        บริการผู้ป่วยนอก
+                                    </a>
+                                    <ul class="bg-success dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item link-primary text-white" href="#">ผู้ป่วยนอกฉุกเฉิน</a>
+                                        </li> 
+                                        <li>
+                                            <a class="dropdown-item link-primary text-white" href="#">ค่าพาหนะ</a>
+                                        </li> 
+                                        <li>
+                                            <a class="dropdown-item link-primary text-white" href="#">OP WALKIN</a>
+                                        </li> 
+                                        <li>
+                                            <a class="dropdown-item link-primary text-white" href="#">บริการแพทย์แผนไทย ยาสมุนไพร</a>
+                                        </li> 
+                                        <li>
+                                            <a class="dropdown-item link-primary text-white" href="#">บริการสาธารณสุขทางไกล (TELEMED)</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="dropend">
+                                    <a class="link-primary dropdown-item dropdown-toggle text-white" href="#" data-bs-toggle="dropdown">
+                                        บริการค่าใช้จ่ายสูง
+                                    </a>
+                                    <ul class="bg-success dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item link-primary text-white" href="#">ยาละลายลิ่มเลือด</a>
+                                        </li> 
+                                        <li>
+                                            <a class="dropdown-item link-primary text-white" href="#">อวัยวะเทียม/อุปกรณ์</a>
+                                        </li> 
+                                        <li>
+                                            <a class="dropdown-item link-primary text-white" href="#">Palliative Care</a>
+                                        </li> 
+                                    </ul>
+                                </li>
+                                <li class="dropend">
+                                    <a class="link-primary dropdown-item dropdown-toggle text-white" href="#" data-bs-toggle="dropdown">
+                                        การส่งเสริมป้องกันโรค
+                                    </a>
+                                    <ul class="bg-success dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item link-primary text-white" href="#">การบริการวางแผนครอบครัว</a>
+                                        </li> 
+                                        <li>
+                                            <a class="dropdown-item link-primary text-white" href="#">บริการทดสอบการตั้งครรภ์ (PRT)</a>
+                                        </li> 
+                                        <li>
+                                            <a class="dropdown-item link-primary text-white" href="#">บริการยาเม็ดเสริมธาตุเหล็ก</a>
+                                        </li> 
+                                        <li>
+                                            <a class="dropdown-item link-primary text-white" href="#">บริการทันตกรรมหญิงตั้งครรภ์</a>
+                                        </li> 
+                                        <li>
+                                            <a class="dropdown-item link-primary text-white" href="#">บริการตรวจอัลตราซาวด์หญิงตั้งครรภ์</a>
+                                        </li> 
+                                        <li>
+                                            <a class="dropdown-item link-primary text-white" href="#">บริการตรวจหลังคลอก</a>
+                                        </li> 
+                                        <li>
+                                            <a class="dropdown-item link-primary text-white" href="#">บริการตรวจคัดกรองมะเร็งลำไส้ใหญ่และสำไส้ตรง (Fit test)</a>
+                                        </li> 
+                                        <li>
+                                            <a class="dropdown-item link-primary text-white" href="#">บริการคัดกรองและประเมินปัจจัยเสี่ยงต่อสุขภาพกาย/สุขภาพจิต (SCR)</a>
+                                        </li> 
+                                    </ul>
+                                </li>                                
+                            </ul> 
+                        </li> 
                         <li >                            
                             <a class="btn btn-outline-info text-white" href="{{ url('hrims/debtor') }}">
                                 ลูกหนี้ค่ารักษาพยาบาล
