@@ -4,7 +4,7 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-sm-12"> 
-        <div class="alert alert-primary text-primary" role="alert"><strong>นำเข้าข้อมูล Statement</strong></div>          
+        <div class="alert alert-success text-primary" role="alert"><strong>นำเข้าข้อมูล Statement</strong></div>          
     </div>
   </div>
 
@@ -14,8 +14,8 @@
         <div class="card-body">    
           <table class="table table-hover">
             <thead>
-              <tr class="table-success">
-                  <th class="text-left text-success">Statement เบิกจ่ายตรงกรมบัญชีกลาง OFC | กทม.BKK | ขสมก.BMT</th>            
+              <tr class="table-primary">
+                  <th class="text-left text-primary">Statement เบิกจ่ายตรงกรมบัญชีกลาง OFC | กทม.BKK | ขสมก.BMT</th>            
               </tr>  
             </thead> 
             <tbody> 
@@ -33,7 +33,7 @@
               </tr>
             </tbody>
             <thead>
-              <tr class="table-success">
+              <tr class="table-primary">
                   <th class="text-left text-primary">Statement เบิกจ่ายตรง อปท.LGO</th>            
               </tr>  
             </thead> 
@@ -52,7 +52,7 @@
               </tr>
             </tbody>
             <thead>
-              <tr class="table-success">
+              <tr class="table-primary">
                   <th class="text-left text-primary">Statement ประกันสุขภาพ UCS</th>            
               </tr>  
             </thead> 
@@ -71,7 +71,7 @@
               </tr>
             </tbody>
             <thead>
-              <tr class="table-success">
+              <tr class="table-primary">
                   <th class="text-left text-primary">Statement ประกันสังคม SSS</th>            
               </tr>  
             </thead> 
