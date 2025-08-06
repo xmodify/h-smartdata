@@ -255,7 +255,7 @@
                         <tr class="table-secondary">
                             <th class="text-center" width="5%">
                                 <button type="submit" class="btn btn-outline-success btn-sm"  onclick="return confirm('ต้องการยืนยันลูกหนี้')">ยืนยันลูกหนี้</button></th>
-                            <th class="text-center" colspan = "14">ผู้มารับบริการ เบิกจ่ายตรงกรมบัญชีกลาง PP วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }} รอยืนยันลูกหนี้</th>      
+                            <th class="text-center" colspan = "14">ผู้มารับบริการใช้ประกันชีวิต iClaim วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }} รอยืนยันลูกหนี้</th>      
                         </tr>
                         <tr class="table-secondary">
                             <th class="text-center"><input type="checkbox" onClick="toggle_iclaim(this)"> All</th>  
