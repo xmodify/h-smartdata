@@ -28,8 +28,8 @@ header("Content-Disposition: attachment; filename=".$files); //ชื่อไ�
                 <th class="text-center">Admit</th>
                 <th class="text-center">Discharge</th>
                 <th class="text-center">ICD10</th>
-                <th class="text-center">AdjRW</th>
-                <th class="text-center">ค่ารักษาทั้งหมด</th>  
+                <th class="text-center">ค่ารักษาทั้งหมด</th> 
+                <th class="text-center">ต้องชำระเงิน</th> 
                 <th class="text-center">ชำระเอง</th>
                 <th class="text-center text-primary">ลูกหนี้</th>
                 <th class="text-center text-primary">ชดเชย</th>
@@ -39,6 +39,7 @@ header("Content-Disposition: attachment; filename=".$files); //ชื่อไ�
             </thead> 
             <?php $count = 1 ; ?>
             <?php $sum_income = 0 ; ?>
+            <?php $sum_paid_money = 0 ; ?>
             <?php $sum_rcpt_money = 0 ; ?>
             <?php $sum_debtor = 0 ; ?>
             <?php $sum_receive = 0 ; ?>
@@ -51,9 +52,9 @@ header("Content-Disposition: attachment; filename=".$files); //ชื่อไ�
                 <td align="left">{{ $row->pttype }} </td>
                 <td align="right">{{ DateThai($row->regdate) }}</td>
                 <td align="right">{{ DateThai($row->dchdate) }}</td>
-                <td align="right">{{ $row->pdx }}</td>  
-                <td align="right">{{ $row->adjrw }}</td>                        
+                <td align="right">{{ $row->pdx }}</td>                        
                 <td align="right">{{ number_format($row->income,2) }}</td>
+                <td align="right">{{ number_format($row->paid_money,2) }}</td>
                 <td align="right">{{ number_format($row->rcpt_money,2) }}</td>
                 <td align="right" class="text-primary">{{ number_format($row->debtor,2) }}</td>  
                 <td align="right" @if($row->receive > 0) style="color:green" 
@@ -68,13 +69,15 @@ header("Content-Disposition: attachment; filename=".$files); //ชื่อไ�
             </tr>                
             <?php $count++; ?>
             <?php $sum_income += $row->income ; ?>
+            <?php $sum_paid_money += $row->paid_money ; ?>
             <?php $sum_rcpt_money += $row->rcpt_money ; ?>
             <?php $sum_debtor += $row->debtor ; ?>   
             <?php $sum_receive += $row->receive ; ?>      
             @endforeach   
             <tr>
-                <td align="right" colspan = "9"><strong>รวมค่ารักษาพยาบาลทั้งสิ้น &nbsp;</strong><br></td> 
-                <td align="right"><strong>{{number_format($sum_income,2)}}&nbsp;</strong></td>  
+                <td align="right" colspan = "8"><strong>รวมค่ารักษาพยาบาลทั้งสิ้น &nbsp;</strong><br></td> 
+                <td align="right"><strong>{{number_format($sum_income,2)}}&nbsp;</strong></td> 
+                <td align="right"><strong>{{number_format($sum_paid_money,2)}}&nbsp;</strong></td> 
                 <td align="right"><strong>{{number_format($sum_rcpt_money,2)}}&nbsp;</strong></td>
                 <td align="right"><strong>{{number_format($sum_debtor,2)}}&nbsp;</strong></td>               
                 <td align="right"><strong>{{number_format($sum_receive,2)}}&nbsp;</strong></td>  

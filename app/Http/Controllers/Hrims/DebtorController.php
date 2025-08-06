@@ -6345,7 +6345,7 @@ class DebtorController extends Controller
         $request->validate([
         'checkbox' => 'required|array',
         ], [
-            'checkbox.required' => 'กรุณาเลือกรายการที่ต้องการยืนยันลูกหนี้'
+            'checkbox.required' => 'กรุณาเลือกรายการที่ต้องการยืนยันลูกหนี้' 
         ]);
         $checkbox = $request->input('checkbox'); // รับ array
         $checkbox_string = implode(",", $checkbox); // แปลงเป็น string สำหรับ SQL IN
@@ -6508,7 +6508,7 @@ class DebtorController extends Controller
         $start_date = Session::get('start_date');
         $end_date = Session::get('end_date');
         $debtor = DB::select('
-            SELECT d.dchdate,COUNT(DISTINCT d.vn) AS anvn,
+            SELECT d.dchdate AS vstdate ,COUNT(DISTINCT d.vn) AS anvn,
             SUM(debtor) AS debtor,SUM(IFNULL(d.receive,r.bill_amount)) AS receive
             FROM finance_debtor_1102050102_107 d
             LEFT JOIN hosxe.rcpt_print r ON r.vn = d.vn AND r.`status` ="OK" AND r.department="OPD"
