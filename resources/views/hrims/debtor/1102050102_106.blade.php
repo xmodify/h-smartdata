@@ -92,7 +92,7 @@
                         <td align="center">{{ $row->hn }}</td>
                         <td align="left">{{ $row->ptname }}</td>
                         <td align="center">{{ $row->mobile_phone_number }}</td>
-                        <td align="right">{{ $row->pttype }}</td>
+                        <td align="left">{{ $row->pttype }}</td>
                         <td align="right">{{ $row->pdx }}</td>                      
                         <td align="right">{{ number_format($row->income,2) }}</td>
                         <td align="right">{{ number_format($row->paid_money,2) }}</td>
@@ -242,7 +242,7 @@
                             <tr class="table-secondary">
                                 <th class="text-center"><input type="checkbox" onClick="toggle_iclaim(this)"> All</th>  
                                 <th class="text-center" width="6%">วันที่</th>
-                                <th class="text-center">Q</th>
+                                <th class="text-center">Queue</th>
                                 <th class="text-center">HN</th>
                                 <th class="text-center">ชื่อ-สกุล</th>
                                 <th class="text-center">สิทธิ</th>
@@ -261,7 +261,7 @@
                                 <td align="center">{{ $row->oqueue }}</td>
                                 <td align="center">{{ $row->hn }}</td>
                                 <td align="left">{{ $row->ptname }}</td>
-                                <td align="right">{{ $row->pttype }}</td>
+                                <td align="left">{{ $row->pttype }}</td>
                                 <td align="right">{{ $row->pdx }}</td>  
                                 <td align="right">{{ number_format($row->income,2) }}</td>
                                 <td align="right">{{ number_format($row->rcpt_money,2) }}</td>     

@@ -235,12 +235,9 @@
                                     <ul class="bg-success dropdown-menu">
                                         <li>
                                             <a class="dropdown-item link-primary text-white" href="{{ url('hrims/mishos/ucs_ae') }}">ผู้ป่วยนอกฉุกเฉิน</a>
-                                        </li> 
+                                        </li>
                                         <li>
-                                            <a class="dropdown-item link-primary text-white" href="#">ค่าพาหนะ</a>
-                                        </li> 
-                                        <li>
-                                            <a class="dropdown-item link-primary text-white" href="#">OP WALKIN</a>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/mishos/ucs_walkin') }}">OP WALKIN</a>
                                         </li> 
                                         <li>
                                             <a class="dropdown-item link-primary text-white" href="#">บริการแพทย์แผนไทย ยาสมุนไพร</a>
