@@ -169,7 +169,8 @@
                         {{ number_format($row->receive_total,2) }}</td>
                     <td align="right" @if($row->receive_total-$row->uc_cr-$row->ppfs-$row->herb > 0) style="color:green" 
                         @elseif($row->receive_total-$row->uc_cr-$row->ppfs-$row->herb < 0) style="color:red" @endif>
-                        {{ number_format($row->receive_total-$row->uc_cr-$row->ppfs-$row->herb,2) }}</td>
+                        {{ number_format($row->receive_total-$row->uc_cr-$row->ppfs-$row->herb,2) }}
+                    </td>
                     <td align="right">{{ $row->repno }}</td> 
                 </tr>
                 <?php $count++; ?>

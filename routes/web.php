@@ -10,6 +10,7 @@ use App\Http\Controllers\Hrims\HrimsController;
 use App\Http\Controllers\Hrims\ImportStmController;
 use App\Http\Controllers\Hrims\ClaimIpController;
 use App\Http\Controllers\Hrims\ClaimOpController;
+use App\Http\Controllers\Hrims\MishosController;
 use App\Http\Controllers\Hrims\DebtorController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Backoffice_AssetController;
@@ -793,6 +794,9 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
     Route::match(['get','post'],'claim_ip/gof',[ClaimIpController::class,'gof']);
     Route::match(['get','post'],'claim_ip/rcpt',[ClaimIpController::class,'rcpt']);
     Route::match(['get','post'],'claim_ip/act',[ClaimIpController::class,'act']);
+
+    // Mishos -------------------------------------------------------------------------------------------------------------------------
+    Route::match(['get','post'],'mishos/ucs_ae',[MishosController::class,'ucs_ae']);
 
     // Debtor -------------------------------------------------------------------------------------------------------------------------
     Route::get('debtor',[DebtorController::class,'index']);    
