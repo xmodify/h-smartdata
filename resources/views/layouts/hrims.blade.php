@@ -281,7 +281,7 @@
                                             <a class="dropdown-item link-primary text-white" href="{{ url('hrims/mishos/ucs_ppfs_anc') }}">บริการฝากครรภ์ (ANC)</a>
                                         </li> 
                                         <li>
-                                            <a class="dropdown-item link-primary text-white" href="#">บริการตรวจหลังคลอก</a>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/mishos/ucs_ppfs_postnatal') }}">บริการตรวจหลังคลอด</a>
                                         </li> 
                                         <li>
                                             <a class="dropdown-item link-primary text-white" href="#">บริการตรวจคัดกรองมะเร็งลำไส้ใหญ่และสำไส้ตรง (Fit test)</a>

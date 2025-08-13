@@ -807,6 +807,7 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
     Route::match(['get','post'],'mishos/ucs_ppfs_prt',[MishosController::class,'ucs_ppfs_prt']);
     Route::match(['get','post'],'mishos/ucs_ppfs_ferrofolic',[MishosController::class,'ucs_ppfs_ferrofolic']);
     Route::match(['get','post'],'mishos/ucs_ppfs_anc',[MishosController::class,'ucs_ppfs_anc']);
+    Route::match(['get','post'],'mishos/ucs_ppfs_postnatal',[MishosController::class,'ucs_ppfs_postnatal']);
 
     // Debtor -------------------------------------------------------------------------------------------------------------------------
     Route::get('debtor',[DebtorController::class,'index']);    
