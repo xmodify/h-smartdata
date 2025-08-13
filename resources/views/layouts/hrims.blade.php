@@ -269,19 +269,16 @@
                                     </a>
                                     <ul class="bg-success dropdown-menu">
                                         <li>
-                                            <a class="dropdown-item link-primary text-white" href="#">การบริการวางแผนครอบครัว</a>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/mishos/ucs_ppfs_fp') }}">การบริการวางแผนครอบครัว</a>
                                         </li> 
                                         <li>
-                                            <a class="dropdown-item link-primary text-white" href="#">บริการทดสอบการตั้งครรภ์ (PRT)</a>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/mishos/ucs_ppfs_prt') }}">บริการทดสอบการตั้งครรภ์ (PRT)</a>
                                         </li> 
                                         <li>
-                                            <a class="dropdown-item link-primary text-white" href="#">บริการยาเม็ดเสริมธาตุเหล็ก</a>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/mishos/ucs_ppfs_ferrofolic') }}">บริการยาเม็ดเสริมธาตุเหล็ก</a>
                                         </li> 
                                         <li>
-                                            <a class="dropdown-item link-primary text-white" href="#">บริการทันตกรรมหญิงตั้งครรภ์</a>
-                                        </li> 
-                                        <li>
-                                            <a class="dropdown-item link-primary text-white" href="#">บริการตรวจอัลตราซาวด์หญิงตั้งครรภ์</a>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/mishos/ucs_ppfs_anc') }}">บริการฝากครรภ์ (ANC)</a>
                                         </li> 
                                         <li>
                                             <a class="dropdown-item link-primary text-white" href="#">บริการตรวจหลังคลอก</a>

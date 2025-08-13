@@ -43,6 +43,7 @@
                   <th class="text-center">ชดเชย</th>
                   <th class="text-center">ส่วนต่าง</th>
                   <th class="text-center">รายการเรียกเก็บ</th>
+                  <th class="text-center">ส่ง Claim</th>
               </tr>
             </thead> 
             <tbody> 
@@ -72,6 +73,7 @@
                     {{ number_format($row->receive_total-$row->claim_price,2) }}
                 </td>  
                 <td align="left">{{$row->claim_list}}</td>
+                <td class="text-success" align="center">{{$row->claim}}</td>
               </tr>
               <?php $count++; ?>
               <?php $sum_income += $row->income ; ?>

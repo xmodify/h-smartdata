@@ -42,6 +42,7 @@
                   <th class="text-center">เรียกเก็บ</th>
                   <th class="text-center">ชดเชย</th>
                   <th class="text-center">ส่วนต่าง</th>
+                  <th class="text-center">ส่ง Claim</th>
               </tr>
             </thead> 
             <tbody> 
@@ -70,6 +71,7 @@
                     @elseif($row->receive_total-$row->claim_price < 0) style="color:red" @endif>
                     {{ number_format($row->receive_total-$row->claim_price,2) }}
                 </td>  
+                <td class="text-success" align="center">{{$row->claim}}</td>
               </tr>
               <?php $count++; ?>
               <?php $sum_income += $row->income ; ?>

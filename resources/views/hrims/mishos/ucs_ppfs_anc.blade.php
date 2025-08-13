@@ -21,7 +21,7 @@
           </div>
       </div>
   </form>   
-  <div class="alert alert-success text-primary" role="alert"><strong>รายชื่อผู้รับอวัยวะเทียม/อุปกรณ์ วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</strong></div>
+  <div class="alert alert-success text-primary" role="alert"><strong>รายชื่อผู้รับบริการฝากครรภ์ (ANC) วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</strong></div>
   
   <div class="card-body">
     <div class="tab-content pt-2" id="myTabContent">
@@ -36,7 +36,9 @@
                   <th class="text-center" width = "10%">ชื่อ-สกุล</th>
                   <th class="text-center">HN</th>    
                   <th class="text-center" width = "10%">สิทธิการรักษา</th>
+                  <th class="text-center">ANC</th>
                   <th class="text-center">PDX</th>
+                  <th class="text-center">ICD10_Claim</th>
                   <th class="text-center">ค่ารักษาทั้งหมด</th> 
                   <th class="text-center">ชำระเอง</th>
                   <th class="text-center">เรียกเก็บ</th>
@@ -60,7 +62,9 @@
                 <td align="left" width = "10%">{{$row->ptname}}</td> 
                 <td align="center">{{$row->hn}}</td> 
                 <td align="left" width = "10%">{{$row->pttype}} [{{$row->hospmain}}]</td> 
-                <td align="right">{{ $row->pdx }}</td>
+                <td class = "text-primary" align="center">{{ $row->anc_service_number }}</td>
+                <td align="center">{{ $row->pdx }}</td>
+                <td align="left">{{ $row->icd10 }}</td>
                 <td align="right">{{ number_format($row->income,2) }}</td>              
                 <td align="right">{{ number_format($row->rcpt_money,2) }}</td>
                 <td align="right">{{ number_format($row->claim_price,2) }}</td>
@@ -139,7 +143,7 @@
               extend: 'excelHtml5',
               text: 'Excel',
               className: 'btn btn-success',
-              title: 'รายชื่อผู้รับอวัยวะเทียม/อุปกรณ์ วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}'
+              title: 'รายชื่อผู้รับบริการฝากครรภ์ (ANC) วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}'
             }
         ],
         language: {
