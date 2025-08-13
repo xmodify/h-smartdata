@@ -21,7 +21,7 @@
           </div>
       </div>
   </form>   
-  <div class="alert alert-success text-primary" role="alert"><strong>รายชื่อผู้มารับบริการ UC-AE วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</strong></div>
+  <div class="alert alert-success text-primary" role="alert"><strong>รายชื่อผู้มารับบริการแพทย์แผนไทย ยาสมุนไพร วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</strong></div>
   
   <div class="card-body">
     <div class="tab-content pt-2" id="myTabContent">
@@ -42,6 +42,7 @@
                   <th class="text-center">เรียกเก็บ</th>
                   <th class="text-center">ชดเชย</th>
                   <th class="text-center">ส่วนต่าง</th>
+                  <th class="text-center">รายการเรียกเก็บ</th>
               </tr>
             </thead> 
             <tbody> 
@@ -70,6 +71,7 @@
                     @elseif($row->receive_total-$row->claim_price < 0) style="color:red" @endif>
                     {{ number_format($row->receive_total-$row->claim_price,2) }}
                 </td>  
+                <td align="left">{{$row->claim_list}}</td>
               </tr>
               <?php $count++; ?>
               <?php $sum_income += $row->income ; ?>
@@ -135,7 +137,7 @@
               extend: 'excelHtml5',
               text: 'Excel',
               className: 'btn btn-success',
-              title: 'รายชื่อผู้มารับบริการ UC-AE วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}'
+              title: 'รายชื่อผู้มาบริการแพทย์แผนไทย ยาสมุนไพร วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}'
             }
         ],
         language: {

@@ -135,7 +135,7 @@
               extend: 'excelHtml5',
               text: 'Excel',
               className: 'btn btn-success',
-              title: 'รายชื่อผู้มารับบริการ UC-OP ต่างจังหวัด รอส่ง Claim วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}'
+              title: 'รายชื่อผู้มารับบริการ OP WALKIN วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}'
             }
         ],
         language: {
@@ -149,39 +149,7 @@
         }
       });
     });
-  </script>
-  <script>
-    $(document).ready(function () {
-      $('#t_claim').DataTable({
-        dom: '<"row mb-3"' +
-                '<"col-md-6"l>' + // Show รายการ
-                '<"col-md-6 d-flex justify-content-end align-items-center gap-2"fB>' + // Search + Export
-              '>' +
-              'rt' +
-              '<"row mt-3"' +
-                '<"col-md-6"i>' + // Info
-                '<"col-md-6"p>' + // Pagination
-              '>',
-        buttons: [
-            {
-              extend: 'excelHtml5',
-              text: 'Excel',
-              className: 'btn btn-success',
-              title: 'รายชื่อผู้มารับบริการ UC-OP ต่างจังหวัด ส่ง Claim วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}'
-            }
-        ],
-        language: {
-            search: "ค้นหา:",
-            lengthMenu: "แสดง _MENU_ รายการ",
-            info: "แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ",
-            paginate: {
-              previous: "ก่อนหน้า",
-              next: "ถัดไป"
-            }
-        }
-      });
-    });
-  </script>
+  </script>  
 @endpush
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

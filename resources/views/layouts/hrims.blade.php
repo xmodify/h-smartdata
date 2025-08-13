@@ -240,10 +240,10 @@
                                             <a class="dropdown-item link-primary text-white" href="{{ url('hrims/mishos/ucs_walkin') }}">OP WALKIN</a>
                                         </li> 
                                         <li>
-                                            <a class="dropdown-item link-primary text-white" href="#">บริการแพทย์แผนไทย ยาสมุนไพร</a>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/mishos/ucs_herb') }}">บริการแพทย์แผนไทย ยาสมุนไพร</a>
                                         </li> 
                                         <li>
-                                            <a class="dropdown-item link-primary text-white" href="#">บริการสาธารณสุขทางไกล (TELEMED)</a>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/mishos/ucs_telemed') }}">บริการสาธารณสุขทางไกล (TELEMED)</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -253,13 +253,13 @@
                                     </a>
                                     <ul class="bg-success dropdown-menu">
                                         <li>
-                                            <a class="dropdown-item link-primary text-white" href="#">ยาละลายลิ่มเลือด</a>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/mishos/ucs_drug_sk') }}">ยาละลายลิ่มเลือด</a>
                                         </li> 
                                         <li>
-                                            <a class="dropdown-item link-primary text-white" href="#">อวัยวะเทียม/อุปกรณ์</a>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/mishos/ucs_ins') }}">อวัยวะเทียม/อุปกรณ์</a>
                                         </li> 
                                         <li>
-                                            <a class="dropdown-item link-primary text-white" href="#">Palliative Care</a>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/mishos/ucs_palliative') }}">Palliative Care</a>
                                         </li> 
                                     </ul>
                                 </li>

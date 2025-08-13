@@ -798,6 +798,11 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
     // Mishos -------------------------------------------------------------------------------------------------------------------------
     Route::match(['get','post'],'mishos/ucs_ae',[MishosController::class,'ucs_ae']);
     Route::match(['get','post'],'mishos/ucs_walkin',[MishosController::class,'ucs_walkin']);
+    Route::match(['get','post'],'mishos/ucs_herb',[MishosController::class,'ucs_herb']);
+    Route::match(['get','post'],'mishos/ucs_telemed',[MishosController::class,'ucs_telemed']);
+    Route::match(['get','post'],'mishos/ucs_drug_sk',[MishosController::class,'ucs_drug_sk']);
+    Route::match(['get','post'],'mishos/ucs_ins',[MishosController::class,'ucs_ins']);
+    Route::match(['get','post'],'mishos/ucs_palliative',[MishosController::class,'ucs_palliative']);
 
     // Debtor -------------------------------------------------------------------------------------------------------------------------
     Route::get('debtor',[DebtorController::class,'index']);    
