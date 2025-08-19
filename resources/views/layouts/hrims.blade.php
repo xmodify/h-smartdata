@@ -275,7 +275,13 @@
                                             <a class="dropdown-item link-primary text-white" href="{{ url('hrims/mishos/ucs_ppfs_prt') }}">บริการทดสอบการตั้งครรภ์ (PRT)</a>
                                         </li> 
                                         <li>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/mishos/ucs_ppfs_ida') }}">บริการคัดกรองโลหิตจางจากการขาดธาตุเหล็ก</a>
+                                        </li> 
+                                        <li>
                                             <a class="dropdown-item link-primary text-white" href="{{ url('hrims/mishos/ucs_ppfs_ferrofolic') }}">บริการยาเม็ดเสริมธาตุเหล็ก</a>
+                                        </li> 
+                                        <li>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/mishos/ucs_ppfs_fluoride') }}">บริการเคลือบฟลูออไรด์ (กลุ่มเสี่ยง)</a>
                                         </li> 
                                         <li>
                                             <a class="dropdown-item link-primary text-white" href="{{ url('hrims/mishos/ucs_ppfs_anc') }}">บริการฝากครรภ์ (ANC)</a>
@@ -284,10 +290,10 @@
                                             <a class="dropdown-item link-primary text-white" href="{{ url('hrims/mishos/ucs_ppfs_postnatal') }}">บริการตรวจหลังคลอด</a>
                                         </li> 
                                         <li>
-                                            <a class="dropdown-item link-primary text-white" href="#">บริการตรวจคัดกรองมะเร็งลำไส้ใหญ่และสำไส้ตรง (Fit test)</a>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/mishos/ucs_ppfs_fittest') }}">บริการตรวจคัดกรองมะเร็งลำไส้ใหญ่และสำไส้ตรง (Fit test)</a>
                                         </li> 
                                         <li>
-                                            <a class="dropdown-item link-primary text-white" href="#">บริการคัดกรองและประเมินปัจจัยเสี่ยงต่อสุขภาพกาย/สุขภาพจิต (SCR)</a>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/mishos/ucs_ppfs_scr') }}">บริการคัดกรองและประเมินปัจจัยเสี่ยงต่อสุขภาพกาย/สุขภาพจิต (SCR)</a>
                                         </li> 
                                     </ul>
                                 </li>                                

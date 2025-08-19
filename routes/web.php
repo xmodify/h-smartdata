@@ -805,9 +805,13 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
     Route::match(['get','post'],'mishos/ucs_palliative',[MishosController::class,'ucs_palliative']);
     Route::match(['get','post'],'mishos/ucs_ppfs_fp',[MishosController::class,'ucs_ppfs_fp']);
     Route::match(['get','post'],'mishos/ucs_ppfs_prt',[MishosController::class,'ucs_ppfs_prt']);
+    Route::match(['get','post'],'mishos/ucs_ppfs_ida',[MishosController::class,'ucs_ppfs_ida']);
     Route::match(['get','post'],'mishos/ucs_ppfs_ferrofolic',[MishosController::class,'ucs_ppfs_ferrofolic']);
+    Route::match(['get','post'],'mishos/ucs_ppfs_fluoride',[MishosController::class,'ucs_ppfs_fluoride']);
     Route::match(['get','post'],'mishos/ucs_ppfs_anc',[MishosController::class,'ucs_ppfs_anc']);
     Route::match(['get','post'],'mishos/ucs_ppfs_postnatal',[MishosController::class,'ucs_ppfs_postnatal']);
+    Route::match(['get','post'],'mishos/ucs_ppfs_fittest',[MishosController::class,'ucs_ppfs_fittest']);
+    Route::match(['get','post'],'mishos/ucs_ppfs_scr',[MishosController::class,'ucs_ppfs_scr']);
 
     // Debtor -------------------------------------------------------------------------------------------------------------------------
     Route::get('debtor',[DebtorController::class,'index']);    
