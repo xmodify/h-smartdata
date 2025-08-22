@@ -266,7 +266,7 @@ class MishosController extends Controller
                 WHEN MONTH(vstdate)=9 THEN CONCAT("ก.ย. ", RIGHT(YEAR(vstdate)+543, 2))
                 END AS month,COUNT(vn) AS visit,SUM(IFNULL(claim_price,0)) AS claim_price,SUM(IFNULL(receive_total,0)) AS receive_total
             FROM (SELECT o.vn,o.vstdate,o.vsttime,COALESCE(tele.claim_price, 0) AS claim_price,
-				IF(stm.receive_op>SUM(tele.claim_price),50,stm.receive_op) AS receive_total
+				LEAST(stm.receive_op, tele.claim_price) AS receive_total
                 FROM ovst o
                 LEFT JOIN patient pt ON pt.hn=o.hn
                 LEFT JOIN visit_pttype vp ON vp.vn=o.vn           
@@ -292,8 +292,8 @@ class MishosController extends Controller
         $search=DB::connection('hosxp')->select('
             SELECT o.vstdate,o.vsttime,o.oqueue,pt.cid,pt.hn,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,
                 p.`name` AS pttype,vp.hospmain,v.pdx,v.income,v.rcpt_money,COALESCE(tele.claim_price, 0) AS claim_price,
-                IF(stm.receive_op>SUM(tele.claim_price),50,stm.receive_op) AS receive_total ,
-				GROUP_CONCAT(DISTINCT sd.`name`) AS claim_list,IF(oe.moph_finance_upload_status IS NOT NULL,"Y","") AS claim
+                LEAST(stm.receive_op, tele.claim_price) AS receive_total,GROUP_CONCAT(DISTINCT sd.`name`) AS claim_list,
+				IF(oe.moph_finance_upload_status IS NOT NULL,"Y","") AS claim
             FROM ovst o
             LEFT JOIN patient pt ON pt.hn=o.hn
             LEFT JOIN visit_pttype vp ON vp.vn=o.vn           
@@ -575,7 +575,7 @@ class MishosController extends Controller
                 WHEN MONTH(vstdate)=9 THEN CONCAT("ก.ย. ", RIGHT(YEAR(vstdate)+543, 2))
                 END AS month,COUNT(vn) AS visit,SUM(IFNULL(claim_price,0)) AS claim_price,SUM(IFNULL(receive_total,0)) AS receive_total
             FROM (SELECT o.vn,o.vstdate,o.vsttime,COALESCE(ppfs.claim_price, 0) AS claim_price,
-                IF(stm.receive_pp>ppfs.claim_price,ppfs.claim_price,stm.receive_pp)  AS receive_total
+                LEAST(stm.receive_pp, ppfs.claim_price) AS receive_total
                 FROM ovst o
                 LEFT JOIN patient pt ON pt.hn=o.hn
                 LEFT JOIN visit_pttype vp ON vp.vn=o.vn           
@@ -603,7 +603,7 @@ class MishosController extends Controller
         $search=DB::connection('hosxp')->select('
             SELECT o.vstdate,o.vsttime,o.oqueue,pt.cid,pt.hn,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,
             p.`name` AS pttype,vp.hospmain,v.pdx,GROUP_CONCAT(DISTINCT ov.icd10) AS icd10,v.income,v.rcpt_money,
-			COALESCE(ppfs.claim_price, 0) AS claim_price,IF(stm.receive_pp>ppfs.claim_price,ppfs.claim_price,stm.receive_pp) AS receive_total,
+			COALESCE(ppfs.claim_price, 0) AS claim_price,LEAST(stm.receive_pp, ppfs.claim_price) AS receive_total,
             GROUP_CONCAT(DISTINCT sd.`name`) AS claim_list,IF(oe.moph_finance_upload_status IS NOT NULL,"Y","") AS claim
             FROM ovst o
             LEFT JOIN patient pt ON pt.hn=o.hn
@@ -659,7 +659,7 @@ class MishosController extends Controller
                 WHEN MONTH(vstdate)=9 THEN CONCAT("ก.ย. ", RIGHT(YEAR(vstdate)+543, 2))
                 END AS month,COUNT(vn) AS visit,SUM(IFNULL(claim_price,0)) AS claim_price,SUM(IFNULL(receive_total,0)) AS receive_total
             FROM (SELECT o.vn,o.vstdate,o.vsttime,COALESCE(ppfs.claim_price, 0) AS claim_price,
-                IF(stm.receive_pp>ppfs.claim_price,ppfs.claim_price,stm.receive_pp)  AS receive_total
+                LEAST(stm.receive_pp, ppfs.claim_price) AS receive_total
                 FROM ovst o
                 LEFT JOIN patient pt ON pt.hn=o.hn
                 LEFT JOIN visit_pttype vp ON vp.vn=o.vn           
@@ -683,7 +683,7 @@ class MishosController extends Controller
         $search=DB::connection('hosxp')->select('
             SELECT o.vstdate,o.vsttime,o.oqueue,pt.cid,pt.hn,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,
             p.`name` AS pttype,vp.hospmain,v.pdx,ov.icd10,lo.lab_items_name_ref,v.income,v.rcpt_money,
-			COALESCE(ppfs.claim_price, 0) AS claim_price,IF(stm.receive_pp>ppfs.claim_price,ppfs.claim_price,stm.receive_pp) AS receive_total,
+			COALESCE(ppfs.claim_price, 0) AS claim_price,LEAST(stm.receive_pp, ppfs.claim_price) AS receive_total,
             GROUP_CONCAT(DISTINCT sd.`name`) AS claim_list,IF(oe.moph_finance_upload_status IS NOT NULL,"Y","") AS claim
             FROM ovst o
             LEFT JOIN patient pt ON pt.hn=o.hn
@@ -736,7 +736,7 @@ class MishosController extends Controller
                 WHEN MONTH(vstdate)=9 THEN CONCAT("ก.ย. ", RIGHT(YEAR(vstdate)+543, 2))
                 END AS month,COUNT(vn) AS visit,SUM(IFNULL(claim_price,0)) AS claim_price,SUM(IFNULL(receive_total,0)) AS receive_total
             FROM (SELECT o.vn,o.vstdate,o.vsttime,COALESCE(ppfs.claim_price, 0) AS claim_price,
-                IF(stm.receive_pp>ppfs.claim_price,ppfs.claim_price,stm.receive_pp)  AS receive_total
+                LEAST(stm.receive_pp, ppfs.claim_price) AS receive_total
                 FROM ovst o
                 LEFT JOIN patient pt ON pt.hn=o.hn
                 LEFT JOIN visit_pttype vp ON vp.vn=o.vn           
@@ -758,15 +758,19 @@ class MishosController extends Controller
         $receive_total = array_column($sum_month,'receive_total');
 
         $search=DB::connection('hosxp')->select('
-            SELECT o.vstdate,o.vsttime,o.oqueue,pt.cid,pt.hn,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,
-            p.`name` AS pttype,vp.hospmain,v.pdx,GROUP_CONCAT(DISTINCT ov.icd10) AS icd10,v.income,v.rcpt_money,
-			COALESCE(ppfs.claim_price, 0) AS claim_price,IF(stm.receive_pp>ppfs.claim_price,ppfs.claim_price,stm.receive_pp) AS receive_total,
+            SELECT o.vstdate,o.vsttime,o.oqueue,pt.cid,pt.hn,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,v.age_y,
+            p.`name` AS pttype,vp.hospmain,v.pdx,GROUP_CONCAT(DISTINCT ov.icd10) AS icd10,v.income,v.rcpt_money,lab.lab,
+			COALESCE(ppfs.claim_price, 0) AS claim_price,LEAST(stm.receive_pp, ppfs.claim_price) AS receive_total,
             GROUP_CONCAT(DISTINCT sd.`name`) AS claim_list,IF(oe.moph_finance_upload_status IS NOT NULL,"Y","") AS claim
             FROM ovst o
             LEFT JOIN patient pt ON pt.hn=o.hn
             LEFT JOIN visit_pttype vp ON vp.vn=o.vn           
             LEFT JOIN pttype p ON p.pttype=vp.pttype          
             LEFT JOIN vn_stat v ON v.vn = o.vn
+            LEFT JOIN (SELECT v1.vn,op.icode,nd.name AS lab FROM vn_stat v1
+                INNER JOIN opitemrece op ON op.vn=v1.vn AND op.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code ="30101")
+                LEFT JOIN nondrugitems nd ON nd.icode=op.icode
+                WHERE v1.sex = 2 AND v1.age_y BETWEEN 13 AND 24 ) lab ON lab.vn=o.vn			
 			LEFT JOIN ovstdiag ov ON ov.vn=o.vn AND ov.icd10 IN ("Z138")
 			LEFT JOIN opitemrece o1 ON o1.vn=o.vn AND o1.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("13001"))
 			LEFT JOIN s_drugitems sd ON sd.icode=o1.icode			
@@ -776,7 +780,7 @@ class MishosController extends Controller
 			AND op.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("13001")) GROUP BY op.vn) ppfs ON ppfs.vn=o.vn						
             LEFT JOIN htp_report.finance_stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL)  
-			AND (o1.vn IS NOT NULL OR ov.icd10 IS NOT NULL)
+			AND (o1.vn IS NOT NULL OR ov.icd10 IS NOT NULL OR lab.vn IS NOT NULL)
             AND o.vstdate BETWEEN ? AND ?
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
 
@@ -811,7 +815,7 @@ class MishosController extends Controller
                 WHEN MONTH(vstdate)=9 THEN CONCAT("ก.ย. ", RIGHT(YEAR(vstdate)+543, 2))
                 END AS month,COUNT(vn) AS visit,SUM(IFNULL(claim_price,0)) AS claim_price,SUM(IFNULL(receive_total,0)) AS receive_total
             FROM (SELECT o.vn,o.vstdate,o.vsttime,COALESCE(ppfs.claim_price, 0) AS claim_price,
-                IF(stm.receive_pp>ppfs.claim_price,ppfs.claim_price,stm.receive_pp)  AS receive_total
+                LEAST(stm.receive_pp, ppfs.claim_price) AS receive_total
                 FROM ovst o
                 LEFT JOIN patient pt ON pt.hn=o.hn
                 LEFT JOIN visit_pttype vp ON vp.vn=o.vn           
@@ -835,7 +839,7 @@ class MishosController extends Controller
         $search=DB::connection('hosxp')->select('
             SELECT o.vstdate,o.vsttime,o.oqueue,pt.cid,pt.hn,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,
             p.`name` AS pttype,vp.hospmain,v.pdx,GROUP_CONCAT(DISTINCT ov.icd10) AS icd10,v.income,v.rcpt_money,
-			COALESCE(ppfs.claim_price, 0) AS claim_price,IF(stm.receive_pp>ppfs.claim_price,ppfs.claim_price,stm.receive_pp) AS receive_total,
+			COALESCE(ppfs.claim_price, 0) AS claim_price,LEAST(stm.receive_pp, ppfs.claim_price) AS receive_total,
             GROUP_CONCAT(DISTINCT sd.`name`) AS claim_list,IF(oe.moph_finance_upload_status IS NOT NULL,"Y","") AS claim
             FROM ovst o
             LEFT JOIN patient pt ON pt.hn=o.hn
@@ -886,7 +890,7 @@ class MishosController extends Controller
                 WHEN MONTH(vstdate)=9 THEN CONCAT("ก.ย. ", RIGHT(YEAR(vstdate)+543, 2))
                 END AS month,COUNT(vn) AS visit,SUM(IFNULL(claim_price,0)) AS claim_price,SUM(IFNULL(receive_total,0)) AS receive_total
             FROM (SELECT o.vn,o.vstdate,o.vsttime,COALESCE(ppfs.claim_price, 0) AS claim_price,
-                IF(stm.receive_pp>ppfs.claim_price,ppfs.claim_price,stm.receive_pp)  AS receive_total
+                LEAST(stm.receive_pp, ppfs.claim_price) AS receive_total
                 FROM ovst o
                 LEFT JOIN patient pt ON pt.hn=o.hn
                 LEFT JOIN visit_pttype vp ON vp.vn=o.vn           
@@ -910,7 +914,7 @@ class MishosController extends Controller
         $search=DB::connection('hosxp')->select('
             SELECT o.vstdate,o.vsttime,o.oqueue,pt.cid,pt.hn,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,
             p.`name` AS pttype,vp.hospmain,v.pdx,GROUP_CONCAT(DISTINCT ov.icd10) AS icd10,v.income,v.rcpt_money,
-			COALESCE(ppfs.claim_price, 0) AS claim_price,IF(stm.receive_pp>ppfs.claim_price,ppfs.claim_price,stm.receive_pp) AS receive_total,
+			COALESCE(ppfs.claim_price, 0) AS claim_price,LEAST(stm.receive_pp, ppfs.claim_price) AS receive_total,
             GROUP_CONCAT(DISTINCT sd.`name`) AS claim_list,IF(oe.moph_finance_upload_status IS NOT NULL,"Y","") AS claim
             FROM ovst o
             LEFT JOIN patient pt ON pt.hn=o.hn
@@ -961,7 +965,7 @@ class MishosController extends Controller
                 WHEN MONTH(vstdate)=9 THEN CONCAT("ก.ย. ", RIGHT(YEAR(vstdate)+543, 2))
                 END AS month,COUNT(vn) AS visit,SUM(IFNULL(claim_price,0)) AS claim_price,SUM(IFNULL(receive_total,0)) AS receive_total
             FROM (SELECT o.vn,o.vstdate,o.vsttime,COALESCE(ppfs.claim_price, 0) AS claim_price,
-                IF(stm.receive_pp>ppfs.claim_price,ppfs.claim_price,stm.receive_pp)  AS receive_total
+                LEAST(stm.receive_pp, ppfs.claim_price) AS receive_total
                 FROM ovst o
                 LEFT JOIN patient pt ON pt.hn=o.hn
                 LEFT JOIN visit_pttype vp ON vp.vn=o.vn           
@@ -986,7 +990,7 @@ class MishosController extends Controller
         $search=DB::connection('hosxp')->select('
             SELECT o.vstdate,o.vsttime,o.oqueue,pt.cid,pt.hn,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,
             p.`name` AS pttype,vp.hospmain,a.anc_service_number,v.pdx,GROUP_CONCAT(DISTINCT ov.icd10) AS icd10,v.income,v.rcpt_money,
-            COALESCE(ppfs.claim_price, 0) AS claim_price,IF(stm.receive_pp>ppfs.claim_price,ppfs.claim_price,stm.receive_pp) AS receive_total,
+            COALESCE(ppfs.claim_price, 0) AS claim_price,LEAST(stm.receive_pp, ppfs.claim_price) AS receive_total,
             GROUP_CONCAT(DISTINCT sd.`name`) AS claim_list,IF(oe.moph_finance_upload_status IS NOT NULL,"Y","") AS claim
             FROM ovst o
             LEFT JOIN person_anc_service a ON a.vn=o.vn
@@ -1041,7 +1045,7 @@ class MishosController extends Controller
                 WHEN MONTH(vstdate)=9 THEN CONCAT("ก.ย. ", RIGHT(YEAR(vstdate)+543, 2))
                 END AS month,COUNT(vn) AS visit,SUM(IFNULL(claim_price,0)) AS claim_price,SUM(IFNULL(receive_total,0)) AS receive_total
             FROM (SELECT o.vn,o.vstdate,o.vsttime,COALESCE(ppfs.claim_price, 0) AS claim_price,
-                IF(stm.receive_pp>ppfs.claim_price,ppfs.claim_price,stm.receive_pp)  AS receive_total
+                LEAST(stm.receive_pp, ppfs.claim_price) AS receive_total
                 FROM ovst o
                 LEFT JOIN patient pt ON pt.hn=o.hn
                 LEFT JOIN visit_pttype vp ON vp.vn=o.vn           
@@ -1066,7 +1070,7 @@ class MishosController extends Controller
         $search=DB::connection('hosxp')->select('
             SELECT o.vstdate,o.vsttime,o.oqueue,pt.cid,pt.hn,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,
             p.`name` AS pttype,vp.hospmain,v.pdx,GROUP_CONCAT(DISTINCT ov.icd10) AS icd10,v.income,v.rcpt_money,
-            COALESCE(ppfs.claim_price, 0) AS claim_price,IF(stm.receive_pp>ppfs.claim_price,ppfs.claim_price,stm.receive_pp) AS receive_total,
+            COALESCE(ppfs.claim_price, 0) AS claim_price,LEAST(stm.receive_pp, ppfs.claim_price) AS receive_total,
             GROUP_CONCAT(DISTINCT sd.`name`) AS claim_list,IF(oe.moph_finance_upload_status IS NOT NULL,"Y","") AS claim
             FROM ovst o
             LEFT JOIN patient pt ON pt.hn=o.hn
@@ -1119,7 +1123,7 @@ class MishosController extends Controller
                 WHEN MONTH(vstdate)=9 THEN CONCAT("ก.ย. ", RIGHT(YEAR(vstdate)+543, 2))
                 END AS month,COUNT(vn) AS visit,SUM(IFNULL(claim_price,0)) AS claim_price,SUM(IFNULL(receive_total,0)) AS receive_total
             FROM (SELECT o.vn,o.vstdate,o.vsttime,COALESCE(ppfs.claim_price, 0) AS claim_price,
-                IF(stm.receive_pp>ppfs.claim_price,ppfs.claim_price,stm.receive_pp)  AS receive_total
+                LEAST(stm.receive_pp, ppfs.claim_price) AS receive_total
                 FROM ovst o
                 LEFT JOIN patient pt ON pt.hn=o.hn
                 LEFT JOIN visit_pttype vp ON vp.vn=o.vn           
@@ -1144,7 +1148,7 @@ class MishosController extends Controller
         $search=DB::connection('hosxp')->select('
             SELECT o.vstdate,o.vsttime,o.oqueue,pt.cid,pt.hn,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,
             p.`name` AS pttype,vp.hospmain,v.pdx,GROUP_CONCAT(DISTINCT ov.icd10) AS icd10,v.income,v.rcpt_money,
-            COALESCE(ppfs.claim_price, 0) AS claim_price,IF(stm.receive_pp>ppfs.claim_price,ppfs.claim_price,stm.receive_pp) AS receive_total,
+            COALESCE(ppfs.claim_price, 0) AS claim_price,LEAST(stm.receive_pp, ppfs.claim_price) AS receive_total,
             GROUP_CONCAT(DISTINCT sd.`name`) AS claim_list,IF(oe.moph_finance_upload_status IS NOT NULL,"Y","") AS claim
             FROM ovst o
             LEFT JOIN patient pt ON pt.hn=o.hn
@@ -1197,7 +1201,7 @@ class MishosController extends Controller
                 WHEN MONTH(vstdate)=9 THEN CONCAT("ก.ย. ", RIGHT(YEAR(vstdate)+543, 2))
                 END AS month,COUNT(vn) AS visit,SUM(IFNULL(claim_price,0)) AS claim_price,SUM(IFNULL(receive_total,0)) AS receive_total
             FROM (SELECT o.vn,o.vstdate,o.vsttime,COALESCE(ppfs.claim_price, 0) AS claim_price,
-                IF(stm.receive_pp>ppfs.claim_price,ppfs.claim_price,stm.receive_pp)  AS receive_total
+                LEAST(stm.receive_pp, ppfs.claim_price) AS receive_total
                 FROM ovst o
                 LEFT JOIN patient pt ON pt.hn=o.hn
                 LEFT JOIN visit_pttype vp ON vp.vn=o.vn           
@@ -1222,7 +1226,7 @@ class MishosController extends Controller
         $search=DB::connection('hosxp')->select('
             SELECT o.vstdate,o.vsttime,o.oqueue,pt.cid,pt.hn,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,
             p.`name` AS pttype,vp.hospmain,v.pdx,GROUP_CONCAT(DISTINCT ov.icd10) AS icd10,v.income,v.rcpt_money,
-            COALESCE(ppfs.claim_price, 0) AS claim_price,IF(stm.receive_pp>ppfs.claim_price,ppfs.claim_price,stm.receive_pp) AS receive_total,
+            COALESCE(ppfs.claim_price, 0) AS claim_price,LEAST(stm.receive_pp, ppfs.claim_price) AS receive_total,
             GROUP_CONCAT(DISTINCT sd.`name`) AS claim_list,IF(oe.moph_finance_upload_status IS NOT NULL,"Y","") AS claim
             FROM ovst o
             LEFT JOIN patient pt ON pt.hn=o.hn

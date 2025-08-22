@@ -35,9 +35,11 @@
                   <th class="text-center">Queue</th>     
                   <th class="text-center" width = "10%">ชื่อ-สกุล</th>
                   <th class="text-center">HN</th>    
+                  <th class="text-center">อายุ</th>  
                   <th class="text-center" width = "10%">สิทธิการรักษา</th>
                   <th class="text-center">PDX</th>
                   <th class="text-center">ICD10_Claim</th>
+                  <th class="text-center">Lab</th>
                   <th class="text-center">ค่ารักษาทั้งหมด</th> 
                   <th class="text-center">ชำระเอง</th>
                   <th class="text-center">เรียกเก็บ</th>
@@ -60,9 +62,11 @@
                 <td align="center">{{ $row->oqueue }}</td>   
                 <td align="left" width = "10%">{{$row->ptname}}</td> 
                 <td align="center">{{$row->hn}}</td> 
+                <td align="center">{{$row->age_y}}</td> 
                 <td align="left" width = "10%">{{$row->pttype}} [{{$row->hospmain}}]</td> 
                 <td align="center">{{ $row->pdx }}</td>
                 <td align="left">{{ $row->icd10 }}</td>
+                <td align="left">{{ $row->lab }}</td>
                 <td align="right">{{ number_format($row->income,2) }}</td>              
                 <td align="right">{{ number_format($row->rcpt_money,2) }}</td>
                 <td align="right">{{ number_format($row->claim_price,2) }}</td>
