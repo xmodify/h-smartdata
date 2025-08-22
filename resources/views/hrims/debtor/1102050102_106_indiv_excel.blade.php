@@ -20,66 +20,64 @@ header("Content-Disposition: attachment; filename=".$files); //ชื่อไ�
             <thead>
             <tr>
                 <th class="text-center">ลำดับ</th>
-                <th class="text-center">วันที่</th>
-                <th class="text-center">HN</th>
+                <th class="text-center"width="6%" >วันที่</th>
+                <th class="text-center">HN</th> 
                 <th class="text-center">ชื่อ-สกุล</th>
+                <th class="text-center">เบอร์โทร</th>
                 <th class="text-center">สิทธิ</th>
                 <th class="text-center">ICD10</th>
-                <th class="text-center">ค่ารักษาทั้งหมด</th>  
+                <th class="text-center">ค่ารักษาทั้งหมด</th> 
+                <th class="text-center">ต้องชำระ</th>  
                 <th class="text-center">ชำระเอง</th> 
-                <th class="text-center">กองทุนอื่น</th> 
-                <th class="text-center">PPFS</th> 
-                <th class="text-center">ลูกหนี้</th>
+                <th class="text-center text-primary">ลูกหนี้</th>
                 <th class="text-center text-primary">ชดเชย</th> 
-                <th class="text-center text-primary">ชดเชย PPFS</th>
                 <th class="text-center text-primary">ผลต่าง</th>  
-                <th class="text-center text-primary">REP</th>   
+                <th class="text-center text-primary">ใบเสร็จ</th>  
             </tr>     
             </thead> 
             <?php $count = 1 ; ?>
             <?php $sum_income = 0 ; ?>
-            <?php $sum_rcpt_money = 0 ; ?>
-            <?php $sum_other = 0 ; ?>
-            <?php $sum_ppfs = 0 ; ?>
+            <?php $sum_paid_money = 0 ; ?>
+            <?php $sum_rcpt_money = 0 ; ?>              
             <?php $sum_debtor = 0 ; ?>
             <?php $sum_receive = 0 ; ?>
-            <?php $sum_receive_pp = 0 ; ?>
             @foreach($debtor as $row)          
             <tr>
                 <td align="center">{{ $count }}</td>
                 <td align="right">{{ DateThai($row->vstdate) }} {{ $row->vsttime }}</td>
                 <td align="center">{{ $row->hn }}</td>
                 <td align="left">{{ $row->ptname }}</td>
-                <td align="left">{{ $row->pttype }} [{{ $row->hospmain }}]</td>
+                <td align="center">{{ $row->mobile_phone_number }}</td>
+                <td align="left">{{ $row->pttype }}</td>
                 <td align="right">{{ $row->pdx }}</td>                      
                 <td align="right">{{ number_format($row->income,2) }}</td>
-                <td align="right">{{ number_format($row->rcpt_money,2) }}</td>
-                <td align="right">{{ number_format($row->other,2) }}</td>
-                <td align="right">{{ number_format($row->ppfs,2) }}</td>
-                <td align="right">{{ number_format($row->debtor,2) }}</td>
-                <td align="right">{{ number_format($row->receive,2) }}</td>
-                <td align="right">{{ number_format($row->receive_pp,2) }}</td>
-                <td align="right">{{ number_format($row->receive-$row->debtor,2) }}</td>
+                <td align="right">{{ number_format($row->paid_money,2) }}</td>
+                <td align="right">{{ number_format($row->rcpt_money,2) }}</td>             
+                <td align="right" class="text-primary">{{ number_format($row->debtor,2) }}</td>  
+                <td align="right" @if($row->receive > 0) style="color:green" 
+                    @elseif($row->receive < 0) style="color:red" @endif>
+                    {{ number_format($row->receive,2) }}
+                </td>
+                <td align="right" @if(($row->receive-$row->debtor) > 0) style="color:green"
+                    @elseif(($row->receive-$row->debtor) < 0) style="color:red" @endif>
+                    {{ number_format($row->receive-$row->debtor,2) }}
+                </td> 
                 <td align="center">{{ $row->repno }}</td>
             </tr>                
-            <?php $count++; ?>
+           <?php $count++; ?>
             <?php $sum_income += $row->income ; ?>
-            <?php $sum_rcpt_money += $row->rcpt_money ; ?>
-            <?php $sum_other += $row->other ; ?> 
-            <?php $sum_ppfs += $row->ppfs ; ?> 
+            <?php $sum_paid_money += $row->paid_money ; ?>    
+            <?php $sum_rcpt_money += $row->rcpt_money ; ?>          
             <?php $sum_debtor += $row->debtor ; ?> 
-            <?php $sum_receive += $row->receive ; ?>  
-            <?php $sum_receive_pp += $row->receive_pp ; ?>    
+            <?php $sum_receive += $row->receive ; ?>    
             @endforeach   
             <tr>
-                <td align="right" colspan = "6"><strong>รวมค่ารักษาพยาบาลทั้งสิ้น &nbsp;</strong><br></td> 
+                <td align="right" colspan = "7"><strong>รวมค่ารักษาพยาบาลทั้งสิ้น &nbsp;</strong><br></td> 
                 <td align="right"><strong>{{number_format($sum_income,2)}}&nbsp;</strong></td>  
+                <td align="right"><strong>{{number_format($sum_paid_money,2)}}&nbsp;</strong></td>
                 <td align="right"><strong>{{number_format($sum_rcpt_money,2)}}&nbsp;</strong></td>
-                <td align="right"><strong>{{number_format($sum_other,2)}}&nbsp;</strong></td>
-                <td align="right"><strong>{{number_format($sum_ppfs,2)}}&nbsp;</strong></td>
                 <td align="right"><strong>{{number_format($sum_debtor,2)}}&nbsp;</strong></td>
-                <td align="right"><strong>{{number_format($sum_receive,2)}}&nbsp;</strong></td> 
-                <td align="right"><strong>{{number_format($sum_receive_pp,2)}}&nbsp;</strong></td> 
+                <td align="right"><strong>{{number_format($sum_receive,2)}}&nbsp;</strong></td>
                 <td align="right"><strong>{{number_format($sum_receive-$sum_debtor,2)}}&nbsp;</strong></td>
             </tr>          
         </table> 

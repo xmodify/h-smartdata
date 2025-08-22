@@ -3541,12 +3541,13 @@ class DebtorController extends Controller
     {
         $start_date = Session::get('start_date');
         $end_date = Session::get('end_date');
-        $debtor = DB::select('
-            SELECT vstdate,COUNT(DISTINCT vn) AS anvn,
-            SUM(debtor) AS debtor,SUM(receive) AS receive
-            FROM finance_debtor_1102050102_106  
-            WHERE vstdate BETWEEN ? AND ?
-            GROUP BY vstdate ORDER BY vstdate',[$start_date,$end_date]);
+        $debtor = DB::connection('hosxp')->select('
+            SELECT d.vstdate,COUNT(DISTINCT d.vn) AS anvn,
+            SUM(d.debtor) AS debtor,SUM(IFNULL(d.receive, r.bill_amount)) AS receive
+            FROM htp_report.finance_debtor_1102050102_106 d 
+            LEFT JOIN rcpt_print r ON r.vn = d.vn AND r.`status` ="OK" AND r.department="OPD" AND r.bill_date <> d.vstdate
+            WHERE d.vstdate BETWEEN ? AND ?
+            GROUP BY d.vstdate ORDER BY d.vstdate',[$start_date,$end_date]);
 
         $pdf = PDF::loadView('hrims.debtor.1102050102_106_daily_pdf', compact('start_date','end_date','debtor'))
                     ->setPaper('A4', 'portrait');
