@@ -245,6 +245,12 @@
                                         <li>
                                             <a class="dropdown-item link-primary text-white" href="{{ url('hrims/mishos/ucs_telemed') }}">บริการสาธารณสุขทางไกล (TELEMED)</a>
                                         </li>
+                                        <li>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/mishos/ucs_rider') }}">จัดส่งยาทางไปรษณีย์</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/mishos/ucs_gdm') }}">บริการในกลุ่ม GDM</a>
+                                        </li> 
                                     </ul>
                                 </li>
                                 <li class="dropend">
@@ -252,6 +258,9 @@
                                         บริการค่าใช้จ่ายสูง
                                     </a>
                                     <ul class="bg-success dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/mishos/ucs_drug_clopidogrel') }}">ยาต้านเกล็ดเลือด</a>
+                                        </li> 
                                         <li>
                                             <a class="dropdown-item link-primary text-white" href="{{ url('hrims/mishos/ucs_drug_sk') }}">ยาละลายลิ่มเลือด</a>
                                         </li> 

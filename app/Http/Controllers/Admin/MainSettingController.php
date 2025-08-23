@@ -60,8 +60,8 @@ class MainSettingController extends Controller
             ['id' => 13, 'name_th' => 'สิทธิ ตรวจสุขภาพหน่วยงานภาครัฐ (รหัสสิทธิ HOSxP)', 'name' => 'pttype_checkup', 'value' => '14,27'],
             ['id' => 14, 'name_th' => 'สิทธิ ประกันชีวิต iClaim (รหัสสิทธิ HOSxP)', 'name' => 'pttype_iclaim', 'value' => '26'],
             ['id' => 15, 'name_th' => 'สิทธิ ปกส. 72 ชั่วโมงแรก (รหัสสิทธิ HOSxP)', 'name' => 'pttype_sss_72', 'value' => '32'],
-            ['id' => 16, 'name_th' => 'LAB Pregnancy Test (รหัส Lab_items HOSxP)', 'name' => 'lab_prt', 'value' => '444'],
-
+            ['id' => 16, 'name_th' => 'LAB Pregnancy Test (รหัส lab_items HOSxP)', 'name' => 'lab_prt', 'value' => '444'],
+            ['id' => 17, 'name_th' => 'ยา Clopidogrel (รหัส drugitems HOSxP)', 'name' => 'drug_clopidogrel', 'value' => '1520019'],
         ];
         
         foreach ($main_setting as $row) {
