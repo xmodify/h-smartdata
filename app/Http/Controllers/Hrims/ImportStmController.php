@@ -1157,10 +1157,10 @@ public function ucs_kidney_save(Request $request)
                 'cid'                   =>$sheet->getCell( 'G' . $row )->getValue(),
                 'pt_name'               =>$sheet->getCell( 'H' . $row )->getValue(),
                 'datetimeadm'           =>$datetimeadm,
-                'hd_type'               =>$sheet->getCell( 'L' . $row )->getValue(), 
-                'charge_total'          =>$sheet->getCell( 'M' . $row )->getValue(), 
-                'receive_total'         =>$sheet->getCell( 'N' . $row )->getValue(),                 
-                'note'                  =>$sheet->getCell( 'P' . $row )->getValue(),                    
+                'hd_type'               =>$sheet->getCell( 'N' . $row )->getValue(), 
+                'charge_total'          =>$sheet->getCell( 'P' . $row )->getValue(), 
+                'receive_total'         =>$sheet->getCell( 'Q' . $row )->getValue(),                 
+                'note'                  =>$sheet->getCell( 'S' . $row )->getValue(),                    
                 'stm_filename'          =>$file_name,
             ]; 
             $startcount++;            
@@ -1182,7 +1182,10 @@ public function ucs_kidney_save(Request $request)
             $check = Finance_stm_ucs_kidney::where('repno','=',$value->repno)->where('no','=',$value->no)->count();
             if ($check > 0) {
                 Finance_stm_ucs_kidney::where('repno','=',$value->repno)->where('no','=',$value->no)->update([
-                        'datetimeadm'        => $value->datetimeadm
+                        'datetimeadm'        => $value->datetimeadm,
+                        'charge_total'       => $value->charge_total,
+                        'receive_total'      => $value->receive_total,
+                        'stm_filename'       => $value->stm_filename
                         ]); 
             } else {
                     $add = new Finance_stm_ucs_kidney();
