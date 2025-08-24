@@ -1,6 +1,4 @@
 @extends('layouts.app')
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
 
 @section('content')
 <div class="container-fluid">
@@ -62,6 +60,7 @@
             <th class="text-center">อาการสำคัญ</th>
             <th class="text-center">โรคหลัก</th> 
             <th class="text-center">หัตถการ/โรคร่วม</th>
+            <th class="text-center">เปลี่ยนถังออกซิเจน</th>
             <th class="text-center">แพทย์ผู้ตรวจ</th>
             <th class="text-center">Refer</th>          
         </tr>     
@@ -79,7 +78,8 @@
             <td align="left">{{ $row->pttype }}</td>
             <td align="left">{{ $row->cc }}</td>
             <td align="right">{{ $row->pdx }}</td>
-            <td align="right">{{ $row->dx }}</td>
+            <td align="left">{{ $row->dx }}</td>
+            <td align="left">{{ $row->h2o }}</td>
             <td align="left">{{ $row->dx_doctor }}</td>              
             <td align="left">{{ $row->refer }}</td>                        
         </tr>                
@@ -144,7 +144,7 @@
             <td align="left">{{ $row->pttype }}</td>
             <td align="left">{{ $row->prediag }}</td>
             <td align="right">{{ $row->pdx }}</td>
-            <td align="right">{{ $row->dx }}</td>
+            <td align="left">{{ $row->dx }}</td>
             <td align="left">{{ $row->dx_doctor }}</td>              
             <td align="left">{{ $row->refer }}</td>                        
         </tr>                
@@ -225,25 +225,106 @@
 <script src="{{ asset('assets/vendor/apexcharts/apexcharts.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/chart.js/chart.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/echarts/echarts.min.js') }}"></script>
-<!-- DataTable -->
-<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
-<script type="text/javascript" class="init">
+
+@push('scripts')
+  <script>
     $(document).ready(function () {
-        $('#diag_list').DataTable();
+      $('#diag_list').DataTable({
+        dom: '<"row mb-3"' +
+                '<"col-md-6"l>' + // Show รายการ
+                '<"col-md-6 d-flex justify-content-end align-items-center gap-2"fB>' + // Search + Export
+              '>' +
+              'rt' +
+              '<"row mt-3"' +
+                '<"col-md-6"i>' + // Info
+                '<"col-md-6"p>' + // Pagination
+              '>',
+        buttons: [
+            {
+              extend: 'excelHtml5',
+              text: 'Excel',
+              className: 'btn btn-success',
+              title: 'รายชื่อผู้ป่วยนอกโรค Palliative Care ปีงบประมาณ {{$budget_year}}'
+            }
+        ],
+        language: {
+            search: "ค้นหา:",
+            lengthMenu: "แสดง _MENU_ รายการ",
+            info: "แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ",
+            paginate: {
+              previous: "ก่อนหน้า",
+              next: "ถัดไป"
+            }
+        }
+      });
     });
-</script>
-<script type="text/javascript" class="init">
+  </script>
+  <script>
     $(document).ready(function () {
-        $('#diag_list_ipd').DataTable();
+      $('#diag_list_ipd').DataTable({
+        dom: '<"row mb-3"' +
+                '<"col-md-6"l>' + // Show รายการ
+                '<"col-md-6 d-flex justify-content-end align-items-center gap-2"fB>' + // Search + Export
+              '>' +
+              'rt' +
+              '<"row mt-3"' +
+                '<"col-md-6"i>' + // Info
+                '<"col-md-6"p>' + // Pagination
+              '>',
+        buttons: [
+            {
+              extend: 'excelHtml5',
+              text: 'Excel',
+              className: 'btn btn-success',
+              title: 'รายชื่อผู้ป่วยในโรค Palliative Care ปีงบประมาณ {{$budget_year}} '
+            }
+        ],
+        language: {
+            search: "ค้นหา:",
+            lengthMenu: "แสดง _MENU_ รายการ",
+            info: "แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ",
+            paginate: {
+              previous: "ก่อนหน้า",
+              next: "ถัดไป"
+            }
+        }
+      });
     });
-</script>
-<script type="text/javascript" class="init">
+  </script>
+  <script>
     $(document).ready(function () {
-        $('#refer_list').DataTable();
+      $('#refer_list').DataTable({
+        dom: '<"row mb-3"' +
+                '<"col-md-6"l>' + // Show รายการ
+                '<"col-md-6 d-flex justify-content-end align-items-center gap-2"fB>' + // Search + Export
+              '>' +
+              'rt' +
+              '<"row mt-3"' +
+                '<"col-md-6"i>' + // Info
+                '<"col-md-6"p>' + // Pagination
+              '>',
+        buttons: [
+            {
+              extend: 'excelHtml5',
+              text: 'Excel',
+              className: 'btn btn-success',
+              title: 'ายชื่อผู้ป่วยส่งต่อ Refer ด้วยโรค Palliative Care ปีงบประมาณ {{$budget_year}}'
+            }
+        ],
+        language: {
+            search: "ค้นหา:",
+            lengthMenu: "แสดง _MENU_ รายการ",
+            info: "แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ",
+            paginate: {
+              previous: "ก่อนหน้า",
+              next: "ถัดไป"
+            }
+        }
+      });
     });
-</script>
+  </script>
+@endpush
+
 <!-- Bar Chart -->
 <script>
     document.addEventListener("DOMContentLoaded", () => {

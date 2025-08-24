@@ -30,9 +30,9 @@ use App\Http\Controllers\LineNotify_InsuranceController;
 use App\Http\Controllers\LineNotifyController;
 use App\Http\Controllers\Medicalrecord_OpdController;
 use App\Http\Controllers\Medicalrecord_IpdController;
+use App\Http\Controllers\Medicalrecord_DiagController;
 use App\Http\Controllers\Service_DeathController;
 use App\Http\Controllers\Service_DentController;
-use App\Http\Controllers\Service_DiagController;
 use App\Http\Controllers\Service_DrugController;
 use App\Http\Controllers\Service_ERController;
 use App\Http\Controllers\Service_HealthMedController;
@@ -545,11 +545,26 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::match(['get','post'],'medicalrecord_ipd/wait_icd_coder',[Medicalrecord_IpdController::class,'wait_icd_coder']);
     Route::match(['get','post'],'medicalrecord_ipd/dchsummary',[Medicalrecord_IpdController::class,'dchsummary']);
     Route::match(['get','post'],'medicalrecord_ipd/dchsummary_audit',[Medicalrecord_IpdController::class,'dchsummary_audit']);
-    Route::get('medicalrecord_ipd/non_dchsummary',[Medicalrecord_IpdController::class,'non_dchsummary']);
-  
+    Route::get('medicalrecord_ipd/non_dchsummary',[Medicalrecord_IpdController::class,'non_dchsummary']);  
     Route::get('medicalrecord_ipd/finance_chk',[Medicalrecord_IpdController::class,'finance_chk']);
     Route::get('medicalrecord_ipd/finance_chk_opd_wait_money',[Medicalrecord_IpdController::class,'finance_chk_opd_wait_money']);
     Route::get('medicalrecord_ipd/finance_chk_wait_rcpt_money',[Medicalrecord_IpdController::class,'finance_chk_wait_rcpt_money']);
+
+// medicalrecord_diag -------------------------------------------------------------------------------------------------------------------------------------
+    Route::get('medicalrecord_diag/',[Medicalrecord_DiagController::class,'index']);
+    Route::match(['get','post'],'medicalrecord_diag/alcohol_withdrawal',[Medicalrecord_DiagController::class,'alcohol_withdrawal']);
+    Route::match(['get','post'],'medicalrecord_diag/asthma',[Medicalrecord_DiagController::class,'asthma']);
+    Route::match(['get','post'],'medicalrecord_diag/copd',[Medicalrecord_DiagController::class,'copd']);
+    Route::match(['get','post'],'medicalrecord_diag/mi',[Medicalrecord_DiagController::class,'mi']);
+    Route::match(['get','post'],'medicalrecord_diag/ihd',[Medicalrecord_DiagController::class,'ihd']);
+    Route::match(['get','post'],'medicalrecord_diag/palliative_care',[Medicalrecord_DiagController::class,'palliative_care']);
+    Route::match(['get','post'],'medicalrecord_diag/pneumonia',[Medicalrecord_DiagController::class,'pneumonia']);
+    Route::match(['get','post'],'medicalrecord_diag/sepsis',[Medicalrecord_DiagController::class,'sepsis']);
+    Route::match(['get','post'],'medicalrecord_diag/septic_shock',[Medicalrecord_DiagController::class,'septic_shock']);
+    Route::match(['get','post'],'medicalrecord_diag/stroke',[Medicalrecord_DiagController::class,'stroke']);
+    Route::match(['get','post'],'medicalrecord_diag/head_injury',[Medicalrecord_DiagController::class,'head_injury']);
+    Route::match(['get','post'],'medicalrecord_diag/fracture',[Medicalrecord_DiagController::class,'fracture']);
+    Route::match(['get','post'],'medicalrecord_diag/trauma',[Medicalrecord_DiagController::class,'trauma']);
 
 // service_death ------------------------------------------------------------------------------------------------------------------------------------
     Route::get('service_death/',[Service_DeathController::class,'index']);
@@ -560,22 +575,6 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
 // service_dent -------------------------------------------------------------------------------------------------------------------------------------
     Route::get('service_dent/',[Service_DentController::class,'index']);
     Route::match(['get','post'],'service_dent/count',[Service_DentController::class,'count']);
-
-// service_diag -------------------------------------------------------------------------------------------------------------------------------------
-    Route::get('service_diag/',[Service_DiagController::class,'index']);
-    Route::match(['get','post'],'service_diag/alcohol_withdrawal',[Service_DiagController::class,'alcohol_withdrawal']);
-    Route::match(['get','post'],'service_diag/asthma',[Service_DiagController::class,'asthma']);
-    Route::match(['get','post'],'service_diag/copd',[Service_DiagController::class,'copd']);
-    Route::match(['get','post'],'service_diag/mi',[Service_DiagController::class,'mi']);
-    Route::match(['get','post'],'service_diag/ihd',[Service_DiagController::class,'ihd']);
-    Route::match(['get','post'],'service_diag/palliative_care',[Service_DiagController::class,'palliative_care']);
-    Route::match(['get','post'],'service_diag/pneumonia',[Service_DiagController::class,'pneumonia']);
-    Route::match(['get','post'],'service_diag/sepsis',[Service_DiagController::class,'sepsis']);
-    Route::match(['get','post'],'service_diag/septic_shock',[Service_DiagController::class,'septic_shock']);
-    Route::match(['get','post'],'service_diag/stroke',[Service_DiagController::class,'stroke']);
-    Route::match(['get','post'],'service_diag/head_injury',[Service_DiagController::class,'head_injury']);
-    Route::match(['get','post'],'service_diag/fracture',[Service_DiagController::class,'fracture']);
-    Route::match(['get','post'],'service_diag/trauma',[Service_DiagController::class,'trauma']);
 
 // service_drug -------------------------------------------------------------------------------------------------------------------------------------
     Route::get('service_drug/',[Service_DrugController::class,'index']);

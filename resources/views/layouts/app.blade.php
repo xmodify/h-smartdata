@@ -106,9 +106,6 @@
                                 <a class="dropdown-item link-primary text-white " href="{{ url('/service_death') }}" >
                                     ข้อมูลเสียชีวิต
                                 </a>
-                                <a class="dropdown-item link-primary text-white " href="{{ url('/service_diag') }}" >
-                                    ข้อมูลเฉพาะโรค
-                                </a>  
                             </div>                 
                         </li> 
                         <li class="nav-item dropdown">
@@ -142,10 +139,10 @@
                             </a>
                             <ul class="bg-primary dropdown-menu dropdown-menu-end">   
                                 <!-- เมนูอื่น -->
-                                <li>
+                                <li>      
                                     <a class="link-primary dropdown-item text-white " href="{{ url('/hosxp_setting') }}">
                                        ข้อมูลพื้นฐาน HOSxP
-                                    </a>
+                                    </a>                              
                                     <a class="link-primary dropdown-item text-white " href="{{ url('/medicalrecord_opd') }}" >
                                         เวชระเบียนผู้ป่วยนอก
                                     </a> 
@@ -159,6 +156,27 @@
                                         <li><a class="dropdown-item link-primary text-white" href="{{ url('medicalrecord_ipd/dchsummary') }}">D/C Summary</a></li> 
                                     </ul>
                                 </li>
+                                <!-- ชี้ขวา -->
+                                <li class="dropend">
+                                    <a class="link-primary dropdown-item dropdown-toggle text-white" href="#" data-bs-toggle="dropdown">
+                                        รายโรคสำคัญ
+                                    </a>
+                                    <ul class="bg-primary dropdown-menu">
+                                        <li><a class="dropdown-item link-primary text-white" href="{{ url('medicalrecord_diag/alcohol_withdrawal') }}">Alcohol Withdrawal</a></li> 
+                                        <li><a class="dropdown-item link-primary text-white" href="{{ url('medicalrecord_diag/asthma') }}">Asthma</a></li> 
+                                        <li><a class="dropdown-item link-primary text-white" href="{{ url('medicalrecord_diag/copd') }}">COPD</a></li> 
+                                        <li><a class="dropdown-item link-primary text-white" href="{{ url('medicalrecord_diag/fracture') }}">กระดูกสะโพกหัก</a></li> 
+                                        <li><a class="dropdown-item link-primary text-white" href="{{ url('medicalrecord_diag/head_injury') }}">Head Injury</a></li> 
+                                        <li><a class="dropdown-item link-primary text-white" href="{{ url('medicalrecord_diag/ihd') }}">หัวใจขาดเลือด(IHD)</a></li> 
+                                        <li><a class="dropdown-item link-primary text-white" href="{{ url('medicalrecord_diag/mi') }}">MI</a></li>                                         
+                                        <li><a class="dropdown-item link-primary text-white" href="{{ url('medicalrecord_diag/palliative_care') }}">Palliative Care</a></li> 
+                                        <li><a class="dropdown-item link-primary text-white" href="{{ url('medicalrecord_diag/pneumonia') }}">Pneumonia</a></li> 
+                                        <li><a class="dropdown-item link-primary text-white" href="{{ url('medicalrecord_diag/sepsis') }}">Sepsis</a></li> 
+                                        <li><a class="dropdown-item link-primary text-white" href="{{ url('medicalrecord_diag/septic_shock') }}">Septic Shock</a></li> 
+                                        <li><a class="dropdown-item link-primary text-white" href="{{ url('medicalrecord_diag/stroke') }}">Stroke</a></li>   
+                                        <li><a class="dropdown-item link-primary text-white" href="{{ url('medicalrecord_diag/trauma') }}">Trauma</a></li> 
+                                    </ul>
+                                </li>                                
                             </ul>           
                         </li>
                         {{-- <li class="nav-item dropdown">
