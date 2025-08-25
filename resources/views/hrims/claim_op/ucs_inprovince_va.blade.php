@@ -86,7 +86,7 @@
               <th class="text-center">ชำระเอง</th>
               <th class="text-center">กองทุนอื่น</th>
               <th class="text-center">เรียกเก็บ</th> 
-              <th class="text-center" width = "10%">รายการที่เรียกเก็บ</th>                
+              <th class="text-center" width = "10%">รายการกองทุนอื่น</th>                
           </tr>
         </thead> 
         <tbody>          
