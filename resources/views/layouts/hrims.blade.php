@@ -85,6 +85,9 @@
                                             <a class="dropdown-item link-primary text-white" href="{{ url('hrims/claim_op/ucs_inprovince') }}"> UC-OP ในจังหวัด </a>
                                         </li> 
                                         <li>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/claim_op/ucs_inprovince_va') }}"> UC-OP ในจังหวัด VA</a>
+                                        </li> 
+                                        <li>
                                             <a class="dropdown-item link-primary text-white" href="{{ url('hrims/claim_op/ucs_outprovince') }}"> UC-OP ต่างจังหวัด </a>
                                         </li> 
                                         <li>

@@ -765,6 +765,7 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
     // Claim_OP -------------------------------------------------------------------------------------------------------------------------
     Route::match(['get','post'],'claim_op/ucs_incup',[ClaimOpController::class,'ucs_incup']);
     Route::match(['get','post'],'claim_op/ucs_inprovince',[ClaimOpController::class,'ucs_inprovince']);
+    Route::match(['get','post'],'claim_op/ucs_inprovince_va',[ClaimOpController::class,'ucs_inprovince_va']);
     Route::match(['get','post'],'claim_op/ucs_outprovince',[ClaimOpController::class,'ucs_outprovince']);
     Route::match(['get','post'],'claim_op/ucs_kidney',[ClaimOpController::class,'ucs_kidney']);
     Route::match(['get','post'],'claim_op/stp_incup',[ClaimOpController::class,'stp_incup']);
