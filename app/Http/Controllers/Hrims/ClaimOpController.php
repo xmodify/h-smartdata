@@ -230,7 +230,7 @@ class ClaimOpController extends Controller
             LEFT JOIN opdscreen os ON os.vn=o.vn
             LEFT JOIN ovstdiag od ON od.vn = o.vn AND od.hn=o.hn AND od.diagtype = "2"
             LEFT JOIN vn_stat v ON v.vn = o.vn
-			LEFT JOIN vn_stat v1 ON v1.vn = o.vn AND v1.pdx IN ("Z242","Z235","Z439","Z488","Z480","Z098","Z549","Z479")
+			LEFT JOIN vn_stat v1 ON v1.vn = o.vn AND v1.pdx IN ("Z242","Z235","Z439","Z488","Z489","Z480","Z098","Z549","Z479")
             LEFT JOIN opitemrece o1 ON o1.vn=o.vn AND o1.icode IN (SELECT icode FROM htp_report.lookup_icode )           
             LEFT JOIN s_drugitems sd ON sd.icode=o1.icode
             LEFT JOIN (SELECT op.vn, SUM(op.sum_price) AS other_price FROM opitemrece op
