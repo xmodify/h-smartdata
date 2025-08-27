@@ -513,8 +513,7 @@ class MishosController extends Controller
 					WHERE op.vstdate BETWEEN ? AND ? AND op.icode = ? GROUP BY op.vn) drug ON drug.vn=o.vn						
                 LEFT JOIN htp_report.finance_stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
                 WHERE (o.an ="" OR o.an IS NULL)
-			        AND p.hipdata_code = "UCS" 	
-			        AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs = "Y")            
+			        AND p.hipdata_code = "UCS"        
 			        AND o.vstdate BETWEEN ? AND ? 
                 GROUP BY o.vn ) AS a
 				GROUP BY YEAR(vstdate), MONTH(vstdate)
@@ -540,8 +539,7 @@ class MishosController extends Controller
             LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn						
             LEFT JOIN htp_report.finance_stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
                 WHERE (o.an ="" OR o.an IS NULL)
-                AND p.hipdata_code = "UCS" 	
-                AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs = "Y")            
+                AND p.hipdata_code = "UCS" 	          
                 AND o.vstdate BETWEEN ? AND ? 
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$drug_clopidogrel,$start_date,$end_date,$drug_clopidogrel,$start_date,$end_date]);
 
