@@ -3,14 +3,13 @@
 @section('content')
 <div class="container">
     <h3 class="text-center text-danger">
-        ยินดีต้อนรับเข้าสู่..
+        <strong>ยินดีต้อนรับเข้าสู่</strong>...
     </h3>
-    <br>
-    <h1 class="text-center text-success">
-        <strong>H-RiMS</strong>
+    <h1 class="text-center text-success">       
+        <img src="{{ asset('images/logo_hrims.jpg') }}" alt="H-RiMS Logo" height="200">
     </h1>
     <h3 class="text-center text-primary">
-        Huataphanhospital Revenue Intelligent Management System
+        <strong>Huataphanhospital Revenue Intelligent Management System</strong>
     </h3>
 </div>
 @endsection

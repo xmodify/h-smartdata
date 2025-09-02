@@ -12,7 +12,7 @@
     th, td {
     padding: 8px;
     }  
-  </style>
+  </style> 
 
 @section('content')
 <div class="container-fluid">  
@@ -64,6 +64,7 @@
                     <th class="text-center">AN</th>                  
                     <th class="text-center">สิทธิการรักษา</th>
                     <th class="text-center">รายการ</th>
+                    <th class="text-center">จำนวน</th>
                     <th class="text-center">วางบิล</th>   
                     <th class="text-center">HOSxP</th> 
                     <th class="text-center">บริษัท CT</th>                
@@ -82,8 +83,9 @@
                     <td align="left">{{ $row->ptname }}</td>
                     <td align="center">{{ $row->hn }}</td>
                     <td align="center">{{ $row->an }}</td>
-                    <td align="right">{{ $row->pttype }} [{{ $row->hospmain }}]</td>
-                    <td align="right">{{ $row->item_name }}</td>
+                    <td align="left">{{ $row->pttype }} [{{ $row->hospmain }}]</td>
+                    <td align="left">{{ $row->item_name }}</td>
+                    <td align="center">{{ $row->qty }}</td>
                     <td align="right">{{ number_format($row->price_bill,2) }}</td> 
                     <td align="right">{{ number_format($row->price_claim,2) }}</td> 
                     <td align="right">{{ number_format($row->price_ct,2) }}</td> 
@@ -98,7 +100,8 @@
 
         <div class="text-center text-primary my-3">
             <h4>
-                วางบิล: <strong>{{number_format($sum_price_bill)}} |</strong> HOSxP: <strong>{{number_format($sum_price_claim)}} |</strong>
+                วางบิล: <strong>{{number_format($sum_price_bill)}} |</strong> 
+                HOSxP: <strong>{{number_format($sum_price_claim)}} |</strong>
                 บริษัท CT: <strong>{{number_format($sum_price_ct)}}</strong>
             </h4>
         </div>

@@ -15,6 +15,7 @@ header('Content-Disposition: attachment; filename="CT Scan.xls"');//ชื่อ
             <th class="text-center">AN</th>                  
             <th class="text-center">สิทธิการรักษา</th>
             <th class="text-center">รายการ</th>
+            <th class="text-center">จำนวน</th>
             <th class="text-center">วางบิล</th>   
             <th class="text-center">HOSxP</th> 
             <th class="text-center">บริษัท CT</th>                
@@ -32,8 +33,9 @@ header('Content-Disposition: attachment; filename="CT Scan.xls"');//ชื่อ
             <td align="left">{{ $row->ptname }}</td>
             <td align="center">{{ $row->hn }}</td>
             <td align="center">{{ $row->an }}</td>
-            <td align="right">{{ $row->hipdata_code }}-{{ $row->pttype }}</td>
-            <td align="right">{{ $row->item_name }}</td>
+            <td align="left">{{ $row->hipdata_code }}-{{ $row->pttype }}</td>
+            <td align="left">{{ $row->item_name }}</td>
+            <td align="center">{{ $row->qty }}</td>
             <td align="right">{{ number_format($row->price_bill,2) }}</td> 
             <td align="right">{{ number_format($row->price_claim,2) }}</td> 
             <td align="right">{{ number_format($row->price_ct,2) }}</td> 
@@ -42,7 +44,21 @@ header('Content-Disposition: attachment; filename="CT Scan.xls"');//ชื่อ
         <?php $sum_price_bill += $row->price_bill ; ?>
         <?php $sum_price_claim += $row->price_claim ; ?>
         <?php $sum_price_ct += $row->price_ct ; ?>
-        @endforeach    
+        @endforeach  
+        <tr>
+            <td align="right"></td> 
+            <td align="center"></td>
+            <td align="right"></td>
+            <td align="left"></td>
+            <td align="center"></td>
+            <td align="center"></td>
+            <td align="left"></td>
+            <td align="left"></td>
+            <td align="center"></td>
+            <td align="right">{{ number_format($sum_price_bill,2) }}</td> 
+            <td align="right">{{ number_format($sum_price_claim,2) }}</td> 
+            <td align="right">{{ number_format( $sum_price_ct,2) }}</td> 
+        </tr>  
     </table>      
 </div>
 
