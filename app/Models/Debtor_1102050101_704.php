@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Finance_debtor_1102050102_802 extends Model
+class Debtor_1102050101_704 extends Model
 {
     use HasFactory;
 
-    protected $table = 'finance_debtor_1102050102_802'; 
+    protected $table = 'debtor_1102050101_704'; 
     protected $primaryKey = 'an';
     protected $fillable = [
         'an',   
@@ -28,7 +28,6 @@ class Finance_debtor_1102050102_802 extends Model
         'adjrw',
         'income',
         'rcpt_money',
-        'kidney',
         'other',
         'debtor',
         'status', 

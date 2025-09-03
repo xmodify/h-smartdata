@@ -20,24 +20,24 @@ use App\Models\Debtor_1102050101_307;
 use App\Models\Debtor_1102050101_308;
 use App\Models\Debtor_1102050101_309;
 use App\Models\Debtor_1102050101_310;
-use App\Models\Finance_debtor_1102050101_401;
-use App\Models\Finance_debtor_1102050101_402;
-use App\Models\Finance_debtor_1102050101_501;
-use App\Models\Finance_debtor_1102050101_502;
-use App\Models\Finance_debtor_1102050101_703;
-use App\Models\Finance_debtor_1102050101_704;
-use App\Models\Finance_debtor_1102050102_106;
-use App\Models\Finance_debtor_1102050102_106_tracking;
-use App\Models\Finance_debtor_1102050102_107;
-use App\Models\Finance_debtor_1102050102_107_tracking;
-use App\Models\Finance_debtor_1102050102_108;
-use App\Models\Finance_debtor_1102050102_109;
-use App\Models\Finance_debtor_1102050102_602;
-use App\Models\Finance_debtor_1102050102_603;
-use App\Models\Finance_debtor_1102050102_801;
-use App\Models\Finance_debtor_1102050102_802;
-use App\Models\Finance_debtor_1102050102_803;
-use App\Models\Finance_debtor_1102050102_804;
+use App\Models\Debtor_1102050101_401;
+use App\Models\Debtor_1102050101_402;
+use App\Models\Debtor_1102050101_501;
+use App\Models\Debtor_1102050101_502;
+use App\Models\Debtor_1102050101_703;
+use App\Models\Debtor_1102050101_704;
+use App\Models\Debtor_1102050102_106;
+use App\Models\Debtor_1102050102_106_tracking;
+use App\Models\Debtor_1102050102_107;
+use App\Models\Debtor_1102050102_107_tracking;
+use App\Models\Debtor_1102050102_108;
+use App\Models\Debtor_1102050102_109;
+use App\Models\Debtor_1102050102_602;
+use App\Models\Debtor_1102050102_603;
+use App\Models\Debtor_1102050102_801;
+use App\Models\Debtor_1102050102_802;
+use App\Models\Debtor_1102050102_803;
+use App\Models\Debtor_1102050102_804;
 use PDF;
 use Session;
 
@@ -142,40 +142,40 @@ public function _summary(Request $request )
     WHERE d.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
   $_1102050101_401 = DB::select('
     SELECT COUNT(DISTINCT d.vn) AS anvn,SUM(d.debtor) AS debtor,SUM(IFNULL(s.receive_total,0)+IFNULL(s1.amount,0)) AS receive
-    FROM finance_debtor_1102050101_401 d 
+    FROM debtor_1102050101_401 d 
     LEFT JOIN finance_stm_ofc s ON s.hn=d.hn AND DATE(s.datetimeadm) = d.vstdate	AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5)
     LEFT JOIN finance_stm_ofc_kidney s1 ON s1.hn=d.hn AND DATE(s1.vstdate) = d.vstdate AND d.kidney IS NOT NULL 
     WHERE d.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
   $_1102050101_501 = DB::select('
     SELECT COUNT(DISTINCT vn) AS anvn,SUM(debtor) AS debtor,IFNULL(SUM(receive),0) AS receive
-    FROM finance_debtor_1102050101_501 
+    FROM debtor_1102050101_501 
     WHERE vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
   $_1102050101_703 = DB::select('
     SELECT COUNT(DISTINCT vn) AS anvn,SUM(debtor) AS debtor,IFNULL(SUM(receive),0) AS receive
-    FROM finance_debtor_1102050101_703 
+    FROM debtor_1102050101_703 
     WHERE vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
   $_1102050102_106 = DB::select('
     SELECT COUNT(DISTINCT d.vn) AS anvn,SUM(debtor) AS debtor,SUM(IFNULL(d.receive,r.bill_amount)) AS receive
-    FROM finance_debtor_1102050102_106 d 
+    FROM debtor_1102050102_106 d 
     LEFT JOIN hosxe.rcpt_print r ON r.vn = d.vn AND r.`status` ="OK" AND r.department="OPD" 
     WHERE d.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
   $_1102050102_108 = DB::select('
     SELECT COUNT(DISTINCT vn) AS anvn,SUM(debtor) AS debtor,IFNULL(SUM(receive),0) AS receive
-    FROM finance_debtor_1102050102_108 
+    FROM debtor_1102050102_108 
     WHERE vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
   $_1102050102_602 = DB::select('
     SELECT COUNT(DISTINCT vn) AS anvn,SUM(debtor) AS debtor,IFNULL(SUM(receive),0) AS receive
-    FROM finance_debtor_1102050102_602 
+    FROM debtor_1102050102_602 
     WHERE vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
   $_1102050102_801 = DB::select('
     SELECT COUNT(DISTINCT d.vn) AS anvn,SUM(d.debtor) AS debtor,SUM(IFNULL(s.compensate_treatment,0)+IFNULL(s1.compensate_kidney,0)) AS receive
-    FROM finance_debtor_1102050102_801 d   
+    FROM debtor_1102050102_801 d   
 		LEFT JOIN finance_stm_lgo s ON s.hn=d.hn AND DATE(s.datetimeadm) = d.vstdate AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5)
     LEFT JOIN finance_stm_lgo_kidney s1 ON s1.hn=d.hn AND DATE(s1.datetimeadm) = d.vstdate AND d.kidney IS NOT NULL
     WHERE d.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
   $_1102050102_803 = DB::select('
     SELECT COUNT(DISTINCT d.vn) AS anvn,SUM(d.debtor) AS debtor,SUM(IFNULL(s.receive_total,0)+IFNULL(s1.amount,0)) AS receive
-    FROM finance_debtor_1102050102_803 d   
+    FROM debtor_1102050102_803 d   
 		LEFT JOIN finance_stm_ofc s ON s.hn=d.hn AND DATE(s.datetimeadm) = d.vstdate AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5)
     LEFT JOIN finance_stm_ofc_kidney s1 ON s1.hn=d.hn AND DATE(s1.vstdate) = d.vstdate AND d.kidney IS NOT NULL
     WHERE d.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
@@ -210,42 +210,42 @@ public function _summary(Request $request )
   $_1102050101_402 = DB::select('
     SELECT COUNT(DISTINCT an) AS anvn,SUM(debtor) AS debtor,SUM(receive_total) AS receive
 		FROM (SELECT d.*,s.receive_total+IFNULL(SUM(s1.amount),0) AS receive_total 
-    FROM finance_debtor_1102050101_402 d    
+    FROM debtor_1102050101_402 d    
     LEFT JOIN htp_report.finance_stm_ofc s ON s.an=d.an
     LEFT JOIN htp_report.finance_stm_ofc_kidney s1 ON s1.hn=d.hn AND s1.vstdate BETWEEN d.regdate AND d.dchdate
     WHERE d.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" GROUP BY d.an) AS a ');
   $_1102050101_502 = DB::select('
     SELECT COUNT(DISTINCT an) AS anvn, SUM(debtor) AS debtor,SUM(receive) AS receive
-    FROM finance_debtor_1102050101_502    
+    FROM debtor_1102050101_502    
     WHERE dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
   $_1102050101_704 = DB::select('
     SELECT COUNT(DISTINCT an) AS anvn, SUM(debtor) AS debtor,SUM(receive) AS receive
-    FROM finance_debtor_1102050101_704    
+    FROM debtor_1102050101_704    
     WHERE dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
   $_1102050102_107 = DB::select('
     SELECT COUNT(DISTINCT d.vn) AS anvn,SUM(debtor) AS debtor,SUM(IFNULL(d.receive,r.bill_amount)) AS receive
-    FROM finance_debtor_1102050102_107 d
+    FROM debtor_1102050102_107 d
     LEFT JOIN hosxe.rcpt_print r ON r.vn = d.vn AND r.`status` ="OK" AND r.department="OPD"
     WHERE d.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
   $_1102050102_109 = DB::select('
     SELECT COUNT(DISTINCT an) AS anvn,SUM(debtor) AS debtor,SUM(receive) AS receive
-    FROM finance_debtor_1102050102_109   
+    FROM debtor_1102050102_109   
     WHERE dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
   $_1102050102_603 = DB::select('
     SELECT COUNT(DISTINCT an) AS anvn, SUM(debtor) AS debtor,SUM(receive) AS receive
-    FROM finance_debtor_1102050102_603  
+    FROM debtor_1102050102_603  
     WHERE dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
   $_1102050102_802 = DB::select('
     SELECT COUNT(DISTINCT an) AS anvn,SUM(debtor) AS debtor,SUM(receive_total) AS receive
 		FROM (SELECT d.*,s.compensate_treatment+IFNULL(SUM(s1.compensate_kidney),0) AS receive_total 
-    FROM finance_debtor_1102050102_802 d    
+    FROM debtor_1102050102_802 d    
     LEFT JOIN htp_report.finance_stm_lgo s ON s.an=d.an
     LEFT JOIN htp_report.finance_stm_lgo_kidney s1 ON s1.cid=d.cid AND DATE(s1.datetimeadm)  BETWEEN d.regdate AND d.dchdate
     WHERE d.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" GROUP BY d.an ) AS a');
   $_1102050102_804 = DB::select('
     SELECT COUNT(DISTINCT an) AS anvn, SUM(debtor) AS debtor,SUM(receive_total) AS receive
 		FROM (SELECT d.*,s.receive_total
-    FROM finance_debtor_1102050102_804 d    
+    FROM debtor_1102050102_804 d    
     LEFT JOIN htp_report.finance_stm_ofc s ON s.an=d.an  
     WHERE d.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" GROUP BY d.an)	AS a ');
 
@@ -1379,7 +1379,7 @@ public function _1102050101_216_confirm_cr(Request $request )
     WHERE p1.hipdata_code = "UCS" AND vp.hospmain IN ("10703","10985","10986","10987","10988","10989","10990")
     AND (o.an IS NULL OR o.an ="") 		
 		AND o1.vn IS NOT NULL AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_216)
+		AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_216)
     AND o.vn IN ('.$checkbox.')
     GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue');     
 
@@ -1438,7 +1438,7 @@ public function _1102050101_216_confirm_anywhere(Request $request )
     WHERE p1.hipdata_code = "UCS" AND vp.hospmain NOT IN ("10703","10985","10986","10987","10988","10989","10990")
     AND (o.an IS NULL OR o.an ="") 		
 		AND (o1.vn IS NULL OR o1.vn = "") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_216)
+		AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_216)
     AND o.vn IN ('.$checkbox.')
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue) AS a WHERE debtor <> "0" ');     
 
@@ -1633,7 +1633,7 @@ public function _1102050101_303(Request $request )
               ->orderBy('vstdate')->get();  
 
   // $debtor = DB::select('
-  //   SELECT * FROM finance_debtor_1102050101_303   
+  //   SELECT * FROM debtor_1102050101_303   
   //   WHERE vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
 
   $debtor_search = DB::connection('hosxp')->select('
@@ -1795,7 +1795,7 @@ public function _1102050101_307(Request $request )
               ->orderBy('vstdate')->get();  
 
   // $debtor = DB::select('
-  //   SELECT * FROM finance_debtor_1102050101_307   
+  //   SELECT * FROM debtor_1102050101_307   
   //   WHERE (vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
   //   OR dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'")');
 
@@ -1950,7 +1950,7 @@ public function _1102050101_307_confirm_ip(Request $request )
       IN (SELECT icode FROM htp_report.finance_lookup_icode WHERE debtor_code <> "1102050101.216") 		
     WHERE i.confirm_discharge = "Y" AND p1.pttype IN ("25","31","D1","S6")
     AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND i.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_307) 
+    AND i.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_307) 
     AND i.vn IN ('.$checkbox.')
     GROUP BY i.an ORDER BY i.ward,i.dchdate) AS a WHERE debtor <> 0 ');     
 
@@ -1999,7 +1999,7 @@ public function _1102050101_307_delete(Request $request )
 
 public function _1102050101_307_update(Request $request, $vn)
 {
-  $item = Finance_debtor_1102050101_307::find($vn);
+  $item = Debtor_1102050101_307::find($vn);
   $item->charge_date = $request->input('charge_date');
   $item->charge_no = $request->input('charge_no');
   $item->charge = $request->input('charge');
@@ -2166,7 +2166,7 @@ public function _1102050101_401(Request $request )
     d.rcpt_money,d.ofc,d.kidney,d.ppfs,d.other,d.debtor,IF(IFNULL(s1.rid,s.repno) <>"","กระทบยอดแล้ว",d.status) AS status,d.charge_date,
     d.charge_no,d.charge,d.receive_date,d.receive_no,IFNULL(d.receive,0)+IFNULL(s.receive_total,0)+IFNULL(s1.amount,0) AS receive,     
 		IFNULL(s2.receive_pp,0) AS receive_pp,IFNULL(s1.rid,s.repno) AS repno,d.repno AS repno_chk,d.debtor_lock
-    FROM finance_debtor_1102050101_401 d   
+    FROM debtor_1102050101_401 d   
 		LEFT JOIN finance_stm_ofc s ON s.hn=d.hn AND DATE(s.datetimeadm) = d.vstdate
 			AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5) AND d.kidney=""   
     LEFT JOIN finance_stm_ofc_kidney s1 ON s1.hn=d.hn AND DATE(s1.vstdate) = d.vstdate AND d.kidney<>""
@@ -2196,7 +2196,7 @@ public function _1102050101_401(Request $request )
     WHERE (p1.pttype LIKE "O%" OR p1.pttype ="H1") AND (o.an IS NULL OR o.an ="") 
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
 		AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
-		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_401)
+		AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_401)
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue) AS a WHERE a.debtor <> 0');  
 
   $debtor_search_pp = DB::connection('hosxp')->select('
@@ -2220,7 +2220,7 @@ public function _1102050101_401(Request $request )
     WHERE (p1.pttype LIKE "O%" OR p1.pttype ="H1") AND (o.an IS NULL OR o.an ="") 
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
 		AND v.pdx IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
-		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_401)
+		AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_401)
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue) AS a WHERE a.debtor <> 0');  
 
     $request->session()->put('start_date',$start_date);
@@ -2247,7 +2247,7 @@ public function _1102050101_401_daily_pdf(Request $request)
   $debtor = DB::select('
     SELECT d.vstdate,COUNT(DISTINCT d.vn) AS anvn,SUM(d.debtor) AS debtor,
 		SUM(IFNULL(s.receive_total,0)+IFNULL(s1.amount,0)) AS receive
-    FROM finance_debtor_1102050101_401 d   
+    FROM debtor_1102050101_401 d   
 		LEFT JOIN finance_stm_ofc s ON s.hn=d.hn AND DATE(s.datetimeadm) = d.vstdate
 			AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5) AND d.kidney ="" 
     LEFT JOIN finance_stm_ofc_kidney s1 ON s1.hn=d.hn AND DATE(s1.vstdate) = d.vstdate AND d.kidney <>"" 
@@ -2292,12 +2292,12 @@ public function _1102050101_401_confirm(Request $request )
     WHERE (p1.pttype LIKE "O%" OR p1.pttype ="H1") AND (o.an IS NULL OR o.an ="") 
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
 		AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
-		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_401)
+		AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_401)
     AND o.vn IN ('.$checkbox.')
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue) AS a WHERE a.debtor <> 0');     
 
   foreach ($debtor as $row) {
-      Finance_debtor_1102050101_401::insert([
+      Debtor_1102050101_401::insert([
         'vn'              => $row->vn,
         'hn'              => $row->hn,
         'an'              => $row->an,
@@ -2374,12 +2374,12 @@ public function _1102050101_401_confirm_pp(Request $request )
     WHERE (p1.pttype LIKE "O%" OR p1.pttype ="H1") AND (o.an IS NULL OR o.an ="") 
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
 		AND v.pdx IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
-		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_401)
+		AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_401)
     AND o.vn IN ('.$checkbox.')
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue) AS a WHERE a.debtor <> 0');     
 
   foreach ($debtor as $row) {
-      Finance_debtor_1102050101_401::insert([
+      Debtor_1102050101_401::insert([
         'vn'              => $row->vn,
         'hn'              => $row->hn,
         'an'              => $row->an,
@@ -2431,7 +2431,7 @@ public function _1102050101_401_delete(Request $request )
   $checkbox_d = $request->input('checkbox_d');
 
     if (!empty($checkbox_d)) {
-      Finance_debtor_1102050101_401::whereIn('vn', $checkbox_d)->whereNull('debtor_lock')->delete();
+      Debtor_1102050101_401::whereIn('vn', $checkbox_d)->whereNull('debtor_lock')->delete();
     }
 
   return redirect()->route('_1102050101_401');
@@ -2439,7 +2439,7 @@ public function _1102050101_401_delete(Request $request )
 
 public function _1102050101_401_update(Request $request, $vn)
 {
-  $item = Finance_debtor_1102050101_401::find($vn);
+  $item = Debtor_1102050101_401::find($vn);
   $item->charge_date = $request->input('charge_date');
   $item->charge_no = $request->input('charge_no');
   $item->charge = $request->input('charge');
@@ -2464,7 +2464,7 @@ public function _1102050101_501(Request $request )
   {$end_date = Session::get('end_date');}else{$end_date =$request->end_date;}
 
   $debtor = DB::select('
-    SELECT * FROM finance_debtor_1102050101_501   
+    SELECT * FROM debtor_1102050101_501   
     WHERE vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
 
   $debtor_search = DB::connection('hosxp')->select('
@@ -2481,7 +2481,7 @@ public function _1102050101_501(Request $request )
 		LEFT JOIN s_drugitems s ON s.icode = o1.icode			
     WHERE p1.pttype IN ("11","12","N1","N2","N3","N4","N5")	
 		AND (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_501)
+		AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_501)
     GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue) AS a WHERE debtor <> "0" '); 
 
     $request->session()->put('start_date',$start_date);
@@ -2508,7 +2508,7 @@ public function _1102050101_501_daily_pdf(Request $request)
   $debtor = DB::select('
     SELECT vstdate,COUNT(DISTINCT vn) AS anvn,
     SUM(debtor) AS debtor,SUM(receive) AS receive
-    FROM finance_debtor_1102050101_501 
+    FROM debtor_1102050101_501 
     WHERE vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     GROUP BY vstdate ORDER BY vstdate');
 
@@ -2542,12 +2542,12 @@ public function _1102050101_501_confirm(Request $request )
 		LEFT JOIN s_drugitems s ON s.icode = o1.icode			
     WHERE  p1.pttype IN ("11","12","N1","N2","N3","N4","N5")	
 		AND (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"  
-		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_501)
+		AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_501)
     AND o.vn IN ('.$checkbox.')
     GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue) AS a WHERE debtor <> "0" ');     
 
   foreach ($debtor as $row) {
-      Finance_debtor_1102050101_501::insert([
+    Debtor_1102050101_501::insert([
         'vn'              => $row->vn,
         'hn'              => $row->hn,
         'an'              => $row->an,
@@ -2578,7 +2578,7 @@ public function _1102050101_501_delete(Request $request )
   $checkbox = $request->input('checkbox');
 
     if (!empty($checkbox)) {
-      Finance_debtor_1102050101_501::whereIn('vn', $checkbox)->whereNull('debtor_lock')->delete();
+      Debtor_1102050101_501::whereIn('vn', $checkbox)->whereNull('debtor_lock')->delete();
     }
 
   return redirect()->route('_1102050101_501');
@@ -2586,7 +2586,7 @@ public function _1102050101_501_delete(Request $request )
 
 public function _1102050101_501_update(Request $request, $vn)
 {
-  $item = Finance_debtor_1102050101_501::findOrFail($vn);
+  $item = Debtor_1102050101_501::findOrFail($vn);
   $item->update([
     'charge_date' => $request->input('charge_date'),
     'charge_no' => $request->input('charge_no'),
@@ -2611,7 +2611,7 @@ public function _1102050101_703(Request $request )
   {$end_date = Session::get('end_date');}else{$end_date =$request->end_date;}
 
   $debtor = DB::select('
-    SELECT * FROM finance_debtor_1102050101_703   
+    SELECT * FROM debtor_1102050101_703   
     WHERE vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
 
   $debtor_search = DB::connection('hosxp')->select('
@@ -2629,7 +2629,7 @@ public function _1102050101_703(Request $request )
     WHERE p1.pttype IN ("ST")
 		AND (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
-		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_703)
+		AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_703)
     GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue) AS a WHERE debtor <> "0" '); 
 
     $request->session()->put('start_date',$start_date);
@@ -2656,7 +2656,7 @@ public function _1102050101_703_daily_pdf(Request $request)
   $debtor = DB::select('
     SELECT vstdate,COUNT(DISTINCT vn) AS anvn,
     SUM(debtor) AS debtor,SUM(receive) AS receive
-    FROM finance_debtor_1102050101_703 
+    FROM debtor_1102050101_703 
     WHERE vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     GROUP BY vstdate ORDER BY vstdate');
 
@@ -2691,12 +2691,12 @@ public function _1102050101_703_confirm(Request $request )
     WHERE  p1.pttype IN ("ST")	
 		AND (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
-		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_703)
+		AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_703)
     AND o.vn IN ('.$checkbox.')
     GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue) AS a WHERE debtor <> "0" ');     
 
   foreach ($debtor as $row) {
-      Finance_debtor_1102050101_703::insert([
+      Debtor_1102050101_703::insert([
         'vn'              => $row->vn,
         'hn'              => $row->hn,
         'an'              => $row->an,
@@ -2726,7 +2726,7 @@ public function _1102050101_703_delete(Request $request )
   $checkbox = $request->input('checkbox');
 
     if (!empty($checkbox)) {
-      Finance_debtor_1102050101_703::whereIn('vn', $checkbox)->whereNull('debtor_lock')->delete();
+      Debtor_1102050101_703::whereIn('vn', $checkbox)->whereNull('debtor_lock')->delete();
     }
 
   return redirect()->route('_1102050101_703');
@@ -2747,9 +2747,9 @@ public function _1102050102_106(Request $request )
     d.debtor,d.debtor_lock,IF(r.bill_amount <>"","กระทบยอดแล้ว",d.status) AS status,d.charge_date,d.charge_no,d.charge,
     d.receive_date,d.receive_no,IFNULL(d.receive,r.bill_amount) AS receive,IFNULL(d.repno,r.rcpno) AS repno,r.bill_amount,
     IF(t.visit IS NULL,0,t.visit) AS visit
-    FROM finance_debtor_1102050102_106 d
+    FROM debtor_1102050102_106 d
     LEFT JOIN hosxe.rcpt_print r ON r.vn = d.vn AND r.`status` ="OK" AND r.department="OPD" AND r.bill_date <> d.vstdate
-    LEFT JOIN (SELECT vn,COUNT(vn) AS visit FROM finance_debtor_1102050102_106_tracking GROUP BY vn) t ON t.vn=d.vn
+    LEFT JOIN (SELECT vn,COUNT(vn) AS visit FROM debtor_1102050102_106_tracking GROUP BY vn) t ON t.vn=d.vn
     WHERE d.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
 
   $debtor_search = DB::connection('hosxp')->select('
@@ -2769,7 +2769,7 @@ public function _1102050102_106(Request $request )
     LEFT JOIN hospcode h ON h.hospcode=vp.hospmain
     WHERE (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND v.paid_money <>"0" AND v.rcpt_money <> v.paid_money 
-    AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050102_106)    
+    AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_106)    
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue '); 
 
   $debtor_search_iclaim = DB::connection('hosxp')->select('
@@ -2785,7 +2785,7 @@ public function _1102050102_106(Request $request )
       IN (SELECT icode FROM htp_report.finance_lookup_icode WHERE debtor_code = "1102050101.109" ) 
 		LEFT JOIN s_drugitems s ON s.icode = o1.icode			
     WHERE (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-		AND vp.pttype = "26" AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050102_106)
+		AND vp.pttype = "26" AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_106)
     GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue) AS a WHERE debtor <> "0"'); 
 
     $request->session()->put('start_date',$start_date);
@@ -2812,7 +2812,7 @@ public function _1102050102_106_daily_pdf(Request $request)
   $debtor = DB::select('
     SELECT d.vstdate,COUNT(DISTINCT d.vn) AS anvn,
     SUM(debtor) AS debtor,SUM(IFNULL(d.receive,r.bill_amount)) AS receive
-    FROM finance_debtor_1102050102_106 d
+    FROM debtor_1102050102_106 d
     LEFT JOIN hosxe.rcpt_print r ON r.vn = d.vn AND r.`status` ="OK" AND r.department="OPD"
     WHERE vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     GROUP BY vstdate ORDER BY vstdate');
@@ -2850,7 +2850,7 @@ public function _1102050102_106_confirm(Request $request )
     LEFT JOIN hospcode h ON h.hospcode=vp.hospmain
     WHERE (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND v.paid_money <>"0" AND v.rcpt_money <> v.paid_money AND o.vn IN ('.$checkbox.')
-    AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050102_106)    
+    AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_106)    
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue ');     
 
   foreach ($debtor as $row) {
@@ -2907,7 +2907,7 @@ public function _1102050102_106_confirm_iclaim(Request $request )
     GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue) AS a WHERE debtor <> "0"');     
 
   foreach ($debtor as $row) {
-      Finance_debtor_1102050102_106::insert([
+      Debtor_1102050102_106::insert([
         'vn'              => $row->vn,
         'hn'              => $row->hn,
         'an'              => $row->an,
@@ -2939,7 +2939,7 @@ public function _1102050102_106_delete(Request $request )
   $checkbox = $request->input('checkbox');
 
     if (!empty($checkbox)) {
-      Finance_debtor_1102050102_106::whereIn('vn', $checkbox)->whereNull('debtor_lock')->delete();
+      Debtor_1102050102_106::whereIn('vn', $checkbox)->whereNull('debtor_lock')->delete();
     }
 
   return redirect()->route('_1102050102_106');
@@ -2947,7 +2947,7 @@ public function _1102050102_106_delete(Request $request )
 
 public function _1102050102_106_update(Request $request, $vn)
 {
-  $item = Finance_debtor_1102050102_106::find($vn);
+  $item = Debtor_1102050102_106::find($vn);
   $item->charge_date = $request->input('charge_date');
   $item->charge_no = $request->input('charge_no');
   $item->charge = $request->input('charge');
@@ -2964,17 +2964,17 @@ public function _1102050102_106_update(Request $request, $vn)
 public function _1102050102_106_tracking(Request $request, $vn )
 {
   $debtor = DB::select('
-    SELECT * FROM finance_debtor_1102050102_106 WHERE vn = "'.$vn.'"');
+    SELECT * FROM debtor_1102050102_106 WHERE vn = "'.$vn.'"');
 
   $tracking = DB::select('
-    SELECT * FROM finance_debtor_1102050102_106_tracking WHERE vn = "'.$vn.'"');
+    SELECT * FROM debtor_1102050102_106_tracking WHERE vn = "'.$vn.'"');
 
   return view('finance_debtor.1102050102_106_tracking',compact('debtor','tracking'));
 }
 
 public function _1102050102_106_tracking_insert(Request $request)
 {
-  $item = new Finance_debtor_1102050102_106_tracking;
+  $item = new Debtor_1102050102_106_tracking;
   $item->vn = $request->input('vn');
   $item->tracking_date = $request->input('tracking_date');
   $item->tracking_type = $request->input('tracking_type');
@@ -2988,7 +2988,7 @@ public function _1102050102_106_tracking_insert(Request $request)
 
 public function _1102050102_106_tracking_update(Request $request, $tracking_id)
 {
-  Finance_debtor_1102050102_106_tracking::where('tracking_id', $tracking_id)
+  Debtor_1102050102_106_tracking::where('tracking_id', $tracking_id)
       ->update([
       'tracking_date' => $request->input('tracking_date'),
       'tracking_type' => $request->input('tracking_type'),
@@ -3011,7 +3011,7 @@ public function _1102050102_108(Request $request )
   {$end_date = Session::get('end_date');}else{$end_date =$request->end_date;}
 
   $debtor = DB::select('
-    SELECT * FROM finance_debtor_1102050102_108  
+    SELECT * FROM debtor_1102050102_108  
     WHERE vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
 
   $debtor_search = DB::connection('hosxp')->select('
@@ -3029,7 +3029,7 @@ public function _1102050102_108(Request $request )
     WHERE p1.hipdata_code IN ("A2","BFC","GOF","PVT","WVO") AND v.paid_money = "0"
 		AND (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
-		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050102_108)
+		AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_108)
     GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue) AS a WHERE debtor <> "0" '); 
 
     $request->session()->put('start_date',$start_date);
@@ -3056,7 +3056,7 @@ public function _1102050102_108_daily_pdf(Request $request)
   $debtor = DB::select('
     SELECT vstdate,COUNT(DISTINCT vn) AS anvn,
     SUM(debtor) AS debtor,SUM(receive) AS receive
-    FROM finance_debtor_1102050102_108
+    FROM debtor_1102050102_108
     WHERE vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     GROUP BY vstdate ORDER BY vstdate');
 
@@ -3091,12 +3091,12 @@ public function _1102050102_108_confirm(Request $request )
     WHERE p1.hipdata_code IN ("A2","BFC","GOF","PVT","WVO") AND v.paid_money = "0"
 		AND (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
-		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050102_108)
+		AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_108)
     AND o.vn IN ('.$checkbox.')
     GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue) AS a WHERE debtor <> "0" ');     
 
   foreach ($debtor as $row) {
-      Finance_debtor_1102050102_108::insert([
+      Debtor_1102050102_108::insert([
         'vn'              => $row->vn,
         'hn'              => $row->hn,
         'an'              => $row->an,
@@ -3127,7 +3127,7 @@ public function _1102050102_108_delete(Request $request )
   $checkbox = $request->input('checkbox');
 
     if (!empty($checkbox)) {
-      Finance_debtor_1102050102_108::whereIn('vn', $checkbox)->whereNull('debtor_lock')->delete();
+      Debtor_1102050102_108::whereIn('vn', $checkbox)->whereNull('debtor_lock')->delete();
     }
 
   return redirect()->route('_1102050102_108');
@@ -3135,7 +3135,7 @@ public function _1102050102_108_delete(Request $request )
 
 public function _1102050102_108_update(Request $request, $vn)
 {
-  $item = Finance_debtor_1102050102_108::findOrFail($vn);
+  $item = Debtor_1102050102_108::findOrFail($vn);
   $item->update([
     'charge_date' => $request->input('charge_date'),
     'charge_no' => $request->input('charge_no'),
@@ -3163,7 +3163,7 @@ public function _1102050102_602(Request $request )
   if($search =='' || $search == null )
   {$search = Session::get('search');}else{$search =$request->search;}
 
-  $debtor =  Finance_debtor_1102050102_602::whereBetween('vstdate', [$start_date,$end_date])
+  $debtor =  Debtor_1102050102_602::whereBetween('vstdate', [$start_date,$end_date])
               ->where(function ($query) use ($search){
                 $query->where('ptname','like','%'.$search.'%');
                 $query->orwhere('hn','like','%'.$search.'%');
@@ -3171,7 +3171,7 @@ public function _1102050102_602(Request $request )
               ->orderBy('vstdate')->get();  
 
   // $debtor = DB::select('
-  // SELECT * FROM finance_debtor_1102050102_602  
+  // SELECT * FROM debtor_1102050102_602  
   // WHERE vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
 
   $debtor_search = DB::connection('hosxp')->select('
@@ -3189,7 +3189,7 @@ public function _1102050102_602(Request $request )
     WHERE p1.pttype = "29"
 		AND (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
-		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050102_602)
+		AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_602)
     GROUP BY o.vn ORDER BY o.hn ,o.vstdate,o.oqueue) AS a WHERE debtor <> "0" '); 
 
     $request->session()->put('start_date',$start_date);
@@ -3217,7 +3217,7 @@ public function _1102050102_602_daily_pdf(Request $request)
   $debtor = DB::select('
     SELECT vstdate,COUNT(DISTINCT vn) AS anvn,
     SUM(debtor) AS debtor,SUM(receive) AS receive
-    FROM finance_debtor_1102050102_602
+    FROM debtor_1102050102_602
     WHERE vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     GROUP BY vstdate ORDER BY vstdate');
 
@@ -3252,12 +3252,12 @@ public function _1102050102_602_confirm(Request $request )
     WHERE p1.pttype ="29"
 		AND (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
-		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050102_602)
+		AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_602)
     AND o.vn IN ('.$checkbox.')
     GROUP BY o.vn ORDER BY o.hn,o.vstdate,o.oqueue) AS a WHERE debtor <> "0" ');     
 
   foreach ($debtor as $row) {
-      Finance_debtor_1102050102_602::insert([
+      Debtor_1102050102_602::insert([
         'vn'              => $row->vn,
         'hn'              => $row->hn,
         'an'              => $row->an,
@@ -3288,7 +3288,7 @@ public function _1102050102_602_delete(Request $request )
   $checkbox = $request->input('checkbox');
 
     if (!empty($checkbox)) {
-      Finance_debtor_1102050102_602::whereIn('vn', $checkbox)->whereNull('debtor_lock')->delete();
+      Debtor_1102050102_602::whereIn('vn', $checkbox)->whereNull('debtor_lock')->delete();
     }
 
   return redirect()->route('_1102050102_602');
@@ -3296,7 +3296,7 @@ public function _1102050102_602_delete(Request $request )
 
 public function _1102050102_602_update(Request $request, $vn)
 {
-  $item = Finance_debtor_1102050102_602::find($vn);
+  $item = Debtor_1102050102_602::find($vn);
   $item->charge_date = $request->input('charge_date');
   $item->charge_no = $request->input('charge_no');
   $item->charge = $request->input('charge');
@@ -3326,7 +3326,7 @@ public function _1102050102_801(Request $request )
     SELECT d.vstdate,d.vsttime,d.vn,d.hn,d.cid,d.ptname,d.hipdata_code,d.pttype,d.pdx,d.hospmain,d.income,
     d.rcpt_money,d.lgo,d.kidney,d.pp,d.other,d.debtor,IFNULL(s.compensate_treatment,0)+IFNULL(s1.compensate_kidney,0) AS receive,   
 		IFNULL(s2.receive_pp,0) AS receive_pp,s.repno,s1.repno AS rid,d.debtor_lock
-    FROM finance_debtor_1102050102_801 d   
+    FROM debtor_1102050102_801 d   
 		LEFT JOIN finance_stm_lgo s ON s.hn=d.hn AND DATE(s.datetimeadm) = d.vstdate 
       AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5) 
     LEFT JOIN finance_stm_lgo_kidney s1 ON s1.hn=d.hn AND DATE(s1.datetimeadm) = d.vstdate AND d.kidney <>""
@@ -3356,7 +3356,7 @@ public function _1102050102_801(Request $request )
     WHERE p1.pttype LIKE "L%" AND (o.an IS NULL OR o.an ="") 
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
 		AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
-		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050102_801)
+		AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_801)
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue) AS a WHERE a.debtor <> 0');  
 
   $debtor_search_pp = DB::connection('hosxp')->select('
@@ -3381,7 +3381,7 @@ public function _1102050102_801(Request $request )
     WHERE p1.pttype LIKE "L%" AND (o.an IS NULL OR o.an ="") 
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
 		AND v.pdx IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
-		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050102_801)
+		AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_801)
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue) AS a WHERE a.debtor <> 0'); 
 
     $request->session()->put('start_date',$start_date);
@@ -3408,7 +3408,7 @@ public function _1102050102_801_daily_pdf(Request $request)
   $debtor = DB::select('
     SELECT d.vstdate,COUNT(DISTINCT d.vn) AS anvn,SUM(d.debtor) AS debtor,
 		SUM(IFNULL(s.compensate_treatment,0)+IFNULL(s1.compensate_kidney,0)) AS receive
-    FROM finance_debtor_1102050102_801 d   
+    FROM debtor_1102050102_801 d   
 		LEFT JOIN finance_stm_lgo s ON s.hn=d.hn AND DATE(s.datetimeadm) = d.vstdate AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5)
     LEFT JOIN finance_stm_lgo_kidney s1 ON s1.hn=d.hn AND DATE(s1.datetimeadm) = d.vstdate AND d.kidney IS NOT NULL
     WHERE d.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
@@ -3452,12 +3452,12 @@ public function _1102050102_801_confirm(Request $request )
     WHERE p1.pttype LIKE "L%" AND (o.an IS NULL OR o.an ="") 
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
 		AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
-		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050102_801)
+		AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_801)
     AND o.vn IN ('.$checkbox.')
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue) AS a WHERE a.debtor <> 0 ');     
 
   foreach ($debtor as $row) {
-      Finance_debtor_1102050102_801::insert([
+      Debtor_1102050102_801::insert([
         'vn'              => $row->vn,
         'hn'              => $row->hn,
         'an'              => $row->an,
@@ -3534,12 +3534,12 @@ public function _1102050102_801_confirm_pp(Request $request )
     WHERE p1.pttype LIKE "L%" AND (o.an IS NULL OR o.an ="") 
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
 		AND v.pdx IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
-		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050102_801)
+		AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_801)
     AND o.vn IN ('.$checkbox.')
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue) AS a WHERE a.debtor <> 0');     
 
   foreach ($debtor as $row) {
-      Finance_debtor_1102050102_801::insert([
+      Debtor_1102050102_801::insert([
         'vn'              => $row->vn,
         'hn'              => $row->hn,
         'an'              => $row->an,
@@ -3590,7 +3590,7 @@ public function _1102050102_801_delete(Request $request )
   $checkbox_d = $request->input('checkbox_d');
 
     if (!empty($checkbox_d)) {
-      Finance_debtor_1102050102_801::whereIn('vn', $checkbox_d)->whereNull('debtor_lock')->delete();
+      Debtor_1102050102_801::whereIn('vn', $checkbox_d)->whereNull('debtor_lock')->delete();
     }
 
   return redirect()->route('_1102050102_801');
@@ -3611,7 +3611,7 @@ public function _1102050102_803(Request $request )
     d.ofc,d.kidney,d.pp,d.other,d.debtor,IF(IFNULL(d.repno,IFNULL(s.repno,s1.rid)) <>"","กระทบยอดแล้ว",d.status) AS status,d.charge_date,
     d.charge_no,d.charge,d.receive_date,d.receive_no,IFNULL(d.receive,0)+IFNULL(s.receive_total,0)+IFNULL(s1.amount,0) AS receive,   
 		IFNULL(s2.receive_pp,0) AS receive_pp,s.repno,s1.rid,d.repno AS repno_chk,d.debtor_lock
-    FROM finance_debtor_1102050102_803 d   
+    FROM debtor_1102050102_803 d   
 		LEFT JOIN finance_stm_ofc s ON s.hn=d.hn AND DATE(s.datetimeadm) = d.vstdate
 			AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5) 
     LEFT JOIN finance_stm_ofc_kidney s1 ON s1.hn=d.hn AND DATE(s1.vstdate) = d.vstdate AND d.kidney IS NOT NULL
@@ -3640,7 +3640,7 @@ public function _1102050102_803(Request $request )
 		LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn	
     WHERE p1.hipdata_code = "BKK" AND (o.an IS NULL OR o.an ="") AND v.paid_money="0"
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050102_803)
+		AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_803)
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue) AS a WHERE a.debtor <> 0');  
 
   $debtor_search_bmt = DB::connection('hosxp')->select('
@@ -3664,7 +3664,7 @@ public function _1102050102_803(Request $request )
 		LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn	
     WHERE p1.hipdata_code = "BMT" AND (o.an IS NULL OR o.an ="") 
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"	
-		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050102_803)
+		AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_803)
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue) AS a WHERE a.debtor <> 0'); 
 
     $request->session()->put('start_date',$start_date);
@@ -3691,7 +3691,7 @@ public function _1102050102_803_daily_pdf(Request $request)
   $debtor = DB::select('
     SELECT d.vstdate,COUNT(DISTINCT d.vn) AS anvn,SUM(d.debtor) AS debtor,
 		SUM(IFNULL(s.receive_total,0)+IFNULL(s1.amount,0)) AS receive
-    FROM finance_debtor_1102050102_803 d   
+    FROM debtor_1102050102_803 d   
 		LEFT JOIN finance_stm_ofc s ON s.hn=d.hn AND DATE(s.datetimeadm) = d.vstdate
 			AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5)
     LEFT JOIN finance_stm_ofc_kidney s1 ON s1.hn=d.hn AND DATE(s1.vstdate) = d.vstdate AND d.kidney IS NOT NULL
@@ -3735,12 +3735,12 @@ public function _1102050102_803_confirm(Request $request )
 		LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn	
     WHERE p1.hipdata_code = "BKK" AND (o.an IS NULL OR o.an ="") AND v.paid_money="0"
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050102_803)
+		AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_803)
     AND o.vn IN ('.$checkbox.')
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue) AS a WHERE a.debtor <> 0 ');     
 
   foreach ($debtor as $row) {
-      Finance_debtor_1102050102_803::insert([
+      Debtor_1102050102_803::insert([
         'vn'              => $row->vn,
         'hn'              => $row->hn,
         'an'              => $row->an,
@@ -3816,12 +3816,12 @@ public function _1102050102_803_confirm_bmt(Request $request )
 		LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn	
     WHERE p1.hipdata_code = "BMT" AND (o.an IS NULL OR o.an ="") 
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-		AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050102_803)
+		AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_803)
     AND o.vn IN ('.$checkbox.')
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue) AS a WHERE a.debtor <> 0');     
 
   foreach ($debtor as $row) {
-      Finance_debtor_1102050102_803::insert([
+      Debtor_1102050102_803::insert([
         'vn'              => $row->vn,
         'hn'              => $row->hn,
         'an'              => $row->an,
@@ -3872,7 +3872,7 @@ public function _1102050102_803_delete(Request $request )
   $checkbox_d = $request->input('checkbox_d');
 
     if (!empty($checkbox_d)) {
-      Finance_debtor_1102050102_803::whereIn('vn', $checkbox_d)->whereNull('debtor_lock')->delete();
+      Debtor_1102050102_803::whereIn('vn', $checkbox_d)->whereNull('debtor_lock')->delete();
     }
 
   return redirect()->route('_1102050102_803');
@@ -3880,7 +3880,7 @@ public function _1102050102_803_delete(Request $request )
 
 public function _1102050102_803_update(Request $request, $vn)
 {
-  $item = Finance_debtor_1102050102_803::find($vn);
+  $item = Debtor_1102050102_803::find($vn);
   $item->charge_date = $request->input('charge_date');
   $item->charge_no = $request->input('charge_no');
   $item->charge = $request->input('charge');
@@ -4833,7 +4833,7 @@ public function _1102050101_402(Request $request )
   $debtor = DB::select('
     SELECT d.*,s.receive_total+IFNULL(SUM(s1.amount),0) AS receive_total ,
     SUM(s1.amount) AS receive_kidney, s.receive_total AS receive_eclaim,s.repno
-    FROM finance_debtor_1102050101_402 d    
+    FROM debtor_1102050101_402 d    
     LEFT JOIN htp_report.finance_stm_ofc s ON s.an=d.an
     LEFT JOIN htp_report.finance_stm_ofc_kidney s1 ON s1.hn=d.hn AND s1.vstdate BETWEEN d.regdate AND d.dchdate
     WHERE d.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" GROUP BY d.an');
@@ -4854,7 +4854,7 @@ public function _1102050101_402(Request $request )
 			IN (SELECT icode FROM htp_report.finance_lookup_icode WHERE (debtor_code = "1102050101.109"))		
     WHERE i.confirm_discharge = "Y" AND p1.pttype LIKE "O%"
     AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND i.an NOT IN (SELECT an FROM htp_report.finance_debtor_1102050101_402) 
+    AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_402) 
     GROUP BY i.an ORDER BY i.ward,i.dchdate) AS a WHERE debtor <> "0"'); 
 
     $request->session()->put('start_date',$start_date);
@@ -4882,7 +4882,7 @@ public function _1102050101_402_daily_pdf(Request $request)
     SELECT dchdate AS vstdate,COUNT(DISTINCT an) AS anvn,
     SUM(debtor) AS debtor,SUM(receive_total) AS receive_total
 		FROM (SELECT d.*,s.receive_total+IFNULL(SUM(s1.amount),0) AS receive_total 
-    FROM finance_debtor_1102050101_402 d    
+    FROM debtor_1102050101_402 d    
     LEFT JOIN htp_report.finance_stm_ofc s ON s.an=d.an
     LEFT JOIN htp_report.finance_stm_ofc_kidney s1 ON s1.hn=d.hn AND s1.vstdate BETWEEN d.regdate AND d.dchdate
     WHERE d.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" GROUP BY d.an) AS a 
@@ -4920,12 +4920,12 @@ public function _1102050101_402_confirm(Request $request )
 			IN (SELECT icode FROM htp_report.finance_lookup_icode WHERE (debtor_code = "1102050101.109"))		
     WHERE i.confirm_discharge = "Y" AND p1.pttype LIKE "O%"
     AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND i.an NOT IN (SELECT an FROM htp_report.finance_debtor_1102050101_402) 
+    AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_402) 
     AND i.an in ('.$checkbox.')
     GROUP BY i.an ORDER BY i.ward,i.dchdate) AS a WHERE debtor <> "0"');     
 
   foreach ($debtor as $row) {
-      Finance_debtor_1102050101_402::insert([
+      Debtor_1102050101_402::insert([
         'an'              => $row->an,
         'vn'              => $row->vn,
         'hn'              => $row->hn,
@@ -4959,7 +4959,7 @@ public function _1102050101_402_delete(Request $request )
   $checkbox = $request->input('checkbox');
 
     if (!empty($checkbox)) {
-      Finance_debtor_1102050101_402::whereIn('an', $checkbox)->whereNull('debtor_lock')->delete();
+      Debtor_1102050101_402::whereIn('an', $checkbox)->whereNull('debtor_lock')->delete();
     }
 
   return redirect()->route('_1102050101_402');
@@ -4977,7 +4977,7 @@ public function _1102050101_502(Request $request )
 
   $debtor = DB::select('
     SELECT *
-    FROM finance_debtor_1102050101_502     
+    FROM debtor_1102050101_502     
     WHERE dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
 
   $debtor_search = DB::connection('hosxp')->select('
@@ -4995,7 +4995,7 @@ public function _1102050101_502(Request $request )
       IN (SELECT icode FROM htp_report.finance_lookup_icode WHERE debtor_code <> "1102050101.216") 		
     WHERE i.confirm_discharge = "Y" AND p1.pttype IN ("11","N1","N2","N3","N4","N5")	
     AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND i.an NOT IN (SELECT an FROM htp_report.finance_debtor_1102050101_502) 
+    AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_502) 
     GROUP BY i.an ORDER BY i.ward,i.dchdate'); 
 
     $request->session()->put('start_date',$start_date);
@@ -5022,7 +5022,7 @@ public function _1102050101_502_daily_pdf(Request $request)
   $debtor = DB::select('
     SELECT dchdate AS vstdate,COUNT(DISTINCT an) AS anvn,
     SUM(debtor) AS debtor,SUM(receive) AS receive_total
-    FROM finance_debtor_1102050101_502    
+    FROM debtor_1102050101_502    
     WHERE dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" 
     GROUP BY dchdate ORDER BY dchdate');
 
@@ -5058,11 +5058,11 @@ public function _1102050101_502_confirm(Request $request )
     WHERE i.confirm_discharge = "Y" AND p1.pttype IN ("11","N1","N2","N3","N4","N5")	
     AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND i.an in ('.$checkbox.')
-    AND i.an NOT IN (SELECT an FROM htp_report.finance_debtor_1102050101_502) 
+    AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_502) 
     GROUP BY i.an ORDER BY i.ward,i.dchdate');     
 
   foreach ($debtor as $row) {
-      Finance_debtor_1102050101_502::insert([
+      Debtor_1102050101_502::insert([
         'an'              => $row->an,
         'vn'              => $row->vn,
         'hn'              => $row->hn,
@@ -5096,7 +5096,7 @@ public function _1102050101_502_delete(Request $request )
   $checkbox = $request->input('checkbox');
 
     if (!empty($checkbox)) {
-      Finance_debtor_1102050101_502::whereIn('an', $checkbox)->whereNull('debtor_lock')->delete();
+      Debtor_1102050101_502::whereIn('an', $checkbox)->whereNull('debtor_lock')->delete();
     }
 
   return redirect()->route('_1102050101_502');
@@ -5104,7 +5104,7 @@ public function _1102050101_502_delete(Request $request )
 
 public function _1102050101_502_update(Request $request, $an)
 {
-  $item = Finance_debtor_1102050101_502::findOrFail($an);
+  $item = Debtor_1102050101_502::findOrFail($an);
   $item->update([
     'charge_date' => $request->input('charge_date'),
     'charge_no' => $request->input('charge_no'),
@@ -5130,7 +5130,7 @@ public function _1102050101_704(Request $request )
 
   $debtor = DB::select('
     SELECT *
-    FROM finance_debtor_1102050101_704     
+    FROM debtor_1102050101_704     
     WHERE dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
 
   $debtor_search = DB::connection('hosxp')->select('
@@ -5148,7 +5148,7 @@ public function _1102050101_704(Request $request )
       IN (SELECT icode FROM htp_report.finance_lookup_icode WHERE debtor_code <> "1102050101.216") 		
     WHERE i.confirm_discharge = "Y" AND p1.pttype IN ("ST")
     AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND i.an NOT IN (SELECT an FROM htp_report.finance_debtor_1102050101_704) 
+    AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_704) 
     GROUP BY i.an ORDER BY i.ward,i.dchdate'); 
 
     $request->session()->put('start_date',$start_date);
@@ -5175,7 +5175,7 @@ public function _1102050101_704_daily_pdf(Request $request)
   $debtor = DB::select('
     SELECT dchdate AS vstdate,COUNT(DISTINCT an) AS anvn,
     SUM(debtor) AS debtor,SUM(receive) AS receive_total
-    FROM finance_debtor_1102050101_704    
+    FROM debtor_1102050101_704    
     WHERE dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" 
     GROUP BY dchdate ORDER BY dchdate');
 
@@ -5210,11 +5210,11 @@ public function _1102050101_704_confirm(Request $request )
       IN (SELECT icode FROM htp_report.finance_lookup_icode WHERE debtor_code <> "1102050101.216")
     WHERE i.confirm_discharge = "Y" AND p1.pttype IN ("ST")	
     AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"  AND i.an in ('.$checkbox.')
-    AND i.an NOT IN (SELECT an FROM htp_report.finance_debtor_1102050101_704) 
+    AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_704) 
     GROUP BY i.an ORDER BY i.ward,i.dchdate');     
 
   foreach ($debtor as $row) {
-      Finance_debtor_1102050101_704::insert([
+      Debtor_1102050101_704::insert([
         'an'              => $row->an,
         'vn'              => $row->vn,
         'hn'              => $row->hn,
@@ -5247,7 +5247,7 @@ public function _1102050101_704_delete(Request $request )
   $checkbox = $request->input('checkbox');
 
     if (!empty($checkbox)) {
-      Finance_debtor_1102050101_704::whereIn('an', $checkbox)->whereNull('debtor_lock')->delete();
+      Debtor_1102050101_704::whereIn('an', $checkbox)->whereNull('debtor_lock')->delete();
     }
 
   return redirect()->route('_1102050101_704');
@@ -5268,9 +5268,9 @@ public function _1102050102_107(Request $request )
     d.debtor,d.debtor_lock,IF(r.bill_amount <>"","กระทบยอดแล้ว",d.status) AS status,d.charge_date,d.charge_no,d.charge,
     d.receive_date,d.receive_no,IFNULL(d.receive,r.bill_amount) AS receive,IFNULL(d.repno,r.rcpno) AS repno,r.bill_amount,
     IF(t.visit IS NULL,0,t.visit) AS visit
-    FROM finance_debtor_1102050102_107 d
+    FROM debtor_1102050102_107 d
     LEFT JOIN hosxe.rcpt_print r ON r.vn = d.an AND r.`status` ="OK" AND r.department="IPD" AND r.bill_date NOT BETWEEN d.regdate AND d.dchdate
-    LEFT JOIN (SELECT an,COUNT(an) AS visit FROM finance_debtor_1102050102_107_tracking GROUP BY an) t ON t.an=d.an
+    LEFT JOIN (SELECT an,COUNT(an) AS visit FROM debtor_1102050102_107_tracking GROUP BY an) t ON t.an=d.an
     WHERE d.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" ');
 
   $debtor_search = DB::connection('hosxp')->select('
@@ -5290,7 +5290,7 @@ public function _1102050102_107(Request $request )
     LEFT JOIN hospcode h ON h.hospcode=ip.hospmain
     WHERE i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND a.paid_money <>"0" AND a.rcpt_money <> a.paid_money 
-		AND i.an NOT IN (SELECT an FROM htp_report.finance_debtor_1102050102_107)
+		AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_107)
     GROUP BY i.an ORDER BY i.dchdate'); 
 
   $debtor_search_iclaim = DB::connection('hosxp')->select('
@@ -5335,7 +5335,7 @@ public function _1102050102_107_daily_pdf(Request $request)
   $debtor = DB::select('
     SELECT d.dchdate,COUNT(DISTINCT d.vn) AS anvn,
     SUM(debtor) AS debtor,SUM(IFNULL(d.receive,r.bill_amount)) AS receive
-    FROM finance_debtor_1102050102_107 d
+    FROM debtor_1102050102_107 d
     LEFT JOIN hosxe.rcpt_print r ON r.vn = d.vn AND r.`status` ="OK" AND r.department="OPD"
     WHERE d.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     GROUP BY d.dchdate ORDER BY d.dchdate');
@@ -5373,11 +5373,11 @@ public function _1102050102_107_confirm(Request $request )
     LEFT JOIN hospcode h ON h.hospcode=ip.hospmain
     WHERE i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" and i.an in ('.$checkbox.')
     AND a.paid_money <>"0" AND a.rcpt_money <> a.paid_money 
-		AND i.an NOT IN (SELECT an FROM htp_report.finance_debtor_1102050102_107)
+		AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_107)
     GROUP BY i.an ORDER BY i.dchdate');     
 
   foreach ($debtor as $row) {
-      Finance_debtor_1102050102_107::insert([
+      Debtor_1102050102_107::insert([
         'vn'                  => $row->vn,
         'hn'                  => $row->hn,
         'an'                  => $row->an,
@@ -5433,7 +5433,7 @@ public function _1102050102_107_confirm_iclaim(Request $request )
     GROUP BY i.an ORDER BY i.ward,i.dchdate) AS a WHERE debtor <> "0"');     
 
   foreach ($debtor as $row) {
-      Finance_debtor_1102050102_107::insert([
+      Debtor_1102050102_107::insert([
         'vn'                  => $row->vn,
         'hn'                  => $row->hn,
         'an'                  => $row->an,
@@ -5467,7 +5467,7 @@ public function _1102050102_107_delete(Request $request )
   $checkbox = $request->input('checkbox');
 
     if (!empty($checkbox)) {
-      Finance_debtor_1102050102_107::whereIn('an', $checkbox)->whereNull('debtor_lock')->delete();
+      Debtor_1102050102_107::whereIn('an', $checkbox)->whereNull('debtor_lock')->delete();
     }
 
   return redirect()->route('_1102050102_107');
@@ -5475,7 +5475,7 @@ public function _1102050102_107_delete(Request $request )
 
 public function _1102050102_107_update(Request $request, $an)
 {
-  $item = Finance_debtor_1102050102_107::find($an);
+  $item = Debtor_1102050102_107::find($an);
   $item->charge_date = $request->input('charge_date');
   $item->charge_no = $request->input('charge_no');
   $item->charge = $request->input('charge');
@@ -5492,17 +5492,17 @@ public function _1102050102_107_update(Request $request, $an)
 public function _1102050102_107_tracking(Request $request, $an )
 {
   $debtor = DB::select('
-    SELECT * FROM finance_debtor_1102050102_107 WHERE an = "'.$an.'"');
+    SELECT * FROM debtor_1102050102_107 WHERE an = "'.$an.'"');
 
   $tracking = DB::select('
-    SELECT * FROM finance_debtor_1102050102_107_tracking WHERE an = "'.$an.'"');
+    SELECT * FROM debtor_1102050102_107_tracking WHERE an = "'.$an.'"');
 
   return view('finance_debtor.1102050102_107_tracking',compact('debtor','tracking'));
 }
 
 public function _1102050102_107_tracking_insert(Request $request)
 {
-  $item = new Finance_debtor_1102050102_107_tracking;
+  $item = new Debtor_1102050102_107_tracking;
   $item->vn = $request->input('vn');
   $item->an = $request->input('an');
   $item->tracking_date = $request->input('tracking_date');
@@ -5517,7 +5517,7 @@ public function _1102050102_107_tracking_insert(Request $request)
 
 public function _1102050102_107_tracking_update(Request $request, $tracking_id)
 {
-  Finance_debtor_1102050102_107_tracking::where('tracking_id', $tracking_id)
+  Debtor_1102050102_107_tracking::where('tracking_id', $tracking_id)
       ->update([
       'tracking_date' => $request->input('tracking_date'),
       'tracking_type' => $request->input('tracking_type'),
@@ -5541,7 +5541,7 @@ public function _1102050102_109(Request $request )
 
   $debtor = DB::select('
     SELECT *
-    FROM finance_debtor_1102050102_109   
+    FROM debtor_1102050102_109   
     WHERE dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
 
   $debtor_search = DB::connection('hosxp')->select('
@@ -5559,7 +5559,7 @@ public function _1102050102_109(Request $request )
       IN (SELECT icode FROM htp_report.finance_lookup_icode WHERE debtor_code <> "1102050101.216") 		
     WHERE i.confirm_discharge = "Y" AND p1.hipdata_code IN ("A2","BFC","GOF","PVT","WVO")
     AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND i.an NOT IN (SELECT an FROM htp_report.finance_debtor_1102050102_109) 
+    AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_109) 
     GROUP BY i.an ORDER BY i.ward,i.dchdate) AS a WHERE debtor <> "0"'); 
 
     $request->session()->put('start_date',$start_date);
@@ -5586,7 +5586,7 @@ public function _1102050102_109_daily_pdf(Request $request)
   $debtor = DB::select('
     SELECT dchdate AS vstdate,COUNT(DISTINCT an) AS anvn,
     SUM(debtor) AS debtor,SUM(receive) AS receive_total
-    FROM finance_debtor_1102050102_109   
+    FROM debtor_1102050102_109   
     WHERE dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" 
     GROUP BY dchdate ORDER BY dchdate');
 
@@ -5622,11 +5622,11 @@ public function _1102050102_109_confirm(Request $request )
     WHERE i.confirm_discharge = "Y" AND p1.hipdata_code IN ("A2","BFC","GOF","PVT","WVO")
     AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     and i.an in ('.$checkbox.')
-    AND i.an NOT IN (SELECT an FROM htp_report.finance_debtor_1102050102_109) 
+    AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_109) 
     GROUP BY i.an ORDER BY i.ward,i.dchdate) AS a WHERE debtor <> "0"');     
 
   foreach ($debtor as $row) {
-      Finance_debtor_1102050102_109::insert([
+      Debtor_1102050102_109::insert([
         'an'              => $row->an,
         'vn'              => $row->vn,
         'hn'              => $row->hn,
@@ -5660,7 +5660,7 @@ public function _1102050102_109_delete(Request $request )
   $checkbox = $request->input('checkbox');
 
     if (!empty($checkbox)) {
-      Finance_debtor_1102050102_109::whereIn('an', $checkbox)->whereNull('debtor_lock')->delete();
+      Debtor_1102050102_109::whereIn('an', $checkbox)->whereNull('debtor_lock')->delete();
     }
 
   return redirect()->route('_1102050102_109');
@@ -5668,7 +5668,7 @@ public function _1102050102_109_delete(Request $request )
 
 public function _1102050102_109_update(Request $request, $an)
 {
-  $item = Finance_debtor_1102050102_109::findOrFail($an);
+  $item = Debtor_1102050102_109::findOrFail($an);
   $item->update([
     'charge_date' => $request->input('charge_date'),
     'charge_no' => $request->input('charge_no'),
@@ -5696,7 +5696,7 @@ public function _1102050102_603(Request $request )
   if($search =='' || $search == null )
   {$search = Session::get('search');}else{$search =$request->search;}
 
-  $debtor =  Finance_debtor_1102050102_603::whereBetween('dchdate', [$start_date,$end_date])
+  $debtor =  Debtor_1102050102_603::whereBetween('dchdate', [$start_date,$end_date])
               ->where(function ($query) use ($search){
                 $query->where('ptname','like','%'.$search.'%');
                 $query->orwhere('hn','like','%'.$search.'%');
@@ -5706,7 +5706,7 @@ public function _1102050102_603(Request $request )
 
   // $debtor = DB::select('
   //   SELECT *
-  //   FROM finance_debtor_1102050102_603   
+  //   FROM debtor_1102050102_603   
   //   WHERE dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
 
   $debtor_search = DB::connection('hosxp')->select('
@@ -5724,7 +5724,7 @@ public function _1102050102_603(Request $request )
       IN (SELECT icode FROM htp_report.finance_lookup_icode WHERE debtor_code <> "1102050101.216") 		
     WHERE i.confirm_discharge = "Y" AND p1.pttype IN ("29")
     AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND i.an NOT IN (SELECT an FROM htp_report.finance_debtor_1102050102_603) 
+    AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_603) 
     GROUP BY i.an ORDER BY i.ward,i.dchdate) AS a WHERE debtor <> "0"'); 
 
     $request->session()->put('start_date',$start_date);
@@ -5752,7 +5752,7 @@ public function _1102050102_603_daily_pdf(Request $request)
   $debtor = DB::select('
     SELECT dchdate AS vstdate,COUNT(DISTINCT an) AS anvn,
     SUM(debtor) AS debtor,SUM(receive) AS receive_total
-    FROM finance_debtor_1102050102_603  
+    FROM debtor_1102050102_603  
     WHERE dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" 
     GROUP BY dchdate ORDER BY dchdate');
 
@@ -5788,11 +5788,11 @@ public function _1102050102_603_confirm(Request $request )
     WHERE i.confirm_discharge = "Y" AND p1.pttype IN ("29")
     AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     and i.an in ('.$checkbox.')
-    AND i.an NOT IN (SELECT an FROM htp_report.finance_debtor_1102050102_603) 
+    AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_603) 
     GROUP BY i.an ORDER BY i.ward,i.dchdate) AS a WHERE debtor <> "0"');     
 
   foreach ($debtor as $row) {
-      Finance_debtor_1102050102_603::insert([
+      Debtor_1102050102_603::insert([
         'an'              => $row->an,
         'vn'              => $row->vn,
         'hn'              => $row->hn,
@@ -5826,7 +5826,7 @@ public function _1102050102_603_delete(Request $request )
   $checkbox = $request->input('checkbox');
 
     if (!empty($checkbox)) {
-      Finance_debtor_1102050102_603::whereIn('an', $checkbox)->whereNull('debtor_lock')->delete();
+      Debtor_1102050102_603::whereIn('an', $checkbox)->whereNull('debtor_lock')->delete();
     }
 
   return redirect()->route('_1102050102_603');
@@ -5834,7 +5834,7 @@ public function _1102050102_603_delete(Request $request )
 
 public function _1102050102_603_update(Request $request, $an)
 {
-  $item = Finance_debtor_1102050102_603::find($an);
+  $item = Debtor_1102050102_603::find($an);
   $item->charge_date = $request->input('charge_date');
   $item->charge_no = $request->input('charge_no');
   $item->charge = $request->input('charge');
@@ -5861,7 +5861,7 @@ public function _1102050102_802(Request $request )
   $debtor = DB::select('
     SELECT d.*,IFNULL(SUM(s.compensate_treatment),0)+IFNULL(SUM(s1.compensate_kidney),0) AS receive_total ,
     SUM(s1.compensate_kidney) AS receive_kidney,SUM(s.compensate_treatment) AS receive_eclaim,GROUP_CONCAT(DISTINCT s.repno) AS repno
-    FROM finance_debtor_1102050102_802 d    
+    FROM debtor_1102050102_802 d    
     LEFT JOIN htp_report.finance_stm_lgo s ON s.an=d.an
     LEFT JOIN htp_report.finance_stm_lgo_kidney s1 ON s1.cid=d.cid AND DATE(s1.datetimeadm)  BETWEEN d.regdate AND d.dchdate
     WHERE d.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" GROUP BY d.an');
@@ -5882,7 +5882,7 @@ public function _1102050102_802(Request $request )
 			IN (SELECT icode FROM htp_report.finance_lookup_icode WHERE (debtor_code = "1102050101.109"))		
     WHERE i.confirm_discharge = "Y" AND p1.pttype LIKE "L%"
     AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND i.an NOT IN (SELECT an FROM htp_report.finance_debtor_1102050102_802) 
+    AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_802) 
     GROUP BY i.an ORDER BY i.ward,i.dchdate) AS a WHERE debtor <> "0"'); 
 
     $request->session()->put('start_date',$start_date);
@@ -5911,7 +5911,7 @@ public function _1102050102_802_daily_pdf(Request $request)
     SUM(debtor) AS debtor,SUM(receive_total) AS receive_total
 		FROM (SELECT d.*,s.compensate_treatment+IFNULL(SUM(s1.compensate_kidney),0) AS receive_total ,
     SUM(s1.compensate_kidney) AS receive_kidney, s.compensate_treatment AS receive_eclaim
-    FROM finance_debtor_1102050102_802 d    
+    FROM debtor_1102050102_802 d    
     LEFT JOIN htp_report.finance_stm_lgo s ON s.an=d.an
     LEFT JOIN htp_report.finance_stm_lgo_kidney s1 ON s1.cid=d.cid AND DATE(s1.datetimeadm)  BETWEEN d.regdate AND d.dchdate
     WHERE d.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" GROUP BY d.an ) AS a
@@ -5949,12 +5949,12 @@ public function _1102050102_802_confirm(Request $request )
 			IN (SELECT icode FROM htp_report.finance_lookup_icode WHERE (debtor_code = "1102050101.109"))		
     WHERE i.confirm_discharge = "Y" AND p1.pttype LIKE "L%"
     AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND i.an NOT IN (SELECT an FROM htp_report.finance_debtor_1102050102_802) 
+    AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_802) 
     AND i.an in ('.$checkbox.')
     GROUP BY i.an ORDER BY i.ward,i.dchdate) AS a WHERE debtor <> "0"');     
 
   foreach ($debtor as $row) {
-      Finance_debtor_1102050102_802::insert([
+      Debtor_1102050102_802::insert([
         'an'              => $row->an,
         'vn'              => $row->vn,
         'hn'              => $row->hn,
@@ -5988,7 +5988,7 @@ public function _1102050102_802_delete(Request $request )
   $checkbox = $request->input('checkbox');
 
     if (!empty($checkbox)) {
-      Finance_debtor_1102050102_802::whereIn('an', $checkbox)->whereNull('debtor_lock')->delete();
+      Debtor_1102050102_802::whereIn('an', $checkbox)->whereNull('debtor_lock')->delete();
     }
 
   return redirect()->route('_1102050102_802');
@@ -6006,7 +6006,7 @@ public function _1102050102_804(Request $request )
 
   $debtor = DB::select('
     SELECT d.*,s.receive_total,s.repno
-    FROM finance_debtor_1102050102_804 d    
+    FROM debtor_1102050102_804 d    
     LEFT JOIN htp_report.finance_stm_ofc s ON s.an=d.an  
     WHERE d.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" GROUP BY d.an');
 
@@ -6026,7 +6026,7 @@ public function _1102050102_804(Request $request )
 			IN (SELECT icode FROM htp_report.finance_lookup_icode WHERE (debtor_code = "1102050101.109"))		
     WHERE i.confirm_discharge = "Y" AND p1.hipdata_code IN ("BKK","BMT")
     AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND i.an NOT IN (SELECT an FROM htp_report.finance_debtor_1102050102_804) 
+    AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_804) 
     GROUP BY i.an ORDER BY i.ward,i.dchdate) AS a WHERE debtor <> "0"'); 
 
     $request->session()->put('start_date',$start_date);
@@ -6054,7 +6054,7 @@ public function _1102050102_804_daily_pdf(Request $request)
     SELECT dchdate AS vstdate,COUNT(DISTINCT an) AS anvn,
     SUM(debtor) AS debtor,SUM(receive_total) AS receive_total
 		FROM (SELECT d.*,s.receive_total
-    FROM finance_debtor_1102050102_804 d    
+    FROM debtor_1102050102_804 d    
     LEFT JOIN htp_report.finance_stm_ofc s ON s.an=d.an  
     WHERE d.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" GROUP BY d.an)	AS a 
 		GROUP BY dchdate ORDER BY dchdate');
@@ -6091,12 +6091,12 @@ public function _1102050102_804_confirm(Request $request )
 			IN (SELECT icode FROM htp_report.finance_lookup_icode WHERE (debtor_code = "1102050101.109"))		
     WHERE i.confirm_discharge = "Y" AND p1.hipdata_code IN ("BKK","BMT")
     AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-    AND i.an NOT IN (SELECT an FROM htp_report.finance_debtor_1102050102_804) 
+    AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_804) 
     AND i.an in ('.$checkbox.')
     GROUP BY i.an ORDER BY i.ward,i.dchdate) AS a WHERE debtor <> "0"');     
 
   foreach ($debtor as $row) {
-      Finance_debtor_1102050102_804::insert([
+      Debtor_1102050102_804::insert([
         'an'              => $row->an,
         'vn'              => $row->vn,
         'hn'              => $row->hn,
@@ -6130,7 +6130,7 @@ public function _1102050102_804_delete(Request $request )
   $checkbox = $request->input('checkbox');
 
     if (!empty($checkbox)) {
-      Finance_debtor_1102050102_804::whereIn('an', $checkbox)->whereNull('debtor_lock')->delete();
+      Debtor_1102050102_804::whereIn('an', $checkbox)->whereNull('debtor_lock')->delete();
     }
 
   return redirect()->route('_1102050102_804');

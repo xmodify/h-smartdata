@@ -49,7 +49,7 @@
                             <button type="button" class="btn btn-outline-danger btn-sm" onclick="confirmDelete()">ลบลูกหนี้</button>
                         </th>
                         <th class="text-left text-primary" colspan = "11">1102050102.803-ลูกหนี้ค่ารักษา เบิกจ่ายตรง อปท.รูปแบบพิเศษ OP วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</th> 
-                        <th class="text-center text-primary" colspan = "10">การชดเชย</th>                                                 
+                        <th class="text-center text-primary" colspan = "11">การชดเชย</th>                                                 
                     </tr>
                     <tr class="table-success">
                         <th class="text-center"><input type="checkbox" onClick="toggle_d(this)"> All</th> 
@@ -73,6 +73,7 @@
                         <th class="text-center text-primary" width="5%">สถานะ</th> 
                         <th class="text-center text-primary" width="5%">Action</th>
                         <th class="text-center text-primary">REP</th>  
+                        <th class="text-center text-primary">อายุหนี้</th>
                         <th class="text-center text-primary">Lock</th>                                       
                     </tr>
                     </thead>
@@ -130,6 +131,11 @@
                             </button>                            
                         </td>  
                         <td align="right">{{ $row->repno }}</td>  
+                        <td align="right" @if($row->days < 90) style="background-color: #90EE90;"  {{-- เขียวอ่อน --}}
+                            @elseif($row->days >= 90 && $row->days <= 365) style="background-color: #FFFF99;" {{-- เหลือง --}}
+                            @else style="background-color: #FF7F7F;" {{-- แดง --}} @endif >
+                            {{ $row->days }} วัน
+                        </td> 
                         <td align="center" style="color:blue">{{ $row->debtor_lock }}</td>                            
                     <?php $count++; ?>
                     <?php $sum_income += $row->income ; ?>

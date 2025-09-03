@@ -72,6 +72,7 @@
                         <th class="text-center text-primary">ชดเชย PPFS</th>
                         <th class="text-center text-primary" width="5%">สถานะ</th> 
                         <th class="text-center text-primary">REP</th>  
+                        <th class="text-center text-primary">อายุหนี้</th>   
                         <th class="text-center text-primary">Lock</th>                                       
                     </tr>
                     </thead>
@@ -124,6 +125,11 @@
                         </td>
                         <td align="right">{{ $row->status }}</td>                         
                         <td align="right">{{ $row->repno }}</td>  
+                        <td align="right" @if($row->days < 90) style="background-color: #90EE90;"  {{-- เขียวอ่อน --}}
+                            @elseif($row->days >= 90 && $row->days <= 365) style="background-color: #FFFF99;" {{-- เหลือง --}}
+                            @else style="background-color: #FF7F7F;" {{-- แดง --}} @endif >
+                            {{ $row->days }} วัน
+                        </td>    
                         <td align="center" style="color:blue">{{ $row->debtor_lock }}</td>                            
                     <?php $count++; ?>
                     <?php $sum_income += $row->income ; ?>

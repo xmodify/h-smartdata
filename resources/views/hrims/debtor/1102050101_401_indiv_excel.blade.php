@@ -37,7 +37,8 @@ header("Content-Disposition: attachment; filename=".$files); //ชื่อไ�
                 <th class="text-center text-primary">ชดเชยรวม</th>
                 <th class="text-center text-primary">ผลต่าง</th>
                 <th class="text-center text-primary">ชดเชย PPFS</th>  
-                <th class="text-center text-primary">REP</th>   
+                <th class="text-center text-primary">REP</th>  
+                <th class="text-center text-primary">อายุหนี้</th> 
             </tr>     
             </thead> 
             <?php $count = 1 ; ?>
@@ -73,6 +74,11 @@ header("Content-Disposition: attachment; filename=".$files); //ชื่อไ�
                 <td align="right">{{ number_format($row->receive-$row->debtor,2) }}</td>
                 <td align="right">{{ number_format($row->receive_ppfs,2) }}</td>
                 <td align="center">{{ $row->repno }}</td>
+                <td align="right" @if($row->days < 90) style="background-color: #90EE90;"  {{-- เขียวอ่อน --}}
+                    @elseif($row->days >= 90 && $row->days <= 365) style="background-color: #FFFF99;" {{-- เหลือง --}}
+                    @else style="background-color: #FF7F7F;" {{-- แดง --}} @endif >
+                    {{ $row->days }} วัน
+                </td>
             </tr>                
             <?php $count++; ?>
             <?php $sum_income += $row->income ; ?>
