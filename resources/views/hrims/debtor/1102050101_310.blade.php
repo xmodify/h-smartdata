@@ -28,7 +28,7 @@
                 <div class="col-md-2">
                     <input type="date" name="end_date" class="form-control my-1" placeholder="Date" value="{{ $end_date }}" >
                 </div>
-                    <label class="col-md-1 col-form-label text-md-end my-1">{{ __('ค้นหา ชื่อ-สกุล,HN') }}</label>
+                    <label class="col-md-1 col-form-label text-md-end my-1">{{ __('ค้นหา ชื่อ-สกุล,HN,AN') }}</label>
                 <div class="col-md-2" >
                     <input id="search" type="text" class="form-control my-1" name="search" value="{{ $search }}" >
                 </div>
@@ -69,14 +69,15 @@
                         <th class="text-center text-primary">ผลต่าง</th>
                         <th class="text-center text-primary">REP</th>  
                         <th class="text-center text-primary" width="5%">สถานะ</th> 
-                        <th class="text-center text-primary" width="5%">Action</th>               
+                        <th class="text-center text-primary" width="5%">Action</th>
+                        <th class="text-center text-primary">อายุหนี้</th>                
                         <th class="text-center text-primary">Lock</th> 
                     </tr>
                     </thead>
                     <?php $count = 1 ; ?>
                     <?php $sum_income = 0 ; ?>
                     <?php $sum_rcpt_money = 0 ; ?>
-                    <?php $sum_other = 0 ; ?>
+                    <?php $sum_kidney = 0 ; ?>
                     <?php $sum_debtor = 0 ; ?>
                     <?php $sum_receive  = 0 ; ?>
                     @foreach($debtor as $row)
@@ -92,7 +93,7 @@
                         <td align="right">{{ $row->adjrw }}</td>                        
                         <td align="right" width ="5%">{{ number_format($row->income,2) }}</td>
                         <td align="right">{{ number_format($row->rcpt_money,2) }}</td>
-                        <td align="right">{{ number_format($row->other,2) }}</td>
+                        <td align="right">{{ number_format($row->kidney,2) }}</td>
                         <td align="right" class="text-primary">{{ number_format($row->debtor,2) }}</td>  
                         <td align="right" @if($row->receive > 0) style="color:green" 
                             @elseif($row->receive < 0) style="color:red" @endif>
@@ -108,12 +109,17 @@
                             <button type="button" class="btn btn-outline-warning btn-sm text-primary receive" data-toggle="modal" data-target="#receive-{{ $row->an }}"  data-id="{{ $row->an }}" > 
                                 บันทึกชดเชย
                             </button>                            
-                        </td>    
+                        </td>  
+                        <td align="right" @if($row->days < 90) style="background-color: #90EE90;"  {{-- เขียวอ่อน --}}
+                            @elseif($row->days >= 90 && $row->days <= 365) style="background-color: #FFFF99;" {{-- เหลือง --}}
+                            @else style="background-color: #FF7F7F;" {{-- แดง --}} @endif >
+                            {{ $row->days }} วัน
+                        </td>  
                         <td align="center" style="color:blue">{{ $row->debtor_lock }}</td>                          
                     <?php $count++; ?>
                     <?php $sum_income += $row->income ; ?>
                     <?php $sum_rcpt_money += $row->rcpt_money ; ?>
-                    <?php $sum_other += $row->other ; ?> 
+                    <?php $sum_kidney += $row->kidney ; ?> 
                     <?php $sum_debtor += $row->debtor ; ?> 
                     <?php $sum_receive += $row->receive ; ?>       
                     @endforeach 
@@ -139,7 +145,7 @@
                     <td class="text-primary" align="left">ลูกหนี้ค่ารักษา ประกันสังคม ค่าใช้จ่ายสูง IP</td>
                     <td class="text-primary" align="right">{{ number_format($sum_income,2)}}</td>
                     <td class="text-primary" align="right">{{ number_format($sum_rcpt_money,2)}}</td>
-                    <td class="text-primary" align="right">{{ number_format($sum_other,2)}}</td>
+                    <td class="text-primary" align="right">{{ number_format($sum_kidney,2)}}</td>
                     <td class="text-primary" align="right"><strong>{{ number_format($sum_debtor,2)}}</strong></td>                    
                     <td align="right" @if($sum_receive > 0) style="color:green" 
                         @elseif($sum_receive < 0) style="color:red" @endif>
@@ -203,9 +209,9 @@
                         <td align="right">{{ $row->adjrw }}</td>                        
                         <td align="right" width ="5%">{{ number_format($row->income,2) }}</td>
                         <td align="right">{{ number_format($row->rcpt_money,2) }}</td>
-                        <td align="right">{{ number_format($row->other,2) }}</td>
+                        <td align="right">{{ number_format($row->kidney,2) }}</td>
                         <td align="right">{{ number_format($row->debtor,2) }}</td>
-                        <td align="left">{{ $row->other_list }}</td>
+                        <td align="left">{{ $row->kidney_list }}</td>
                         <td align="left">{{ $row->ipt_coll_status_type_name }}</td>
                     <?php $count++; ?>
                     @endforeach 

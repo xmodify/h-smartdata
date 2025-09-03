@@ -28,7 +28,7 @@
                 <div class="col-md-2">
                     <input type="date" name="end_date" class="form-control my-1" placeholder="Date" value="{{ $end_date }}" >
                 </div>
-                    <label class="col-md-1 col-form-label text-md-end my-1">{{ __('ค้นหา ชื่อ-สกุล,HN') }}</label>
+                    <label class="col-md-1 col-form-label text-md-end my-1">{{ __('ค้นหา ชื่อ-สกุล,HN,AN') }}</label>
                 <div class="col-md-2" >
                     <input id="search" type="text" class="form-control my-1" name="search" value="{{ $search }}" >
                 </div>
@@ -48,13 +48,14 @@
                         <th class="text-center">
                             <button type="button" class="btn btn-outline-danger btn-sm" onclick="confirmDelete()">ลบลูกหนี้</button>
                         </th>
-                        <th class="text-left text-primary" colspan = "9">1102050101.307-ลูกหนี้ค่ารักษา ประกันสังคม-กองทุนทดแทน วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</th> 
-                        <th class="text-center text-primary" colspan = "8">การชดเชย</th>                                                 
+                        <th class="text-left text-primary" colspan = "10">1102050101.307-ลูกหนี้ค่ารักษา ประกันสังคม-กองทุนทดแทน วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</th> 
+                        <th class="text-center text-primary" colspan = "9">การชดเชย</th>                                                 
                     </tr>
                     <tr class="table-success">
                         <th class="text-center"><input type="checkbox" onClick="toggle_d(this)"> All</th> 
                         <th class="text-center">วันที่</th>
                         <th class="text-center">HN</th>
+                        <th class="text-center">AN</th>
                         <th class="text-center">ชื่อ-สกุล</th>
                         <th class="text-center">สิทธิ</th>
                         <th class="text-center">ICD10</th>
@@ -68,7 +69,8 @@
                         <th class="text-center text-primary">ผลต่าง</th>
                         <th class="text-center text-primary" width="9%">สถานะ</th> 
                         <th class="text-center text-primary" width="6%">Action</th>
-                        <th class="text-center text-primary">REP</th>  
+                        <th class="text-center text-primary">REP</th> 
+                        <th class="text-center text-primary">อายุหนี้</th> 
                         <th class="text-center text-primary">Lock</th>                                       
                     </tr>
                     </thead>
@@ -85,6 +87,7 @@
                         <td class="text-center"><input type="checkbox" name="checkbox_d[]" value="{{$row->vn}}"></td>   
                         <td align="right">{{ DateThai($row->vstdate) }} {{ $row->vsttime }}</td>
                         <td align="center">{{ $row->hn }}</td>
+                        <td align="center">{{ $row->an }}</td>
                         <td align="left">{{ $row->ptname }}</td>
                         <td align="left">{{ $row->pttype }} </td>
                         <td align="right">{{ $row->pdx }}</td>                      
@@ -111,7 +114,12 @@
                                 บันทึกชดเชย
                             </button>                            
                         </td>  
-                        <td align="right">{{ $row->repno_pp }}</td>  
+                        <td align="right">{{ $row->repno_pp }}</td> 
+                        <td align="right" @if($row->days < 90) style="background-color: #90EE90;"  {{-- เขียวอ่อน --}}
+                            @elseif($row->days >= 90 && $row->days <= 365) style="background-color: #FFFF99;" {{-- เหลือง --}}
+                            @else style="background-color: #FF7F7F;" {{-- แดง --}} @endif >
+                            {{ $row->days }} วัน
+                        </td>  
                         <td align="center" style="color:blue">{{ $row->debtor_lock }}</td>                            
                     <?php $count++; ?>
                     <?php $sum_income += $row->income ; ?>

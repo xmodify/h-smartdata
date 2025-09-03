@@ -5,24 +5,25 @@ namespace App\Http\Controllers\Hrims;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use PDF;
 use Session;
-use App\Models\Finance_debtor_1102050101_103;
-use App\Models\Finance_debtor_1102050101_109;
-use App\Models\Finance_debtor_1102050101_201;
-use App\Models\Finance_debtor_1102050101_202;
-use App\Models\Finance_debtor_1102050101_203;
-use App\Models\Finance_debtor_1102050101_209;
-use App\Models\Finance_debtor_1102050101_216;
-use App\Models\Finance_debtor_1102050101_217;
-use App\Models\Finance_debtor_1102050101_301;
-use App\Models\Finance_debtor_1102050101_302;
-use App\Models\Finance_debtor_1102050101_303;
-use App\Models\Finance_debtor_1102050101_304;
-use App\Models\Finance_debtor_1102050101_307;
-use App\Models\Finance_debtor_1102050101_308;
-use App\Models\Finance_debtor_1102050101_309;
-use App\Models\Finance_debtor_1102050101_310;
+use App\Models\Debtor_1102050101_103;
+use App\Models\Debtor_1102050101_109;
+use App\Models\Debtor_1102050101_201;
+use App\Models\Debtor_1102050101_202;
+use App\Models\Debtor_1102050101_203;
+use App\Models\Debtor_1102050101_209;
+use App\Models\Debtor_1102050101_216;
+use App\Models\Debtor_1102050101_217;
+use App\Models\Debtor_1102050101_301;
+use App\Models\Debtor_1102050101_302;
+use App\Models\Debtor_1102050101_303;
+use App\Models\Debtor_1102050101_304;
+use App\Models\Debtor_1102050101_307;
+use App\Models\Debtor_1102050101_308;
+use App\Models\Debtor_1102050101_309;
+use App\Models\Debtor_1102050101_310;
 use App\Models\Finance_debtor_1102050101_401;
 use App\Models\Finance_debtor_1102050101_402;
 use App\Models\Finance_debtor_1102050101_501;
@@ -90,48 +91,48 @@ class DebtorController extends Controller
 
         $_1102050101_103 = DB::select('
             SELECT COUNT(DISTINCT vn) AS anvn,SUM(debtor) AS debtor,IFNULL(SUM(receive),0) AS receive
-            FROM finance_debtor_1102050101_103 
+            FROM debtor_1102050101_103 
             WHERE vstdate BETWEEN ? AND ? ',[$start_date,$end_date]);
         $_1102050101_109 = DB::select('
             SELECT COUNT(DISTINCT vn) AS anvn,SUM(debtor) AS debtor,IFNULL(SUM(receive),0) AS receive
-            FROM finance_debtor_1102050101_109 
+            FROM debtor_1102050101_109 
             WHERE vstdate BETWEEN ? AND ? ',[$start_date,$end_date]);
         $_1102050101_201 = DB::select('
             SELECT COUNT(DISTINCT vn) AS anvn,SUM(debtor) AS debtor,IFNULL(SUM(receive),0) AS receive
-            FROM finance_debtor_1102050101_201 
+            FROM debtor_1102050101_201 
             WHERE vstdate BETWEEN ? AND ? ',[$start_date,$end_date]);
         $_1102050101_203 = DB::select('
             SELECT COUNT(DISTINCT vn) AS anvn,SUM(debtor) AS debtor,IFNULL(SUM(receive),0) AS receive
-            FROM finance_debtor_1102050101_203
+            FROM debtor_1102050101_203
             WHERE vstdate BETWEEN ? AND ? ',[$start_date,$end_date]);
         $_1102050101_209 = DB::select('
             SELECT COUNT(DISTINCT d.vn) AS anvn,SUM(d.debtor) AS debtor,IFNULL(SUM(s.receive_pp),0) AS receive
-            FROM finance_debtor_1102050101_209 d 
+            FROM debtor_1102050101_209 d 
             LEFT JOIN finance_stm_ucs s ON s.cid=d.cid AND s.vstdate = d.vstdate 
             AND LEFT(s.vsttime,5) =LEFT(d.vsttime,5) 
             WHERE d.vstdate BETWEEN ? AND ?',[$start_date,$end_date]);
         $_1102050101_216 = DB::select('
             SELECT COUNT(DISTINCT d.vn) AS anvn,SUM(d.debtor) AS debtor,SUM(IFNULL(s.receive_total,sk.receive_total)) AS receive
-            FROM finance_debtor_1102050101_216 d 
+            FROM debtor_1102050101_216 d 
             LEFT JOIN finance_stm_ucs s ON s.cid=d.cid AND s.vstdate = d.vstdate 
             AND LEFT(s.vsttime,5) =LEFT(d.vsttime,5) 
             LEFT JOIN (SELECT cid,datetimeadm AS vstdate,sum(receive_total) AS receive_total FROM finance_stm_ucs_kidney GROUP BY cid,datetimeadm) sk ON sk.cid=d.cid AND sk.vstdate = d.vstdate 
             WHERE d.vstdate BETWEEN ? AND ?',[$start_date,$end_date]);
         $_1102050101_301 = DB::select('
             SELECT COUNT(DISTINCT vn) AS anvn,SUM(debtor) AS debtor,IFNULL(SUM(receive),0) AS receive
-            FROM finance_debtor_1102050101_301 
+            FROM debtor_1102050101_301 
             WHERE vstdate BETWEEN ? AND ?',[$start_date,$end_date]);
         $_1102050101_303 = DB::select('
             SELECT COUNT(DISTINCT vn) AS anvn,SUM(debtor) AS debtor,IFNULL(SUM(receive),0) AS receive
-            FROM finance_debtor_1102050101_303 
+            FROM debtor_1102050101_303 
             WHERE vstdate BETWEEN ? AND ?',[$start_date,$end_date]);
         $_1102050101_307 = DB::select('
             SELECT COUNT(DISTINCT vn) AS anvn,SUM(debtor) AS debtor,IFNULL(SUM(receive),0) AS receive
-            FROM finance_debtor_1102050101_307 
+            FROM debtor_1102050101_307 
             WHERE vstdate BETWEEN ? AND ?',[$start_date,$end_date]);
         $_1102050101_309 = DB::select('
             SELECT COUNT(DISTINCT vn) AS anvn, SUM(debtor) AS debtor,IFNULL(SUM(s.amount+s.epopay+s.epoadm),0) AS receive
-            FROM finance_debtor_1102050101_309 d 
+            FROM debtor_1102050101_309 d 
             LEFT JOIN finance_stm_sss_kidney s ON s.cid=d.cid AND s.vstdate = d.vstdate 
             WHERE d.vstdate BETWEEN ? AND ?',[$start_date,$end_date]);
         $_1102050101_401 = DB::select('
@@ -188,31 +189,31 @@ class DebtorController extends Controller
             WHERE d.vstdate BETWEEN ? AND ?',[$start_date,$end_date]);
         $_1102050101_202 = DB::select('
             SELECT COUNT(an) AS anvn,SUM(debtor) AS debtor,IFNULL(SUM(receive_ip_compensate_pay),0) AS receive
-            FROM (SELECT d.an,d.debtor,stm.receive_ip_compensate_pay FROM finance_debtor_1102050101_202 d
+            FROM (SELECT d.an,d.debtor,stm.receive_ip_compensate_pay FROM debtor_1102050101_202 d
             LEFT JOIN finance_stm_ucs stm ON stm.an=d.an    
             WHERE d.dchdate BETWEEN ? AND ? GROUP BY d.an) AS a',[$start_date,$end_date]);
         $_1102050101_217 = DB::select('
             SELECT COUNT(DISTINCT an) AS anvn,SUM(debtor) AS debtor,SUM(receive) AS receive
             FROM (SELECT d.dchdate,d.an,d.debtor,(s.receive_total-s.receive_ip_compensate_pay)+IFNULL(SUM(sk.receive_total),0) AS receive
-            FROM finance_debtor_1102050101_217 d
+            FROM debtor_1102050101_217 d
             LEFT JOIN finance_stm_ucs s ON s.an=d.an
             LEFT JOIN finance_stm_ucs_kidney sk ON sk.cid=d.cid AND sk.datetimeadm BETWEEN d.regdate AND d.dchdate
             WHERE d.dchdate BETWEEN ? AND ? GROUP BY d.an) AS a ',[$start_date,$end_date]);
         $_1102050101_302 = DB::select('
             SELECT COUNT(DISTINCT an) AS anvn, SUM(debtor) AS debtor,SUM(receive) AS receive
-            FROM finance_debtor_1102050101_302    
+            FROM debtor_1102050101_302    
             WHERE dchdate BETWEEN ? AND ?',[$start_date,$end_date]);
         $_1102050101_304 = DB::select('
             SELECT COUNT(DISTINCT an) AS anvn, SUM(debtor) AS debtor,SUM(receive) AS receive
-            FROM finance_debtor_1102050101_304    
+            FROM debtor_1102050101_304    
             WHERE dchdate BETWEEN ? AND ?',[$start_date,$end_date]);
         $_1102050101_308 = DB::select('
             SELECT COUNT(DISTINCT an) AS anvn, SUM(debtor) AS debtor,SUM(receive) AS receive
-            FROM finance_debtor_1102050101_308    
+            FROM debtor_1102050101_308    
             WHERE dchdate BETWEEN ? AND ?',[$start_date,$end_date]);
         $_1102050101_310 = DB::select('
             SELECT COUNT(DISTINCT an) AS anvn, SUM(debtor) AS debtor,SUM(receive) AS receive
-            FROM finance_debtor_1102050101_310    
+            FROM debtor_1102050101_310    
             WHERE dchdate BETWEEN ? AND ?',[$start_date,$end_date]);
         $_1102050101_402 = DB::select('
             SELECT COUNT(DISTINCT an) AS anvn,SUM(debtor) AS debtor,SUM(receive_total) AS receive
@@ -366,12 +367,21 @@ class DebtorController extends Controller
         $pttype_checkup = DB::table('main_setting')->where('name', 'pttype_checkup')->value('value');
        
 
-        $debtor =  Finance_debtor_1102050101_103::whereBetween('vstdate', [$start_date,$end_date])
+        $debtor =  Debtor_1102050101_103::whereBetween('vstdate', [$start_date,$end_date])
                     ->where(function ($query) use ($search){
                         $query->where('ptname','like','%'.$search.'%');
                         $query->orwhere('hn','like','%'.$search.'%');
                         })
-                    ->orderBy('vstdate')->get();
+                    ->orderBy('vstdate')
+                    ->get()
+                    ->map(function ($item) {                        
+                        if (($item->receive - $item->debtor) >= 0) {
+                            $item->days = 0; // เช็คก่อนว่ารับแล้วหรือยัง
+                        } else {
+                            $item->days = Carbon::parse($item->vstdate)->diffInDays(Carbon::today());
+                        }
+                        return $item;
+                    });
 
         $debtor_search = DB::connection('hosxp')->select('
             SELECT o.vn,o.hn,o.an,pt.cid,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,o.vstdate,
@@ -386,7 +396,7 @@ class DebtorController extends Controller
                 AND o.vstdate BETWEEN ? AND ?
                 AND v.income-v.rcpt_money <>"0" 
                 AND vp.pttype IN ('.$pttype_checkup.')
-                AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_103) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_103) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -428,7 +438,7 @@ class DebtorController extends Controller
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
-            Finance_debtor_1102050101_103::insert([
+            Debtor_1102050101_103::insert([
                 'vn'              => $row->vn,
                 'hn'              => $row->hn,
                 'cid'             => $row->cid,
@@ -460,7 +470,7 @@ class DebtorController extends Controller
     {
         $checkbox = $request->input('checkbox_d');        
 
-        $deleted = Finance_debtor_1102050101_103::whereIn('vn', $checkbox)
+        $deleted = Debtor_1102050101_103::whereIn('vn', $checkbox)
             ->whereNull('debtor_lock')
             ->delete();
 
@@ -476,7 +486,7 @@ class DebtorController extends Controller
 //_1102050101_103_update-------------------------------------------------------------------------------------------------------
     public function _1102050101_103_update(Request $request, $vn)
     {
-        $item = Finance_debtor_1102050101_103::findOrFail($vn);
+        $item = Debtor_1102050101_103::findOrFail($vn);
         $item->update([
             'charge_date' => $request->input('charge_date'),
             'charge_no' => $request->input('charge_no'),
@@ -498,7 +508,7 @@ class DebtorController extends Controller
         $debtor = DB::select('
             SELECT vstdate,COUNT(DISTINCT vn) AS anvn,
             SUM(debtor) AS debtor,SUM(receive) AS receive
-            FROM finance_debtor_1102050101_103  
+            FROM debtor_1102050101_103  
             WHERE vstdate BETWEEN ? AND ?
             GROUP BY vstdate ORDER BY vstdate',[$start_date,$end_date]);
 
@@ -523,12 +533,20 @@ class DebtorController extends Controller
         $end_date = $request->end_date ?: Session::get('end_date');
         $search  =  $request->search ?: Session::get('search');              
 
-        $debtor =  Finance_debtor_1102050101_109::whereBetween('vstdate', [$start_date,$end_date])
+        $debtor =  Debtor_1102050101_109::whereBetween('vstdate', [$start_date,$end_date])
                     ->where(function ($query) use ($search){
                         $query->where('ptname','like','%'.$search.'%');
                         $query->orwhere('hn','like','%'.$search.'%');
                         })
-                    ->orderBy('vstdate')->get();
+                    ->orderBy('vstdate')->get()
+                    ->map(function ($item) {                        
+                        if (($item->receive - $item->debtor) >= 0) {
+                            $item->days = 0; // เช็คก่อนว่ารับแล้วหรือยัง
+                        } else {
+                            $item->days = Carbon::parse($item->vstdate)->diffInDays(Carbon::today());
+                        }
+                        return $item;
+                    });
 
         $debtor_search = DB::connection('hosxp')->select('
             SELECT o.vn,o.hn,o.an,p.cid,CONCAT(p.pname,p.fname,SPACE(1),p.lname) AS ptname,o.vstdate,
@@ -546,7 +564,7 @@ class DebtorController extends Controller
 				INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
 				WHERE op.vstdate BETWEEN ? AND ? AND li.ems = "Y" GROUP BY op.vn) ems ON ems.vn=o.vn			
             WHERE o.vstdate BETWEEN ? AND ?            
-                AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_109) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_109) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -591,7 +609,7 @@ class DebtorController extends Controller
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
-            Finance_debtor_1102050101_109::insert([
+            Debtor_1102050101_109::insert([
                 'vn'              => $row->vn,
                 'hn'              => $row->hn,
                 'cid'             => $row->cid,
@@ -623,7 +641,7 @@ class DebtorController extends Controller
     {
         $checkbox = $request->input('checkbox_d');        
 
-        $deleted = Finance_debtor_1102050101_109::whereIn('vn', $checkbox)
+        $deleted = Debtor_1102050101_109::whereIn('vn', $checkbox)
             ->whereNull('debtor_lock')
             ->delete();
 
@@ -639,7 +657,7 @@ class DebtorController extends Controller
 //_1102050101_109_update-------------------------------------------------------------------------------------------------------
     public function _1102050101_109_update(Request $request, $vn)
     {
-        $item = Finance_debtor_1102050101_109::findOrFail($vn);
+        $item = Debtor_1102050101_109::findOrFail($vn);
         $item->update([
             'charge_date' => $request->input('charge_date'),
             'charge_no' => $request->input('charge_no'),
@@ -661,7 +679,7 @@ class DebtorController extends Controller
         $debtor = DB::select('
             SELECT vstdate,COUNT(DISTINCT vn) AS anvn,
             SUM(debtor) AS debtor,SUM(receive) AS receive
-            FROM finance_debtor_1102050101_109  
+            FROM debtor_1102050101_109  
             WHERE vstdate BETWEEN ? AND ?
             GROUP BY vstdate ORDER BY vstdate',[$start_date,$end_date]);
 
@@ -691,7 +709,7 @@ class DebtorController extends Controller
                 SELECT d.vn,d.vstdate,d.vsttime, d.hn,d.ptname,d.hipdata_code,d.pttype,d.hospmain,d.pdx,d.income,  
                     d.rcpt_money,d.other,d.ppfs,d.debtor,d.receive,d.repno,s.receive_pp,
                     IF(s.receive_pp <>"",s.repno,"") AS repno_pp,d.status,d.debtor_lock
-                FROM finance_debtor_1102050101_201 d   
+                FROM debtor_1102050101_201 d   
                 LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%"))
                 AND d.vstdate BETWEEN ? AND ?', [$search, $search, $start_date, $end_date]);
@@ -700,7 +718,7 @@ class DebtorController extends Controller
                 SELECT d.vn,d.vstdate,d.vsttime, d.hn,d.ptname,d.hipdata_code,d.pttype,d.hospmain,d.pdx,d.income,  
                     d.rcpt_money,d.other,d.ppfs,d.debtor,d.receive,d.repno,s.receive_pp,
                     IF(s.receive_pp <>"",s.repno,"") AS repno_pp,d.status,d.debtor_lock
-                FROM finance_debtor_1102050101_201 d   
+                FROM debtor_1102050101_201 d   
                 LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE d.vstdate BETWEEN ? AND ?', [$start_date, $end_date]);
         }
@@ -733,7 +751,7 @@ class DebtorController extends Controller
                 AND p.hipdata_code = "UCS" 					
                 AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
                 AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
-                AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_201) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_201) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -789,7 +807,7 @@ class DebtorController extends Controller
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
-            Finance_debtor_1102050101_201::insert([
+            Debtor_1102050101_201::insert([
                 'vn'              => $row->vn,
                 'hn'              => $row->hn,
                 'cid'             => $row->cid,
@@ -823,7 +841,7 @@ class DebtorController extends Controller
     {
         $checkbox = $request->input('checkbox_d');        
 
-        $deleted = Finance_debtor_1102050101_201::whereIn('vn', $checkbox)
+        $deleted = Debtor_1102050101_201::whereIn('vn', $checkbox)
             ->whereNull('debtor_lock')
             ->delete();
 
@@ -845,7 +863,7 @@ class DebtorController extends Controller
         $debtor = DB::select('
             SELECT vstdate,COUNT(DISTINCT vn) AS anvn,
             SUM(debtor) AS debtor,SUM(receive) AS receive
-            FROM finance_debtor_1102050101_201  
+            FROM debtor_1102050101_201  
             WHERE vstdate BETWEEN ? AND ?
             GROUP BY vstdate ORDER BY vstdate',[$start_date,$end_date]);
 
@@ -870,7 +888,7 @@ class DebtorController extends Controller
         $end_date = $request->end_date ?: Session::get('end_date');
         $search  =  $request->search ?: Session::get('search');              
 
-        $debtor =  Finance_debtor_1102050101_203::whereBetween('vstdate', [$start_date,$end_date])
+        $debtor =  Debtor_1102050101_203::whereBetween('vstdate', [$start_date,$end_date])
                     ->where(function ($query) use ($search){
                         $query->where('ptname','like','%'.$search.'%');
                         $query->orwhere('hn','like','%'.$search.'%');
@@ -880,8 +898,10 @@ class DebtorController extends Controller
             $debtor = DB::select('
                 SELECT d.vn,d.vstdate,d.vsttime, d.hn,d.ptname,d.hipdata_code,d.pttype,d.hospmain,d.pdx,d.income,  
                     d.rcpt_money,d.other,d.ppfs,d.debtor,d.charge,d.charge_date,d.charge_no,d.receive,d.receive_date,
-					d.receive_no,d.repno,s.receive_pp,s.repno AS repno_pp,d.status,d.debtor_lock
-                FROM finance_debtor_1102050101_203 d   
+					d.receive_no,d.repno,s.receive_pp,s.repno AS repno_pp,d.status,d.debtor_lock,
+                    CASE WHEN (IFNULL(d.receive,0) - IFNULL(d.debtor,0)) >= 0 THEN 0 
+                    ELSE DATEDIFF(CURDATE(), d.vstdate) END AS days
+                FROM debtor_1102050101_203 d   
                 LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%"))
                 AND d.vstdate BETWEEN ? AND ?', [$search, $search, $start_date, $end_date]);
@@ -889,8 +909,10 @@ class DebtorController extends Controller
             $debtor = DB::select('
                 SELECT d.vn,d.vstdate,d.vsttime, d.hn,d.ptname,d.hipdata_code,d.pttype,d.hospmain,d.pdx,d.income,  
                     d.rcpt_money,d.other,d.ppfs,d.debtor,d.charge,d.charge_date,d.charge_no,d.receive,d.receive_date,
-					d.receive_no,d.repno,s.receive_pp,s.repno AS repno_pp,d.status,d.debtor_lock
-                FROM finance_debtor_1102050101_203 d   
+					d.receive_no,d.repno,s.receive_pp,s.repno AS repno_pp,d.status,d.debtor_lock,
+                    CASE WHEN (IFNULL(d.receive,0) - IFNULL(d.debtor,0)) >= 0 THEN 0 
+                    ELSE DATEDIFF(CURDATE(), d.vstdate) END AS days
+                FROM debtor_1102050101_203 d   
                 LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE d.vstdate BETWEEN ? AND ?', [$start_date, $end_date]);
         }
@@ -923,7 +945,7 @@ class DebtorController extends Controller
                 AND p.hipdata_code = "UCS" 					
                 AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y"	AND (hmain_ucs IS NULL OR hmain_ucs ="")) 
                 AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
-                AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_203) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_203) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -980,7 +1002,7 @@ class DebtorController extends Controller
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
-            Finance_debtor_1102050101_203::insert([
+            Debtor_1102050101_203::insert([
                 'vn'              => $row->vn,
                 'hn'              => $row->hn,
                 'cid'             => $row->cid,
@@ -1014,7 +1036,7 @@ class DebtorController extends Controller
     {
         $checkbox = $request->input('checkbox_d');        
 
-        $deleted = Finance_debtor_1102050101_203::whereIn('vn', $checkbox)
+        $deleted = Debtor_1102050101_203::whereIn('vn', $checkbox)
             ->whereNull('debtor_lock')
             ->delete();
 
@@ -1030,7 +1052,7 @@ class DebtorController extends Controller
 //_1102050101_203_update-------------------------------------------------------------------------------------------------------
     public function _1102050101_203_update(Request $request, $vn)
     {
-        $item = Finance_debtor_1102050101_203::findOrFail($vn);
+        $item = Debtor_1102050101_203::findOrFail($vn);
         $item->update([
             'charge_date' => $request->input('charge_date'),
             'charge_no' => $request->input('charge_no'),
@@ -1052,7 +1074,7 @@ class DebtorController extends Controller
         $debtor = DB::select('
             SELECT vstdate,COUNT(DISTINCT vn) AS anvn,
             SUM(debtor) AS debtor,SUM(receive) AS receive
-            FROM finance_debtor_1102050101_203  
+            FROM debtor_1102050101_203  
             WHERE vstdate BETWEEN ? AND ?
             GROUP BY vstdate ORDER BY vstdate',[$start_date,$end_date]);
 
@@ -1082,7 +1104,7 @@ class DebtorController extends Controller
             $debtor = DB::select('
                 SELECT d.vn, d.vstdate, d.vsttime, d.hn, d.ptname, d.hipdata_code, d.pttype, d.hospmain,d.pdx, d.income,  
                     d.rcpt_money, d.ppfs, d.pp, d.other, d.debtor,s.receive_pp AS receive, s.repno, d.status, d.debtor_lock
-                FROM finance_debtor_1102050101_209 d   
+                FROM debtor_1102050101_209 d   
                 LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%"))
                 AND d.vstdate BETWEEN ? AND ?', [$search, $search, $start_date, $end_date]);
@@ -1090,7 +1112,7 @@ class DebtorController extends Controller
             $debtor = DB::select('
                 SELECT d.vn, d.vstdate, d.vsttime, d.hn, d.ptname, d.hipdata_code, d.pttype, d.hospmain, d.pdx,d.income,
                      d.rcpt_money, d.ppfs, d.pp, d.other,d.debtor,s.receive_pp AS receive, s.repno, d.status, d.debtor_lock
-                FROM finance_debtor_1102050101_209 d   
+                FROM debtor_1102050101_209 d   
                 LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE d.vstdate BETWEEN ? AND ?', [$start_date, $end_date]);
         }
@@ -1123,7 +1145,7 @@ class DebtorController extends Controller
                 AND p.hipdata_code NOT IN ("OFC","LGO")	
                 AND vp.pttype NOT IN ('.$pttype_checkup.')
                 AND v.pdx IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
-                AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_209) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_209) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -1180,7 +1202,7 @@ class DebtorController extends Controller
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
-            Finance_debtor_1102050101_209::insert([
+            Debtor_1102050101_209::insert([
                 'vn'              => $row->vn,
                 'hn'              => $row->hn,
                 'cid'             => $row->cid,
@@ -1214,7 +1236,7 @@ class DebtorController extends Controller
     {
         $checkbox = $request->input('checkbox_d');        
 
-        $deleted = Finance_debtor_1102050101_209::whereIn('vn', $checkbox)
+        $deleted = Debtor_1102050101_209::whereIn('vn', $checkbox)
             ->whereNull('debtor_lock')
             ->delete();
 
@@ -1236,7 +1258,7 @@ class DebtorController extends Controller
         $debtor = DB::select('
             SELECT d.vstdate,COUNT(DISTINCT d.vn) AS anvn,
             SUM(d.debtor) AS debtor,SUM(s.receive_pp) AS receive
-            FROM finance_debtor_1102050101_209 d   
+            FROM debtor_1102050101_209 d   
             LEFT JOIN finance_stm_ucs s ON s.cid=d.cid AND s.vstdate = d.vstdate
             AND LEFT(s.vsttime,5) =LEFT(d.vsttime,5)
             WHERE d.vstdate BETWEEN ? AND ?
@@ -1267,8 +1289,10 @@ class DebtorController extends Controller
             $debtor = DB::select('
                 SELECT d.vn, d.vstdate, d.vsttime, d.hn, d.ptname, d.hipdata_code, d.pttype, d.hospmain,d.pdx, d.income,  
                     d.rcpt_money, d.kidney, d.cr,d.anywhere, d.debtor,IFNULL(s.receive_total,sk.receive_total) AS receive,
-                    IFNULL(s.repno,sk.repno) AS repno, d.status, d.debtor_lock
-                FROM finance_debtor_1102050101_216 d   
+                    IFNULL(s.repno,sk.repno) AS repno, d.status, d.debtor_lock,
+                    CASE WHEN (IFNULL(IFNULL(s.receive_total, sk.receive_total), 0) - IFNULL(d.debtor, 0)) >= 0 
+                    THEN 0 ELSE DATEDIFF(CURDATE(), d.vstdate) END AS days
+                FROM debtor_1102050101_216 d   
                 LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 LEFT JOIN (SELECT cid,datetimeadm AS vstdate,sum(receive_total) AS receive_total,repno
                     FROM finance_stm_ucs_kidney GROUP BY cid,datetimeadm) sk ON sk.cid=d.cid AND sk.vstdate = d.vstdate
@@ -1278,8 +1302,10 @@ class DebtorController extends Controller
             $debtor = DB::select('
                 SELECT d.vn, d.vstdate, d.vsttime, d.hn, d.ptname, d.hipdata_code, d.pttype, d.hospmain,d.pdx, d.income,  
                     d.rcpt_money, d.kidney, d.cr,d.anywhere, d.debtor,IFNULL(s.receive_total,sk.receive_total) AS receive,
-                    IFNULL(s.repno,sk.repno) AS repno, d.status, d.debtor_lock
-                FROM finance_debtor_1102050101_216 d   
+                    IFNULL(s.repno,sk.repno) AS repno, d.status, d.debtor_lock,
+                    CASE WHEN (IFNULL(IFNULL(s.receive_total, sk.receive_total), 0) - IFNULL(d.debtor, 0)) >= 0 
+                    THEN 0 ELSE DATEDIFF(CURDATE(), d.vstdate) END AS days
+                FROM debtor_1102050101_216 d   
                 LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 LEFT JOIN (SELECT cid,datetimeadm AS vstdate,sum(receive_total) AS receive_total,repno
                     FROM finance_stm_ucs_kidney GROUP BY cid,datetimeadm) sk ON sk.cid=d.cid AND sk.vstdate = d.vstdate
@@ -1305,7 +1331,7 @@ class DebtorController extends Controller
                 AND o.vstdate BETWEEN ? AND ?
                 AND p.hipdata_code = "UCS"
 				AND o1.vn IS NOT NULL 
-                AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_216) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_216) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date]); 
 
         $debtor_search_cr = DB::connection('hosxp')->select('
@@ -1331,7 +1357,7 @@ class DebtorController extends Controller
                 AND p.hipdata_code = "UCS"
 				AND o1.vn IS NOT NULL 
                 AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y") 
-                AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_216) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_216) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date]); 
 
         $debtor_search_anywhere = DB::connection('hosxp')->select('
@@ -1352,7 +1378,7 @@ class DebtorController extends Controller
                 AND p.hipdata_code = "UCS" 
                 AND o1.vn IS NULL				
                 AND vp.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y") 
-                AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_216) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_216) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -1400,7 +1426,7 @@ class DebtorController extends Controller
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
-            Finance_debtor_1102050101_216::insert([
+            Debtor_1102050101_216::insert([
                 'vn'              => $row->vn,
                 'hn'              => $row->hn,
                 'cid'             => $row->cid,
@@ -1466,7 +1492,7 @@ class DebtorController extends Controller
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
-            Finance_debtor_1102050101_216::insert([
+            Debtor_1102050101_216::insert([
                 'vn'              => $row->vn,
                 'hn'              => $row->hn,
                 'cid'             => $row->cid,
@@ -1528,7 +1554,7 @@ class DebtorController extends Controller
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
-            Finance_debtor_1102050101_216::insert([
+            Debtor_1102050101_216::insert([
                 'vn'              => $row->vn,
                 'hn'              => $row->hn,
                 'cid'             => $row->cid,
@@ -1561,7 +1587,7 @@ class DebtorController extends Controller
     {
         $checkbox = $request->input('checkbox_d');        
 
-        $deleted = Finance_debtor_1102050101_216::whereIn('vn', $checkbox)
+        $deleted = Debtor_1102050101_216::whereIn('vn', $checkbox)
             ->whereNull('debtor_lock')
             ->delete();
 
@@ -1585,7 +1611,7 @@ class DebtorController extends Controller
             FROM (SELECT d.vn, d.vstdate, d.vsttime, d.hn, d.ptname, d.hipdata_code, d.pttype, d.hospmain,d.pdx, d.income,  
             d.rcpt_money, d.kidney, d.cr,d.anywhere, d.debtor,IFNULL(s.receive_total,sk.receive_total) AS receive,
             IFNULL(s.repno,sk.repno) AS repno, d.status, d.debtor_lock
-            FROM finance_debtor_1102050101_216 d   
+            FROM debtor_1102050101_216 d   
             LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
             LEFT JOIN (SELECT cid,datetimeadm AS vstdate,sum(receive_total) AS receive_total,repno
             FROM finance_stm_ucs_kidney GROUP BY cid,datetimeadm) sk ON sk.cid=d.cid AND sk.vstdate = d.vstdate
@@ -1617,8 +1643,10 @@ class DebtorController extends Controller
             $debtor = DB::select('
                 SELECT d.vn,d.vstdate,d.vsttime, d.hn,d.ptname,d.hipdata_code,d.pttype,d.hospmain,d.pdx,d.income,  
                     d.rcpt_money,d.other,d.ppfs,d.debtor,d.receive,d.repno,s.receive_pp,
-                    IF(s.receive_pp <>"",s.repno,"") AS repno_pp,d.status,d.debtor_lock
-                FROM finance_debtor_1102050101_301 d   
+                    IF(s.receive_pp <>"",s.repno,"") AS repno_pp,d.status,d.debtor_lock,
+                    CASE WHEN (IFNULL(d.receive, 0) - IFNULL(d.debtor, 0)) >= 0 
+                    THEN 0 ELSE DATEDIFF(CURDATE(), d.vstdate) END AS days
+                FROM debtor_1102050101_301 d   
                 LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%"))
                 AND d.vstdate BETWEEN ? AND ?', [$search, $search, $start_date, $end_date]);
@@ -1626,8 +1654,10 @@ class DebtorController extends Controller
             $debtor = DB::select('
                 SELECT d.vn,d.vstdate,d.vsttime, d.hn,d.ptname,d.hipdata_code,d.pttype,d.hospmain,d.pdx,d.income,  
                     d.rcpt_money,d.other,d.ppfs,d.debtor,d.receive,d.repno,s.receive_pp,
-                    IF(s.receive_pp <>"",s.repno,"") AS repno_pp,d.status,d.debtor_lock
-                FROM finance_debtor_1102050101_301 d   
+                    IF(s.receive_pp <>"",s.repno,"") AS repno_pp,d.status,d.debtor_lock,
+                    CASE WHEN (IFNULL(d.receive, 0) - IFNULL(d.debtor, 0)) >= 0 
+                    THEN 0 ELSE DATEDIFF(CURDATE(), d.vstdate) END AS days
+                FROM debtor_1102050101_301 d   
                 LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE d.vstdate BETWEEN ? AND ?', [$start_date, $end_date]);
         }
@@ -1661,7 +1691,7 @@ class DebtorController extends Controller
                 AND p.pttype NOT IN ('.$pttype_sss_fund.')					
                 AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_sss ="Y")
                 AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
-                AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_301) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_301) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -1719,7 +1749,7 @@ class DebtorController extends Controller
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
-            Finance_debtor_1102050101_301::insert([
+            Debtor_1102050101_301::insert([
                 'vn'              => $row->vn,
                 'hn'              => $row->hn,
                 'cid'             => $row->cid,
@@ -1753,7 +1783,7 @@ class DebtorController extends Controller
     {
         $checkbox = $request->input('checkbox_d');        
 
-        $deleted = Finance_debtor_1102050101_301::whereIn('vn', $checkbox)
+        $deleted = Debtor_1102050101_301::whereIn('vn', $checkbox)
             ->whereNull('debtor_lock')
             ->delete();
 
@@ -1775,7 +1805,7 @@ class DebtorController extends Controller
         $debtor = DB::select('
             SELECT vstdate,COUNT(DISTINCT vn) AS anvn,
             SUM(debtor) AS debtor,SUM(receive) AS receive
-            FROM finance_debtor_1102050101_301  
+            FROM debtor_1102050101_301  
             WHERE vstdate BETWEEN ? AND ?
             GROUP BY vstdate ORDER BY vstdate',[$start_date,$end_date]);
 
@@ -1805,8 +1835,10 @@ class DebtorController extends Controller
             $debtor = DB::select('
                 SELECT d.vn,d.vstdate,d.vsttime, d.hn,d.ptname,d.hipdata_code,d.pttype,d.hospmain,d.pdx,d.income,  
                     d.rcpt_money,d.other,d.ppfs,d.debtor,d.charge_date,d.charge_no,d.charge,d.receive_date,d.receive_no, 
-                    d.receive ,d.repno,s.receive_pp,IF(s.receive_pp <>"",s.repno,"") AS repno_pp,d.status,d.debtor_lock
-                FROM finance_debtor_1102050101_303 d   
+                    d.receive ,d.repno,s.receive_pp,IF(s.receive_pp <>"",s.repno,"") AS repno_pp,d.status,d.debtor_lock,
+                    CASE WHEN (IFNULL(d.receive, 0) - IFNULL(d.debtor, 0)) >= 0 
+                    THEN 0 ELSE DATEDIFF(CURDATE(), d.vstdate) END AS days
+                FROM debtor_1102050101_303 d   
                 LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%"))
                 AND d.vstdate BETWEEN ? AND ?', [$search, $search, $start_date, $end_date]);
@@ -1814,8 +1846,10 @@ class DebtorController extends Controller
             $debtor = DB::select('
                 SELECT d.vn,d.vstdate,d.vsttime, d.hn,d.ptname,d.hipdata_code,d.pttype,d.hospmain,d.pdx,d.income,  
                     d.rcpt_money,d.other,d.ppfs,d.debtor,d.charge_date,d.charge_no,d.charge,d.receive_date,d.receive_no, 
-                    d.receive ,d.repno,s.receive_pp,IF(s.receive_pp <>"",s.repno,"") AS repno_pp,d.status,d.debtor_lock
-                FROM finance_debtor_1102050101_303 d   
+                    d.receive ,d.repno,s.receive_pp,IF(s.receive_pp <>"",s.repno,"") AS repno_pp,d.status,d.debtor_lock,
+                    CASE WHEN (IFNULL(d.receive, 0) - IFNULL(d.debtor, 0)) >= 0 
+                    THEN 0 ELSE DATEDIFF(CURDATE(), d.vstdate) END AS days
+                FROM debtor_1102050101_303 d   
                 LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE d.vstdate BETWEEN ? AND ?', [$start_date, $end_date]);
         }
@@ -1849,7 +1883,7 @@ class DebtorController extends Controller
                 AND p.pttype NOT IN ('.$pttype_sss_fund.')					
                 AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE (hmain_sss ="" OR hmain_sss IS NULL))
                 AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
-                AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_303) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_303) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -1907,7 +1941,7 @@ class DebtorController extends Controller
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
-            Finance_debtor_1102050101_303::insert([
+            Debtor_1102050101_303::insert([
                 'vn'              => $row->vn,
                 'hn'              => $row->hn,
                 'cid'             => $row->cid,
@@ -1941,7 +1975,7 @@ class DebtorController extends Controller
     {
         $checkbox = $request->input('checkbox_d');        
 
-        $deleted = Finance_debtor_1102050101_303::whereIn('vn', $checkbox)
+        $deleted = Debtor_1102050101_303::whereIn('vn', $checkbox)
             ->whereNull('debtor_lock')
             ->delete();
 
@@ -1957,7 +1991,7 @@ class DebtorController extends Controller
 //_1102050101_303_update-------------------------------------------------------------------------------------------------------
     public function _1102050101_303_update(Request $request, $vn)
     {
-        $item = Finance_debtor_1102050101_303::findOrFail($vn);
+        $item = Debtor_1102050101_303::findOrFail($vn);
         $item->update([
             'charge_date' => $request->input('charge_date'),
             'charge_no' => $request->input('charge_no'),
@@ -1979,7 +2013,7 @@ class DebtorController extends Controller
         $debtor = DB::select('
             SELECT vstdate,COUNT(DISTINCT vn) AS anvn,
             SUM(debtor) AS debtor,SUM(receive) AS receive
-            FROM finance_debtor_1102050101_303  
+            FROM debtor_1102050101_303  
             WHERE vstdate BETWEEN ? AND ?
             GROUP BY vstdate ORDER BY vstdate',[$start_date,$end_date]);
 
@@ -2005,24 +2039,21 @@ class DebtorController extends Controller
         $search  =  $request->search ?: Session::get('search');
         $pttype_sss_fund = DB::table('main_setting')->where('name', 'pttype_sss_fund')->value('value');          
 
-        if ($search) {
-            $debtor = DB::select('
-                SELECT d.vn,d.vstdate,d.vsttime, d.hn,d.ptname,d.hipdata_code,d.pttype,d.hospmain,d.pdx,d.income,  
-                    d.rcpt_money,d.other,d.ppfs,d.debtor,d.charge_date,d.charge_no,d.charge,d.receive_date,d.receive_no, 
-                    d.receive ,d.repno,s.receive_pp,IF(s.receive_pp <>"",s.repno,"") AS repno_pp,d.status,d.debtor_lock
-                FROM finance_debtor_1102050101_307 d   
-                LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
-                WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%"))
-                AND d.vstdate BETWEEN ? AND ?', [$search, $search, $start_date, $end_date]);
-        } else {
-            $debtor = DB::select('
-                SELECT d.vn,d.vstdate,d.vsttime, d.hn,d.ptname,d.hipdata_code,d.pttype,d.hospmain,d.pdx,d.income,  
-                    d.rcpt_money,d.other,d.ppfs,d.debtor,d.charge_date,d.charge_no,d.charge,d.receive_date,d.receive_no, 
-                    d.receive ,d.repno,s.receive_pp,IF(s.receive_pp <>"",s.repno,"") AS repno_pp,d.status,d.debtor_lock
-                FROM finance_debtor_1102050101_307 d   
-                LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
-                WHERE d.vstdate BETWEEN ? AND ?', [$start_date, $end_date]);
-        }
+        $debtor =  Debtor_1102050101_307::whereBetween('vstdate', [$start_date,$end_date])
+              ->where(function ($query) use ($search){
+                $query->where('ptname','like','%'.$search.'%');
+                $query->orwhere('hn','like','%'.$search.'%');
+                $query->orwhere('an','like','%'.$search.'%');
+                })
+              ->orderBy('vstdate')->get()
+              ->map(function ($item) {                        
+                    if (($item->receive - $item->debtor) >= 0) {
+                        $item->days = 0; // เช็คก่อนว่ารับแล้วหรือยัง
+                    } else {
+                        $item->days = Carbon::parse($item->vstdate)->diffInDays(Carbon::today());
+                    }
+                    return $item;
+                }); 
 
         $debtor_search = DB::connection('hosxp')->select('
             SELECT o.vn,o.hn,o.an,pt.cid,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,o.vstdate,
@@ -2051,7 +2082,7 @@ class DebtorController extends Controller
                 AND o.vstdate BETWEEN ? AND ?
                 AND p.pttype IN ('.$pttype_sss_fund.')
                 AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
-                AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_307) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_307) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -2107,7 +2138,7 @@ class DebtorController extends Controller
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
-            Finance_debtor_1102050101_307::insert([
+            Debtor_1102050101_307::insert([
                 'vn'              => $row->vn,
                 'hn'              => $row->hn,
                 'cid'             => $row->cid,
@@ -2141,7 +2172,7 @@ class DebtorController extends Controller
     {
         $checkbox = $request->input('checkbox_d');        
 
-        $deleted = Finance_debtor_1102050101_307::whereIn('vn', $checkbox)
+        $deleted = Debtor_1102050101_307::whereIn('vn', $checkbox)
             ->whereNull('debtor_lock')
             ->delete();
 
@@ -2157,7 +2188,7 @@ class DebtorController extends Controller
 //_1102050101_307_update-------------------------------------------------------------------------------------------------------
     public function _1102050101_307_update(Request $request, $vn)
     {
-        $item = Finance_debtor_1102050101_307::findOrFail($vn);
+        $item = Debtor_1102050101_307::findOrFail($vn);
         $item->update([
             'charge_date' => $request->input('charge_date'),
             'charge_no' => $request->input('charge_no'),
@@ -2179,7 +2210,7 @@ class DebtorController extends Controller
         $debtor = DB::select('
             SELECT vstdate,COUNT(DISTINCT vn) AS anvn,
             SUM(debtor) AS debtor,SUM(receive) AS receive
-            FROM finance_debtor_1102050101_307  
+            FROM debtor_1102050101_307  
             WHERE vstdate BETWEEN ? AND ?
             GROUP BY vstdate ORDER BY vstdate',[$start_date,$end_date]);
 
@@ -2208,8 +2239,10 @@ class DebtorController extends Controller
             $debtor = DB::select('
                 SELECT d.vstdate,d.vsttime,d.vn,d.hn,d.cid,d.ptname,d.hipdata_code,d.pttype,
                     d.pdx,d.hospmain,d.income,d.rcpt_money,d.kidney,d.debtor,
-                    s.amount+s.epopay+s.epoadm AS receive,s.rid AS repno,d.debtor_lock
-                    FROM finance_debtor_1102050101_309 d   
+                    s.amount+s.epopay+s.epoadm AS receive,s.rid AS repno,d.debtor_lock,
+                    CASE WHEN (IFNULL(s.amount+s.epopay+s.epoadm, 0) - IFNULL(d.debtor, 0)) >= 0 
+                    THEN 0 ELSE DATEDIFF(CURDATE(), d.vstdate) END AS days
+                    FROM debtor_1102050101_309 d   
                 LEFT JOIN finance_stm_sss_kidney s ON s.cid=d.cid AND s.vstdate = d.vstdate
                 WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%"))
                 AND d.vstdate BETWEEN ? AND ?', [$search, $search, $start_date, $end_date]);
@@ -2217,8 +2250,10 @@ class DebtorController extends Controller
             $debtor = DB::select('
                 SELECT d.vstdate,d.vsttime,d.vn,d.hn,d.cid,d.ptname,d.hipdata_code,d.pttype,
                     d.pdx,d.hospmain,d.income,d.rcpt_money,d.kidney,d.debtor,
-                    s.amount+s.epopay+s.epoadm AS receive,s.rid AS repno,d.debtor_lock
-                    FROM finance_debtor_1102050101_309 d   
+                    s.amount+s.epopay+s.epoadm AS receive,s.rid AS repno,d.debtor_lock,
+                    CASE WHEN (IFNULL(s.amount+s.epopay+s.epoadm, 0) - IFNULL(d.debtor, 0)) >= 0 
+                    THEN 0 ELSE DATEDIFF(CURDATE(), d.vstdate) END AS days
+                    FROM debtor_1102050101_309 d   
                 LEFT JOIN finance_stm_sss_kidney s ON s.cid=d.cid AND s.vstdate = d.vstdate
                 WHERE d.vstdate BETWEEN ? AND ?', [$start_date, $end_date]);
         }
@@ -2241,7 +2276,7 @@ class DebtorController extends Controller
             WHERE p.hipdata_code IN ("SSS","SSI")	
 			AND o1.vn IS NOT NULL	
             AND o.vstdate BETWEEN ? AND ?
-            AND o.vn NOT IN (SELECT vn FROM htp_report.finance_debtor_1102050101_309) 
+            AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_309) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -2288,7 +2323,7 @@ class DebtorController extends Controller
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
-            Finance_debtor_1102050101_309::insert([
+            Debtor_1102050101_309::insert([
                 'vn'              => $row->vn,
                 'hn'              => $row->hn,
                 'cid'             => $row->cid,
@@ -2321,7 +2356,7 @@ class DebtorController extends Controller
     {
         $checkbox = $request->input('checkbox_d');        
 
-        $deleted = Finance_debtor_1102050101_309::whereIn('vn', $checkbox)
+        $deleted = Debtor_1102050101_309::whereIn('vn', $checkbox)
             ->whereNull('debtor_lock')
             ->delete();
 
@@ -2337,7 +2372,7 @@ class DebtorController extends Controller
 //_1102050101_309_update-------------------------------------------------------------------------------------------------------
     public function _1102050101_309_update(Request $request, $vn)
     {
-        $item = Finance_debtor_1102050101_309::findOrFail($vn);
+        $item = Debtor_1102050101_309::findOrFail($vn);
         $item->update([
             'charge_date' => $request->input('charge_date'),
             'charge_no' => $request->input('charge_no'),
@@ -2361,7 +2396,7 @@ class DebtorController extends Controller
             FROM (SELECT d.vstdate,d.vsttime,d.vn,d.hn,d.cid,d.ptname,d.hipdata_code,d.pttype,
             d.pdx,d.hospmain,d.income,d.rcpt_money,d.kidney,d.debtor,
             s.amount+s.epopay+s.epoadm AS receive,s.rid AS repno,d.debtor_lock
-            FROM finance_debtor_1102050101_309 d   
+            FROM debtor_1102050101_309 d   
             LEFT JOIN finance_stm_sss_kidney s ON s.cid=d.cid AND s.vstdate = d.vstdate
             WHERE d.vstdate BETWEEN ? AND ?) AS a GROUP BY vstdate ORDER BY vsttime',[$start_date,$end_date]);
 
@@ -4399,16 +4434,20 @@ class DebtorController extends Controller
  
         if ($search) {
             $debtor = DB::select('
-                SELECT d.*,stm.fund_ip_payrate,stm.receive_ip_compensate_pay,stm.receive_total,stm.repno
-                FROM finance_debtor_1102050101_202 d
+                SELECT d.*,stm.fund_ip_payrate,stm.receive_ip_compensate_pay,stm.receive_total,stm.repno,
+                CASE WHEN (IFNULL(stm.receive_total,0) - IFNULL(d.debtor,0)) >= 0 THEN 0
+                   ELSE DATEDIFF(CURDATE(), d.dchdate) END AS days
+                FROM debtor_1102050101_202 d
                 LEFT JOIN finance_stm_ucs stm ON stm.an=d.an
-                WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%"))
+                WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%") OR d.an LIKE CONCAT("%", ?, "%"))
                 AND d.dchdate BETWEEN ? AND ?
-                GROUP BY d.an', [$search, $search,$start_date,$end_date]);
+                GROUP BY d.an', [$search, $search,$search,$start_date,$end_date]);
         } else {
             $debtor = DB::select('
-                SELECT d.*,stm.fund_ip_payrate,stm.receive_ip_compensate_pay,stm.receive_total,stm.repno
-                FROM finance_debtor_1102050101_202 d
+                SELECT d.*,stm.fund_ip_payrate,stm.receive_ip_compensate_pay,stm.receive_total,stm.repno,
+                CASE WHEN (IFNULL(stm.receive_total,0) - IFNULL(d.debtor,0)) >= 0 THEN 0
+                   ELSE DATEDIFF(CURDATE(), d.dchdate) END AS days
+                FROM debtor_1102050101_202 d
                 LEFT JOIN finance_stm_ucs stm ON stm.an=d.an
                 WHERE d.dchdate BETWEEN ? AND ?
                 GROUP BY d.an', [$start_date,$end_date]);
@@ -4440,7 +4479,7 @@ class DebtorController extends Controller
             WHERE i.confirm_discharge = "Y" 
             AND p.hipdata_code = "UCS" 
             AND i.dchdate BETWEEN ? AND ?
-            AND i.an NOT IN (SELECT an FROM htp_report.finance_debtor_1102050101_202) 
+            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_202) 
             GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -4494,7 +4533,7 @@ class DebtorController extends Controller
             GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
-            Finance_debtor_1102050101_202::insert([
+            Debtor_1102050101_202::insert([
                 'an'              => $row->an,
                 'vn'              => $row->vn,
                 'hn'              => $row->hn,
@@ -4530,7 +4569,7 @@ class DebtorController extends Controller
     {
         $checkbox = $request->input('checkbox_d');        
 
-        $deleted = Finance_debtor_1102050101_202::whereIn('an', $checkbox)
+        $deleted = Debtor_1102050101_202::whereIn('an', $checkbox)
             ->whereNull('debtor_lock')
             ->delete();
 
@@ -4552,7 +4591,7 @@ class DebtorController extends Controller
         $debtor = DB::select('
             SELECT dchdate AS vstdate,COUNT(DISTINCT an) AS anvn,
             SUM(debtor) AS debtor,SUM(receive_ip_compensate_pay) AS receive
-            FROM (SELECT d.dchdate,d.an,d.debtor,stm.receive_ip_compensate_pay FROM finance_debtor_1102050101_202 d
+            FROM (SELECT d.dchdate,d.an,d.debtor,stm.receive_ip_compensate_pay FROM debtor_1102050101_202 d
             LEFT JOIN finance_stm_ucs stm ON stm.an=d.an    
             WHERE d.dchdate BETWEEN ? AND ?
             GROUP BY d.an) AS a
@@ -4582,18 +4621,22 @@ class DebtorController extends Controller
         if ($search) {
             $debtor = DB::select('
                 SELECT d.*,stm.fund_ip_payrate,(stm.receive_total-stm.receive_ip_compensate_pay)+sk.receive_total AS receive,
-						stm.repno,sk.repno AS repno_kidney
-                FROM finance_debtor_1102050101_217 d
+				    stm.repno,sk.repno AS repno_kidney,
+                    CASE WHEN IFNULL((stm.receive_total-stm.receive_ip_compensate_pay)+sk.receive_total,0) - IFNULL(d.debtor, 0) >= 0
+                    THEN 0 ELSE DATEDIFF(CURDATE(), d.dchdate) END AS days
+                FROM debtor_1102050101_217 d
                 LEFT JOIN finance_stm_ucs stm ON stm.an=d.an
                 LEFT JOIN finance_stm_ucs_kidney sk ON sk.cid=d.cid AND sk.datetimeadm BETWEEN d.regdate AND d.dchdate
-                WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%"))
+                WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%") OR d.an LIKE CONCAT("%", ?, "%"))
                 AND d.dchdate BETWEEN ? AND ?
-                GROUP BY d.an', [$search, $search,$start_date,$end_date]);
+                GROUP BY d.an', [$search,$search,$search,$start_date,$end_date]);
         } else {
             $debtor = DB::select('
                 SELECT d.*,stm.fund_ip_payrate,(stm.receive_total-stm.receive_ip_compensate_pay)+sk.receive_total AS receive,
-						stm.repno,sk.repno AS repno_kidney
-                FROM finance_debtor_1102050101_217 d
+					stm.repno,sk.repno AS repno_kidney,
+                    CASE WHEN IFNULL((stm.receive_total-stm.receive_ip_compensate_pay)+sk.receive_total,0) - IFNULL(d.debtor, 0) >= 0
+                    THEN 0 ELSE DATEDIFF(CURDATE(), d.dchdate) END AS days
+                FROM debtor_1102050101_217 d
                 LEFT JOIN finance_stm_ucs stm ON stm.an=d.an
                 LEFT JOIN finance_stm_ucs_kidney sk ON sk.cid=d.cid AND sk.datetimeadm BETWEEN d.regdate AND d.dchdate
                 WHERE d.dchdate BETWEEN ? AND ?
@@ -4627,7 +4670,7 @@ class DebtorController extends Controller
                 AND COALESCE(cr.cr_price,0) <> "0"
                 AND p.hipdata_code = "UCS" 
                 AND i.dchdate BETWEEN ? AND ?
-                AND i.an NOT IN (SELECT an FROM htp_report.finance_debtor_1102050101_217) 
+                AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_217) 
             GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -4682,7 +4725,7 @@ class DebtorController extends Controller
             GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
-            Finance_debtor_1102050101_217::insert([
+            Debtor_1102050101_217::insert([
                 'an'              => $row->an,
                 'vn'              => $row->vn,
                 'hn'              => $row->hn,
@@ -4718,7 +4761,7 @@ class DebtorController extends Controller
     {
         $checkbox = $request->input('checkbox_d');        
 
-        $deleted = Finance_debtor_1102050101_217::whereIn('an', $checkbox)
+        $deleted = Debtor_1102050101_217::whereIn('an', $checkbox)
             ->whereNull('debtor_lock')
             ->delete();
 
@@ -4740,7 +4783,7 @@ class DebtorController extends Controller
         $debtor = DB::select('
             SELECT dchdate AS vstdate,COUNT(DISTINCT an) AS anvn,SUM(debtor) AS debtor,SUM(receive) AS receive
             FROM (SELECT d.dchdate,d.an,d.debtor,(stm.receive_total-stm.receive_ip_compensate_pay)+IFNULL(SUM(sk.receive_total),0) AS receive
-            FROM finance_debtor_1102050101_217 d
+            FROM debtor_1102050101_217 d
             LEFT JOIN finance_stm_ucs stm ON stm.an=d.an 
 			LEFT JOIN finance_stm_ucs_kidney sk ON sk.cid=d.cid AND sk.datetimeadm BETWEEN d.regdate AND d.dchdate			
             WHERE d.dchdate BETWEEN ? AND ?
@@ -4770,13 +4813,21 @@ class DebtorController extends Controller
         $pttype_sss_fund = DB::table('main_setting')->where('name', 'pttype_sss_fund')->value('value');
         $pttype_sss_72 = DB::table('main_setting')->where('name', 'pttype_sss_72')->value('value');
         
-        $debtor =  Finance_debtor_1102050101_302::whereBetween('dchdate', [$start_date,$end_date])
+        $debtor =  Debtor_1102050101_302::whereBetween('dchdate', [$start_date,$end_date])
             ->where(function ($query) use ($search){
                 $query->where('ptname','like','%'.$search.'%');
                 $query->orwhere('hn','like','%'.$search.'%');
                 $query->orwhere('an','like','%'.$search.'%');
             })
-            ->orderBy('dchdate')->get();  
+            ->orderBy('dchdate')->get()
+            ->map(function ($item) {                        
+                if (($item->receive - $item->debtor) >= 0) {
+                    $item->days = 0; // เช็คก่อนว่ารับแล้วหรือยัง
+                } else {
+                    $item->days = Carbon::parse($item->dchdate)->diffInDays(Carbon::today());
+                }
+                return $item;
+            });  
 
         $debtor_search = DB::connection('hosxp')->select('
             SELECT w.`name` AS ward,i.hn,pt.cid,i.vn,i.an,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,a.age_y,
@@ -4805,7 +4856,7 @@ class DebtorController extends Controller
 			AND ip.pttype NOT IN ('.$pttype_sss_72.') 
             AND i.dchdate BETWEEN ? AND ?
 			AND ip.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_sss ="Y")
-            AND i.an NOT IN (SELECT an FROM htp_report.finance_debtor_1102050101_302)
+            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_302)
             GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -4862,7 +4913,7 @@ class DebtorController extends Controller
             GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
-            Finance_debtor_1102050101_302::insert([
+            Debtor_1102050101_302::insert([
                 'an'              => $row->an,
                 'vn'              => $row->vn,
                 'hn'              => $row->hn,
@@ -4899,7 +4950,7 @@ class DebtorController extends Controller
     {
         $checkbox = $request->input('checkbox_d');        
 
-        $deleted = Finance_debtor_1102050101_302::whereIn('an', $checkbox)
+        $deleted = Debtor_1102050101_302::whereIn('an', $checkbox)
             ->whereNull('debtor_lock')
             ->delete();
 
@@ -4915,7 +4966,7 @@ class DebtorController extends Controller
 //_1102050101_302_update-------------------------------------------------------------------------------------------------------
     public function _1102050101_302_update(Request $request, $an)
     {
-        $item = Finance_debtor_1102050101_302::findOrFail($an);
+        $item = Debtor_1102050101_302::findOrFail($an);
         $item->update([
             'charge_date' => $request->input('charge_date'),
             'charge_no' => $request->input('charge_no'),
@@ -4936,7 +4987,7 @@ class DebtorController extends Controller
         $end_date = Session::get('end_date');
         $debtor = DB::select('
             SELECT dchdate AS vstdate,COUNT(DISTINCT an) AS anvn,SUM(debtor) AS debtor,SUM(receive) AS receive
-            FROM finance_debtor_1102050101_302    
+            FROM debtor_1102050101_302    
             WHERE dchdate BETWEEN ? AND ?
             GROUP BY dchdate ORDER BY dchdate',[$start_date,$end_date]);
 
@@ -4963,13 +5014,21 @@ class DebtorController extends Controller
         $pttype_sss_fund = DB::table('main_setting')->where('name', 'pttype_sss_fund')->value('value');
         $pttype_sss_72 = DB::table('main_setting')->where('name', 'pttype_sss_72')->value('value');
         
-        $debtor =  Finance_debtor_1102050101_304::whereBetween('dchdate', [$start_date,$end_date])
+        $debtor =  Debtor_1102050101_304::whereBetween('dchdate', [$start_date,$end_date])
             ->where(function ($query) use ($search){
                 $query->where('ptname','like','%'.$search.'%');
                 $query->orwhere('hn','like','%'.$search.'%');
                 $query->orwhere('an','like','%'.$search.'%');
             })
-            ->orderBy('dchdate')->get();  
+            ->orderBy('dchdate')->get()
+            ->map(function ($item) {                        
+                if (($item->receive - $item->debtor) >= 0) {
+                    $item->days = 0; // เช็คก่อนว่ารับแล้วหรือยัง
+                } else {
+                    $item->days = Carbon::parse($item->dchdate)->diffInDays(Carbon::today());
+                }
+                return $item;
+            });  
 
         $debtor_search = DB::connection('hosxp')->select('
             SELECT w.`name` AS ward,i.hn,pt.cid,i.vn,i.an,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,a.age_y,
@@ -4998,7 +5057,7 @@ class DebtorController extends Controller
 			AND ip.pttype NOT IN ('.$pttype_sss_72.') 
             AND i.dchdate BETWEEN ? AND ?
 			AND ip.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_sss ="Y")
-            AND i.an NOT IN (SELECT an FROM htp_report.finance_debtor_1102050101_304)
+            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_304)
             GROUP BY i.an,ip.pttype ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -5055,7 +5114,7 @@ class DebtorController extends Controller
             GROUP BY i.an,ip.pttype ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
-            Finance_debtor_1102050101_304::insert([
+            Debtor_1102050101_304::insert([
                 'an'              => $row->an,
                 'vn'              => $row->vn,
                 'hn'              => $row->hn,
@@ -5092,7 +5151,7 @@ class DebtorController extends Controller
     {
         $checkbox = $request->input('checkbox_d');        
 
-        $deleted = Finance_debtor_1102050101_304::whereIn('an', $checkbox)
+        $deleted = Debtor_1102050101_304::whereIn('an', $checkbox)
             ->whereNull('debtor_lock')
             ->delete();
 
@@ -5108,7 +5167,7 @@ class DebtorController extends Controller
 //_1102050101_304_update-------------------------------------------------------------------------------------------------------
     public function _1102050101_304_update(Request $request, $an)
     {
-        $item = Finance_debtor_1102050101_304::findOrFail($an);
+        $item = Debtor_1102050101_304::findOrFail($an);
         $item->update([
             'charge_date' => $request->input('charge_date'),
             'charge_no' => $request->input('charge_no'),
@@ -5129,7 +5188,7 @@ class DebtorController extends Controller
         $end_date = Session::get('end_date');
         $debtor = DB::select('
             SELECT dchdate AS vstdate,COUNT(DISTINCT an) AS anvn,SUM(debtor) AS debtor,SUM(receive) AS receive
-            FROM finance_debtor_1102050101_304    
+            FROM debtor_1102050101_304    
             WHERE dchdate BETWEEN ? AND ?
             GROUP BY dchdate ORDER BY dchdate',[$start_date,$end_date]);
 
@@ -5155,13 +5214,21 @@ class DebtorController extends Controller
         $search  =  $request->search ?: Session::get('search'); 
         $pttype_sss_72 = DB::table('main_setting')->where('name', 'pttype_sss_72')->value('value');
         
-        $debtor =  Finance_debtor_1102050101_308::whereBetween('dchdate', [$start_date,$end_date])
+        $debtor =  Debtor_1102050101_308::whereBetween('dchdate', [$start_date,$end_date])
             ->where(function ($query) use ($search){
                 $query->where('ptname','like','%'.$search.'%');
                 $query->orwhere('hn','like','%'.$search.'%');
                 $query->orwhere('an','like','%'.$search.'%');
             })
-            ->orderBy('dchdate')->get();  
+            ->orderBy('dchdate')->get()
+            ->map(function ($item) {                        
+                if (($item->receive - $item->debtor) >= 0) {
+                    $item->days = 0; // เช็คก่อนว่ารับแล้วหรือยัง
+                } else {
+                    $item->days = Carbon::parse($item->dchdate)->diffInDays(Carbon::today());
+                }
+                return $item;
+            });  
 
         $debtor_search = DB::connection('hosxp')->select('
             SELECT w.`name` AS ward,i.hn,pt.cid,i.vn,i.an,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,a.age_y,
@@ -5187,7 +5254,7 @@ class DebtorController extends Controller
             WHERE i.confirm_discharge = "Y" 
 			AND ip.pttype IN ('.$pttype_sss_72.') 
             AND i.dchdate BETWEEN ? AND ?
-            AND i.an NOT IN (SELECT an FROM htp_report.finance_debtor_1102050101_308)
+            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_308)
             GROUP BY i.an,ip.pttype ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -5241,7 +5308,7 @@ class DebtorController extends Controller
             GROUP BY i.an,ip.pttype ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
-            Finance_debtor_1102050101_308::insert([
+            Debtor_1102050101_308::insert([
                 'an'              => $row->an,
                 'vn'              => $row->vn,
                 'hn'              => $row->hn,
@@ -5278,7 +5345,7 @@ class DebtorController extends Controller
     {
         $checkbox = $request->input('checkbox_d');        
 
-        $deleted = Finance_debtor_1102050101_308::whereIn('an', $checkbox)
+        $deleted = Debtor_1102050101_308::whereIn('an', $checkbox)
             ->whereNull('debtor_lock')
             ->delete();
 
@@ -5294,7 +5361,7 @@ class DebtorController extends Controller
 //_1102050101_308_update-------------------------------------------------------------------------------------------------------
     public function _1102050101_308_update(Request $request, $an)
     {
-        $item = Finance_debtor_1102050101_308::findOrFail($an);
+        $item = Debtor_1102050101_308::findOrFail($an);
         $item->update([
             'charge_date' => $request->input('charge_date'),
             'charge_no' => $request->input('charge_no'),
@@ -5315,7 +5382,7 @@ class DebtorController extends Controller
         $end_date = Session::get('end_date');
         $debtor = DB::select('
             SELECT dchdate AS vstdate,COUNT(DISTINCT an) AS anvn,SUM(debtor) AS debtor,SUM(receive) AS receive
-            FROM finance_debtor_1102050101_308    
+            FROM debtor_1102050101_308    
             WHERE dchdate BETWEEN ? AND ?
             GROUP BY dchdate ORDER BY dchdate',[$start_date,$end_date]);
 
@@ -5340,40 +5407,48 @@ class DebtorController extends Controller
         $end_date = $request->end_date ?: Session::get('end_date');
         $search  =  $request->search ?: Session::get('search'); 
         
-        $debtor =  Finance_debtor_1102050101_310::whereBetween('dchdate', [$start_date,$end_date])
+        $debtor =  Debtor_1102050101_310::whereBetween('dchdate', [$start_date,$end_date])
             ->where(function ($query) use ($search){
                 $query->where('ptname','like','%'.$search.'%');
                 $query->orwhere('hn','like','%'.$search.'%');
                 $query->orwhere('an','like','%'.$search.'%');
             })
-            ->orderBy('dchdate')->get();  
+            ->orderBy('dchdate')->get()
+            ->map(function ($item) {                        
+                if (($item->receive - $item->debtor) >= 0) {
+                    $item->days = 0; // เช็คก่อนว่ารับแล้วหรือยัง
+                } else {
+                    $item->days = Carbon::parse($item->dchdate)->diffInDays(Carbon::today());
+                }
+                return $item;
+            });  
 
         $debtor_search = DB::connection('hosxp')->select('
             SELECT w.`name` AS ward,i.hn,pt.cid,i.vn,i.an,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,a.age_y,
                 p.`name` AS pttype,p.hipdata_code,ip.hospmain,i.regdate,i.regtime,i.dchdate,i.dchtime,a.pdx,i.adjrw,
-                a.income,a.rcpt_money,COALESCE(other.other_price,0) AS other,COALESCE(other.other_price,0) AS debtor,
-                GROUP_CONCAT(DISTINCT s.`name`) AS other_list,ict.ipt_coll_status_type_name,i.data_ok ,"ยืนยันลูกหนี้" AS status  
+                a.income,a.rcpt_money,COALESCE(kidney.kidney_price,0) AS kidney,COALESCE(kidney.kidney_price,0) AS debtor,
+                GROUP_CONCAT(DISTINCT s.`name`) AS kidney_list,ict.ipt_coll_status_type_name,i.data_ok ,"ยืนยันลูกหนี้" AS status  
             FROM ipt i 
             LEFT JOIN patient pt ON pt.hn=i.hn
             LEFT JOIN ipt_pttype ip ON ip.an=i.an
             LEFT JOIN pttype p ON p.pttype=ip.pttype
             LEFT JOIN ward w ON w.ward=i.ward
             LEFT JOIN an_stat a ON a.an=i.an
-            LEFT JOIN (SELECT op.an, SUM(op.sum_price) AS other_price	
+            LEFT JOIN (SELECT op.an, SUM(op.sum_price) AS kidney_price	
                 FROM opitemrece op INNER JOIN ipt ON ipt.an=op.an
                 LEFT JOIN htp_report.lookup_icode li ON op.icode = li.icode
                 LEFT JOIN nondrugitems n ON n.icode=op.icode 
                 WHERE op.an IS NOT NULL AND ipt.dchdate BETWEEN ? AND ?  AND li.kidney = "Y"
-                GROUP BY op.an) other ON other.an=i.an
+                GROUP BY op.an) kidney ON kidney.an=i.an
             LEFT JOIN opitemrece o ON o.an=i.an AND o.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE kidney = "Y")
             LEFT JOIN s_drugitems s ON s.icode=o.icode
             LEFT JOIN ipt_coll_stat ic ON ic.an=i.an
             LEFT JOIN ipt_coll_status_type ict ON ict.ipt_coll_status_type_id=ic.ipt_coll_status_type_id
             WHERE i.confirm_discharge = "Y" 
 			AND p.hipdata_code IN ("SSS","SSI") 
-            AND COALESCE(other.other_price,0)<>"0"
+            AND COALESCE(kidney.kidney_price,0)<>"0"
             AND i.dchdate BETWEEN ? AND ?            
-            AND i.an NOT IN (SELECT an FROM htp_report.finance_debtor_1102050101_310)
+            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_310)
             GROUP BY i.an,ip.pttype ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -5382,15 +5457,13 @@ class DebtorController extends Controller
         $request->session()->put('debtor',$debtor);
         $request->session()->save();
 
-        return view('hrims.debtor.1102050101_308',compact('start_date','end_date','search','debtor','debtor_search'));
+        return view('hrims.debtor.1102050101_310',compact('start_date','end_date','search','debtor','debtor_search'));
     }
 //_1102050101_310_confirm-------------------------------------------------------------------------------------------------------
     public function _1102050101_310_confirm(Request $request )
     {
         $start_date = Session::get('start_date');
-        $end_date = Session::get('end_date'); 
-        $pttype_sss_fund = DB::table('main_setting')->where('name', 'pttype_sss_fund')->value('value');
-        $pttype_sss_72 = DB::table('main_setting')->where('name', 'pttype_sss_72')->value('value');
+        $end_date = Session::get('end_date');
         $request->validate([
         'checkbox' => 'required|array',
         ], [
@@ -5402,33 +5475,33 @@ class DebtorController extends Controller
         $debtor = DB::connection('hosxp')->select('
             SELECT w.`name` AS ward,i.hn,pt.cid,i.vn,i.an,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,a.age_y,
                 p.`name` AS pttype,p.hipdata_code,ip.hospmain,i.regdate,i.regtime,i.dchdate,i.dchtime,a.pdx,i.adjrw,
-                a.income,a.rcpt_money,COALESCE(other.other_price,0) AS other,COALESCE(other.other_price,0) AS debtor,
-                GROUP_CONCAT(DISTINCT s.`name`) AS other_list,ict.ipt_coll_status_type_name,i.data_ok ,"ยืนยันลูกหนี้" AS status  
+                a.income,a.rcpt_money,COALESCE(kidney.kidney_price,0) AS kidney,COALESCE(kidney.kidney_price,0) AS debtor,
+                GROUP_CONCAT(DISTINCT s.`name`) AS kidney_list,ict.ipt_coll_status_type_name,i.data_ok ,"ยืนยันลูกหนี้" AS status  
             FROM ipt i 
             LEFT JOIN patient pt ON pt.hn=i.hn
             LEFT JOIN ipt_pttype ip ON ip.an=i.an
             LEFT JOIN pttype p ON p.pttype=ip.pttype
             LEFT JOIN ward w ON w.ward=i.ward
             LEFT JOIN an_stat a ON a.an=i.an
-            LEFT JOIN (SELECT op.an, SUM(op.sum_price) AS other_price	
+            LEFT JOIN (SELECT op.an, SUM(op.sum_price) AS kidney_price	
                 FROM opitemrece op INNER JOIN ipt ON ipt.an=op.an
                 LEFT JOIN htp_report.lookup_icode li ON op.icode = li.icode
                 LEFT JOIN nondrugitems n ON n.icode=op.icode 
                 WHERE op.an IS NOT NULL AND ipt.dchdate BETWEEN ? AND ?  AND li.kidney = "Y"
-                GROUP BY op.an) other ON other.an=i.an
+                GROUP BY op.an) kidney ON kidney.an=i.an
             LEFT JOIN opitemrece o ON o.an=i.an AND o.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE kidney = "Y")
             LEFT JOIN s_drugitems s ON s.icode=o.icode
             LEFT JOIN ipt_coll_stat ic ON ic.an=i.an
             LEFT JOIN ipt_coll_status_type ict ON ict.ipt_coll_status_type_id=ic.ipt_coll_status_type_id
             WHERE i.confirm_discharge = "Y" 
 			AND p.hipdata_code IN ("SSS","SSI") 
-            AND COALESCE(other.other_price,0)<>"0"
+            AND COALESCE(kidney.kidney_price,0)<>"0"
             AND i.dchdate BETWEEN ? AND ?   			
             AND i.an IN ('.$checkbox_string.') 
             GROUP BY i.an,ip.pttype ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
-            Finance_debtor_1102050101_308::insert([
+            Debtor_1102050101_310::insert([
                 'an'              => $row->an,
                 'vn'              => $row->vn,
                 'hn'              => $row->hn,
@@ -5445,7 +5518,7 @@ class DebtorController extends Controller
                 'adjrw'           => $row->adjrw,  
                 'income'          => $row->income,  
                 'rcpt_money'      => $row->rcpt_money, 
-                'other'           => $row->other,  
+                'kidney'          => $row->kidney,  
                 'debtor'          => $row->debtor,  
                 'status'          => $row->status,            
             ]);            
@@ -5465,7 +5538,7 @@ class DebtorController extends Controller
     {
         $checkbox = $request->input('checkbox_d');        
 
-        $deleted = Finance_debtor_1102050101_310::whereIn('an', $checkbox)
+        $deleted = Debtor_1102050101_310::whereIn('an', $checkbox)
             ->whereNull('debtor_lock')
             ->delete();
 
@@ -5481,7 +5554,7 @@ class DebtorController extends Controller
 //_1102050101_310_update-------------------------------------------------------------------------------------------------------
     public function _1102050101_310_update(Request $request, $an)
     {
-        $item = Finance_debtor_1102050101_310::findOrFail($an);
+        $item = Debtor_1102050101_310::findOrFail($an);
         $item->update([
             'charge_date' => $request->input('charge_date'),
             'charge_no' => $request->input('charge_no'),
@@ -5502,7 +5575,7 @@ class DebtorController extends Controller
         $end_date = Session::get('end_date');
         $debtor = DB::select('
             SELECT dchdate AS vstdate,COUNT(DISTINCT an) AS anvn,SUM(debtor) AS debtor,SUM(receive) AS receive
-            FROM finance_debtor_1102050101_310   
+            FROM debtor_1102050101_310   
             WHERE dchdate BETWEEN ? AND ?
             GROUP BY dchdate ORDER BY dchdate',[$start_date,$end_date]);
 

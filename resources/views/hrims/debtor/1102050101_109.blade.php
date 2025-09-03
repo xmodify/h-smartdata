@@ -49,7 +49,7 @@
                             <button type="button" class="btn btn-outline-danger btn-sm" onclick="confirmDelete()">ลบลูกหนี้</button>
                         </th>
                         <th class="text-left text-primary" colspan = "7">1102050101.109-ลูกหนี้-ระบบปฏิบัติการฉุกเฉิน วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</th> 
-                        <th class="text-center text-primary" colspan = "6">การชดเชย</th>                                                 
+                        <th class="text-center text-primary" colspan = "7">การชดเชย</th>                                                 
                     </tr>
                     <tr class="table-success">
                         <th class="text-center"><input type="checkbox" onClick="toggle_d(this)"> All</th> 
@@ -64,7 +64,8 @@
                         <th class="text-center text-primary">ชดเชย</th> 
                         <th class="text-center text-primary">ผลต่าง</th>                     
                         <th class="text-center text-primary" width="9%">สถานะ</th> 
-                        <th class="text-center text-primary" width="6%">Action</th>  
+                        <th class="text-center text-primary" width="6%">Action</th>                        
+                        <th class="text-center text-primary">อายุหนี้</th>  
                         <th class="text-center text-primary">Lock</th>                                       
                     </tr>
                     </thead>
@@ -91,13 +92,18 @@
                         <td align="right" @if(($row->receive-$row->debtor) > 0) style="color:green"
                             @elseif(($row->receive-$row->debtor) < 0) style="color:red" @endif>
                             {{ number_format($row->receive-$row->debtor,2) }}
-                        </td>                    
+                        </td>            
                         <td align="right">{{ $row->status }}</td> 
                         <td align="center">         
                             <button type="button" class="btn btn-outline-warning btn-sm text-primary receive" data-toggle="modal" data-target="#receive-{{ $row->vn }}"  data-id="{{ $row->vn }}" > 
                                 บันทึกชดเชย
                             </button>                            
-                        </td>      
+                        </td>
+                        <td align="right" @if($row->days < 90) style="background-color: #90EE90;"  {{-- เขียวอ่อน --}}
+                            @elseif($row->days >= 90 && $row->days <= 365) style="background-color: #FFFF99;" {{-- เหลือง --}}
+                            @else style="background-color: #FF7F7F;" {{-- แดง --}} @endif >
+                            {{ $row->days }} วัน
+                        </td>       
                         <td align="center" style="color:blue">{{ $row->debtor_lock }}</td>                            
                     <?php $count++; ?>
                     <?php $sum_income += $row->income ; ?>

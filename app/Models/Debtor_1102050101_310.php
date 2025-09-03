@@ -5,37 +5,35 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Finance_debtor_1102050101_103 extends Model
+class Debtor_1102050101_310 extends Model
 {
     use HasFactory;
 
-    protected $table = 'finance_debtor_1102050101_103'; 
-    protected $primaryKey = 'vn';
+    protected $table = 'debtor_1102050101_310'; 
+    protected $primaryKey = 'an';
     protected $fillable = [  
+        'an',   
         'vn',
         'hn', 
-        'an', 
         'cid',
-        'ptname', 
-        'vstdate', 
-        'vsttime',  
+        'ptname',
+        'regdate', 
+        'regtime',
+        'dchdate',
+        'dchtime',      
         'pttype',
         'hospmain',
         'hipdata_code',
         'pdx',
+        'adjrw',
         'income',
         'rcpt_money',
-        'other',
+        'kidney',
         'debtor',
-        'charge_date',
-        'charge_no',
-        'charge',
-        'receive_date', 
-        'receive_no',  
+        'status', 
         'receive',
         'repno',
-        'status', 
-        'debtor_lock',             
+        'debtor_lock',           
     ];
     public $timestamps = false;   
 }

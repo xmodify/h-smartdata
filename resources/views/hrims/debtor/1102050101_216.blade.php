@@ -82,7 +82,8 @@
                         <th class="text-center text-primary">ลูกหนี้</th>
                         <th class="text-center text-primary">ชดเชย</th> 
                         <th class="text-center text-primary">ผลต่าง</th>
-                        <th class="text-center text-primary">REP</th>                         
+                        <th class="text-center text-primary">REP</th> 
+                        <th class="text-center text-primary">อายุหนี้</th>                         
                         <th class="text-center text-primary">Lock</th>                                       
                     </tr>
                     </thead>
@@ -117,6 +118,11 @@
                             {{ number_format($row->receive-$row->debtor,2) }}
                         </td>         
                         <td align="right">{{ $row->repno }}</td> 
+                        <td align="right" @if($row->days < 90) style="background-color: #90EE90;"  {{-- เขียวอ่อน --}}
+                            @elseif($row->days >= 90 && $row->days <= 365) style="background-color: #FFFF99;" {{-- เหลือง --}}
+                            @else style="background-color: #FF7F7F;" {{-- แดง --}} @endif >
+                            {{ $row->days }} วัน
+                        </td>  
                         <td align="center" style="color:blue">{{ $row->debtor_lock }}</td>                            
                     <?php $count++; ?>
                     <?php $sum_income += $row->income ; ?>
