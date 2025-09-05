@@ -15,6 +15,19 @@
 </style>
 
 @section('content')
+    <style>
+        .btn-outline-purple {
+            color: #6f42c1;
+            border: 1px solid #6f42c1;
+            background-color: transparent;
+        }
+        .btn-outline-purple:hover {
+            color: #fff;
+            background-color: #6f42c1;
+            border-color: #6f42c1;
+        }
+    </style>
+
 <div class="container-fluid">
     <div class="card">
         <div class="alert alert-success" role="alert">
@@ -40,7 +53,8 @@
                                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                             </div>
                             <div class="col-md-3" >
-                                <button type="submit" class="btn btn-outline-danger">ImportDrugCat NHSO</button>
+                                <button type="submit" onclick="simulateProcess()" 
+                                class="btn btn-outline-success">ImportDrugCat NHSO</button>
                             </div> 
                             <div class="col-md-3">                                
                             </div>      
@@ -66,19 +80,19 @@
             </div>  
             <div class="row">   
                 <div class="col-md-6" align="left">
-                    <a class="btn btn-outline-success " href="{{ url('hosxp_setting/drug_cat') }}">
+                    <a class="btn btn-outline-primary " href="{{ url('hosxp_setting/drug_cat') }}">
                         ทั้งหมดที่ HOSxP
                     </a>  
-                    <a class="btn btn-outline-danger " href="{{ url('hosxp_setting/drug_cat_non_nhso') }}">
+                    <a class="btn btn-outline-purple " href="{{ url('hosxp_setting/drug_cat_non_nhso') }}">
                         ไม่พบที่ NHSO
                     </a>  
-                    <a class="btn btn-outline-danger " href="{{ url('hosxp_setting/drug_cat_nhso_price_notmatch_hosxp') }}">
+                    <a class="btn btn-outline-purple " href="{{ url('hosxp_setting/drug_cat_nhso_price_notmatch_hosxp') }}">
                         ราคาไม่ตรง HOSxP
                     </a> 
-                    <a class="btn btn-outline-danger " href="{{ url('hosxp_setting/drug_cat_nhso_tmt_notmatch_hosxp') }}">
+                    <a class="btn btn-outline-purple " href="{{ url('hosxp_setting/drug_cat_nhso_tmt_notmatch_hosxp') }}">
                         รหัส TMT ไม่ตรง HOSxP
                     </a> 
-                    <a class="btn btn-outline-danger " href="{{ url('hosxp_setting/drug_cat_nhso_code24_notmatch_hosxp') }}">
+                    <a class="btn btn-outline-purple " href="{{ url('hosxp_setting/drug_cat_nhso_code24_notmatch_hosxp') }}">
                         รหัส 24 หลักไม่ตรง HOSxP
                     </a> 
                 </div>   
@@ -155,17 +169,80 @@
     </div>
 </div>
 <br>
+@if (session('success'))
+<script>
+    Swal.fire({
+        title: 'นำเข้าสำเร็จ!',
+        text: '{{ session('success') }}',
+        icon: 'success',
+        confirmButtonText: 'ตกลง'
+    });
+</script>
+@endif
+
 @endsection
-<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
-<script type="text/javascript" class="init">
-    $(document).ready(function () {
-        $('#drug').DataTable();
-    });
+
+<script>
+    function showLoadingAlert() {
+        Swal.fire({
+            title: 'กำลังนำเข้าข้อมูล...',
+            text: 'กรุณารอสักครู่',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading()
+            }
+        });
+    }
+
+    function simulateProcess() {
+        const fileInput = document.querySelector('input[type="file"]');
+                // ตรวจสอบว่าไม่ได้เลือกไฟล์
+        if (!fileInput.files || fileInput.files.length === 0) {
+            Swal.fire({
+                title: 'แจ้งเตือน',
+                text: 'กรุณาเลือกไฟล์ก่อนนำเข้า',
+                icon: 'warning',
+                confirmButtonText: 'ตกลง'
+            });
+            return; // ❌ หยุดการทำงาน ไม่ส่งฟอร์ม
+        }
+
+        showLoadingAlert();
+        document.getElementById('importForm').submit();
+    }
 </script>
-<script type="text/javascript" class="init">
+
+@push('scripts')  
+  <script>
     $(document).ready(function () {
-        $('#drug_non_active').DataTable();
+      $('#drug').DataTable({
+        dom: '<"row mb-3"' +
+                '<"col-md-6"l>' + // Show รายการ
+                '<"col-md-6 d-flex justify-content-end align-items-center gap-2"fB>' + // Search + Export
+              '>' +
+              'rt' +
+              '<"row mt-3"' +
+                '<"col-md-6"i>' + // Info
+                '<"col-md-6"p>' + // Pagination
+              '>',
+        buttons: [
+            {
+              extend: 'excelHtml5',
+              text: 'Excel',
+              className: 'btn btn-success',
+              title: 'ตรวจสอบ Drug Catalog'
+            }
+        ],
+        language: {
+            search: "ค้นหา:",
+            lengthMenu: "แสดง _MENU_ รายการ",
+            info: "แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ",
+            paginate: {
+              previous: "ก่อนหน้า",
+              next: "ถัดไป"
+            }
+        }
+      });
     });
-</script>
+  </script>
+@endpush

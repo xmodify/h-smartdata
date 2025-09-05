@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Nhso_drugcat extends Model
+class Drugcat_nhso extends Model
 {
     use HasFactory;
 
-    protected $table = 'nhso_drugcat'; 
+    protected $table = 'drugcat_nhso'; 
     protected $fillable = [
         'hospdrugcode',
         'productcat',  

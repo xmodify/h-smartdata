@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Aipn_drugcat extends Model
+class Drugcat_aipn extends Model
 {
     use HasFactory;
 
-    protected $table = 'aipn_drugcat'; 
+    protected $table = 'drugcat_aipn'; 
     protected $fillable = [
         'id',
         'Hospdcode',

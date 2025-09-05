@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Reader\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use App\Models\Nhso_drugcat;
-use App\Models\Aipn_drugcat;
+use App\Models\Drugcat_nhso;
+use App\Models\Drugcat_aipn;
 use Session;
 use PDF;
 
@@ -173,6 +173,8 @@ public function drug_cat_nhso_save(Request $request)
     // Set the execution time to 300 seconds (5 minutes)
     set_time_limit(300);
 
+    Drugcat_nhso::truncate(); 
+
     $this->validate($request, [
         'file' => 'required|file|mimes:xls,xlsx'
     ]);
@@ -250,8 +252,7 @@ public function drug_cat_nhso_save(Request $request)
 
         $for_insert = array_chunk($data, 1000);
         foreach ($for_insert as $key => $data_) {
-            Nhso_drugcat::truncate(); 
-            Nhso_drugcat::insert($data_);                 
+            Drugcat_nhso::insert($data_);                 
         }
     }     
 
@@ -267,6 +268,8 @@ public function drug_cat_aipn_save(Request $request)
 {
     // Set the execution time to 300 seconds (5 minutes)
     set_time_limit(300);
+
+    Drugcat_aipn::truncate(); 
 
     $this->validate($request, [
         'file' => 'required|file|mimes:xls,xlsx'
@@ -347,9 +350,8 @@ public function drug_cat_aipn_save(Request $request)
         }
 
         $for_insert = array_chunk($data, 1000);
-        foreach ($for_insert as $key => $data_) {
-            Aipn_drugcat::truncate(); 
-            Aipn_drugcat::insert($data_);                 
+        foreach ($for_insert as $key => $data_) {            
+            Drugcat_aipn::insert($data_);                 
         }
     }     
 
@@ -375,10 +377,10 @@ public function drug_cat()
         LEFT JOIN drugitems_ref_code d2 ON d2.icode=d.icode AND d2.drugitems_ref_code_type_id=1
         LEFT JOIN drugitems_ref_code d3 ON d3.icode=d.icode AND d3.drugitems_ref_code_type_id=3
         LEFT JOIN sks_drugcatalog s ON s.HospDrugCode=d.icode
-        LEFT JOIN (SELECT dc.* FROM htp_report.nhso_drugcat dc WHERE  dc.date_approved = (SELECT MAX(dc1.date_approved) 
-		    FROM htp_report.nhso_drugcat dc1 WHERE dc.hospdrugcode=dc1.hospdrugcode AND dc1.updateflag IN ("A","U","E"))) nd ON nd.hospdrugcode=d.icode 
-        LEFT JOIN (SELECT dc.* FROM htp_report.aipn_drugcat dc WHERE  dc.DateUpdate = (SELECT MAX(dc1.DateUpdate) 
-			FROM htp_report.aipn_drugcat dc1 WHERE dc.Hospdcode=dc1.Hospdcode AND dc1.Updateflag IN ("A","U","E"))) ad ON ad.hospdcode=d.icode 
+        LEFT JOIN (SELECT dc.* FROM htp_report.drugcat_nhso dc WHERE  dc.date_approved = (SELECT MAX(dc1.date_approved) 
+		    FROM htp_report.drugcat_nhso dc1 WHERE dc.hospdrugcode=dc1.hospdrugcode AND dc1.updateflag IN ("A","U","E"))) nd ON nd.hospdrugcode=d.icode 
+        LEFT JOIN (SELECT dc.* FROM htp_report.drugcat_aipn dc WHERE  dc.DateUpdate = (SELECT MAX(dc1.DateUpdate) 
+			FROM htp_report.drugcat_aipn dc1 WHERE dc.Hospdcode=dc1.Hospdcode AND dc1.Updateflag IN ("A","U","E"))) ad ON ad.hospdcode=d.icode 
         WHERE d.istatus = "Y" AND d.`name` NOT LIKE "*%"  
 		ORDER BY d.NAME,d.strength,d.units');
 
@@ -399,10 +401,10 @@ public function drug_cat_non_nhso()
         LEFT JOIN drugitems_ref_code d2 ON d2.icode=d.icode AND d2.drugitems_ref_code_type_id=1
         LEFT JOIN drugitems_ref_code d3 ON d3.icode=d.icode AND d3.drugitems_ref_code_type_id=3
         LEFT JOIN sks_drugcatalog s ON s.HospDrugCode=d.icode
-        LEFT JOIN (SELECT dc.* FROM htp_report.nhso_drugcat dc WHERE  dc.date_approved = (SELECT MAX(dc1.date_approved) 
-		    FROM htp_report.nhso_drugcat dc1 WHERE dc.hospdrugcode=dc1.hospdrugcode AND dc1.updateflag IN ("A","U","E"))) nd ON nd.hospdrugcode=d.icode 
-        LEFT JOIN (SELECT dc.* FROM htp_report.aipn_drugcat dc WHERE  dc.DateUpdate = (SELECT MAX(dc1.DateUpdate) 
-			FROM htp_report.aipn_drugcat dc1 WHERE dc.Hospdcode=dc1.Hospdcode AND dc1.Updateflag IN ("A","U","E"))) ad ON ad.hospdcode=d.icode 
+        LEFT JOIN (SELECT dc.* FROM htp_report.drugcat_nhso dc WHERE  dc.date_approved = (SELECT MAX(dc1.date_approved) 
+		    FROM htp_report.drugcat_nhso dc1 WHERE dc.hospdrugcode=dc1.hospdrugcode AND dc1.updateflag IN ("A","U","E"))) nd ON nd.hospdrugcode=d.icode 
+        LEFT JOIN (SELECT dc.* FROM htp_report.drugcat_aipn dc WHERE  dc.DateUpdate = (SELECT MAX(dc1.DateUpdate) 
+			FROM htp_report.drugcat_aipn dc1 WHERE dc.Hospdcode=dc1.Hospdcode AND dc1.Updateflag IN ("A","U","E"))) ad ON ad.hospdcode=d.icode 
         WHERE d.istatus = "Y" AND d.`name` NOT LIKE "*%" AND nd.hospdrugcode IS NULL  
 		ORDER BY d.NAME,d.strength,d.units');
 
@@ -423,10 +425,10 @@ public function drug_cat_nhso_price_notmatch_hosxp()
         LEFT JOIN drugitems_ref_code d2 ON d2.icode=d.icode AND d2.drugitems_ref_code_type_id=1
         LEFT JOIN drugitems_ref_code d3 ON d3.icode=d.icode AND d3.drugitems_ref_code_type_id=3
         LEFT JOIN sks_drugcatalog s ON s.HospDrugCode=d.icode
-        LEFT JOIN (SELECT dc.* FROM htp_report.nhso_drugcat dc WHERE  dc.date_approved = (SELECT MAX(dc1.date_approved) 
-		    FROM htp_report.nhso_drugcat dc1 WHERE dc.hospdrugcode=dc1.hospdrugcode AND dc1.updateflag IN ("A","U","E"))) nd ON nd.hospdrugcode=d.icode 
-        LEFT JOIN (SELECT dc.* FROM htp_report.aipn_drugcat dc WHERE  dc.DateUpdate = (SELECT MAX(dc1.DateUpdate) 
-			FROM htp_report.aipn_drugcat dc1 WHERE dc.Hospdcode=dc1.Hospdcode AND dc1.Updateflag IN ("A","U","E"))) ad ON ad.hospdcode=d.icode 
+        LEFT JOIN (SELECT dc.* FROM htp_report.drugcat_nhso dc WHERE  dc.date_approved = (SELECT MAX(dc1.date_approved) 
+		    FROM htp_report.drugcat_nhso dc1 WHERE dc.hospdrugcode=dc1.hospdrugcode AND dc1.updateflag IN ("A","U","E"))) nd ON nd.hospdrugcode=d.icode 
+        LEFT JOIN (SELECT dc.* FROM htp_report.drugcat_aipn dc WHERE  dc.DateUpdate = (SELECT MAX(dc1.DateUpdate) 
+			FROM htp_report.drugcat_aipn dc1 WHERE dc.Hospdcode=dc1.Hospdcode AND dc1.Updateflag IN ("A","U","E"))) ad ON ad.hospdcode=d.icode 
         WHERE d.istatus = "Y" AND d.`name` NOT LIKE "*%" AND nd.unitprice <> d.unitprice
 		ORDER BY d.NAME,d.strength,d.units');
 
@@ -447,10 +449,10 @@ public function drug_cat_nhso_tmt_notmatch_hosxp()
         LEFT JOIN drugitems_ref_code d2 ON d2.icode=d.icode AND d2.drugitems_ref_code_type_id=1
         LEFT JOIN drugitems_ref_code d3 ON d3.icode=d.icode AND d3.drugitems_ref_code_type_id=3
         LEFT JOIN sks_drugcatalog s ON s.HospDrugCode=d.icode
-        LEFT JOIN (SELECT dc.* FROM htp_report.nhso_drugcat dc WHERE  dc.date_approved = (SELECT MAX(dc1.date_approved) 
-		    FROM htp_report.nhso_drugcat dc1 WHERE dc.hospdrugcode=dc1.hospdrugcode AND dc1.updateflag IN ("A","U","E"))) nd ON nd.hospdrugcode=d.icode 
-        LEFT JOIN (SELECT dc.* FROM htp_report.aipn_drugcat dc WHERE  dc.DateUpdate = (SELECT MAX(dc1.DateUpdate) 
-			FROM htp_report.aipn_drugcat dc1 WHERE dc.Hospdcode=dc1.Hospdcode AND dc1.Updateflag IN ("A","U","E"))) ad ON ad.hospdcode=d.icode 
+        LEFT JOIN (SELECT dc.* FROM htp_report.drugcat_nhso dc WHERE  dc.date_approved = (SELECT MAX(dc1.date_approved) 
+		    FROM htp_report.drugcat_nhso dc1 WHERE dc.hospdrugcode=dc1.hospdrugcode AND dc1.updateflag IN ("A","U","E"))) nd ON nd.hospdrugcode=d.icode 
+        LEFT JOIN (SELECT dc.* FROM htp_report.drugcat_aipn dc WHERE  dc.DateUpdate = (SELECT MAX(dc1.DateUpdate) 
+			FROM htp_report.drugcat_aipn dc1 WHERE dc.Hospdcode=dc1.Hospdcode AND dc1.Updateflag IN ("A","U","E"))) ad ON ad.hospdcode=d.icode 
         WHERE d.istatus = "Y" AND d.`name` NOT LIKE "*%" AND nd.tmtid <> d3.ref_code
 		ORDER BY d.NAME,d.strength,d.units');
 
@@ -471,10 +473,10 @@ public function drug_cat_nhso_code24_notmatch_hosxp()
         LEFT JOIN drugitems_ref_code d2 ON d2.icode=d.icode AND d2.drugitems_ref_code_type_id=1
         LEFT JOIN drugitems_ref_code d3 ON d3.icode=d.icode AND d3.drugitems_ref_code_type_id=3
         LEFT JOIN sks_drugcatalog s ON s.HospDrugCode=d.icode
-        LEFT JOIN (SELECT dc.* FROM htp_report.nhso_drugcat dc WHERE  dc.date_approved = (SELECT MAX(dc1.date_approved) 
-		    FROM htp_report.nhso_drugcat dc1 WHERE dc.hospdrugcode=dc1.hospdrugcode AND dc1.updateflag IN ("A","U","E"))) nd ON nd.hospdrugcode=d.icode 
-        LEFT JOIN (SELECT dc.* FROM htp_report.aipn_drugcat dc WHERE  dc.DateUpdate = (SELECT MAX(dc1.DateUpdate) 
-			FROM htp_report.aipn_drugcat dc1 WHERE dc.Hospdcode=dc1.Hospdcode AND dc1.Updateflag IN ("A","U","E"))) ad ON ad.hospdcode=d.icode 
+        LEFT JOIN (SELECT dc.* FROM htp_report.drugcat_nhso dc WHERE  dc.date_approved = (SELECT MAX(dc1.date_approved) 
+		    FROM htp_report.drugcat_nhso dc1 WHERE dc.hospdrugcode=dc1.hospdrugcode AND dc1.updateflag IN ("A","U","E"))) nd ON nd.hospdrugcode=d.icode 
+        LEFT JOIN (SELECT dc.* FROM htp_report.drugcat_aipn dc WHERE  dc.DateUpdate = (SELECT MAX(dc1.DateUpdate) 
+			FROM htp_report.drugcat_aipn dc1 WHERE dc.Hospdcode=dc1.Hospdcode AND dc1.Updateflag IN ("A","U","E"))) ad ON ad.hospdcode=d.icode 
         WHERE d.istatus = "Y" AND d.`name` NOT LIKE "*%" AND nd.ndc24 <> d2.ref_code
 		ORDER BY d.NAME,d.strength,d.units');
 
@@ -495,10 +497,10 @@ public function drug_cat_non_aipn()
         LEFT JOIN drugitems_ref_code d2 ON d2.icode=d.icode AND d2.drugitems_ref_code_type_id=1
         LEFT JOIN drugitems_ref_code d3 ON d3.icode=d.icode AND d3.drugitems_ref_code_type_id=3
         LEFT JOIN sks_drugcatalog s ON s.HospDrugCode=d.icode
-        LEFT JOIN (SELECT dc.* FROM htp_report.nhso_drugcat dc WHERE  dc.date_approved = (SELECT MAX(dc1.date_approved) 
-		    FROM htp_report.nhso_drugcat dc1 WHERE dc.hospdrugcode=dc1.hospdrugcode AND dc1.updateflag IN ("A","U","E"))) nd ON nd.hospdrugcode=d.icode 
-        LEFT JOIN (SELECT dc.* FROM htp_report.aipn_drugcat dc WHERE  dc.DateUpdate = (SELECT MAX(dc1.DateUpdate) 
-			FROM htp_report.aipn_drugcat dc1 WHERE dc.Hospdcode=dc1.Hospdcode AND dc1.Updateflag IN ("A","U","E"))) ad ON ad.hospdcode=d.icode 
+        LEFT JOIN (SELECT dc.* FROM htp_report.drugcat_nhso dc WHERE  dc.date_approved = (SELECT MAX(dc1.date_approved) 
+		    FROM htp_report.drugcat_nhso dc1 WHERE dc.hospdrugcode=dc1.hospdrugcode AND dc1.updateflag IN ("A","U","E"))) nd ON nd.hospdrugcode=d.icode 
+        LEFT JOIN (SELECT dc.* FROM htp_report.drugcat_aipn dc WHERE  dc.DateUpdate = (SELECT MAX(dc1.DateUpdate) 
+			FROM htp_report.drugcat_aipn dc1 WHERE dc.Hospdcode=dc1.Hospdcode AND dc1.Updateflag IN ("A","U","E"))) ad ON ad.hospdcode=d.icode 
         WHERE d.istatus = "Y" AND d.`name` NOT LIKE "*%" AND ad.hospdcode IS NULL
 		ORDER BY d.NAME,d.strength,d.units');
 
@@ -519,10 +521,10 @@ public function drug_cat_aipn_price_notmatch_hosxp()
         LEFT JOIN drugitems_ref_code d2 ON d2.icode=d.icode AND d2.drugitems_ref_code_type_id=1
         LEFT JOIN drugitems_ref_code d3 ON d3.icode=d.icode AND d3.drugitems_ref_code_type_id=3
         LEFT JOIN sks_drugcatalog s ON s.HospDrugCode=d.icode
-        LEFT JOIN (SELECT dc.* FROM htp_report.nhso_drugcat dc WHERE  dc.date_approved = (SELECT MAX(dc1.date_approved) 
-		    FROM htp_report.nhso_drugcat dc1 WHERE dc.hospdrugcode=dc1.hospdrugcode AND dc1.updateflag IN ("A","U","E"))) nd ON nd.hospdrugcode=d.icode 
-        LEFT JOIN (SELECT dc.* FROM htp_report.aipn_drugcat dc WHERE  dc.DateUpdate = (SELECT MAX(dc1.DateUpdate) 
-			FROM htp_report.aipn_drugcat dc1 WHERE dc.Hospdcode=dc1.Hospdcode AND dc1.Updateflag IN ("A","U","E"))) ad ON ad.hospdcode=d.icode 
+        LEFT JOIN (SELECT dc.* FROM htp_report.drugcat_nhso dc WHERE  dc.date_approved = (SELECT MAX(dc1.date_approved) 
+		    FROM htp_report.drugcat_nhso dc1 WHERE dc.hospdrugcode=dc1.hospdrugcode AND dc1.updateflag IN ("A","U","E"))) nd ON nd.hospdrugcode=d.icode 
+        LEFT JOIN (SELECT dc.* FROM htp_report.drugcat_aipn dc WHERE  dc.DateUpdate = (SELECT MAX(dc1.DateUpdate) 
+			FROM htp_report.drugcat_aipn dc1 WHERE dc.Hospdcode=dc1.Hospdcode AND dc1.Updateflag IN ("A","U","E"))) ad ON ad.hospdcode=d.icode 
         WHERE d.istatus = "Y" AND d.`name` NOT LIKE "*%" AND ad.unitprice <> d.unitprice
 		ORDER BY d.NAME,d.strength,d.units');
 
@@ -543,10 +545,10 @@ public function drug_cat_aipn_tmt_notmatch_hosxp()
         LEFT JOIN drugitems_ref_code d2 ON d2.icode=d.icode AND d2.drugitems_ref_code_type_id=1
         LEFT JOIN drugitems_ref_code d3 ON d3.icode=d.icode AND d3.drugitems_ref_code_type_id=3
         LEFT JOIN sks_drugcatalog s ON s.HospDrugCode=d.icode
-        LEFT JOIN (SELECT dc.* FROM htp_report.nhso_drugcat dc WHERE  dc.date_approved = (SELECT MAX(dc1.date_approved) 
-		    FROM htp_report.nhso_drugcat dc1 WHERE dc.hospdrugcode=dc1.hospdrugcode AND dc1.updateflag IN ("A","U","E"))) nd ON nd.hospdrugcode=d.icode 
-        LEFT JOIN (SELECT dc.* FROM htp_report.aipn_drugcat dc WHERE  dc.DateUpdate = (SELECT MAX(dc1.DateUpdate) 
-			FROM htp_report.aipn_drugcat dc1 WHERE dc.Hospdcode=dc1.Hospdcode AND dc1.Updateflag IN ("A","U","E"))) ad ON ad.hospdcode=d.icode 
+        LEFT JOIN (SELECT dc.* FROM htp_report.drugcat_nhso dc WHERE  dc.date_approved = (SELECT MAX(dc1.date_approved) 
+		    FROM htp_report.drugcat_nhso dc1 WHERE dc.hospdrugcode=dc1.hospdrugcode AND dc1.updateflag IN ("A","U","E"))) nd ON nd.hospdrugcode=d.icode 
+        LEFT JOIN (SELECT dc.* FROM htp_report.drugcat_aipn dc WHERE  dc.DateUpdate = (SELECT MAX(dc1.DateUpdate) 
+			FROM htp_report.drugcat_aipn dc1 WHERE dc.Hospdcode=dc1.Hospdcode AND dc1.Updateflag IN ("A","U","E"))) ad ON ad.hospdcode=d.icode 
         WHERE d.istatus = "Y" AND d.`name` NOT LIKE "*%" AND ad.tmtid <> d3.ref_code
 		ORDER BY d.NAME,d.strength,d.units');
 
@@ -567,10 +569,10 @@ public function drug_cat_aipn_code24_notmatch_hosxp()
         LEFT JOIN drugitems_ref_code d2 ON d2.icode=d.icode AND d2.drugitems_ref_code_type_id=1
         LEFT JOIN drugitems_ref_code d3 ON d3.icode=d.icode AND d3.drugitems_ref_code_type_id=3
         LEFT JOIN sks_drugcatalog s ON s.HospDrugCode=d.icode
-        LEFT JOIN (SELECT dc.* FROM htp_report.nhso_drugcat dc WHERE  dc.date_approved = (SELECT MAX(dc1.date_approved) 
-		    FROM htp_report.nhso_drugcat dc1 WHERE dc.hospdrugcode=dc1.hospdrugcode AND dc1.updateflag IN ("A","U","E"))) nd ON nd.hospdrugcode=d.icode 
-        LEFT JOIN (SELECT dc.* FROM htp_report.aipn_drugcat dc WHERE  dc.DateUpdate = (SELECT MAX(dc1.DateUpdate) 
-			FROM htp_report.aipn_drugcat dc1 WHERE dc.Hospdcode=dc1.Hospdcode AND dc1.Updateflag IN ("A","U","E"))) ad ON ad.hospdcode=d.icode 
+        LEFT JOIN (SELECT dc.* FROM htp_report.drugcat_nhso dc WHERE  dc.date_approved = (SELECT MAX(dc1.date_approved) 
+		    FROM htp_report.drugcat_nhso dc1 WHERE dc.hospdrugcode=dc1.hospdrugcode AND dc1.updateflag IN ("A","U","E"))) nd ON nd.hospdrugcode=d.icode 
+        LEFT JOIN (SELECT dc.* FROM htp_report.drugcat_aipn dc WHERE  dc.DateUpdate = (SELECT MAX(dc1.DateUpdate) 
+			FROM htp_report.drugcat_aipn dc1 WHERE dc.Hospdcode=dc1.Hospdcode AND dc1.Updateflag IN ("A","U","E"))) ad ON ad.hospdcode=d.icode 
         WHERE d.istatus = "Y" AND d.`name` NOT LIKE "*%" AND ad.ndc24 <> d2.ref_code
 		ORDER BY d.NAME,d.strength,d.units');
 
@@ -608,8 +610,8 @@ public function drug_cat_aipn_export()
         LEFT JOIN drugitems_register_unique dr ON dr.std_code = d.did
         LEFT JOIN provis_medication_unit p ON p.provis_medication_unit_code = d.provis_medication_unit_code 
         LEFT JOIN sks_drugcatalog s ON s.HospDrugCode=d.icode
-        LEFT JOIN (SELECT dc.* FROM htp_report.aipn_drugcat dc WHERE  dc.DateUpdate = (SELECT MAX(dc1.DateUpdate) 
-			FROM htp_report.aipn_drugcat dc1 WHERE dc.Hospdcode=dc1.Hospdcode AND dc1.Updateflag IN ("A","U","E"))) ad ON ad.hospdcode=d.icode 
+        LEFT JOIN (SELECT dc.* FROM htp_report.drugcat_aipn dc WHERE  dc.DateUpdate = (SELECT MAX(dc1.DateUpdate) 
+			FROM htp_report.drugcat_aipn dc1 WHERE dc.Hospdcode=dc1.Hospdcode AND dc1.Updateflag IN ("A","U","E"))) ad ON ad.hospdcode=d.icode 
         WHERE istatus ="Y" AND d.`name` NOT LIKE "*%" 
         ORDER BY ad.hospdcode,d.icode');
 
