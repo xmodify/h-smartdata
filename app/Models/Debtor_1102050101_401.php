@@ -29,6 +29,7 @@ class Debtor_1102050101_401 extends Model
         'kidney',
         'pp',
         'debtor', 
+        'debtor_change',
         'status', 
         'receive',
         'repno',

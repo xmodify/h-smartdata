@@ -27,6 +27,7 @@ class Debtor_1102050101_301 extends Model
         'rcpt_money',
         'other',
         'debtor', 
+        'debtor_change',
         'status', 
         'receive',
         'repno',

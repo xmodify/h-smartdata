@@ -31,6 +31,7 @@ class Debtor_1102050101_308 extends Model
         'rcpt_money',
         'other',
         'debtor',
+        'debtor_change',
         'charge_date',
         'charge_no',
         'charge',

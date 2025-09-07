@@ -30,6 +30,7 @@ class Debtor_1102050102_803 extends Model
         'pp',
         'other',
         'debtor', 
+        'debtor_change',
         'status', 
         'receive',
         'repno',

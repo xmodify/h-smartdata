@@ -29,6 +29,7 @@ class Debtor_1102050101_216 extends Model
         'cr',
         'anywhere',
         'debtor',
+        'debtor_change',
         'status', 
         'receive',
         'repno',

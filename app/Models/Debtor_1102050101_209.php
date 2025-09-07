@@ -28,6 +28,7 @@ class Debtor_1102050101_209 extends Model
         'pp',
         'ppfs',
         'debtor', 
+        'debtor_change',
         'status', 
         'receive',
         'repno',

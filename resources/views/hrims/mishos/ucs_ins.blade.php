@@ -3,7 +3,7 @@
 @section('content')
 
 <div class="container-fluid"> 
-  <canvas id="sum_month" style="max-height: 400px;"></canvas>
+  <canvas id="sum_month" style="max-height: 400px;"></canvas> 
   <hr>
   <form method="POST" enctype="multipart/form-data">
       @csrf            

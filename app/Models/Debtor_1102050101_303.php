@@ -30,6 +30,7 @@ class Debtor_1102050101_303 extends Model
         'charge_date',
         'charge_no',
         'charge',
+        'debtor_change',
         'receive_date', 
         'receive_no',  
         'receive',

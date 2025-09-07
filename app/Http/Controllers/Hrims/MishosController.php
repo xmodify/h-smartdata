@@ -1403,7 +1403,7 @@ class MishosController extends Controller
         return view('hrims.mishos.ucs_ppfs_fittest',compact('start_date','end_date','month','claim_price','receive_total','search'));
     }
 //----------------------------------------------------------------------------------------------------------------------------------------
-    public function ucs_ppfs_scr(Request $request )
+    public function ucs_ppfs_scr(Request $request ) 
     {
         ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
 

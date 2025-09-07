@@ -27,6 +27,7 @@ class Debtor_1102050101_309 extends Model
         'rcpt_money',
         'kidney',
         'debtor', 
+        'debtor_change',
         'status', 
         'receive',
         'repno',

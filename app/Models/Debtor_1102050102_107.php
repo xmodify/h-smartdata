@@ -28,6 +28,7 @@ class Debtor_1102050102_107 extends Model
         'paid_money',
         'rcpt_money',   
         'debtor', 
+        'debtor_change',
         'status', 
         'receive',
         'repno',
