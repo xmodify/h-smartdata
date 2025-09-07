@@ -27,7 +27,7 @@
             checkboxes[i].checked = source.checked;
         }
     }
-</script>
+</script> 
 <script>
     function toggle_d(source) {
         checkbox = document.getElementsByName('checkbox[]');

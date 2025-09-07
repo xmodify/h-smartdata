@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Finance_stm_ofcexcel extends Model
+class Stm_ofcexcel extends Model
 {
     use HasFactory;
 
-    protected $table = 'finance_stm_ofcexcel'; 
+    protected $table = 'stm_ofcexcel'; 
     protected $primaryKey = 'id';
     protected $fillable = [
         'id',

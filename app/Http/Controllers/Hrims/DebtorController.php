@@ -108,15 +108,15 @@ class DebtorController extends Controller
         $_1102050101_209 = DB::select('
             SELECT COUNT(DISTINCT d.vn) AS anvn,SUM(d.debtor) AS debtor,IFNULL(SUM(s.receive_pp),0) AS receive
             FROM debtor_1102050101_209 d 
-            LEFT JOIN finance_stm_ucs s ON s.cid=d.cid AND s.vstdate = d.vstdate 
+            LEFT JOIN stm_ucs s ON s.cid=d.cid AND s.vstdate = d.vstdate 
             AND LEFT(s.vsttime,5) =LEFT(d.vsttime,5) 
             WHERE d.vstdate BETWEEN ? AND ?',[$start_date,$end_date]);
         $_1102050101_216 = DB::select('
             SELECT COUNT(DISTINCT d.vn) AS anvn,SUM(d.debtor) AS debtor,SUM(IFNULL(s.receive_total,sk.receive_total)) AS receive
             FROM debtor_1102050101_216 d 
-            LEFT JOIN finance_stm_ucs s ON s.cid=d.cid AND s.vstdate = d.vstdate 
+            LEFT JOIN stm_ucs s ON s.cid=d.cid AND s.vstdate = d.vstdate 
             AND LEFT(s.vsttime,5) =LEFT(d.vsttime,5) 
-            LEFT JOIN (SELECT cid,datetimeadm AS vstdate,sum(receive_total) AS receive_total FROM finance_stm_ucs_kidney GROUP BY cid,datetimeadm) sk ON sk.cid=d.cid AND sk.vstdate = d.vstdate 
+            LEFT JOIN (SELECT cid,datetimeadm AS vstdate,sum(receive_total) AS receive_total FROM stm_ucs_kidney GROUP BY cid,datetimeadm) sk ON sk.cid=d.cid AND sk.vstdate = d.vstdate 
             WHERE d.vstdate BETWEEN ? AND ?',[$start_date,$end_date]);
         $_1102050101_301 = DB::select('
             SELECT COUNT(DISTINCT vn) AS anvn,SUM(debtor) AS debtor,IFNULL(SUM(receive),0) AS receive
@@ -133,14 +133,14 @@ class DebtorController extends Controller
         $_1102050101_309 = DB::select('
             SELECT COUNT(DISTINCT vn) AS anvn, SUM(debtor) AS debtor,IFNULL(SUM(s.amount+s.epopay+s.epoadm),0) AS receive
             FROM debtor_1102050101_309 d 
-            LEFT JOIN finance_stm_sss_kidney s ON s.cid=d.cid AND s.vstdate = d.vstdate 
+            LEFT JOIN stm_sss_kidney s ON s.cid=d.cid AND s.vstdate = d.vstdate 
             WHERE d.vstdate BETWEEN ? AND ?',[$start_date,$end_date]);
         $_1102050101_401 = DB::select('
             SELECT COUNT(DISTINCT d.vn) AS anvn,SUM(d.debtor) AS debtor,
             SUM(IFNULL(d.receive,0))+SUM(IFNULL(s.receive_total,0)+IFNULL(sk.amount,0)) AS receive
             FROM debtor_1102050101_401 d 
-            LEFT JOIN finance_stm_ofc s ON s.hn=d.hn AND s.vstdate = d.vstdate	AND LEFT(s.vsttime,5) =LEFT(d.vsttime,5)
-            LEFT JOIN finance_stm_ofc_kidney sk ON sk.hn=d.hn AND sk.vstdate = d.vstdate AND d.kidney IS NOT NULL 
+            LEFT JOIN stm_ofc s ON s.hn=d.hn AND s.vstdate = d.vstdate	AND LEFT(s.vsttime,5) =LEFT(d.vsttime,5)
+            LEFT JOIN stm_ofc_kidney sk ON sk.hn=d.hn AND sk.vstdate = d.vstdate AND d.kidney IS NOT NULL 
             WHERE d.vstdate BETWEEN ? AND ?',[$start_date,$end_date]);
         $_1102050101_501 = DB::select('
             SELECT COUNT(DISTINCT vn) AS anvn,SUM(debtor) AS debtor,IFNULL(SUM(receive),0) AS receive
@@ -178,26 +178,26 @@ class DebtorController extends Controller
         $_1102050102_801 = DB::select('
             SELECT COUNT(DISTINCT d.vn) AS anvn,SUM(d.debtor) AS debtor,SUM(IFNULL(s.compensate_treatment,0)+IFNULL(sk.compensate_kidney,0)) AS receive
             FROM debtor_1102050102_801 d   
-                LEFT JOIN finance_stm_lgo s ON s.hn=d.hn AND s.vstdate = d.vstdate AND LEFT(s.vsttime,5) =LEFT(d.vsttime,5)
-            LEFT JOIN finance_stm_lgo_kidney sk ON sk.hn=d.hn AND sk.datetimeadm = d.vstdate AND d.kidney IS NOT NULL
+                LEFT JOIN stm_lgo s ON s.hn=d.hn AND s.vstdate = d.vstdate AND LEFT(s.vsttime,5) =LEFT(d.vsttime,5)
+            LEFT JOIN stm_lgo_kidney sk ON sk.hn=d.hn AND sk.datetimeadm = d.vstdate AND d.kidney IS NOT NULL
             WHERE d.vstdate BETWEEN ? AND ?',[$start_date,$end_date]);
         $_1102050102_803 = DB::select('
             SELECT COUNT(DISTINCT d.vn) AS anvn,SUM(d.debtor) AS debtor,SUM(IFNULL(s.receive_total,0)+IFNULL(sk.amount,0)) AS receive
             FROM debtor_1102050102_803 d   
-                LEFT JOIN finance_stm_ofc s ON s.hn=d.hn AND s.vstdate = d.vstdate AND LEFT(s.vsttime,5) =LEFT(d.vsttime,5)
-            LEFT JOIN finance_stm_ofc_kidney sk ON sk.hn=d.hn AND sk.vstdate = d.vstdate AND d.kidney IS NOT NULL
+                LEFT JOIN stm_ofc s ON s.hn=d.hn AND s.vstdate = d.vstdate AND LEFT(s.vsttime,5) =LEFT(d.vsttime,5)
+            LEFT JOIN stm_ofc_kidney sk ON sk.hn=d.hn AND sk.vstdate = d.vstdate AND d.kidney IS NOT NULL
             WHERE d.vstdate BETWEEN ? AND ?',[$start_date,$end_date]);
         $_1102050101_202 = DB::select('
             SELECT COUNT(an) AS anvn,SUM(debtor) AS debtor,IFNULL(SUM(receive_ip_compensate_pay),0) AS receive
             FROM (SELECT d.an,d.debtor,stm.receive_ip_compensate_pay FROM debtor_1102050101_202 d
-            LEFT JOIN finance_stm_ucs stm ON stm.an=d.an    
+            LEFT JOIN stm_ucs stm ON stm.an=d.an    
             WHERE d.dchdate BETWEEN ? AND ? GROUP BY d.an) AS a',[$start_date,$end_date]);
         $_1102050101_217 = DB::select('
             SELECT COUNT(DISTINCT an) AS anvn,SUM(debtor) AS debtor,SUM(receive) AS receive
             FROM (SELECT d.dchdate,d.an,d.debtor,(s.receive_total-s.receive_ip_compensate_pay)+IFNULL(SUM(sk.receive_total),0) AS receive
             FROM debtor_1102050101_217 d
-            LEFT JOIN finance_stm_ucs s ON s.an=d.an
-            LEFT JOIN finance_stm_ucs_kidney sk ON sk.cid=d.cid AND sk.datetimeadm BETWEEN d.regdate AND d.dchdate
+            LEFT JOIN stm_ucs s ON s.an=d.an
+            LEFT JOIN stm_ucs_kidney sk ON sk.cid=d.cid AND sk.datetimeadm BETWEEN d.regdate AND d.dchdate
             WHERE d.dchdate BETWEEN ? AND ? GROUP BY d.an) AS a ',[$start_date,$end_date]);
         $_1102050101_302 = DB::select('
             SELECT COUNT(DISTINCT an) AS anvn, SUM(debtor) AS debtor,SUM(receive) AS receive
@@ -219,8 +219,8 @@ class DebtorController extends Controller
             SELECT COUNT(DISTINCT an) AS anvn,SUM(debtor) AS debtor,SUM(receive_total) AS receive
             FROM (SELECT d.*,s.receive_total+IFNULL(SUM(sk.amount),0) AS receive_total 
             FROM debtor_1102050101_402 d    
-            LEFT JOIN finance_stm_ofc s ON s.an=d.an
-            LEFT JOIN finance_stm_ofc_kidney sk ON sk.hn=d.hn AND sk.vstdate BETWEEN d.regdate AND d.dchdate
+            LEFT JOIN stm_ofc s ON s.an=d.an
+            LEFT JOIN stm_ofc_kidney sk ON sk.hn=d.hn AND sk.vstdate BETWEEN d.regdate AND d.dchdate
             WHERE d.dchdate BETWEEN ? AND ? GROUP BY d.an) AS a ' ,[$start_date,$end_date]);
         $_1102050101_502 = DB::select('
             SELECT COUNT(DISTINCT an) AS anvn, SUM(debtor) AS debtor,SUM(receive) AS receive
@@ -251,14 +251,14 @@ class DebtorController extends Controller
             SELECT COUNT(DISTINCT an) AS anvn,SUM(debtor) AS debtor,SUM(receive_total) AS receive
             FROM (SELECT d.*,s.compensate_treatment+IFNULL(SUM(sk.compensate_kidney),0) AS receive_total 
             FROM debtor_1102050102_802 d    
-            LEFT JOIN finance_stm_lgo s ON s.an=d.an
-            LEFT JOIN finance_stm_lgo_kidney sk ON sk.cid=d.cid AND sk.datetimeadm BETWEEN d.regdate AND d.dchdate
+            LEFT JOIN stm_lgo s ON s.an=d.an
+            LEFT JOIN stm_lgo_kidney sk ON sk.cid=d.cid AND sk.datetimeadm BETWEEN d.regdate AND d.dchdate
             WHERE d.dchdate BETWEEN ? AND ? GROUP BY d.an ) AS a' ,[$start_date,$end_date]);
         $_1102050102_804 = DB::select('
             SELECT COUNT(DISTINCT an) AS anvn, SUM(debtor) AS debtor,SUM(receive_total) AS receive
                 FROM (SELECT d.*,s.receive_total
             FROM debtor_1102050102_804 d    
-            LEFT JOIN finance_stm_ofc s ON s.an=d.an  
+            LEFT JOIN stm_ofc s ON s.an=d.an  
             WHERE d.dchdate BETWEEN ? AND ? GROUP BY d.an) AS a ' ,[$start_date,$end_date]);
 
         $request->session()->put('start_date',$start_date);
@@ -710,7 +710,7 @@ class DebtorController extends Controller
                     d.rcpt_money,d.other,d.ppfs,d.debtor,d.receive,d.repno,s.receive_pp,
                     IF(s.receive_pp <>"",s.repno,"") AS repno_pp,d.status,d.debtor_lock
                 FROM debtor_1102050101_201 d   
-                LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+                LEFT JOIN stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%"))
                 AND d.vstdate BETWEEN ? AND ?', [$search, $search, $start_date, $end_date]);
         } else {
@@ -719,7 +719,7 @@ class DebtorController extends Controller
                     d.rcpt_money,d.other,d.ppfs,d.debtor,d.receive,d.repno,s.receive_pp,
                     IF(s.receive_pp <>"",s.repno,"") AS repno_pp,d.status,d.debtor_lock
                 FROM debtor_1102050101_201 d   
-                LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+                LEFT JOIN stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE d.vstdate BETWEEN ? AND ?', [$start_date, $end_date]);
         }
 
@@ -902,7 +902,7 @@ class DebtorController extends Controller
                     CASE WHEN (IFNULL(d.receive,0) - IFNULL(d.debtor,0)) >= 0 THEN 0 
                     ELSE DATEDIFF(CURDATE(), d.vstdate) END AS days
                 FROM debtor_1102050101_203 d   
-                LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+                LEFT JOIN stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%"))
                 AND d.vstdate BETWEEN ? AND ?', [$search, $search, $start_date, $end_date]);
         } else {
@@ -913,7 +913,7 @@ class DebtorController extends Controller
                     CASE WHEN (IFNULL(d.receive,0) - IFNULL(d.debtor,0)) >= 0 THEN 0 
                     ELSE DATEDIFF(CURDATE(), d.vstdate) END AS days
                 FROM debtor_1102050101_203 d   
-                LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+                LEFT JOIN stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE d.vstdate BETWEEN ? AND ?', [$start_date, $end_date]);
         }
 
@@ -1105,7 +1105,7 @@ class DebtorController extends Controller
                 SELECT d.vn, d.vstdate, d.vsttime, d.hn, d.ptname, d.hipdata_code, d.pttype, d.hospmain,d.pdx, d.income,  
                     d.rcpt_money, d.ppfs, d.pp, d.other, d.debtor,s.receive_pp AS receive, s.repno, d.status, d.debtor_lock
                 FROM debtor_1102050101_209 d   
-                LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+                LEFT JOIN stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%"))
                 AND d.vstdate BETWEEN ? AND ?', [$search, $search, $start_date, $end_date]);
         } else {
@@ -1113,7 +1113,7 @@ class DebtorController extends Controller
                 SELECT d.vn, d.vstdate, d.vsttime, d.hn, d.ptname, d.hipdata_code, d.pttype, d.hospmain, d.pdx,d.income,
                      d.rcpt_money, d.ppfs, d.pp, d.other,d.debtor,s.receive_pp AS receive, s.repno, d.status, d.debtor_lock
                 FROM debtor_1102050101_209 d   
-                LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+                LEFT JOIN stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE d.vstdate BETWEEN ? AND ?', [$start_date, $end_date]);
         }
 
@@ -1259,7 +1259,7 @@ class DebtorController extends Controller
             SELECT d.vstdate,COUNT(DISTINCT d.vn) AS anvn,
             SUM(d.debtor) AS debtor,SUM(s.receive_pp) AS receive
             FROM debtor_1102050101_209 d   
-            LEFT JOIN finance_stm_ucs s ON s.cid=d.cid AND s.vstdate = d.vstdate
+            LEFT JOIN stm_ucs s ON s.cid=d.cid AND s.vstdate = d.vstdate
             AND LEFT(s.vsttime,5) =LEFT(d.vsttime,5)
             WHERE d.vstdate BETWEEN ? AND ?
             GROUP BY d.vstdate ORDER BY d.vstdate ',[$start_date,$end_date]);
@@ -1293,9 +1293,9 @@ class DebtorController extends Controller
                     CASE WHEN (IFNULL(IFNULL(s.receive_total, sk.receive_total), 0) - IFNULL(d.debtor, 0)) >= 0 
                     THEN 0 ELSE DATEDIFF(CURDATE(), d.vstdate) END AS days
                 FROM debtor_1102050101_216 d   
-                LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+                LEFT JOIN stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 LEFT JOIN (SELECT cid,datetimeadm AS vstdate,sum(receive_total) AS receive_total,repno
-                    FROM finance_stm_ucs_kidney GROUP BY cid,datetimeadm) sk ON sk.cid=d.cid AND sk.vstdate = d.vstdate
+                    FROM stm_ucs_kidney GROUP BY cid,datetimeadm) sk ON sk.cid=d.cid AND sk.vstdate = d.vstdate
                 WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%"))
                 AND d.vstdate BETWEEN ? AND ?', [$search,$search,$start_date,$end_date]);
         } else {
@@ -1306,9 +1306,9 @@ class DebtorController extends Controller
                     CASE WHEN (IFNULL(IFNULL(s.receive_total, sk.receive_total), 0) - IFNULL(d.debtor, 0)) >= 0 
                     THEN 0 ELSE DATEDIFF(CURDATE(), d.vstdate) END AS days
                 FROM debtor_1102050101_216 d   
-                LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+                LEFT JOIN stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 LEFT JOIN (SELECT cid,datetimeadm AS vstdate,sum(receive_total) AS receive_total,repno
-                    FROM finance_stm_ucs_kidney GROUP BY cid,datetimeadm) sk ON sk.cid=d.cid AND sk.vstdate = d.vstdate
+                    FROM stm_ucs_kidney GROUP BY cid,datetimeadm) sk ON sk.cid=d.cid AND sk.vstdate = d.vstdate
                 WHERE d.vstdate BETWEEN ? AND ?', [$start_date,$end_date]);
         }
 
@@ -1612,9 +1612,9 @@ class DebtorController extends Controller
             d.rcpt_money, d.kidney, d.cr,d.anywhere, d.debtor,IFNULL(s.receive_total,sk.receive_total) AS receive,
             IFNULL(s.repno,sk.repno) AS repno, d.status, d.debtor_lock
             FROM debtor_1102050101_216 d   
-            LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+            LEFT JOIN stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
             LEFT JOIN (SELECT cid,datetimeadm AS vstdate,sum(receive_total) AS receive_total,repno
-            FROM finance_stm_ucs_kidney GROUP BY cid,datetimeadm) sk ON sk.cid=d.cid AND sk.vstdate = d.vstdate
+            FROM stm_ucs_kidney GROUP BY cid,datetimeadm) sk ON sk.cid=d.cid AND sk.vstdate = d.vstdate
             WHERE d.vstdate BETWEEN ? AND ?) AS a GROUP BY vstdate ORDER BY vsttime ',[$start_date,$end_date]);
 
         $pdf = PDF::loadView('hrims.debtor.1102050101_216_daily_pdf', compact('start_date','end_date','debtor'))
@@ -1647,7 +1647,7 @@ class DebtorController extends Controller
                     CASE WHEN (IFNULL(d.receive, 0) - IFNULL(d.debtor, 0)) >= 0 
                     THEN 0 ELSE DATEDIFF(CURDATE(), d.vstdate) END AS days
                 FROM debtor_1102050101_301 d   
-                LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+                LEFT JOIN stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%"))
                 AND d.vstdate BETWEEN ? AND ?', [$search, $search, $start_date, $end_date]);
         } else {
@@ -1658,7 +1658,7 @@ class DebtorController extends Controller
                     CASE WHEN (IFNULL(d.receive, 0) - IFNULL(d.debtor, 0)) >= 0 
                     THEN 0 ELSE DATEDIFF(CURDATE(), d.vstdate) END AS days
                 FROM debtor_1102050101_301 d   
-                LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+                LEFT JOIN stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE d.vstdate BETWEEN ? AND ?', [$start_date, $end_date]);
         }
 
@@ -1839,7 +1839,7 @@ class DebtorController extends Controller
                     CASE WHEN (IFNULL(d.receive, 0) - IFNULL(d.debtor, 0)) >= 0 
                     THEN 0 ELSE DATEDIFF(CURDATE(), d.vstdate) END AS days
                 FROM debtor_1102050101_303 d   
-                LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+                LEFT JOIN stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%"))
                 AND d.vstdate BETWEEN ? AND ?', [$search, $search, $start_date, $end_date]);
         } else {
@@ -1850,7 +1850,7 @@ class DebtorController extends Controller
                     CASE WHEN (IFNULL(d.receive, 0) - IFNULL(d.debtor, 0)) >= 0 
                     THEN 0 ELSE DATEDIFF(CURDATE(), d.vstdate) END AS days
                 FROM debtor_1102050101_303 d   
-                LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+                LEFT JOIN stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE d.vstdate BETWEEN ? AND ?', [$start_date, $end_date]);
         }
 
@@ -2039,21 +2039,24 @@ class DebtorController extends Controller
         $search  =  $request->search ?: Session::get('search');
         $pttype_sss_fund = DB::table('main_setting')->where('name', 'pttype_sss_fund')->value('value');          
 
-        $debtor =  Debtor_1102050101_307::whereBetween('vstdate', [$start_date,$end_date])
-              ->where(function ($query) use ($search){
-                $query->where('ptname','like','%'.$search.'%');
-                $query->orwhere('hn','like','%'.$search.'%');
-                $query->orwhere('an','like','%'.$search.'%');
-                })
-              ->orderBy('vstdate')->get()
-              ->map(function ($item) {                        
-                    if (($item->receive - $item->debtor) >= 0) {
-                        $item->days = 0; // เช็คก่อนว่ารับแล้วหรือยัง
-                    } else {
-                        $item->days = Carbon::parse($item->vstdate)->diffInDays(Carbon::today());
-                    }
-                    return $item;
-                }); 
+        $debtor = Debtor_1102050101_307::selectRaw('*, IFNULL(vstdate, dchdate) as visit_date,IFNULL(vsttime, dchtime) as visit_time')
+            ->whereBetween(DB::raw('IFNULL(vstdate, dchdate)'), [$start_date, $end_date])
+            ->where(function ($query) use ($search) {
+                $query->where('ptname','like','%'.$search.'%')
+                    ->orWhere('hn','like','%'.$search.'%')
+                    ->orWhere('an','like','%'.$search.'%');
+            })
+            ->orderBy(DB::raw('IFNULL(vstdate, dchdate)'))
+            ->get()
+            ->map(function ($item) {
+                $baseDate = $item->visit_date; // ใช้ field ใหม่ที่เราสร้าง
+                if (($item->receive - $item->debtor) >= 0) {
+                    $item->days = 0;
+                } else {
+                    $item->days = Carbon::parse($baseDate)->diffInDays(Carbon::today());
+                }
+                return $item;
+            });
 
         $debtor_search = DB::connection('hosxp')->select('
             SELECT o.vn,o.hn,o.an,pt.cid,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,o.vstdate,
@@ -2084,6 +2087,33 @@ class DebtorController extends Controller
                 AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
                 AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_307) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+        
+        $debtor_search_ip = DB::connection('hosxp')->select('
+            SELECT w.`name` AS ward,i.hn,pt.cid,i.vn,i.an,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,a.age_y,
+                p.`name` AS pttype,p.hipdata_code,ip.hospmain,i.regdate,i.regtime,i.dchdate,i.dchtime,a.pdx,i.adjrw,
+                a.income,a.rcpt_money,COALESCE(other.other_price,0) AS other,a.income-a.rcpt_money-COALESCE(other.other_price,0) AS debtor,
+                GROUP_CONCAT(DISTINCT s.`name`) AS other_list,ict.ipt_coll_status_type_name,i.data_ok ,"ยืนยันลูกหนี้" AS status  
+            FROM ipt i 
+            LEFT JOIN patient pt ON pt.hn=i.hn
+            LEFT JOIN ipt_pttype ip ON ip.an=i.an
+            LEFT JOIN pttype p ON p.pttype=ip.pttype
+            LEFT JOIN ward w ON w.ward=i.ward
+            LEFT JOIN an_stat a ON a.an=i.an
+            LEFT JOIN (SELECT op.an, SUM(op.sum_price) AS other_price	
+                FROM opitemrece op INNER JOIN ipt ON ipt.an=op.an
+            LEFT JOIN htp_report.lookup_icode li ON op.icode = li.icode
+                LEFT JOIN nondrugitems n ON n.icode=op.icode 
+                WHERE op.an IS NOT NULL AND ipt.dchdate BETWEEN ? AND ?  AND li.kidney = "Y"
+                GROUP BY op.an) other ON other.an=i.an
+            LEFT JOIN opitemrece o ON o.an=i.an AND o.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE kidney = "Y")
+            LEFT JOIN s_drugitems s ON s.icode=o.icode
+            LEFT JOIN ipt_coll_stat ic ON ic.an=i.an
+            LEFT JOIN ipt_coll_status_type ict ON ict.ipt_coll_status_type_id=ic.ipt_coll_status_type_id
+            WHERE i.confirm_discharge = "Y" 
+			AND p.pttype IN ('.$pttype_sss_fund.')
+            AND i.dchdate BETWEEN ? AND ?
+            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_307 WHERE an IS NOT NULL)
+            GROUP BY i.an,ip.pttype ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
         $request->session()->put('end_date',$end_date);
@@ -2091,7 +2121,7 @@ class DebtorController extends Controller
         $request->session()->put('debtor',$debtor);
         $request->session()->save();
 
-        return view('hrims.debtor.1102050101_307',compact('start_date','end_date','search','debtor','debtor_search'));
+        return view('hrims.debtor.1102050101_307',compact('start_date','end_date','search','debtor','debtor_search','debtor_search_ip'));
     }
 //_1102050101_307_confirm-------------------------------------------------------------------------------------------------------
     public function _1102050101_307_confirm(Request $request )
@@ -2159,6 +2189,80 @@ class DebtorController extends Controller
         }
 
         if (empty($checkbox) || !is_array($checkbox)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'กรุณาเลือกรายการที่จะยืนยัน'
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'ยืนยันลูกหนี้สำเร็จ');
+    }
+//_1102050101_307_confirm_ip-------------------------------------------------------------------------------------------------------
+    public function _1102050101_307_confirm_ip(Request $request )
+    {
+        $start_date = Session::get('start_date');
+        $end_date = Session::get('end_date');        
+        $pttype_sss_fund = DB::table('main_setting')->where('name', 'pttype_sss_fund')->value('value'); 
+        $request->validate([
+        'checkbox_ip' => 'required|array',
+        ], [
+            'checkbox.required' => 'กรุณาเลือกรายการที่ต้องการยืนยันลูกหนี้'
+        ]);
+        $checkbox_ip = $request->input('checkbox_ip'); // รับ array
+        $checkbox_string = implode(",", $checkbox_ip); // แปลงเป็น string สำหรับ SQL IN
+       
+        $debtor = DB::connection('hosxp')->select('
+            SELECT w.`name` AS ward,i.hn,pt.cid,i.vn,i.an,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,a.age_y,
+                p.`name` AS pttype,p.hipdata_code,ip.hospmain,i.regdate,i.regtime,i.dchdate,i.dchtime,a.pdx,i.adjrw,
+                a.income,a.rcpt_money,COALESCE(other.other_price,0) AS other,a.income-a.rcpt_money-COALESCE(other.other_price,0) AS debtor,
+                GROUP_CONCAT(DISTINCT s.`name`) AS other_list,ict.ipt_coll_status_type_name,i.data_ok ,"ยืนยันลูกหนี้" AS status  
+            FROM ipt i 
+            LEFT JOIN patient pt ON pt.hn=i.hn
+            LEFT JOIN ipt_pttype ip ON ip.an=i.an
+            LEFT JOIN pttype p ON p.pttype=ip.pttype
+            LEFT JOIN ward w ON w.ward=i.ward
+            LEFT JOIN an_stat a ON a.an=i.an
+            LEFT JOIN (SELECT op.an, SUM(op.sum_price) AS other_price	
+                FROM opitemrece op INNER JOIN ipt ON ipt.an=op.an
+            LEFT JOIN htp_report.lookup_icode li ON op.icode = li.icode
+                LEFT JOIN nondrugitems n ON n.icode=op.icode 
+                WHERE op.an IS NOT NULL AND ipt.dchdate BETWEEN ? AND ?  AND li.kidney = "Y"
+                GROUP BY op.an) other ON other.an=i.an
+            LEFT JOIN opitemrece o ON o.an=i.an AND o.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE kidney = "Y")
+            LEFT JOIN s_drugitems s ON s.icode=o.icode
+            LEFT JOIN ipt_coll_stat ic ON ic.an=i.an
+            LEFT JOIN ipt_coll_status_type ict ON ict.ipt_coll_status_type_id=ic.ipt_coll_status_type_id
+            WHERE i.confirm_discharge = "Y" 
+			AND p.pttype IN ('.$pttype_sss_fund.')
+            AND i.dchdate BETWEEN ? AND ?
+            AND i.an IN ('.$checkbox_string.') 
+            GROUP BY i.an,ip.pttype ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]);  
+        
+        foreach ($debtor as $row) {
+            Debtor_1102050101_307::insert([
+                'an'              => $row->an,
+                'vn'              => $row->vn,
+                'hn'              => $row->hn,
+                'cid'             => $row->cid,
+                'ptname'          => $row->ptname,
+                'regdate'         => $row->regdate,
+                'regtime'         => $row->regtime,
+                'dchdate'         => $row->dchdate,
+                'dchtime'         => $row->dchtime,    
+                'pttype'          => $row->pttype,    
+                'hospmain'        => $row->hospmain,    
+                'hipdata_code'    => $row->hipdata_code,   
+                'pdx'             => $row->pdx,  
+                'adjrw'           => $row->adjrw,  
+                'income'          => $row->income,  
+                'rcpt_money'      => $row->rcpt_money, 
+                'other'           => $row->other,  
+                'debtor'          => $row->debtor,  
+                'status'          => $row->status,          
+            ]);            
+        }
+
+        if (empty($checkbox_ip) || !is_array($checkbox_ip)) {
             return response()->json([
                 'success' => false,
                 'message' => 'กรุณาเลือกรายการที่จะยืนยัน'
@@ -2243,7 +2347,7 @@ class DebtorController extends Controller
                     CASE WHEN (IFNULL(s.amount+s.epopay+s.epoadm, 0) - IFNULL(d.debtor, 0)) >= 0 
                     THEN 0 ELSE DATEDIFF(CURDATE(), d.vstdate) END AS days
                     FROM debtor_1102050101_309 d   
-                LEFT JOIN finance_stm_sss_kidney s ON s.cid=d.cid AND s.vstdate = d.vstdate
+                LEFT JOIN stm_sss_kidney s ON s.cid=d.cid AND s.vstdate = d.vstdate
                 WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%"))
                 AND d.vstdate BETWEEN ? AND ?', [$search, $search, $start_date, $end_date]);
         } else {
@@ -2254,7 +2358,7 @@ class DebtorController extends Controller
                     CASE WHEN (IFNULL(s.amount+s.epopay+s.epoadm, 0) - IFNULL(d.debtor, 0)) >= 0 
                     THEN 0 ELSE DATEDIFF(CURDATE(), d.vstdate) END AS days
                     FROM debtor_1102050101_309 d   
-                LEFT JOIN finance_stm_sss_kidney s ON s.cid=d.cid AND s.vstdate = d.vstdate
+                LEFT JOIN stm_sss_kidney s ON s.cid=d.cid AND s.vstdate = d.vstdate
                 WHERE d.vstdate BETWEEN ? AND ?', [$start_date, $end_date]);
         }
 
@@ -2397,7 +2501,7 @@ class DebtorController extends Controller
             d.pdx,d.hospmain,d.income,d.rcpt_money,d.kidney,d.debtor,
             s.amount+s.epopay+s.epoadm AS receive,s.rid AS repno,d.debtor_lock
             FROM debtor_1102050101_309 d   
-            LEFT JOIN finance_stm_sss_kidney s ON s.cid=d.cid AND s.vstdate = d.vstdate
+            LEFT JOIN stm_sss_kidney s ON s.cid=d.cid AND s.vstdate = d.vstdate
             WHERE d.vstdate BETWEEN ? AND ?) AS a GROUP BY vstdate ORDER BY vsttime',[$start_date,$end_date]);
 
         $pdf = PDF::loadView('hrims.debtor.1102050101_309_daily_pdf', compact('start_date','end_date','debtor'))
@@ -2431,10 +2535,10 @@ class DebtorController extends Controller
                     CASE WHEN (IFNULL(d.receive,0)+IFNULL(s.receive_total,0)+IFNULL(sk.receive_total,0)) - IFNULL(d.debtor, 0)>= 0 
                     THEN 0 ELSE DATEDIFF(CURDATE(), d.vstdate) END AS days
                 FROM debtor_1102050101_401 d   
-                LEFT JOIN finance_stm_ofc s ON s.hn = d.hn AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
-				LEFT JOIN (SELECT hn,vstdate,sum(amount) AS receive_total,rid AS repno FROM finance_stm_ofc_kidney
+                LEFT JOIN stm_ofc s ON s.hn = d.hn AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+				LEFT JOIN (SELECT hn,vstdate,sum(amount) AS receive_total,rid AS repno FROM stm_ofc_kidney
 				WHERE vstdate BETWEEN ? AND ? GROUP BY hn,vstdate) sk ON sk.hn=d.hn AND sk.vstdate = d.vstdate
-				LEFT JOIN finance_stm_ucs su ON su.hn = d.hn AND su.vstdate = d.vstdate AND LEFT(su.vsttime, 5) = LEFT(d.vsttime, 5)
+				LEFT JOIN stm_ucs su ON su.hn = d.hn AND su.vstdate = d.vstdate AND LEFT(su.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%"))
                 AND d.vstdate BETWEEN ? AND ?', [$start_date,$end_date,$search, $search,$start_date,$end_date]);
         } else {
@@ -2446,10 +2550,10 @@ class DebtorController extends Controller
                     CASE WHEN (IFNULL(d.receive,0)+IFNULL(s.receive_total,0)+IFNULL(sk.receive_total,0)) - IFNULL(d.debtor, 0)>= 0 
                     THEN 0 ELSE DATEDIFF(CURDATE(), d.vstdate) END AS days
                 FROM debtor_1102050101_401 d   
-                LEFT JOIN finance_stm_ofc s ON s.hn = d.hn AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
-				LEFT JOIN (SELECT hn,vstdate,sum(amount) AS receive_total,rid AS repno FROM finance_stm_ofc_kidney
+                LEFT JOIN stm_ofc s ON s.hn = d.hn AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+				LEFT JOIN (SELECT hn,vstdate,sum(amount) AS receive_total,rid AS repno FROM stm_ofc_kidney
 				WHERE vstdate BETWEEN ? AND ? GROUP BY hn,vstdate) sk ON sk.hn=d.hn AND sk.vstdate = d.vstdate
-				LEFT JOIN finance_stm_ucs su ON su.hn = d.hn AND su.vstdate = d.vstdate AND LEFT(su.vsttime, 5) = LEFT(d.vsttime, 5)
+				LEFT JOIN stm_ucs su ON su.hn = d.hn AND su.vstdate = d.vstdate AND LEFT(su.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE d.vstdate BETWEEN ? AND ?', [$start_date,$end_date,$start_date, $end_date]);
         }
 
@@ -2625,10 +2729,10 @@ class DebtorController extends Controller
                 SUM(IFNULL(receive,0)+IFNULL(receive_s,0)+IFNULL(receive_sk,0)) AS receive
             FROM (SELECT d.vstdate,d.vn,d.hn,d.debtor,d.receive,s.receive_total AS receive_s,sk.receive_sk ,su.receive_pp 
             FROM debtor_1102050101_401 d   
-            LEFT JOIN finance_stm_ofc s ON s.hn = d.hn AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
-			LEFT JOIN (SELECT hn,vstdate,sum(amount) AS receive_sk,rid AS repno FROM finance_stm_ofc_kidney
+            LEFT JOIN stm_ofc s ON s.hn = d.hn AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+			LEFT JOIN (SELECT hn,vstdate,sum(amount) AS receive_sk,rid AS repno FROM stm_ofc_kidney
 				WHERE vstdate BETWEEN ? AND ? GROUP BY hn,vstdate) sk ON sk.hn=d.hn AND sk.vstdate = d.vstdate
-			LEFT JOIN finance_stm_ucs su ON su.hn = d.hn AND su.vstdate = d.vstdate AND LEFT(su.vsttime, 5) = LEFT(d.vsttime, 5)
+			LEFT JOIN stm_ucs su ON su.hn = d.hn AND su.vstdate = d.vstdate AND LEFT(su.vsttime, 5) = LEFT(d.vsttime, 5)
             WHERE d.vstdate BETWEEN ? AND ? GROUP BY d.vn ) AS a GROUP BY vstdate ORDER BY vstdate',[$start_date,$end_date,$start_date,$end_date]);
 
         $pdf = PDF::loadView('hrims.debtor.1102050101_401_daily_pdf', compact('start_date','end_date','debtor'))
@@ -2985,7 +3089,7 @@ class DebtorController extends Controller
                     d.rcpt_money,d.other,d.ppfs,d.debtor,d.receive,d.repno,s.receive_pp,
                     IF(s.receive_pp <>"",s.repno,"") AS repno_pp,d.status,d.debtor_lock
                 FROM debtor_1102050101_701 d   
-                LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+                LEFT JOIN stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%"))
                 AND d.vstdate BETWEEN ? AND ?', [$search, $search, $start_date, $end_date]);
         } else {
@@ -2994,7 +3098,7 @@ class DebtorController extends Controller
                     d.rcpt_money,d.other,d.ppfs,d.debtor,d.receive,d.repno,s.receive_pp,
                     IF(s.receive_pp <>"",s.repno,"") AS repno_pp,d.status,d.debtor_lock
                 FROM debtor_1102050101_701 d   
-                LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+                LEFT JOIN stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE d.vstdate BETWEEN ? AND ?', [$start_date, $end_date]);
         }
 
@@ -3167,7 +3271,7 @@ class DebtorController extends Controller
                     d.rcpt_money,d.other,d.ppfs,d.debtor,d.receive,d.repno,s.receive_pp,
                     IF(s.receive_pp <>"",s.repno,"") AS repno_pp,d.status,d.debtor_lock
                 FROM debtor_1102050101_702 d   
-                LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+                LEFT JOIN stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%"))
                 AND d.vstdate BETWEEN ? AND ?', [$search, $search, $start_date, $end_date]);
         } else {
@@ -3176,7 +3280,7 @@ class DebtorController extends Controller
                     d.rcpt_money,d.other,d.ppfs,d.debtor,d.receive,d.repno,s.receive_pp,
                     IF(s.receive_pp <>"",s.repno,"") AS repno_pp,d.status,d.debtor_lock
                 FROM debtor_1102050101_702 d   
-                LEFT JOIN finance_stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+                LEFT JOIN stm_ucs s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE d.vstdate BETWEEN ? AND ?', [$start_date, $end_date]);
         }
 
@@ -4019,10 +4123,10 @@ class DebtorController extends Controller
                     CASE WHEN (IFNULL(s.compensate_treatment,0)+IFNULL(sk.receive_total,0)+IFNULL(su.receive_pp,0)) - IFNULL(d.debtor, 0)>= 0 
                     THEN 0 ELSE DATEDIFF(CURDATE(), d.vstdate) END AS days
                 FROM debtor_1102050102_801 d   
-                LEFT JOIN finance_stm_lgo s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
-				LEFT JOIN (SELECT cid,datetimeadm,sum(compensate_kidney) AS receive_total,repno FROM finance_stm_lgo_kidney
+                LEFT JOIN stm_lgo s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+				LEFT JOIN (SELECT cid,datetimeadm,sum(compensate_kidney) AS receive_total,repno FROM stm_lgo_kidney
 				WHERE datetimeadm BETWEEN ? AND ? GROUP BY cid,datetimeadm) sk ON sk.cid=d.cid AND sk.datetimeadm = d.vstdate
-				LEFT JOIN finance_stm_ucs su ON su.cid = d.cid AND su.vstdate = d.vstdate AND LEFT(su.vsttime, 5) = LEFT(d.vsttime, 5)
+				LEFT JOIN stm_ucs su ON su.cid = d.cid AND su.vstdate = d.vstdate AND LEFT(su.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%"))
                 AND d.vstdate BETWEEN ? AND ?', [$start_date,$end_date,$search, $search,$start_date,$end_date]);
         } else {
@@ -4034,10 +4138,10 @@ class DebtorController extends Controller
                     CASE WHEN (IFNULL(s.compensate_treatment,0)+IFNULL(sk.receive_total,0)+IFNULL(su.receive_pp,0)) - IFNULL(d.debtor, 0)>= 0 
                     THEN 0 ELSE DATEDIFF(CURDATE(), d.vstdate) END AS days
                 FROM debtor_1102050102_801 d   
-                LEFT JOIN finance_stm_lgo s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
-				LEFT JOIN (SELECT cid,datetimeadm,sum(compensate_kidney) AS receive_total,repno FROM finance_stm_lgo_kidney
+                LEFT JOIN stm_lgo s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+				LEFT JOIN (SELECT cid,datetimeadm,sum(compensate_kidney) AS receive_total,repno FROM stm_lgo_kidney
 				WHERE datetimeadm BETWEEN ? AND ? GROUP BY cid,datetimeadm) sk ON sk.cid=d.cid AND sk.datetimeadm = d.vstdate
-				LEFT JOIN finance_stm_ucs su ON su.cid = d.cid AND su.vstdate = d.vstdate AND LEFT(su.vsttime, 5) = LEFT(d.vsttime, 5)
+				LEFT JOIN stm_ucs su ON su.cid = d.cid AND su.vstdate = d.vstdate AND LEFT(su.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE d.vstdate BETWEEN ? AND ?', [$start_date,$end_date,$start_date, $end_date]);
         }
 
@@ -4214,10 +4318,10 @@ class DebtorController extends Controller
             FROM (SELECT d.vstdate,d.vn,d.hn,d.debtor,IFNULL(s.compensate_treatment,0) AS receive_lgo,
 			IFNULL(sk.receive_total,0) AS receive_kidney
             FROM debtor_1102050102_801 d   
-            LEFT JOIN finance_stm_lgo s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
-			LEFT JOIN (SELECT cid,datetimeadm,sum(compensate_kidney) AS receive_total,repno FROM finance_stm_lgo_kidney
+            LEFT JOIN stm_lgo s ON s.cid = d.cid AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+			LEFT JOIN (SELECT cid,datetimeadm,sum(compensate_kidney) AS receive_total,repno FROM stm_lgo_kidney
 				WHERE datetimeadm BETWEEN ? AND ? GROUP BY cid,datetimeadm) sk ON sk.cid=d.cid AND sk.datetimeadm = d.vstdate
-			LEFT JOIN finance_stm_ucs su ON su.hn = d.hn AND su.vstdate = d.vstdate AND LEFT(su.vsttime, 5) = LEFT(d.vsttime, 5)
+			LEFT JOIN stm_ucs su ON su.hn = d.hn AND su.vstdate = d.vstdate AND LEFT(su.vsttime, 5) = LEFT(d.vsttime, 5)
             WHERE d.vstdate BETWEEN ? AND ? GROUP BY d.vn ) AS a GROUP BY vstdate ORDER BY vstdate',[$start_date,$end_date,$start_date,$end_date]);
 
         $pdf = PDF::loadView('hrims.debtor.1102050102_801_daily_pdf', compact('start_date','end_date','debtor'))
@@ -4251,10 +4355,10 @@ class DebtorController extends Controller
                     CASE WHEN (IFNULL(d.receive,0)+IFNULL(s.receive_total,0)+IFNULL(sk.receive_total,0)) - IFNULL(d.debtor, 0)>= 0 
                     THEN 0 ELSE DATEDIFF(CURDATE(), d.vstdate) END AS days
                 FROM debtor_1102050102_803 d   
-                LEFT JOIN finance_stm_ofc s ON s.hn = d.hn AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
-				LEFT JOIN (SELECT hn,vstdate,sum(amount) AS receive_total,rid AS repno FROM finance_stm_ofc_kidney
+                LEFT JOIN stm_ofc s ON s.hn = d.hn AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+				LEFT JOIN (SELECT hn,vstdate,sum(amount) AS receive_total,rid AS repno FROM stm_ofc_kidney
 				WHERE vstdate BETWEEN ? AND ? GROUP BY hn,vstdate) sk ON sk.hn=d.hn AND sk.vstdate = d.vstdate
-				LEFT JOIN finance_stm_ucs su ON su.hn = d.hn AND su.vstdate = d.vstdate AND LEFT(su.vsttime, 5) = LEFT(d.vsttime, 5)
+				LEFT JOIN stm_ucs su ON su.hn = d.hn AND su.vstdate = d.vstdate AND LEFT(su.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%"))
                 AND d.vstdate BETWEEN ? AND ?', [$start_date,$end_date,$search, $search,$start_date,$end_date]);
         } else {
@@ -4266,10 +4370,10 @@ class DebtorController extends Controller
                     CASE WHEN (IFNULL(d.receive,0)+IFNULL(s.receive_total,0)+IFNULL(sk.receive_total,0)) - IFNULL(d.debtor, 0)>= 0 
                     THEN 0 ELSE DATEDIFF(CURDATE(), d.vstdate) END AS days
                 FROM debtor_1102050102_803 d   
-                LEFT JOIN finance_stm_ofc s ON s.hn = d.hn AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
-				LEFT JOIN (SELECT hn,vstdate,sum(amount) AS receive_total,rid AS repno FROM finance_stm_ofc_kidney
+                LEFT JOIN stm_ofc s ON s.hn = d.hn AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+				LEFT JOIN (SELECT hn,vstdate,sum(amount) AS receive_total,rid AS repno FROM stm_ofc_kidney
 				WHERE vstdate BETWEEN ? AND ? GROUP BY hn,vstdate) sk ON sk.hn=d.hn AND sk.vstdate = d.vstdate
-				LEFT JOIN finance_stm_ucs su ON su.hn = d.hn AND su.vstdate = d.vstdate AND LEFT(su.vsttime, 5) = LEFT(d.vsttime, 5)
+				LEFT JOIN stm_ucs su ON su.hn = d.hn AND su.vstdate = d.vstdate AND LEFT(su.vsttime, 5) = LEFT(d.vsttime, 5)
                 WHERE d.vstdate BETWEEN ? AND ?', [$start_date,$end_date,$start_date, $end_date]);
         }
 
@@ -4445,10 +4549,10 @@ class DebtorController extends Controller
                 SUM(IFNULL(receive,0)+IFNULL(receive_s,0)+IFNULL(receive_sk,0)) AS receive
             FROM (SELECT d.vstdate,d.vn,d.hn,d.debtor,d.receive,s.receive_total AS receive_s,sk.receive_sk ,su.receive_pp 
             FROM debtor_1102050102_803 d   
-            LEFT JOIN finance_stm_ofc s ON s.hn = d.hn AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
-			LEFT JOIN (SELECT hn,vstdate,sum(amount) AS receive_sk,rid AS repno FROM finance_stm_ofc_kidney
+            LEFT JOIN stm_ofc s ON s.hn = d.hn AND s.vstdate = d.vstdate AND LEFT(s.vsttime, 5) = LEFT(d.vsttime, 5)
+			LEFT JOIN (SELECT hn,vstdate,sum(amount) AS receive_sk,rid AS repno FROM stm_ofc_kidney
 				WHERE vstdate BETWEEN ? AND ? GROUP BY hn,vstdate) sk ON sk.hn=d.hn AND sk.vstdate = d.vstdate
-			LEFT JOIN finance_stm_ucs su ON su.hn = d.hn AND su.vstdate = d.vstdate AND LEFT(su.vsttime, 5) = LEFT(d.vsttime, 5)
+			LEFT JOIN stm_ucs su ON su.hn = d.hn AND su.vstdate = d.vstdate AND LEFT(su.vsttime, 5) = LEFT(d.vsttime, 5)
             WHERE d.vstdate BETWEEN ? AND ? GROUP BY d.vn ) AS a GROUP BY vstdate ORDER BY vstdate',[$start_date,$end_date,$start_date,$end_date]);
 
         $pdf = PDF::loadView('hrims.debtor.1102050102_803_daily_pdf', compact('start_date','end_date','debtor'))
@@ -4478,7 +4582,7 @@ class DebtorController extends Controller
                 CASE WHEN (IFNULL(stm.receive_total,0) - IFNULL(d.debtor,0)) >= 0 THEN 0
                    ELSE DATEDIFF(CURDATE(), d.dchdate) END AS days
                 FROM debtor_1102050101_202 d
-                LEFT JOIN finance_stm_ucs stm ON stm.an=d.an
+                LEFT JOIN stm_ucs stm ON stm.an=d.an
                 WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%") OR d.an LIKE CONCAT("%", ?, "%"))
                 AND d.dchdate BETWEEN ? AND ?
                 GROUP BY d.an', [$search, $search,$search,$start_date,$end_date]);
@@ -4488,7 +4592,7 @@ class DebtorController extends Controller
                 CASE WHEN (IFNULL(stm.receive_total,0) - IFNULL(d.debtor,0)) >= 0 THEN 0
                    ELSE DATEDIFF(CURDATE(), d.dchdate) END AS days
                 FROM debtor_1102050101_202 d
-                LEFT JOIN finance_stm_ucs stm ON stm.an=d.an
+                LEFT JOIN stm_ucs stm ON stm.an=d.an
                 WHERE d.dchdate BETWEEN ? AND ?
                 GROUP BY d.an', [$start_date,$end_date]);
         }
@@ -4632,7 +4736,7 @@ class DebtorController extends Controller
             SELECT dchdate AS vstdate,COUNT(DISTINCT an) AS anvn,
             SUM(debtor) AS debtor,SUM(receive_ip_compensate_pay) AS receive
             FROM (SELECT d.dchdate,d.an,d.debtor,stm.receive_ip_compensate_pay FROM debtor_1102050101_202 d
-            LEFT JOIN finance_stm_ucs stm ON stm.an=d.an    
+            LEFT JOIN stm_ucs stm ON stm.an=d.an    
             WHERE d.dchdate BETWEEN ? AND ?
             GROUP BY d.an) AS a
             GROUP BY dchdate ORDER BY dchdate',[$start_date,$end_date]);
@@ -4665,8 +4769,8 @@ class DebtorController extends Controller
                     CASE WHEN IFNULL((stm.receive_total-stm.receive_ip_compensate_pay)+sk.receive_total,0) - IFNULL(d.debtor, 0) >= 0
                     THEN 0 ELSE DATEDIFF(CURDATE(), d.dchdate) END AS days
                 FROM debtor_1102050101_217 d
-                LEFT JOIN finance_stm_ucs stm ON stm.an=d.an
-                LEFT JOIN finance_stm_ucs_kidney sk ON sk.cid=d.cid AND sk.datetimeadm BETWEEN d.regdate AND d.dchdate
+                LEFT JOIN stm_ucs stm ON stm.an=d.an
+                LEFT JOIN stm_ucs_kidney sk ON sk.cid=d.cid AND sk.datetimeadm BETWEEN d.regdate AND d.dchdate
                 WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%") OR d.an LIKE CONCAT("%", ?, "%"))
                 AND d.dchdate BETWEEN ? AND ?
                 GROUP BY d.an', [$search,$search,$search,$start_date,$end_date]);
@@ -4677,8 +4781,8 @@ class DebtorController extends Controller
                     CASE WHEN IFNULL((stm.receive_total-stm.receive_ip_compensate_pay)+sk.receive_total,0) - IFNULL(d.debtor, 0) >= 0
                     THEN 0 ELSE DATEDIFF(CURDATE(), d.dchdate) END AS days
                 FROM debtor_1102050101_217 d
-                LEFT JOIN finance_stm_ucs stm ON stm.an=d.an
-                LEFT JOIN finance_stm_ucs_kidney sk ON sk.cid=d.cid AND sk.datetimeadm BETWEEN d.regdate AND d.dchdate
+                LEFT JOIN stm_ucs stm ON stm.an=d.an
+                LEFT JOIN stm_ucs_kidney sk ON sk.cid=d.cid AND sk.datetimeadm BETWEEN d.regdate AND d.dchdate
                 WHERE d.dchdate BETWEEN ? AND ?
                 GROUP BY d.an', [$start_date,$end_date]);
         }
@@ -4824,8 +4928,8 @@ class DebtorController extends Controller
             SELECT dchdate AS vstdate,COUNT(DISTINCT an) AS anvn,SUM(debtor) AS debtor,SUM(receive) AS receive
             FROM (SELECT d.dchdate,d.an,d.debtor,(stm.receive_total-stm.receive_ip_compensate_pay)+IFNULL(SUM(sk.receive_total),0) AS receive
             FROM debtor_1102050101_217 d
-            LEFT JOIN finance_stm_ucs stm ON stm.an=d.an 
-			LEFT JOIN finance_stm_ucs_kidney sk ON sk.cid=d.cid AND sk.datetimeadm BETWEEN d.regdate AND d.dchdate			
+            LEFT JOIN stm_ucs stm ON stm.an=d.an 
+			LEFT JOIN stm_ucs_kidney sk ON sk.cid=d.cid AND sk.datetimeadm BETWEEN d.regdate AND d.dchdate			
             WHERE d.dchdate BETWEEN ? AND ?
             GROUP BY d.an) AS a
             GROUP BY dchdate ORDER BY dchdate',[$start_date,$end_date]);
@@ -5648,8 +5752,8 @@ class DebtorController extends Controller
                     CASE WHEN (s.receive_total+IFNULL(SUM(s1.amount),0)) - IFNULL(d.debtor,0) >= 0 THEN 0
                     ELSE DATEDIFF(CURDATE(), d.dchdate) END AS days
                 FROM debtor_1102050101_402 d    
-                LEFT JOIN htp_report.finance_stm_ofc s ON s.an=d.an
-                LEFT JOIN htp_report.finance_stm_ofc_kidney s1 ON s1.hn=d.hn AND s1.vstdate BETWEEN d.regdate AND d.dchdate
+                LEFT JOIN htp_report.stm_ofc s ON s.an=d.an
+                LEFT JOIN htp_report.stm_ofc_kidney s1 ON s1.hn=d.hn AND s1.vstdate BETWEEN d.regdate AND d.dchdate
                 WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%") OR d.an LIKE CONCAT("%", ?, "%"))
                 AND d.dchdate BETWEEN ? AND ?
                 GROUP BY d.an', [$search,$search,$search,$start_date,$end_date]);
@@ -5661,8 +5765,8 @@ class DebtorController extends Controller
                     CASE WHEN (s.receive_total+IFNULL(SUM(s1.amount),0)) - IFNULL(d.debtor,0) >= 0 THEN 0
                     ELSE DATEDIFF(CURDATE(), d.dchdate) END AS days
                 FROM debtor_1102050101_402 d    
-                LEFT JOIN htp_report.finance_stm_ofc s ON s.an=d.an
-                LEFT JOIN htp_report.finance_stm_ofc_kidney s1 ON s1.hn=d.hn AND s1.vstdate BETWEEN d.regdate AND d.dchdate
+                LEFT JOIN htp_report.stm_ofc s ON s.an=d.an
+                LEFT JOIN htp_report.stm_ofc_kidney s1 ON s1.hn=d.hn AND s1.vstdate BETWEEN d.regdate AND d.dchdate
                 WHERE d.dchdate BETWEEN ? AND ? GROUP BY d.an', [$start_date,$end_date]);
         }
 
@@ -5802,8 +5906,8 @@ class DebtorController extends Controller
             SUM(debtor) AS debtor,SUM(receive_total) AS receive
             FROM (SELECT d.*,s.receive_total+IFNULL(SUM(sk.amount),0) AS receive_total 
             FROM debtor_1102050101_402 d    
-            LEFT JOIN htp_report.finance_stm_ofc s ON s.an=d.an
-            LEFT JOIN htp_report.finance_stm_ofc_kidney sk ON sk.hn=d.hn AND sk.vstdate BETWEEN d.regdate AND d.dchdate
+            LEFT JOIN htp_report.stm_ofc s ON s.an=d.an
+            LEFT JOIN htp_report.stm_ofc_kidney sk ON sk.hn=d.hn AND sk.vstdate BETWEEN d.regdate AND d.dchdate
             WHERE d.dchdate BETWEEN ? AND ? GROUP BY d.an) AS a 
 		GROUP BY dchdate ORDER BY dchdate',[$start_date,$end_date]);
 
@@ -6915,7 +7019,7 @@ class DebtorController extends Controller
 
         return view('hrims.debtor.1102050102_603',compact('start_date','end_date','search','debtor','debtor_search'));
     }
-//_1102050102_603_confirm-------------------------------------------------------------------------------------------------------
+//_1102050102_603_confirm------------------------------------------------------------------------------------------------------- 
     public function _1102050102_603_confirm(Request $request )
     {
         $start_date = Session::get('start_date');
@@ -7065,8 +7169,8 @@ class DebtorController extends Controller
                     CASE WHEN (s.compensate_treatment+IFNULL(SUM(s1.compensate_kidney),0)) - IFNULL(d.debtor, 0)>= 0 
                     THEN 0 ELSE DATEDIFF(CURDATE(), d.dchdate) END AS days
                 FROM debtor_1102050102_802 d    
-                LEFT JOIN finance_stm_lgo s ON s.an=d.an
-				LEFT JOIN finance_stm_lgo_kidney s1 ON s1.cid=d.cid AND s1.datetimeadm BETWEEN d.regdate AND d.dchdate
+                LEFT JOIN stm_lgo s ON s.an=d.an
+				LEFT JOIN stm_lgo_kidney s1 ON s1.cid=d.cid AND s1.datetimeadm BETWEEN d.regdate AND d.dchdate
                 WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%") OR d.an LIKE CONCAT("%", ?, "%"))
                 AND d.dchdate BETWEEN ? AND ?
                 GROUP BY d.an', [$search,$search,$search,$start_date,$end_date]);
@@ -7078,8 +7182,8 @@ class DebtorController extends Controller
                     CASE WHEN (s.compensate_treatment+IFNULL(SUM(s1.compensate_kidney),0)) - IFNULL(d.debtor, 0)>= 0 
                     THEN 0 ELSE DATEDIFF(CURDATE(), d.dchdate) END AS days
                 FROM debtor_1102050102_802 d    
-                LEFT JOIN finance_stm_lgo s ON s.an=d.an
-				LEFT JOIN finance_stm_lgo_kidney s1 ON s1.cid=d.cid AND s1.datetimeadm BETWEEN d.regdate AND d.dchdate
+                LEFT JOIN stm_lgo s ON s.an=d.an
+				LEFT JOIN stm_lgo_kidney s1 ON s1.cid=d.cid AND s1.datetimeadm BETWEEN d.regdate AND d.dchdate
                 WHERE d.dchdate BETWEEN ? AND ? GROUP BY d.an', [$start_date,$end_date]);
         }
 
@@ -7219,8 +7323,8 @@ class DebtorController extends Controller
             d.rcpt_money,d.kidney,d.debtor,debtor_lock,s.compensate_treatment+IFNULL(SUM(s1.compensate_kidney),0) AS receive,
             s.compensate_treatment AS receive_lgo,SUM(s1.compensate_kidney) AS receive_kidney,s.repno,s1.repno AS repno_kidney
             FROM debtor_1102050102_802 d    
-            LEFT JOIN finance_stm_lgo s ON s.an=d.an
-			LEFT JOIN finance_stm_lgo_kidney s1 ON s1.cid=d.cid AND s1.datetimeadm BETWEEN d.regdate AND d.dchdate
+            LEFT JOIN stm_lgo s ON s.an=d.an
+			LEFT JOIN stm_lgo_kidney s1 ON s1.cid=d.cid AND s1.datetimeadm BETWEEN d.regdate AND d.dchdate
             WHERE d.dchdate BETWEEN ? AND ? GROUP BY d.an) AS a
 		    GROUP BY dchdate ORDER BY dchdate',[$start_date,$end_date]);
 
@@ -7252,7 +7356,7 @@ class DebtorController extends Controller
                     CASE WHEN IFNULL(s.receive_total, 0) - IFNULL(d.debtor, 0)>= 0 
                     THEN 0 ELSE DATEDIFF(CURDATE(), d.dchdate) END AS days
                 FROM debtor_1102050102_804 d    
-                LEFT JOIN htp_report.finance_stm_ofc s ON s.an=d.an                
+                LEFT JOIN htp_report.stm_ofc s ON s.an=d.an                
                 WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%") OR d.an LIKE CONCAT("%", ?, "%"))
                 AND d.dchdate BETWEEN ? AND ?
                 GROUP BY d.an', [$search,$search,$search,$start_date,$end_date]);
@@ -7263,7 +7367,7 @@ class DebtorController extends Controller
                     CASE WHEN IFNULL(s.receive_total, 0) - IFNULL(d.debtor, 0)>= 0 
                     THEN 0 ELSE DATEDIFF(CURDATE(), d.dchdate) END AS days
                 FROM debtor_1102050102_804 d    
-                LEFT JOIN htp_report.finance_stm_ofc s ON s.an=d.an                
+                LEFT JOIN htp_report.stm_ofc s ON s.an=d.an                
                 WHERE d.dchdate BETWEEN ? AND ? GROUP BY d.an', [$start_date,$end_date]);
         }
 
@@ -7403,7 +7507,7 @@ class DebtorController extends Controller
             SUM(debtor) AS debtor,SUM(receive_total) AS receive
             FROM (SELECT d.*,s.receive_total
             FROM debtor_1102050102_804 d    
-            LEFT JOIN htp_report.finance_stm_ofc s ON s.an=d.an            
+            LEFT JOIN htp_report.stm_ofc s ON s.an=d.an            
             WHERE d.dchdate BETWEEN ? AND ? GROUP BY d.an) AS a 
 		GROUP BY dchdate ORDER BY dchdate',[$start_date,$end_date]);
 

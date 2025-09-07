@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Finance_stm_lgo_kidneyexcel extends Model
+class Stm_lgo_kidneyexcel extends Model
 {
     use HasFactory;
 
-    protected $table = 'finance_stm_lgo_kidneyexcel'; 
+    protected $table = 'stm_lgo_kidneyexcel'; 
     protected $primaryKey = 'id';
     protected $fillable = [
         'id',

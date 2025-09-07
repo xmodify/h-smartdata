@@ -5,26 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Finance_stm_ucs_kidney extends Model
+class Stm_lgo_kidney extends Model
 {
     use HasFactory;
 
-    protected $table = 'finance_stm_ucs_kidney'; 
+    protected $table = 'stm_lgo_kidney'; 
     protected $primaryKey = 'id';
     protected $fillable = [
         'id',
         'no',
         'repno', 
         'hn', 
-        'an', 
         'cid',
         'pt_name',
+        'dep',  
         'datetimeadm',
-        'hd_type',
-        'charge_total',
-        'receive_total',
-        'note',
-        'stm_filename',        
+        'compensate_total',
+        'note',        
     ];
     public $timestamps = false;   
 }

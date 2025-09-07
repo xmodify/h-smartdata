@@ -39,7 +39,7 @@ class ClaimIpController extends Controller
             LEFT JOIN ipt_coll_stat ic ON ic.an=i.an
             LEFT JOIN ipt_coll_status_type ict ON ict.ipt_coll_status_type_id=ic.ipt_coll_status_type_id
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=i.vn
-            LEFT JOIN htp_report.finance_stm_ucs stm ON stm.an=i.an
+            LEFT JOIN htp_report.stm_ucs stm ON stm.an=i.an
             WHERE i.confirm_discharge = "Y" 
             AND i.dchdate BETWEEN ? AND ?
             AND p.hipdata_code = "UCS" 
@@ -66,7 +66,7 @@ class ClaimIpController extends Controller
             LEFT JOIN ipt_coll_stat ic ON ic.an=i.an
             LEFT JOIN ipt_coll_status_type ict ON ict.ipt_coll_status_type_id=ic.ipt_coll_status_type_id
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=i.vn
-            LEFT JOIN htp_report.finance_stm_ucs stm ON stm.an=i.an
+            LEFT JOIN htp_report.stm_ucs stm ON stm.an=i.an
             WHERE i.confirm_discharge = "Y" 
             AND i.dchdate BETWEEN ? AND ?
             AND p.hipdata_code = "UCS" 
@@ -102,7 +102,7 @@ class ClaimIpController extends Controller
             LEFT JOIN ipt_coll_stat ic ON ic.an=i.an
             LEFT JOIN ipt_coll_status_type ict ON ict.ipt_coll_status_type_id=ic.ipt_coll_status_type_id
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=i.vn
-            LEFT JOIN htp_report.finance_stm_ucs stm ON stm.an=i.an
+            LEFT JOIN htp_report.stm_ucs stm ON stm.an=i.an
             WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN ? AND ?
             AND p.hipdata_code = "UCS" AND ip.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
             AND i.data_exp_date IS NULL
@@ -126,7 +126,7 @@ class ClaimIpController extends Controller
             LEFT JOIN ipt_coll_stat ic ON ic.an=i.an
             LEFT JOIN ipt_coll_status_type ict ON ict.ipt_coll_status_type_id=ic.ipt_coll_status_type_id
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=i.vn
-            LEFT JOIN htp_report.finance_stm_ucs stm ON stm.an=i.an
+            LEFT JOIN htp_report.stm_ucs stm ON stm.an=i.an
             WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN ? AND ?
             AND p.hipdata_code = "UCS" AND ip.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
             AND i.data_exp_date IS NOT NULL 
@@ -160,7 +160,7 @@ class ClaimIpController extends Controller
             LEFT JOIN ipt_coll_stat ic ON ic.an=i.an
             LEFT JOIN ipt_coll_status_type ict ON ict.ipt_coll_status_type_id=ic.ipt_coll_status_type_id
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=i.vn
-            LEFT JOIN htp_report.finance_stm_ucs stm ON stm.an=i.an
+            LEFT JOIN htp_report.stm_ucs stm ON stm.an=i.an
             WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN ? AND ?
             AND p.hipdata_code = "STP" 
             AND i.data_exp_date IS NULL
@@ -184,7 +184,7 @@ class ClaimIpController extends Controller
             LEFT JOIN ipt_coll_stat ic ON ic.an=i.an
             LEFT JOIN ipt_coll_status_type ict ON ict.ipt_coll_status_type_id=ic.ipt_coll_status_type_id
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=i.vn
-            LEFT JOIN htp_report.finance_stm_ucs stm ON stm.an=i.an
+            LEFT JOIN htp_report.stm_ucs stm ON stm.an=i.an
             WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN ? AND ?
             AND p.hipdata_code = "STP" 
             AND i.data_exp_date IS NOT NULL 
@@ -238,7 +238,7 @@ class ClaimIpController extends Controller
             LEFT JOIN iptoprt idx ON idx.an=i.an
             LEFT JOIN ipt_coll_stat ic ON ic.an=i.an
             LEFT JOIN ipt_coll_status_type ict ON ict.ipt_coll_status_type_id=ic.ipt_coll_status_type_id
-            LEFT JOIN htp_report.finance_stm_ofc stm ON stm.an=i.an 
+            LEFT JOIN htp_report.stm_ofc stm ON stm.an=i.an 
             WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN ? AND ?
             AND p.hipdata_code = "OFC" AND ((ic.an IS NOT NULL AND ict.ipt_coll_status_type_id IN ("4","5")) OR stm.an IS NOT NULL)
             GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date]);
@@ -291,7 +291,7 @@ class ClaimIpController extends Controller
             LEFT JOIN iptoprt idx ON idx.an=i.an
             LEFT JOIN ipt_coll_stat ic ON ic.an=i.an
             LEFT JOIN ipt_coll_status_type ict ON ict.ipt_coll_status_type_id=ic.ipt_coll_status_type_id
-            LEFT JOIN htp_report.finance_stm_lgo stm ON stm.an=i.an 
+            LEFT JOIN htp_report.stm_lgo stm ON stm.an=i.an 
             WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN ? AND ?
             AND p.hipdata_code = "LGO" AND ((ic.an IS NOT NULL AND ict.ipt_coll_status_type_id IN ("4","5")) OR stm.an IS NOT NULL)
             GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date]);
@@ -344,7 +344,7 @@ class ClaimIpController extends Controller
             LEFT JOIN iptoprt idx ON idx.an=i.an
             LEFT JOIN ipt_coll_stat ic ON ic.an=i.an
             LEFT JOIN ipt_coll_status_type ict ON ict.ipt_coll_status_type_id=ic.ipt_coll_status_type_id
-            LEFT JOIN htp_report.finance_stm_ofc stm ON stm.an=i.an 
+            LEFT JOIN htp_report.stm_ofc stm ON stm.an=i.an 
             WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN ? AND ?
             AND p.hipdata_code = "BKK" AND ((ic.an IS NOT NULL AND ict.ipt_coll_status_type_id IN ("4","5")) OR stm.an IS NOT NULL)
             GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date]);
@@ -397,7 +397,7 @@ class ClaimIpController extends Controller
             LEFT JOIN iptoprt idx ON idx.an=i.an
             LEFT JOIN ipt_coll_stat ic ON ic.an=i.an
             LEFT JOIN ipt_coll_status_type ict ON ict.ipt_coll_status_type_id=ic.ipt_coll_status_type_id
-            LEFT JOIN htp_report.finance_stm_ofc stm ON stm.an=i.an 
+            LEFT JOIN htp_report.stm_ofc stm ON stm.an=i.an 
             WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN ? AND ?
             AND p.hipdata_code = "BMT" AND ((ic.an IS NOT NULL AND ict.ipt_coll_status_type_id IN ("4","5")) OR stm.an IS NOT NULL)
             GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date]);

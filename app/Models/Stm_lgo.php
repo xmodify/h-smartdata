@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Finance_stm_lgoexcel extends Model
+class Stm_lgo extends Model
 {
     use HasFactory;
 
-    protected $table = 'finance_stm_lgoexcel'; 
+    protected $table = 'stm_lgo'; 
     protected $primaryKey = 'id';
     protected $fillable = [
         'id',
@@ -46,6 +46,7 @@ class Finance_stm_lgoexcel extends Model
         'pa',
         'drg',
         'rw',
+        'proj',
         'charge_treatment',
         'charge_pp',
         'withdraw',

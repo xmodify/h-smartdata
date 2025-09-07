@@ -51,7 +51,7 @@ public function ofc_claim_opd(Request $request )
     LEFT JOIN ovst_seq os ON os.vn=o.vn
     LEFT JOIN patient p ON p.hn=o.hn
     LEFT JOIN hospcode h ON h.hospcode=vp.hospmain
-    LEFT JOIN htp_report.finance_stm_ofc stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ofc stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND (o2.icode IS NULL OR o2.icode="") AND p1.pttype LIKE "O%"
     AND v.income <>"0" GROUP BY o.vn ORDER BY o.vstdate,o.oqueue ');
@@ -71,7 +71,7 @@ public function ofc_claim_opd(Request $request )
     LEFT JOIN ovst_seq os ON os.vn=o.vn
     LEFT JOIN patient p ON p.hn=o.hn
     LEFT JOIN hospcode h ON h.hospcode=vp.hospmain
-    LEFT JOIN htp_report.finance_stm_ofc_kidney stm ON stm.hn=o.hn AND DATE(stm.vstdate) = o.vstdate
+    LEFT JOIN htp_report.stm_ofc_kidney stm ON stm.hn=o.hn AND DATE(stm.vstdate) = o.vstdate
     WHERE (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND (o2.icode IS NOT NULL OR o2.icode<>"") AND (p1.pttype LIKE "O%" OR p1.pttype LIKE "H%") 
     AND v.income <>"0" GROUP BY o.vn ORDER BY o.vstdate,o.oqueue ');
@@ -106,7 +106,7 @@ public function ofc_claim_ipd(Request $request )
     LEFT JOIN ipt_pttype ip ON ip.an=i.an
     LEFT JOIN pttype p1 ON p1.pttype=ip.pttype
     LEFT JOIN patient p ON p.hn=i.hn
-    LEFT JOIN htp_report.finance_stm_ofc stm ON stm.an=i.an 
+    LEFT JOIN htp_report.stm_ofc stm ON stm.an=i.an 
     WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND p1.hipdata_code = "OFC" 
     GROUP BY i.an ORDER BY i.ward,i.dchdate ');
@@ -144,7 +144,7 @@ public function bkk_claim_opd(Request $request )
     LEFT JOIN ovst_seq os ON os.vn=o.vn
     LEFT JOIN patient p ON p.hn=o.hn
     LEFT JOIN hospcode h ON h.hospcode=vp.hospmain
-    LEFT JOIN htp_report.finance_stm_ofc stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ofc stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND (o2.icode IS NULL OR o2.icode="") AND p1.pttype LIKE "B%"
     AND v.income <>"0" GROUP BY o.vn ORDER BY o.vstdate,o.oqueue ');
@@ -168,7 +168,7 @@ public function bkk_claim_opd(Request $request )
     LEFT JOIN ovst_seq os ON os.vn=o.vn
     LEFT JOIN patient p ON p.hn=o.hn
     LEFT JOIN hospcode h ON h.hospcode=vp.hospmain
-    LEFT JOIN htp_report.finance_stm_ofc stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ofc stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND (o2.icode IS NOT NULL OR o2.icode<>"") AND p1.hipdata_code = "BKK"
     AND v.income <>"0" GROUP BY o.vn ORDER BY o.vstdate,o.oqueue ');
@@ -203,7 +203,7 @@ public function bkk_claim_ipd(Request $request )
     LEFT JOIN ipt_pttype ip ON ip.an=i.an
     LEFT JOIN pttype p1 ON p1.pttype=ip.pttype
     LEFT JOIN patient p ON p.hn=i.hn
-    LEFT JOIN htp_report.finance_stm_ofc stm ON stm.an=i.an 
+    LEFT JOIN htp_report.stm_ofc stm ON stm.an=i.an 
     WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND p1.hipdata_code = "BKK" 
     GROUP BY i.an ORDER BY i.ward,i.dchdate ');
@@ -241,7 +241,7 @@ public function bmt_claim_opd(Request $request )
     LEFT JOIN ovst_seq os ON os.vn=o.vn
     LEFT JOIN patient p ON p.hn=o.hn
     LEFT JOIN hospcode h ON h.hospcode=vp.hospmain
-    LEFT JOIN htp_report.finance_stm_ofc stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ofc stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND (o2.icode IS NULL OR o2.icode="") AND p1.hipdata_code = "BMT"
     AND v.income <>"0" GROUP BY o.vn ORDER BY o.vstdate,o.oqueue ');
@@ -265,7 +265,7 @@ public function bmt_claim_opd(Request $request )
     LEFT JOIN ovst_seq os ON os.vn=o.vn
     LEFT JOIN patient p ON p.hn=o.hn
     LEFT JOIN hospcode h ON h.hospcode=vp.hospmain
-    LEFT JOIN htp_report.finance_stm_ofc stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ofc stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND (o2.icode IS NOT NULL OR o2.icode<>"") AND p1.hipdata_code = "BMT"
     AND v.income <>"0" GROUP BY o.vn ORDER BY o.vstdate,o.oqueue ');
@@ -300,7 +300,7 @@ public function bmt_claim_ipd(Request $request )
     LEFT JOIN ipt_pttype ip ON ip.an=i.an
     LEFT JOIN pttype p1 ON p1.pttype=ip.pttype
     LEFT JOIN patient p ON p.hn=i.hn
-    LEFT JOIN htp_report.finance_stm_ofc stm ON stm.an=i.an 
+    LEFT JOIN htp_report.stm_ofc stm ON stm.an=i.an 
     WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND p1.hipdata_code = "BMT" 
     GROUP BY i.an ORDER BY i.ward,i.dchdate ');
@@ -336,7 +336,7 @@ public function lgo_claim_opd(Request $request )
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
     LEFT JOIN patient p ON p.hn=o.hn
     LEFT JOIN hospcode h ON h.hospcode=vp.hospmain
-    LEFT JOIN htp_report.finance_stm_lgo stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_lgo stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND (o2.icode IS NULL OR o2.icode="") AND p1.pttype LIKE "L%" 
     AND v.income <>"0" GROUP BY o.vn ORDER BY o.vstdate,o.oqueue ');
@@ -360,8 +360,8 @@ public function lgo_claim_opd(Request $request )
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
     LEFT JOIN patient p ON p.hn=o.hn
     LEFT JOIN hospcode h ON h.hospcode=vp.hospmain		
-    LEFT JOIN htp_report.finance_stm_lgo stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
-    LEFT JOIN htp_report.finance_stm_lgo_kidney stm1 ON stm1.hn=o.hn AND stm1.datetimeadm = o.vstdate 
+    LEFT JOIN htp_report.stm_lgo stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_lgo_kidney stm1 ON stm1.hn=o.hn AND stm1.datetimeadm = o.vstdate 
 		WHERE (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND (o2.icode IS NOT NULL OR o2.icode<>"") AND p1.pttype LIKE "L%" 
     AND v.income <>"0" GROUP BY o.vn ORDER BY o.vstdate,o.oqueue ');
@@ -396,7 +396,7 @@ public function lgo_claim_ipd(Request $request )
     LEFT JOIN ipt_pttype ip ON ip.an=i.an
     LEFT JOIN pttype p1 ON p1.pttype=ip.pttype
     LEFT JOIN patient p ON p.hn=i.hn
-    LEFT JOIN htp_report.finance_stm_lgo stm ON stm.an=i.an 
+    LEFT JOIN htp_report.stm_lgo stm ON stm.an=i.an 
     WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND p1.hipdata_code = "LGO" 
     GROUP BY i.an ORDER BY i.ward,i.dchdate ');
@@ -428,7 +428,7 @@ public function sss_claim_kidney(Request $request )
     LEFT JOIN pttype p1 ON p1.pttype=vp.pttype
     LEFT JOIN patient p ON p.hn=o.hn
     LEFT JOIN hospcode h ON h.hospcode=vp.hospmain
-    LEFT JOIN htp_report.finance_stm_sss_kidney stm ON stm.cid=p.cid AND DATE(stm.vstdate) = o.vstdate
+    LEFT JOIN htp_report.stm_sss_kidney stm ON stm.cid=p.cid AND DATE(stm.vstdate) = o.vstdate
     WHERE (o.an IS NULL OR o.an ="") AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND (o2.icode IS NOT NULL OR o2.icode<>"") AND p1.hipdata_code IN ("SSS","SSI")
     AND v.income <>"0" GROUP BY o.vn ORDER BY o.vstdate,o.oqueue ');
@@ -466,7 +466,7 @@ public function ucs_claim_ipd(Request $request )
       LEFT JOIN pttype p1 ON p1.pttype=ip.pttype
       LEFT JOIN rep_eclaim_detail rep ON rep.vn=i.vn
       LEFT JOIN patient p ON p.hn=i.hn
-      LEFT JOIN htp_report.finance_stm_ucs stm ON stm.an=i.an 
+      LEFT JOIN htp_report.stm_ucs stm ON stm.an=i.an 
       WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN  "'.$start_date.'" AND "'.$end_date.'"
       AND p1.hipdata_code = "UCS" AND i.data_ok = "Y" 
       GROUP BY i.an ORDER BY i.ward,i.dchdate');
@@ -490,7 +490,7 @@ public function ucs_claim_ipd(Request $request )
       LEFT JOIN pttype p1 ON p1.pttype=ip.pttype
       LEFT JOIN rep_eclaim_detail rep ON rep.vn=i.vn
       LEFT JOIN patient p ON p.hn=i.hn
-      LEFT JOIN htp_report.finance_stm_ucs stm ON stm.an=i.an 
+      LEFT JOIN htp_report.stm_ucs stm ON stm.an=i.an 
       WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN  "'.$start_date.'" AND "'.$end_date.'"
       AND p1.hipdata_code = "UCS" AND (i.data_ok <> "Y" OR i.data_ok IS NULL OR i.data_ok ="")
       GROUP BY i.an ORDER BY i.ward,i.dchdate');
@@ -658,7 +658,7 @@ public function ucs_claim_kidney(Request $request )
     LEFT JOIN patient p ON p.hn=o.hn
     LEFT JOIN hospcode h ON h.hospcode=vp.hospmain
     LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate
-    LEFT JOIN htp_report.finance_stm_ucs_kidney stm ON stm.cid=p.cid AND DATE(stm.datetimeadm) = o.vstdate
+    LEFT JOIN htp_report.stm_ucs_kidney stm ON stm.cid=p.cid AND DATE(stm.datetimeadm) = o.vstdate
     WHERE o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND (o2.icode IS NOT NULL OR o2.icode<>"") AND p1.hipdata_code IN ("UCS")
     AND v.income <>"0" GROUP BY o.vn ORDER BY o.vstdate,o.oqueue');
@@ -703,7 +703,7 @@ public function ucs_claim_opanywhere(Request $request )
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
     LEFT JOIN htp_report.nhso_endpoint ep ON ep.personalId=v.cid AND DATE(ep.claimDate)=o.vstdate AND ep.claimStatus="E"
     LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE (o.an ="" OR o.an IS NULL) AND p1.hipdata_code = "UCS" AND vp.hospmain NOT IN ("10703","10985","10986","10987","10988","10989","10990")		
     AND v.income <> "0" AND kidney.vn IS NULL AND oe.moph_finance_upload_status IS NULL 
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
@@ -736,7 +736,7 @@ public function ucs_claim_opanywhere(Request $request )
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
     LEFT JOIN htp_report.nhso_endpoint ep ON ep.personalId=v.cid AND DATE(ep.claimDate)=o.vstdate AND ep.claimStatus="E"
     LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE (o.an ="" OR o.an IS NULL) AND p1.hipdata_code = "UCS" AND vp.hospmain NOT IN ("10703","10985","10986","10987","10988","10989","10990")		
     AND v.income <> "0" AND kidney.vn IS NULL AND oe.moph_finance_upload_status IS NOT NULL 
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
@@ -774,7 +774,7 @@ public function ucs_claim_instrument(Request $request )
     LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE p1.hipdata_code = "UCS" AND vp.hospmain ="10989" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_type_id = "2")
     AND (o.an ="" OR o.an IS NULL) AND vp.confirm_and_locked ="Y" 
@@ -799,7 +799,7 @@ public function ucs_claim_instrument(Request $request )
     LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE p1.hipdata_code = "UCS" AND vp.hospmain ="10989" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_type_id = "2") AND (o.an ="" OR o.an IS NULL) 
     AND (vp.confirm_and_locked IS NULL OR vp.confirm_and_locked ="" OR vp.confirm_and_locked <>"Y")
@@ -838,7 +838,7 @@ public function ucs_claim_telehealth(Request $request )
     LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE p1.hipdata_code = "UCS" AND vp.hospmain ="10989" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("TELMED"))
     AND (o.an ="" OR o.an IS NULL) AND vp.confirm_and_locked ="Y" 
@@ -864,7 +864,7 @@ public function ucs_claim_telehealth(Request $request )
     LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE p1.hipdata_code = "UCS" AND vp.hospmain ="10989" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("TELMED")) AND (o.an ="" OR o.an IS NULL)
     AND (vp.confirm_and_locked IS NULL OR vp.confirm_and_locked ="" OR vp.confirm_and_locked <>"Y")
@@ -903,7 +903,7 @@ public function ucs_claim_rider(Request $request )
     LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE p1.hipdata_code = "UCS" AND vp.hospmain ="10989" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("DRUGP"))
     AND (o.an ="" OR o.an IS NULL) AND vp.confirm_and_locked ="Y" 
@@ -929,7 +929,7 @@ public function ucs_claim_rider(Request $request )
     LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE p1.hipdata_code = "UCS" AND vp.hospmain ="10989" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("DRUGP")) AND (o.an ="" OR o.an IS NULL)
     AND (vp.confirm_and_locked IS NULL OR vp.confirm_and_locked ="" OR vp.confirm_and_locked <>"Y")
@@ -967,7 +967,7 @@ public function ucs_claim_palliative(Request $request )
     LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE p1.hipdata_code = "UCS" AND vp.hospmain ="10989" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("Cons01","Eva001","30001"))
     AND (o.an ="" OR o.an IS NULL) AND vp.confirm_and_locked ="Y" 
@@ -992,7 +992,7 @@ public function ucs_claim_palliative(Request $request )
     LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE p1.hipdata_code = "UCS" AND vp.hospmain ="10989" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("Cons01","Eva001","30001"))
     AND (o.an ="" OR o.an IS NULL) AND (vp.confirm_and_locked IS NULL OR vp.confirm_and_locked ="" OR vp.confirm_and_locked <>"Y")
@@ -1035,7 +1035,7 @@ public function ucs_claim_t1dm_gdm_pdm(Request $request )
     LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE p1.hipdata_code = "UCS" AND vp.hospmain ="10989" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("80001","80002","80003","80004","80005","80006",
 			"80007","80008","80015","80024","80025","80026","80027","80028"))
@@ -1066,7 +1066,7 @@ public function ucs_claim_t1dm_gdm_pdm(Request $request )
     LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE p1.hipdata_code = "UCS" AND vp.hospmain ="10989" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND (claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("80001","80002","80003","80004","80005","80006",
 			"80007","80008","80015","80024","80025","80026","80027","80028")) OR od.icd10 IN ("Z348","O244","O249","8744"))
@@ -1104,7 +1104,7 @@ $eclaim_fdh = DB::connection('hosxp')->select('
   LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
   LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
   LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-  LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+  LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
   WHERE p1.hipdata_code = "UCS" AND vp.hospmain ="10989" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
   AND claim.icode IN (SELECT icode FROM drugitems_property_list WHERE drugitems_property_id="13")
   AND (o.an ="" OR o.an IS NULL) AND vp.confirm_and_locked ="Y" 
@@ -1128,7 +1128,7 @@ $eclaim = DB::connection('hosxp')->select('
   LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
   LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
   LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-  LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+  LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
   WHERE p1.hipdata_code = "UCS" AND vp.hospmain ="10989" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
   AND claim.icode IN (SELECT icode FROM drugitems_property_list WHERE drugitems_property_id="13")
   AND (o.an ="" OR o.an IS NULL) AND (vp.confirm_and_locked IS NULL OR vp.confirm_and_locked ="" OR vp.confirm_and_locked <>"Y")
@@ -1170,7 +1170,7 @@ public function ucs_claim_drug_herb32(Request $request )
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
     LEFT JOIN htp_report.nhso_endpoint ep ON ep.personalId=v.cid AND DATE(ep.claimDate)=o.vstdate AND ep.claimStatus="E"
     LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE p1.hipdata_code = "UCS" AND vp.hospmain ="10989" AND (o.an ="" OR o.an IS NULL)		 
 		AND claim.icode IN (SELECT icode FROM drugitems_property_list WHERE drugitems_property_id="12")
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
@@ -1200,7 +1200,7 @@ public function ucs_claim_drug_herb32(Request $request )
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
     LEFT JOIN htp_report.nhso_endpoint ep ON ep.personalId=v.cid AND DATE(ep.claimDate)=o.vstdate AND ep.claimStatus="E"
     LEFT JOIN htp_report.nhso_endpoint_indiv epi ON epi.cid=v.cid AND DATE(epi.serviceDateTime)=o.vstdate
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE p1.hipdata_code = "UCS" AND vp.hospmain ="10989" AND (o.an ="" OR o.an IS NULL)		 
 		AND claim.icode IN (SELECT icode FROM drugitems_property_list WHERE drugitems_property_id="12")
 		AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
@@ -1239,7 +1239,7 @@ public function ucs_claim_drug_morphine(Request $request )
     LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE p1.hipdata_code = "UCS" AND vp.hospmain ="10989" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND claim.icode IN ("1000201","1000202","1000203","1500052","1510002","1510021","1530020")
     AND (o.an ="" OR o.an IS NULL)  AND vp.confirm_and_locked ="Y" 
@@ -1264,7 +1264,7 @@ public function ucs_claim_drug_morphine(Request $request )
     LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE p1.hipdata_code = "UCS" AND vp.hospmain ="10989" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND claim.icode IN ("1000201","1000202","1000203","1500052","1510002","1510021","1530020") AND (o.an ="" OR o.an IS NULL)  
     AND (vp.confirm_and_locked IS NULL OR vp.confirm_and_locked ="" OR vp.confirm_and_locked <>"Y")
@@ -1301,7 +1301,7 @@ public function ucs_claim_drug_clopidogrel(Request $request )
   LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
   LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
   LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-  LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+  LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
   WHERE p1.hipdata_code = "UCS" AND vp.hospmain ="10989" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
   AND claim.icode IN ("1520019") AND (o.an ="" OR o.an IS NULL)  AND vp.confirm_and_locked ="Y" 
   GROUP BY o.vn ORDER BY o.vstdate,o.oqueue');
@@ -1324,7 +1324,7 @@ $eclaim = DB::connection('hosxp')->select('
   LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
   LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
   LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-  LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+  LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
   WHERE p1.hipdata_code = "UCS" AND vp.hospmain ="10989" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
   AND claim.icode IN ("1520019") AND (o.an ="" OR o.an IS NULL)  
   AND (vp.confirm_and_locked IS NULL OR vp.confirm_and_locked ="" OR vp.confirm_and_locked <>"Y")
@@ -1361,7 +1361,7 @@ public function ucs_claim_drug_sk(Request $request )
     LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE p1.hipdata_code = "UCS" AND vp.hospmain ="10989" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND claim.icode IN ("1580011") AND (o.an ="" OR o.an IS NULL)  
     AND vp.confirm_and_locked ="Y" 
@@ -1385,7 +1385,7 @@ public function ucs_claim_drug_sk(Request $request )
     LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE p1.hipdata_code = "UCS" AND vp.hospmain ="10989" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND claim.icode IN ("1580011") AND (o.an ="" OR o.an IS NULL)  
     AND (vp.confirm_and_locked IS NULL OR vp.confirm_and_locked ="" OR vp.confirm_and_locked <>"Y")
@@ -1456,7 +1456,7 @@ public function ucs_ppfs_2(Request $request )
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
     LEFT JOIN htp_report.nhso_endpoint ep ON ep.personalId=v.cid AND DATE(ep.claimDate)=o.vstdate AND ep.claimStatus="E"
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE (o.an ="" OR o.an IS NULL) AND vp.pttype <> "10" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND (claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("30008","30009","30010","30011","30012","30013","52612")) OR
     v.pdx IN ("Z340","Z348","Z350","Z359") OR a.vn IS NOT NULL OR a.vn <>"" OR ov.icd10 IN ("8878","2330011","2387010","2277310","2277320","2287310","2287320"))
@@ -1487,7 +1487,7 @@ public function ucs_ppfs_2(Request $request )
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
     LEFT JOIN htp_report.nhso_endpoint ep ON ep.personalId=v.cid AND DATE(ep.claimDate)=o.vstdate AND ep.claimStatus="E"
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE (o.an ="" OR o.an IS NULL) AND vp.pttype <> "10" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND (claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("30008","30009","30010","30011","30012","30013","52612")) OR
     v.pdx IN ("Z340","Z348","Z350","Z359") OR a.vn IS NOT NULL OR a.vn <>"" OR ov.icd10 IN ("8878","2330011","2387010","2277310","2277320","2287310","2287320"))
@@ -1527,7 +1527,7 @@ public function ucs_ppfs_7(Request $request )
     LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("30015","30016")
 		UNION SELECT icode FROM drugitems WHERE icode IN ("1600050")) 
@@ -1555,7 +1555,7 @@ public function ucs_ppfs_7(Request $request )
     LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND (claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("30015","30016")
 		UNION SELECT icode FROM drugitems WHERE icode IN ("1600050")) OR v.pdx IN ("Z390","Z391","Z392"))
@@ -1598,7 +1598,7 @@ $eclaim_fdh = DB::connection('hosxp')->select('
 	LEFT JOIN lab_order lo ON lo.lab_order_number=lh.lab_order_number AND lo.lab_items_code="444"
   LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
   LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-  LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+  LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
   WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
   AND claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("30014")) 
   AND vp.confirm_and_locked ="Y" 
@@ -1627,7 +1627,7 @@ $eclaim = DB::connection('hosxp')->select('
 	LEFT JOIN lab_order lo ON lo.lab_order_number=lh.lab_order_number AND lo.lab_items_code="444"
   LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
   LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-  LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+  LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
   WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
   AND (claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("30014","31101")) OR v.pdx IN ("Z320","Z321") OR lo.lab_items_code="444")
   AND (vp.confirm_and_locked IS NULL OR vp.confirm_and_locked ="" OR vp.confirm_and_locked <>"Y")
@@ -1667,7 +1667,7 @@ $eclaim_fdh = DB::connection('hosxp')->select('
   LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
   LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
   LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-  LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+  LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
   WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
   AND claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("FP003_3","FP003_4","FP001","FP002")
 	UNION SELECT icode FROM drugitems WHERE nhso_adp_code IN ("FP003_1","FP003_2")) 
@@ -1695,7 +1695,7 @@ $eclaim = DB::connection('hosxp')->select('
   LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
   LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
   LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-  LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+  LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
   WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
   AND (claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("FP003_3","FP003_4","FP001","FP002")
 	UNION SELECT icode FROM drugitems WHERE nhso_adp_code IN ("FP003_1","FP003_2")) OR v.pdx IN ("Z304","Z392","G431","Z308"))
@@ -1735,7 +1735,7 @@ $eclaim_fdh = DB::connection('hosxp')->select('
   LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
   LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
   LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-  LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+  LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
   WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"	
   AND claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("12003","12004")) 
   AND v.age_y BETWEEN "35" AND "70" AND vp.confirm_and_locked ="Y" 
@@ -1761,7 +1761,7 @@ $eclaim = DB::connection('hosxp')->select('
   LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
   LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
   LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-  LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+  LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
   WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"	
   AND (claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("12003","12004")) OR ov.icd10 IN ("Z131","Z133","Z136"))
   AND v.age_y BETWEEN "35" AND "70" AND (vp.confirm_and_locked IS NULL OR vp.confirm_and_locked ="" OR vp.confirm_and_locked <>"Y")
@@ -1799,7 +1799,7 @@ public function ucs_ppfs_14_excel(Request $request)
   LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
   LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
   LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-  LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+  LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
   WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"	
   AND (claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("12003","12004")) OR ov.icd10 IN ("Z131","Z133","Z136"))
   AND v.age_y BETWEEN "35" AND "70" AND vp.pttype <> "10"
@@ -1838,7 +1838,7 @@ public function ucs_ppfs_17(Request $request )
 		LEFT JOIN nondrugitems n_lab ON n_lab.icode=lab.icode
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("13001"))
     AND vp.confirm_and_locked ="Y"
@@ -1865,7 +1865,7 @@ public function ucs_ppfs_17(Request $request )
 		LEFT JOIN nondrugitems n_lab ON n_lab.icode=lab.icode
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND (claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("13001")) OR ov.icd10 = "Z138" 
 		OR lab.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code ="30101"))
@@ -1908,7 +1908,7 @@ public function ucs_ppfs_18(Request $request )
   LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
   LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
   LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-  LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+  LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
   WHERE o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
   AND claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("14001"))
   AND (o.an ="" OR o.an IS NULL) AND vp.confirm_and_locked ="Y" 
@@ -1933,7 +1933,7 @@ $eclaim = DB::connection('hosxp')->select('
   LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
   LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
   LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-  LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+  LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
   WHERE o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
   AND claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("14001"))
   AND (o.an ="" OR o.an IS NULL) AND (vp.confirm_and_locked IS NULL OR vp.confirm_and_locked ="" OR vp.confirm_and_locked <>"Y")
@@ -1971,7 +1971,7 @@ public function ucs_ppfs_20(Request $request )
   LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
   LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
   LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-  LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+  LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
   WHERE o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
   AND claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("15001"))
   AND (o.an ="" OR o.an IS NULL) AND vp.confirm_and_locked ="Y" 
@@ -1996,7 +1996,7 @@ $eclaim = DB::connection('hosxp')->select('
   LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
   LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
   LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-  LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+  LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
   WHERE o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
   AND claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("15001"))
   AND (o.an ="" OR o.an IS NULL) AND (vp.confirm_and_locked IS NULL OR vp.confirm_and_locked ="" OR vp.confirm_and_locked <>"Y")
@@ -2034,7 +2034,7 @@ public function ucs_ppfs_21(Request $request )
     LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("90005"))
     AND (o.an ="" OR o.an IS NULL) AND vp.confirm_and_locked ="Y" 
@@ -2059,7 +2059,7 @@ public function ucs_ppfs_21(Request $request )
     LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND claim.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("90005"))
     AND (o.an ="" OR o.an IS NULL) AND (vp.confirm_and_locked IS NULL OR vp.confirm_and_locked ="" OR vp.confirm_and_locked <>"Y")
@@ -2095,7 +2095,7 @@ public function stp_claim_opd(Request $request )
     LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE p1.hipdata_code = "STP" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND (o.an ="" OR o.an IS NULL) AND vp.confirm_and_locked ="Y" 
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue');
@@ -2115,7 +2115,7 @@ public function stp_claim_opd(Request $request )
     LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
     LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
     LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-    LEFT JOIN htp_report.finance_stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+    LEFT JOIN htp_report.stm_ucs stm ON stm.hn=o.hn AND DATE(stm.datetimeadm) = o.vstdate AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
     WHERE p1.hipdata_code = "STP" AND o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     AND (o.an ="" OR o.an IS NULL) AND (vp.confirm_and_locked IS NULL OR vp.confirm_and_locked ="" OR vp.confirm_and_locked <>"Y")
     GROUP BY o.vn ORDER BY o.vstdate,o.oqueue');
@@ -2152,7 +2152,7 @@ public function stp_claim_ipd(Request $request )
   LEFT JOIN pttype p1 ON p1.pttype=ip.pttype
   LEFT JOIN rep_eclaim_detail rep ON rep.vn=i.vn
   LEFT JOIN patient p ON p.hn=i.hn
-  LEFT JOIN htp_report.finance_stm_ucs stm ON stm.an=i.an 
+  LEFT JOIN htp_report.stm_ucs stm ON stm.an=i.an 
   WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN  "'.$start_date.'" AND "'.$end_date.'"
   AND p1.hipdata_code = "STP" AND i.data_ok = "Y" 
   GROUP BY i.an ORDER BY i.ward,i.dchdate');
@@ -2176,7 +2176,7 @@ $eclaim = DB::connection('hosxp')->select('
   LEFT JOIN pttype p1 ON p1.pttype=ip.pttype
   LEFT JOIN rep_eclaim_detail rep ON rep.vn=i.vn
   LEFT JOIN patient p ON p.hn=i.hn
-  LEFT JOIN htp_report.finance_stm_ucs stm ON stm.an=i.an 
+  LEFT JOIN htp_report.stm_ucs stm ON stm.an=i.an 
   WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN  "'.$start_date.'" AND "'.$end_date.'"
   AND p1.hipdata_code = "STP" AND (i.data_ok <> "Y" OR i.data_ok IS NULL OR i.data_ok ="")
   GROUP BY i.an ORDER BY i.ward,i.dchdate');

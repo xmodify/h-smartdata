@@ -8,18 +8,18 @@ use Illuminate\Support\Facades\File;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Reader\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use App\Models\Finance_stm_ofc;
-use App\Models\Finance_stm_ofcexcel;
-use App\Models\Finance_stm_ofc_kidney;
-use App\Models\Finance_stm_lgo;
-use App\Models\Finance_stm_lgoexcel;
-use App\Models\Finance_stm_lgo_kidney;
-use App\Models\Finance_stm_lgo_kidneyexcel;
-use App\Models\Finance_stm_sss_kidney;
-use App\Models\Finance_stm_ucs;
-use App\Models\Finance_stm_ucsexcel;
-use App\Models\Finance_stm_ucs_kidney;
-use App\Models\Finance_stm_ucs_kidneyexcel;
+use App\Models\Stm_ofc;
+use App\Models\Stm_ofcexcel;
+use App\Models\Stm_ofc_kidney;
+use App\Models\Stm_lgo;
+use App\Models\Stm_lgoexcel;
+use App\Models\Stm_lgo_kidney;
+use App\Models\Stm_lgo_kidneyexcel;
+use App\Models\Stm_sss_kidney;
+use App\Models\Stm_ucs;
+use App\Models\Stm_ucsexcel;
+use App\Models\Stm_ucs_kidney;
+use App\Models\Stm_ucs_kidneyexcel;
 
 class Finance_StmController extends Controller
 {
@@ -45,7 +45,7 @@ public function stm_ofc(Request $request)
         SUM(receive_drug) AS sum_receive_drug,SUM(receive_treatment) AS sum_receive_treatment,
         SUM(receive_car) AS sum_receive_car,SUM(receive_waitdch) AS sum_receive_waitdch,
         SUM(receive_other) AS sum_receive_other,SUM(receive_total) AS sum_receive_total
-        FROM finance_stm_ofc GROUP BY stm_filename ORDER BY repno');    
+        FROM stm_ofc GROUP BY stm_filename ORDER BY repno');    
 
     return view('finance_stm.stm_ofc',compact('stm_ofc'));
 }
@@ -118,7 +118,7 @@ public function stm_ofc_save(Request $request)
 
         $for_insert = array_chunk($data, 1000);
         foreach ($for_insert as $key => $data_) {
-            Finance_stm_ofcexcel::insert($data_);                 
+            Stm_ofcexcel::insert($data_);                 
         }
 
     } 
@@ -128,14 +128,14 @@ public function stm_ofc_save(Request $request)
         return back()->withErrors('There was a problem uploading the data!');
     }
 // ***************************************************************************************************************************** 
-        $stm_ofcexcel=Finance_stm_ofcexcel::whereNotNull('charge')
+        $stm_ofcexcel=Stm_ofcexcel::whereNotNull('charge')
                     ->Where('charge','<>', 'เรียกเก็บ')->get();
                     
         foreach ($stm_ofcexcel as $key => $value) {
 
-            $check = Finance_stm_ofc::where('repno','=',$value->repno)->where('no','=',$value->no)->count();
+            $check = Stm_ofc::where('repno','=',$value->repno)->where('no','=',$value->no)->count();
                 if ($check > 0) {
-                    Finance_stm_ofc::where('repno','=',$value->repno)->where('no','=',$value->no)->update([
+                    Stm_ofc::where('repno','=',$value->repno)->where('no','=',$value->no)->update([
                         'datetimeadm'           => $value->datetimeadm,
                         'datetimedch'           => $value->datetimedch,
                         'charge'                => $value->charge,
@@ -150,7 +150,7 @@ public function stm_ofc_save(Request $request)
                         'stm_filename'          => $value->stm_filename
                     ]); 
                 } else {
-                    $add = new Finance_stm_ofc();
+                    $add = new Stm_ofc();
                     $add->repno                 = $value->repno;
                     $add->no                    = $value->no;
                     $add->hn                    = $value->hn;
@@ -175,7 +175,7 @@ public function stm_ofc_save(Request $request)
                     $add->save(); 
                 } 
         }                
-        Finance_stm_ofcexcel::truncate(); 
+        Stm_ofcexcel::truncate(); 
         
     return redirect()->route('stm_ofc')->with('success',$file_name);
 }
@@ -194,7 +194,7 @@ public function stm_ofc_detail(Request $request)
         SELECT IF(SUBSTRING(stm_filename,11) LIKE "O%","OPD","IPD") AS dep,stm_filename,repno,
         hn,an,pt_name,datetimeadm,datetimedch,adjrw,charge,act,receive_room,receive_instument,
         receive_drug,receive_treatment,receive_car,receive_waitdch,receive_other,receive_total
-        FROM finance_stm_ofc
+        FROM stm_ofc
         WHERE DATE(datetimeadm) BETWEEN "'.$start_date.'" AND "'.$end_date.'"
         AND SUBSTRING(stm_filename,11) LIKE "O%"
         GROUP BY stm_filename,repno,hn,datetimeadm 
@@ -204,7 +204,7 @@ public function stm_ofc_detail(Request $request)
         SELECT IF(SUBSTRING(stm_filename,11) LIKE "O%","OPD","IPD") AS dep,stm_filename,repno,
         hn,an,pt_name,datetimeadm,datetimedch,adjrw,charge,act,receive_room,receive_instument,
         receive_drug,receive_treatment,receive_car,receive_waitdch,receive_other,receive_total
-        FROM finance_stm_ofc 
+        FROM stm_ofc 
         WHERE DATE(datetimedch) BETWEEN "'.$start_date.'" AND "'.$end_date.'"
         AND SUBSTRING(stm_filename,11) LIKE "I%"
         GROUP BY stm_filename,repno,hn,datetimeadm 
@@ -218,7 +218,7 @@ public function stm_ofc_kidney(Request $request)
 {  
     $stm_ofc_kidney=DB::select('
         SELECT stmdoc,station,COUNT(*) AS count_no,	
-	    SUM(amount) AS amount FROM finance_stm_ofc_kidney 
+	    SUM(amount) AS amount FROM stm_ofc_kidney 
         GROUP BY stmdoc,station ORDER BY station ,stmdoc');
     
 
@@ -261,9 +261,9 @@ public function stm_ofc_kidney_save(Request $request)
                 $dttranDate = explode("T",$value['dttran']);
                 $dttdate = $dttranDate[0];
                 $dtttime = $dttranDate[1];
-                $checkc = Finance_stm_ofc_kidney::where('hn', $hn)->where('vstdate', $dttdate)->count();
+                $checkc = Stm_ofc_kidney::where('hn', $hn)->where('vstdate', $dttdate)->count();
                 if ( $checkc > 0) {
-                    Finance_stm_ofc_kidney::where('hn', $hn)->where('vstdate', $dttdate) 
+                    Stm_ofc_kidney::where('hn', $hn)->where('vstdate', $dttdate) 
                         ->update([   
                             'invno'            => $invno,
                             'dttran'           => $dttran, 
@@ -277,7 +277,7 @@ public function stm_ofc_kidney_save(Request $request)
                         ]);
 
                 } else {
-                        Finance_stm_ofc_kidney::insert([                            
+                        Stm_ofc_kidney::insert([                            
  
                             'hcode'              => @$hcode, 
                             'hname'              => @$hname,
@@ -312,7 +312,7 @@ public function stm_ofc_kidneydetail(Request $request)
 
     $stm_ofc_kidney_list=DB::select('
         SELECT hcode,hname,stmdoc,station,hreg,hn,invno,dttran,paid,rid,amount,hdflag
-        FROM finance_stm_ofc_kidney  WHERE DATE(dttran) BETWEEN "'.$start_date.'" AND "'.$end_date.'"
+        FROM stm_ofc_kidney  WHERE DATE(dttran) BETWEEN "'.$start_date.'" AND "'.$end_date.'"
         ORDER BY station ,stmdoc');
 
     return view('finance_stm.stm_ofc_kidneydetail',compact('start_date','end_date','stm_ofc_kidney_list'));
@@ -326,7 +326,7 @@ public function stm_lgo(Request $request)
         SUM(charge_treatment) AS charge_treatment,SUM(compensate_treatment) AS compensate_treatment,
         SUM(case_iplg) AS case_iplg,SUM(case_oplg) AS case_oplg,SUM(case_palg) AS case_palg,
         SUM(case_inslg) AS case_inslg,SUM(case_otlg) AS case_otlg,SUM(case_pp) AS case_pp,SUM(case_drug) AS case_drug
-        FROM finance_stm_lgo GROUP BY stm_filename,repno ORDER BY dep DESC,repno');
+        FROM stm_lgo GROUP BY stm_filename,repno ORDER BY dep DESC,repno');
 
     return view('finance_stm.stm_lgo',compact('stm_lgo'));
 }
@@ -431,7 +431,7 @@ public function stm_lgo_save(Request $request)
 
         $for_insert = array_chunk($data, 1000);
         foreach ($for_insert as $key => $data_) {
-            Finance_stm_lgoexcel::insert($data_);                 
+            Stm_lgoexcel::insert($data_);                 
         }
     }    
     catch (Exception $e) {
@@ -439,12 +439,12 @@ public function stm_lgo_save(Request $request)
         return back()->withErrors('There was a problem uploading the data!');
     }
 // ***************************************************************************************************************************** 
-        $stm_lgoexcel=Finance_stm_lgoexcel::whereNotNull('charge_treatment')->get();
+        $stm_lgoexcel=Stm_lgoexcel::whereNotNull('charge_treatment')->get();
                     
         foreach ($stm_lgoexcel as $key => $value) {
-            $check = Finance_stm_lgo::where('repno','=',$value->repno)->where('no','=',$value->no)->count();
+            $check = Stm_lgo::where('repno','=',$value->repno)->where('no','=',$value->no)->count();
             if ($check > 0) {
-                Finance_stm_lgo::where('repno','=',$value->repno)->where('no','=',$value->no)->update([
+                Stm_lgo::where('repno','=',$value->repno)->where('no','=',$value->no)->update([
                         'datetimeadm'                   => $value->datetimeadm,
                         'datetimedch'                   => $value->datetimedch,
                         'compensate_treatment'          => $value->compensate_treatment,
@@ -462,7 +462,7 @@ public function stm_lgo_save(Request $request)
                         'stm_filename'                  => $value->stm_filename
                         ]); 
             } else {
-                    $add = new Finance_stm_lgo();
+                    $add = new Stm_lgo();
                     $add->repno                 = $value->repno;
                     $add->no                    = $value->no;
                     $add->tran_id               = $value->tran_id;
@@ -522,7 +522,7 @@ public function stm_lgo_save(Request $request)
                     $add->save(); 
             } 
         }                
-            Finance_stm_lgoexcel::truncate(); 
+            Stm_lgoexcel::truncate(); 
         
     return redirect()->route('stm_lgo')->with('success',$file_name);
 }
@@ -541,7 +541,7 @@ public function stm_lgo_detail(Request $request)
         SELECT dep,stm_filename,repno,hn,an,pt_name,datetimeadm,datetimedch,adjrw,
         payrate,charge_treatment,compensate_treatment,
         case_iplg,case_oplg,case_palg,case_inslg,case_otlg,case_pp,case_drug
-        FROM finance_stm_lgo WHERE DATE(datetimeadm) BETWEEN "'.$start_date.'" AND "'.$end_date.'"
+        FROM stm_lgo WHERE DATE(datetimeadm) BETWEEN "'.$start_date.'" AND "'.$end_date.'"
         AND dep = "OP"
         GROUP BY stm_filename,repno,hn,datetimeadm ORDER BY dep DESC,repno');
 
@@ -549,7 +549,7 @@ public function stm_lgo_detail(Request $request)
         SELECT dep,stm_filename,repno,hn,an,pt_name,datetimeadm,datetimedch,adjrw,
         payrate,charge_treatment,compensate_treatment,
         case_iplg,case_oplg,case_palg,case_inslg,case_otlg,case_pp,case_drug
-        FROM finance_stm_lgo WHERE DATE(datetimedch) BETWEEN "'.$start_date.'" AND "'.$end_date.'"
+        FROM stm_lgo WHERE DATE(datetimedch) BETWEEN "'.$start_date.'" AND "'.$end_date.'"
         AND dep = "IP"
         GROUP BY stm_filename,repno,hn,datetimedch ORDER BY dep DESC,repno');
 
@@ -562,7 +562,7 @@ public function stm_lgo_kidney(Request $request)
     $stm_lgo_kidney=DB::select('
         SELECT stm_filename,repno,COUNT(repno) AS count_no,	
 	    SUM(compensate_kidney) AS compensate_kidney 
-		FROM finance_stm_lgo_kidney 
+		FROM stm_lgo_kidney 
         GROUP BY stm_filename,repno 
         ORDER BY stm_filename,repno');
 
@@ -616,7 +616,7 @@ public function stm_lgo_kidney_save(Request $request)
 
         $for_insert = array_chunk($data, 1000);
         foreach ($for_insert as $key => $data_) {
-            Finance_stm_lgo_kidneyexcel::insert($data_);                 
+            Stm_lgo_kidneyexcel::insert($data_);                 
         }
     }    
     catch (Exception $e) {
@@ -624,18 +624,18 @@ public function stm_lgo_kidney_save(Request $request)
         return back()->withErrors('There was a problem uploading the data!');
     }
 // ***************************************************************************************************************************** 
-        $stm_lgo_kidneyexcel=Finance_stm_lgo_kidneyexcel::whereNotNull('compensate_kidney')->get();
+        $stm_lgo_kidneyexcel=Stm_lgo_kidneyexcel::whereNotNull('compensate_kidney')->get();
                     
         foreach ($stm_lgo_kidneyexcel as $key => $value) {
-            $check = Finance_stm_lgo_kidney::where('repno','=',$value->repno)->where('no','=',$value->no)->count();
+            $check = Stm_lgo_kidney::where('repno','=',$value->repno)->where('no','=',$value->no)->count();
             if ($check > 0) {
-                Finance_stm_lgo_kidney::where('repno','=',$value->repno)->where('no','=',$value->no)->update([
+                Stm_lgo_kidney::where('repno','=',$value->repno)->where('no','=',$value->no)->update([
                         'datetimeadm'               => $value->datetimeadm,
                         'compensate_kidney'         => $value->compensate_kidney,
                         'stm_filename'              => $value->stm_filename
                         ]); 
             } else {
-                    $add = new Finance_stm_lgo_kidney();
+                    $add = new Stm_lgo_kidney();
                     $add->no                    = $value->no;
                     $add->repno                 = $value->repno;
                     $add->hn                    = $value->hn;                
@@ -649,7 +649,7 @@ public function stm_lgo_kidney_save(Request $request)
                     $add->save(); 
             } 
         }                
-            Finance_stm_lgo_kidneyexcel::truncate(); 
+            Stm_lgo_kidneyexcel::truncate(); 
         
     return redirect()->route('stm_lgo_kidney')->with('success',$file_name);
 }
@@ -667,7 +667,7 @@ public function stm_lgo_kidneydetail(Request $request)
     $stm_lgo_kidney_list=DB::select('
         SELECT dep,stm_filename,repno,hn,cid,pt_name,
         datetimeadm,compensate_kidney,note 
-        FROM finance_stm_lgo_kidney 
+        FROM stm_lgo_kidney 
         WHERE DATE(datetimeadm) BETWEEN "'.$start_date.'" AND "'.$end_date.'"
         GROUP BY stm_filename,repno,cid,datetimeadm 
         ORDER BY dep DESC,repno');
@@ -681,7 +681,7 @@ public function stm_sss_kidney(Request $request)
     $stm_sss_kidney=DB::select('
         SELECT stmdoc,station,COUNT(*) AS count_no,	
         SUM(amount) AS amount,SUM(epopay) AS epopay,
-        SUM(epoadm) AS epoadm	FROM finance_stm_sss_kidney 
+        SUM(epoadm) AS epoadm	FROM stm_sss_kidney 
         GROUP BY stmdoc,station ORDER BY station ,stmdoc');    
 
     return view('finance_stm.stm_sss_kidney',compact('stm_sss_kidney'));
@@ -743,9 +743,9 @@ public function stm_sss_kidney_save(Request $request)
                             $epoadm   = '';
                         }
             
-                    $checkc = Finance_stm_sss_kidney::where('cid', $cid)->where('vstdate', $dttdate)->count();
+                    $checkc = Stm_sss_kidney::where('cid', $cid)->where('vstdate', $dttdate)->count();
                     if ( $checkc > 0) {
-                        Finance_stm_sss_kidney::where('cid', $cid)->where('vstdate', $dttdate) 
+                        Stm_sss_kidney::where('cid', $cid)->where('vstdate', $dttdate) 
                             ->update([   
                                 'invno'            => $invno,
                                 'dttran'           => $dttran, 
@@ -762,7 +762,7 @@ public function stm_sss_kidney_save(Request $request)
                             ]);
 
                     } else {
-                            Finance_stm_sss_kidney::insert([                            
+                            Stm_sss_kidney::insert([                            
     
                                 'hcode'              => @$hcode, 
                                 'hname'              => @$hname,
@@ -802,7 +802,7 @@ public function stm_sss_kidneydetail(Request $request)
     $stm_sss_kidney_list=DB::select('
         SELECT hcode,hname,stmdoc,station,hreg,hn,cid,
         dttran,paid,rid,amount,epopay,epoadm 
-        FROM finance_stm_sss_kidney 
+        FROM stm_sss_kidney 
         WHERE DATE(dttran) BETWEEN "'.$start_date.'" AND "'.$end_date.'"
         ORDER BY station ,stmdoc');
 
@@ -815,7 +815,7 @@ public function stm_ucs(Request $request)
     $stm_ucs=DB::select('
         SELECT IF(SUBSTRING(stm_filename,11) LIKE "O%","OPD","IPD") AS dep,
         stm_filename,COUNT(DISTINCT repno) AS repno,COUNT(cid) AS count_cid,SUM(charge) AS charge,
-        SUM(fund_ip_payrate) AS fund_ip_payrate,SUM(receive_total) AS receive_total FROM finance_stm_ucs 
+        SUM(fund_ip_payrate) AS fund_ip_payrate,SUM(receive_total) AS receive_total FROM stm_ucs 
         GROUP BY stm_filename ORDER BY stm_filename DESC');
 
     return view('finance_stm.stm_ucs',compact('stm_ucs'));
@@ -948,7 +948,7 @@ public function stm_ucs_save(Request $request)
 
         $for_insert = array_chunk($data, 1000);
         foreach ($for_insert as $key => $data_) {
-            Finance_stm_ucsexcel::insert($data_);                 
+            Stm_ucsexcel::insert($data_);                 
         }
     }    
     catch (Exception $e) {
@@ -956,12 +956,12 @@ public function stm_ucs_save(Request $request)
         return back()->withErrors('There was a problem uploading the data!');
     }
 // ***************************************************************************************************************************** 
-        $stm_ucsexcel=Finance_stm_ucsexcel::whereNotNull('charge')->get();
+        $stm_ucsexcel=Stm_ucsexcel::whereNotNull('charge')->get();
             
         foreach ($stm_ucsexcel as $key => $value) {
-            $check = Finance_stm_ucs::where('repno','=',$value->repno)->where('no','=',$value->no)->count();
+            $check = Stm_ucs::where('repno','=',$value->repno)->where('no','=',$value->no)->count();
             if ($check > 0) {
-                Finance_stm_ucs::where('repno','=',$value->repno)->where('no','=',$value->no)->update([
+                Stm_ucs::where('repno','=',$value->repno)->where('no','=',$value->no)->update([
                         'datetimeadm'                   => $value->datetimeadm,
                         'datetimedch'                   => $value->datetimedch,
                         'charge'                        => $value->charge,
@@ -981,7 +981,7 @@ public function stm_ucs_save(Request $request)
                         'stm_filename'                  => $value->stm_filename
                         ]); 
             } else {
-                    $add = new Finance_stm_ucs();
+                    $add = new Stm_ucs();
                     $add->repno                         = $value->repno;
                     $add->no                            = $value->no;
                     $add->tran_id                       = $value->tran_id;
@@ -1027,7 +1027,7 @@ public function stm_ucs_save(Request $request)
                     $add->save(); 
             } 
         }                
-            Finance_stm_ucsexcel::truncate(); 
+            Stm_ucsexcel::truncate(); 
         
     return redirect()->route('stm_ucs')->with('success',$file_name);
 }
@@ -1048,7 +1048,7 @@ public function stm_ucs_detail(Request $request)
         charge,receive_op,receive_ip_compensate_pay,fund_ip_payrate,receive_total,
         receive_hc_hc,receive_hc_drug,receive_ae_ae,receive_ae_drug,receive_inst,
         receive_palliative,receive_pp,receive_fs
-        FROM finance_stm_ucs 
+        FROM stm_ucs 
 		WHERE DATE(datetimeadm) BETWEEN "'.$start_date.'" AND "'.$end_date.'"
 		AND SUBSTRING(stm_filename,11) LIKE "O%"
         GROUP BY stm_filename,repno,hn,datetimeadm 
@@ -1060,7 +1060,7 @@ public function stm_ucs_detail(Request $request)
         charge,receive_op,receive_ip_compensate_pay,fund_ip_payrate,receive_total,
         receive_hc_hc,receive_hc_drug,receive_ae_ae,receive_ae_drug,receive_inst,
         receive_palliative,receive_pp,receive_fs
-        FROM finance_stm_ucs 
+        FROM stm_ucs 
 		WHERE DATE(datetimedch) BETWEEN "'.$start_date.'" AND "'.$end_date.'"
 		AND SUBSTRING(stm_filename,11) LIKE "I%"
         GROUP BY stm_filename,repno,hn,datetimedch 
@@ -1075,7 +1075,7 @@ public function stm_ucs_kidney(Request $request)
     $stm_ucs_kidney=DB::select('
         SELECT stm_filename,repno,COUNT(cid) AS count_cid,	
         SUM(charge_total) AS charge_total,SUM(receive_total) AS receive_total
-        FROM finance_stm_ucs_kidney 
+        FROM stm_ucs_kidney 
         GROUP BY stm_filename ORDER BY stm_filename');   
 
     return view('finance_stm.stm_ucs_kidney',compact('stm_ucs_kidney'));
@@ -1127,7 +1127,7 @@ public function stm_ucs_kidney_save(Request $request)
 
         $for_insert = array_chunk($data, 1000);
         foreach ($for_insert as $key => $data_) {
-            Finance_stm_ucs_kidneyexcel::insert($data_);                 
+            Stm_ucs_kidneyexcel::insert($data_);                 
         }
     }    
     catch (Exception $e) {
@@ -1135,16 +1135,16 @@ public function stm_ucs_kidney_save(Request $request)
         return back()->withErrors('There was a problem uploading the data!');
     }
 // ***************************************************************************************************************************** 
-        $stm_ucs_kidneyexcel=Finance_stm_ucs_kidneyexcel::whereNotNull('charge_total')->get();
+        $stm_ucs_kidneyexcel=Stm_ucs_kidneyexcel::whereNotNull('charge_total')->get();
                     
         foreach ($stm_ucs_kidneyexcel as $key => $value) {
-            $check = Finance_stm_ucs_kidney::where('repno','=',$value->repno)->where('no','=',$value->no)->count();
+            $check = Stm_ucs_kidney::where('repno','=',$value->repno)->where('no','=',$value->no)->count();
             if ($check > 0) {
-                Finance_stm_ucs_kidney::where('repno','=',$value->repno)->where('no','=',$value->no)->update([
+                Stm_ucs_kidney::where('repno','=',$value->repno)->where('no','=',$value->no)->update([
                         'datetimeadm'        => $value->datetimeadm
                         ]); 
             } else {
-                    $add = new Finance_stm_ucs_kidney();
+                    $add = new Stm_ucs_kidney();
                     $add->no                    = $value->no;
                     $add->repno                 = $value->repno;
                     $add->hn                    = $value->hn;   
@@ -1160,7 +1160,7 @@ public function stm_ucs_kidney_save(Request $request)
                     $add->save(); 
             } 
         }                
-            Finance_stm_ucs_kidneyexcel::truncate(); 
+            Stm_ucs_kidneyexcel::truncate(); 
         
     return redirect()->route('stm_ucs_kidney')->with('success',$file_name);
 }
@@ -1178,7 +1178,7 @@ public function stm_ucs_kidneydetail(Request $request)
     $stm_ucs_kidney_list=DB::select('
         SELECT stm_filename,repno,hn,an,cid,pt_name,datetimeadm,SUM(charge_total) AS charge_total,
         SUM(receive_total) AS receive_total,note 
-        FROM finance_stm_ucs_kidney WHERE DATE(datetimeadm) BETWEEN "'.$start_date.'" AND "'.$end_date.'"
+        FROM stm_ucs_kidney WHERE DATE(datetimeadm) BETWEEN "'.$start_date.'" AND "'.$end_date.'"
         GROUP BY repno,cid,datetimeadm ORDER BY cid,datetimeadm');
 
     return view('finance_stm.stm_ucs_kidneydetail',compact('start_date','end_date','stm_ucs_kidney_list'));

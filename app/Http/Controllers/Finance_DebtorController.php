@@ -113,15 +113,15 @@ public function _summary(Request $request )
   $_1102050101_209 = DB::select('
     SELECT COUNT(DISTINCT d.vn) AS anvn,SUM(d.debtor) AS debtor,IFNULL(SUM(s.receive_pp),0) AS receive
     FROM debtor_1102050101_209 d 
-    LEFT JOIN finance_stm_ucs s ON s.cid=d.cid AND DATE(s.datetimeadm) = d.vstdate 
+    LEFT JOIN stm_ucs s ON s.cid=d.cid AND DATE(s.datetimeadm) = d.vstdate 
       AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5) 
     WHERE d.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
   $_1102050101_216 = DB::select('
     SELECT COUNT(DISTINCT d.vn) AS anvn,SUM(d.debtor) AS debtor,SUM(IFNULL(s.receive_total,sk.receive_total)) AS receive
     FROM debtor_1102050101_216 d 
-    LEFT JOIN finance_stm_ucs s ON s.cid=d.cid AND DATE(s.datetimeadm) = d.vstdate 
+    LEFT JOIN stm_ucs s ON s.cid=d.cid AND DATE(s.datetimeadm) = d.vstdate 
       AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5) 
-    LEFT JOIN (SELECT cid,datetimeadm AS vstdate,sum(receive_total) AS receive_total FROM finance_stm_ucs_kidney GROUP BY cid,datetimeadm) sk ON sk.cid=d.cid AND sk.vstdate = d.vstdate 
+    LEFT JOIN (SELECT cid,datetimeadm AS vstdate,sum(receive_total) AS receive_total FROM stm_ucs_kidney GROUP BY cid,datetimeadm) sk ON sk.cid=d.cid AND sk.vstdate = d.vstdate 
     WHERE d.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
   $_1102050101_301 = DB::select('
     SELECT COUNT(DISTINCT vn) AS anvn,SUM(debtor) AS debtor,IFNULL(SUM(receive),0) AS receive
@@ -138,13 +138,13 @@ public function _summary(Request $request )
   $_1102050101_309 = DB::select('
     SELECT COUNT(DISTINCT vn) AS anvn, SUM(debtor) AS debtor,IFNULL(SUM(s.amount+s.epopay+s.epoadm),0) AS receive
     FROM debtor_1102050101_309 d 
-    LEFT JOIN finance_stm_sss_kidney s ON s.cid=d.cid AND s.vstdate = d.vstdate 
+    LEFT JOIN stm_sss_kidney s ON s.cid=d.cid AND s.vstdate = d.vstdate 
     WHERE d.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
   $_1102050101_401 = DB::select('
     SELECT COUNT(DISTINCT d.vn) AS anvn,SUM(d.debtor) AS debtor,SUM(IFNULL(s.receive_total,0)+IFNULL(s1.amount,0)) AS receive
     FROM debtor_1102050101_401 d 
-    LEFT JOIN finance_stm_ofc s ON s.hn=d.hn AND DATE(s.datetimeadm) = d.vstdate	AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5)
-    LEFT JOIN finance_stm_ofc_kidney s1 ON s1.hn=d.hn AND DATE(s1.vstdate) = d.vstdate AND d.kidney IS NOT NULL 
+    LEFT JOIN stm_ofc s ON s.hn=d.hn AND DATE(s.datetimeadm) = d.vstdate	AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5)
+    LEFT JOIN stm_ofc_kidney s1 ON s1.hn=d.hn AND DATE(s1.vstdate) = d.vstdate AND d.kidney IS NOT NULL 
     WHERE d.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
   $_1102050101_501 = DB::select('
     SELECT COUNT(DISTINCT vn) AS anvn,SUM(debtor) AS debtor,IFNULL(SUM(receive),0) AS receive
@@ -170,26 +170,26 @@ public function _summary(Request $request )
   $_1102050102_801 = DB::select('
     SELECT COUNT(DISTINCT d.vn) AS anvn,SUM(d.debtor) AS debtor,SUM(IFNULL(s.compensate_treatment,0)+IFNULL(s1.compensate_kidney,0)) AS receive
     FROM debtor_1102050102_801 d   
-		LEFT JOIN finance_stm_lgo s ON s.hn=d.hn AND DATE(s.datetimeadm) = d.vstdate AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5)
-    LEFT JOIN finance_stm_lgo_kidney s1 ON s1.hn=d.hn AND DATE(s1.datetimeadm) = d.vstdate AND d.kidney IS NOT NULL
+		LEFT JOIN stm_lgo s ON s.hn=d.hn AND DATE(s.datetimeadm) = d.vstdate AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5)
+    LEFT JOIN stm_lgo_kidney s1 ON s1.hn=d.hn AND DATE(s1.datetimeadm) = d.vstdate AND d.kidney IS NOT NULL
     WHERE d.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
   $_1102050102_803 = DB::select('
     SELECT COUNT(DISTINCT d.vn) AS anvn,SUM(d.debtor) AS debtor,SUM(IFNULL(s.receive_total,0)+IFNULL(s1.amount,0)) AS receive
     FROM debtor_1102050102_803 d   
-		LEFT JOIN finance_stm_ofc s ON s.hn=d.hn AND DATE(s.datetimeadm) = d.vstdate AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5)
-    LEFT JOIN finance_stm_ofc_kidney s1 ON s1.hn=d.hn AND DATE(s1.vstdate) = d.vstdate AND d.kidney IS NOT NULL
+		LEFT JOIN stm_ofc s ON s.hn=d.hn AND DATE(s.datetimeadm) = d.vstdate AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5)
+    LEFT JOIN stm_ofc_kidney s1 ON s1.hn=d.hn AND DATE(s1.vstdate) = d.vstdate AND d.kidney IS NOT NULL
     WHERE d.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
   $_1102050101_202 = DB::select('
     SELECT COUNT(DISTINCT an) AS anvn,SUM(debtor) AS debtor,IFNULL(SUM(receive_ip_compensate_pay),0) AS receive
     FROM (SELECT d.an,d.debtor,stm.receive_ip_compensate_pay FROM debtor_1102050101_202 d
-    LEFT JOIN finance_stm_ucs stm ON stm.an=d.an    
+    LEFT JOIN stm_ucs stm ON stm.an=d.an    
     WHERE d.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"	GROUP BY d.an) AS a');
   $_1102050101_217 = DB::select('
     SELECT COUNT(DISTINCT an) AS anvn,SUM(debtor) AS debtor,SUM(receive) AS receive
     FROM (SELECT d.dchdate,d.an,d.debtor,(stm.receive_total-stm.receive_ip_compensate_pay)+IFNULL(SUM(stm1.receive_total),0) AS receive
     FROM debtor_1102050101_217 d
-    LEFT JOIN finance_stm_ucs stm ON stm.an=d.an
-		LEFT JOIN finance_stm_ucs_kidney stm1 ON stm1.cid=d.cid AND stm1.datetimeadm BETWEEN d.regdate AND d.dchdate
+    LEFT JOIN stm_ucs stm ON stm.an=d.an
+		LEFT JOIN stm_ucs_kidney stm1 ON stm1.cid=d.cid AND stm1.datetimeadm BETWEEN d.regdate AND d.dchdate
 		WHERE d.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" GROUP BY d.an) AS a ');
   $_1102050101_302 = DB::select('
     SELECT COUNT(DISTINCT an) AS anvn, SUM(debtor) AS debtor,SUM(receive) AS receive
@@ -211,8 +211,8 @@ public function _summary(Request $request )
     SELECT COUNT(DISTINCT an) AS anvn,SUM(debtor) AS debtor,SUM(receive_total) AS receive
 		FROM (SELECT d.*,s.receive_total+IFNULL(SUM(s1.amount),0) AS receive_total 
     FROM debtor_1102050101_402 d    
-    LEFT JOIN htp_report.finance_stm_ofc s ON s.an=d.an
-    LEFT JOIN htp_report.finance_stm_ofc_kidney s1 ON s1.hn=d.hn AND s1.vstdate BETWEEN d.regdate AND d.dchdate
+    LEFT JOIN htp_report.stm_ofc s ON s.an=d.an
+    LEFT JOIN htp_report.stm_ofc_kidney s1 ON s1.hn=d.hn AND s1.vstdate BETWEEN d.regdate AND d.dchdate
     WHERE d.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" GROUP BY d.an) AS a ');
   $_1102050101_502 = DB::select('
     SELECT COUNT(DISTINCT an) AS anvn, SUM(debtor) AS debtor,SUM(receive) AS receive
@@ -239,14 +239,14 @@ public function _summary(Request $request )
     SELECT COUNT(DISTINCT an) AS anvn,SUM(debtor) AS debtor,SUM(receive_total) AS receive
 		FROM (SELECT d.*,s.compensate_treatment+IFNULL(SUM(s1.compensate_kidney),0) AS receive_total 
     FROM debtor_1102050102_802 d    
-    LEFT JOIN htp_report.finance_stm_lgo s ON s.an=d.an
-    LEFT JOIN htp_report.finance_stm_lgo_kidney s1 ON s1.cid=d.cid AND DATE(s1.datetimeadm)  BETWEEN d.regdate AND d.dchdate
+    LEFT JOIN htp_report.stm_lgo s ON s.an=d.an
+    LEFT JOIN htp_report.stm_lgo_kidney s1 ON s1.cid=d.cid AND DATE(s1.datetimeadm)  BETWEEN d.regdate AND d.dchdate
     WHERE d.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" GROUP BY d.an ) AS a');
   $_1102050102_804 = DB::select('
     SELECT COUNT(DISTINCT an) AS anvn, SUM(debtor) AS debtor,SUM(receive_total) AS receive
 		FROM (SELECT d.*,s.receive_total
     FROM debtor_1102050102_804 d    
-    LEFT JOIN htp_report.finance_stm_ofc s ON s.an=d.an  
+    LEFT JOIN htp_report.stm_ofc s ON s.an=d.an  
     WHERE d.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" GROUP BY d.an)	AS a ');
 
   $request->session()->put('start_date',$start_date);
@@ -968,7 +968,7 @@ public function _1102050101_209(Request $request )
     SELECT d.vn,d.vstdate,d.vsttime,d.hn,d.ptname,d.hipdata_code,d.pttype,d.hospmain,d.pdx,
     d.income,d.rcpt_money,d.ppfs,d.pp,d.debtor,s.receive_pp AS receive,s.repno,d.debtor_lock
     FROM debtor_1102050101_209 d   
-    LEFT JOIN finance_stm_ucs s ON s.cid=d.cid AND DATE(s.datetimeadm) = d.vstdate
+    LEFT JOIN stm_ucs s ON s.cid=d.cid AND DATE(s.datetimeadm) = d.vstdate
       AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5)
     WHERE d.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
 
@@ -1039,7 +1039,7 @@ public function _1102050101_209_daily_pdf(Request $request)
     SELECT d.vstdate,COUNT(DISTINCT d.vn) AS anvn,
     SUM(d.debtor) AS debtor,SUM(s.receive_pp) AS receive
     FROM debtor_1102050101_209 d   
-    LEFT JOIN finance_stm_ucs s ON s.cid=d.cid AND DATE(s.datetimeadm) = d.vstdate
+    LEFT JOIN stm_ucs s ON s.cid=d.cid AND DATE(s.datetimeadm) = d.vstdate
       AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5)
     WHERE d.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
 		GROUP BY d.vstdate ORDER BY d.vstdate ');
@@ -1188,10 +1188,10 @@ public function _1102050101_216(Request $request )
     d.pdx,d.hospmain,d.income,d.rcpt_money,d.kidney,d.cr,d.anywhere,d.debtor,
     IFNULL(s.receive_total,sk.receive_total) AS receive,IFNULL(s.repno,sk.repno) AS repno,d.debtor_lock
     FROM debtor_1102050101_216 d   
-    LEFT JOIN finance_stm_ucs s ON s.cid=d.cid AND DATE(s.datetimeadm) = d.vstdate
+    LEFT JOIN stm_ucs s ON s.cid=d.cid AND DATE(s.datetimeadm) = d.vstdate
       AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5)
     LEFT JOIN (SELECT cid,datetimeadm AS vstdate,sum(receive_total) AS receive_total,repno
-      FROM finance_stm_ucs_kidney GROUP BY cid,datetimeadm) sk ON sk.cid=d.cid AND sk.vstdate = d.vstdate
+      FROM stm_ucs_kidney GROUP BY cid,datetimeadm) sk ON sk.cid=d.cid AND sk.vstdate = d.vstdate
     WHERE d.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
 
   $debtor_search_kidney = DB::connection('hosxp')->select('
@@ -1286,10 +1286,10 @@ public function _1102050101_216_daily_pdf(Request $request)
     SELECT d.vstdate,COUNT(DISTINCT d.vn) AS anvn,
     SUM(d.debtor) AS debtor,SUM(IFNULL(s.receive_total,sk.receive_total)) AS receive
     FROM debtor_1102050101_216 d   
-    LEFT JOIN finance_stm_ucs s ON s.cid=d.cid AND DATE(s.datetimeadm) = d.vstdate
+    LEFT JOIN stm_ucs s ON s.cid=d.cid AND DATE(s.datetimeadm) = d.vstdate
       AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5)
     LEFT JOIN (SELECT cid,datetimeadm AS vstdate,sum(receive_total) AS receive_total
-      FROM finance_stm_ucs_kidney GROUP BY cid,datetimeadm) sk ON sk.cid=d.cid AND sk.vstdate = d.vstdate
+      FROM stm_ucs_kidney GROUP BY cid,datetimeadm) sk ON sk.cid=d.cid AND sk.vstdate = d.vstdate
     WHERE d.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     GROUP BY d.vstdate ORDER BY d.vstdate');
 
@@ -2029,7 +2029,7 @@ public function _1102050101_309(Request $request )
     d.pdx,d.hospmain,d.income,d.rcpt_money,d.kidney,d.debtor,
     s.amount+s.epopay+s.epoadm AS receive,s.rid AS repno,d.debtor_lock
     FROM debtor_1102050101_309 d   
-    LEFT JOIN finance_stm_sss_kidney s ON s.cid=d.cid AND s.vstdate = d.vstdate 
+    LEFT JOIN stm_sss_kidney s ON s.cid=d.cid AND s.vstdate = d.vstdate 
     WHERE d.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
 
   $debtor_search = DB::connection('hosxp')->select('
@@ -2075,7 +2075,7 @@ public function _1102050101_309_daily_pdf(Request $request)
     SELECT d.vstdate,COUNT(DISTINCT vn) AS anvn,
     SUM(debtor) AS debtor,SUM(s.amount+s.epopay+s.epoadm) AS receive
     FROM debtor_1102050101_309 d   
-    LEFT JOIN finance_stm_sss_kidney s ON s.cid=d.cid AND s.vstdate = d.vstdate 
+    LEFT JOIN stm_sss_kidney s ON s.cid=d.cid AND s.vstdate = d.vstdate 
     WHERE d.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
     GROUP BY d.vstdate ORDER BY d.vstdate');
 
@@ -2167,10 +2167,10 @@ public function _1102050101_401(Request $request )
     d.charge_no,d.charge,d.receive_date,d.receive_no,IFNULL(d.receive,0)+IFNULL(s.receive_total,0)+IFNULL(s1.amount,0) AS receive,     
 		IFNULL(s2.receive_pp,0) AS receive_pp,IFNULL(s1.rid,s.repno) AS repno,d.repno AS repno_chk,d.debtor_lock
     FROM debtor_1102050101_401 d   
-		LEFT JOIN finance_stm_ofc s ON s.hn=d.hn AND DATE(s.datetimeadm) = d.vstdate
+		LEFT JOIN stm_ofc s ON s.hn=d.hn AND DATE(s.datetimeadm) = d.vstdate
 			AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5) AND d.kidney=""   
-    LEFT JOIN finance_stm_ofc_kidney s1 ON s1.hn=d.hn AND DATE(s1.vstdate) = d.vstdate AND d.kidney<>""
-    LEFT JOIN finance_stm_ucs s2 ON s2.cid=d.cid AND DATE(s2.datetimeadm) = d.vstdate
+    LEFT JOIN stm_ofc_kidney s1 ON s1.hn=d.hn AND DATE(s1.vstdate) = d.vstdate AND d.kidney<>""
+    LEFT JOIN stm_ucs s2 ON s2.cid=d.cid AND DATE(s2.datetimeadm) = d.vstdate
 		  AND LEFT(TIME(s2.datetimeadm),5) =LEFT(d.vsttime,5)
     WHERE d.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" ');
 
@@ -2248,9 +2248,9 @@ public function _1102050101_401_daily_pdf(Request $request)
     SELECT d.vstdate,COUNT(DISTINCT d.vn) AS anvn,SUM(d.debtor) AS debtor,
 		SUM(IFNULL(s.receive_total,0)+IFNULL(s1.amount,0)) AS receive
     FROM debtor_1102050101_401 d   
-		LEFT JOIN finance_stm_ofc s ON s.hn=d.hn AND DATE(s.datetimeadm) = d.vstdate
+		LEFT JOIN stm_ofc s ON s.hn=d.hn AND DATE(s.datetimeadm) = d.vstdate
 			AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5) AND d.kidney ="" 
-    LEFT JOIN finance_stm_ofc_kidney s1 ON s1.hn=d.hn AND DATE(s1.vstdate) = d.vstdate AND d.kidney <>"" 
+    LEFT JOIN stm_ofc_kidney s1 ON s1.hn=d.hn AND DATE(s1.vstdate) = d.vstdate AND d.kidney <>"" 
     WHERE d.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
 		GROUP BY d.vstdate ORDER BY d.vstdate');
 
@@ -3327,10 +3327,10 @@ public function _1102050102_801(Request $request )
     d.rcpt_money,d.lgo,d.kidney,d.pp,d.other,d.debtor,IFNULL(s.compensate_treatment,0)+IFNULL(s1.compensate_kidney,0) AS receive,   
 		IFNULL(s2.receive_pp,0) AS receive_pp,s.repno,s1.repno AS rid,d.debtor_lock
     FROM debtor_1102050102_801 d   
-		LEFT JOIN finance_stm_lgo s ON s.hn=d.hn AND DATE(s.datetimeadm) = d.vstdate 
+		LEFT JOIN stm_lgo s ON s.hn=d.hn AND DATE(s.datetimeadm) = d.vstdate 
       AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5) 
-    LEFT JOIN finance_stm_lgo_kidney s1 ON s1.hn=d.hn AND DATE(s1.datetimeadm) = d.vstdate AND d.kidney <>""
-    LEFT JOIN finance_stm_ucs s2 ON s2.cid=d.cid AND DATE(s2.datetimeadm) = d.vstdate 
+    LEFT JOIN stm_lgo_kidney s1 ON s1.hn=d.hn AND DATE(s1.datetimeadm) = d.vstdate AND d.kidney <>""
+    LEFT JOIN stm_ucs s2 ON s2.cid=d.cid AND DATE(s2.datetimeadm) = d.vstdate 
       AND LEFT(TIME(s2.datetimeadm),5) =LEFT(d.vsttime,5)
     WHERE d.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" ');
 
@@ -3409,8 +3409,8 @@ public function _1102050102_801_daily_pdf(Request $request)
     SELECT d.vstdate,COUNT(DISTINCT d.vn) AS anvn,SUM(d.debtor) AS debtor,
 		SUM(IFNULL(s.compensate_treatment,0)+IFNULL(s1.compensate_kidney,0)) AS receive
     FROM debtor_1102050102_801 d   
-		LEFT JOIN finance_stm_lgo s ON s.hn=d.hn AND DATE(s.datetimeadm) = d.vstdate AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5)
-    LEFT JOIN finance_stm_lgo_kidney s1 ON s1.hn=d.hn AND DATE(s1.datetimeadm) = d.vstdate AND d.kidney IS NOT NULL
+		LEFT JOIN stm_lgo s ON s.hn=d.hn AND DATE(s.datetimeadm) = d.vstdate AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5)
+    LEFT JOIN stm_lgo_kidney s1 ON s1.hn=d.hn AND DATE(s1.datetimeadm) = d.vstdate AND d.kidney IS NOT NULL
     WHERE d.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
 		GROUP BY d.vstdate ORDER BY d.vstdate');
 
@@ -3612,10 +3612,10 @@ public function _1102050102_803(Request $request )
     d.charge_no,d.charge,d.receive_date,d.receive_no,IFNULL(d.receive,0)+IFNULL(s.receive_total,0)+IFNULL(s1.amount,0) AS receive,   
 		IFNULL(s2.receive_pp,0) AS receive_pp,s.repno,s1.rid,d.repno AS repno_chk,d.debtor_lock
     FROM debtor_1102050102_803 d   
-		LEFT JOIN finance_stm_ofc s ON s.hn=d.hn AND DATE(s.datetimeadm) = d.vstdate
+		LEFT JOIN stm_ofc s ON s.hn=d.hn AND DATE(s.datetimeadm) = d.vstdate
 			AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5) 
-    LEFT JOIN finance_stm_ofc_kidney s1 ON s1.hn=d.hn AND DATE(s1.vstdate) = d.vstdate AND d.kidney IS NOT NULL
-    LEFT JOIN finance_stm_ucs s2 ON s2.cid=d.cid AND DATE(s2.datetimeadm) = d.vstdate 
+    LEFT JOIN stm_ofc_kidney s1 ON s1.hn=d.hn AND DATE(s1.vstdate) = d.vstdate AND d.kidney IS NOT NULL
+    LEFT JOIN stm_ucs s2 ON s2.cid=d.cid AND DATE(s2.datetimeadm) = d.vstdate 
       AND LEFT(TIME(s2.datetimeadm),5) =LEFT(d.vsttime,5)
     WHERE d.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"');
 
@@ -3692,9 +3692,9 @@ public function _1102050102_803_daily_pdf(Request $request)
     SELECT d.vstdate,COUNT(DISTINCT d.vn) AS anvn,SUM(d.debtor) AS debtor,
 		SUM(IFNULL(s.receive_total,0)+IFNULL(s1.amount,0)) AS receive
     FROM debtor_1102050102_803 d   
-		LEFT JOIN finance_stm_ofc s ON s.hn=d.hn AND DATE(s.datetimeadm) = d.vstdate
+		LEFT JOIN stm_ofc s ON s.hn=d.hn AND DATE(s.datetimeadm) = d.vstdate
 			AND LEFT(TIME(s.datetimeadm),5) =LEFT(d.vsttime,5)
-    LEFT JOIN finance_stm_ofc_kidney s1 ON s1.hn=d.hn AND DATE(s1.vstdate) = d.vstdate AND d.kidney IS NOT NULL
+    LEFT JOIN stm_ofc_kidney s1 ON s1.hn=d.hn AND DATE(s1.vstdate) = d.vstdate AND d.kidney IS NOT NULL
     WHERE d.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
 		GROUP BY d.vstdate ORDER BY d.vstdate');
 
@@ -3909,7 +3909,7 @@ public function _1102050101_202(Request $request )
     stm.fund_ip_adjrw,GROUP_CONCAT(DISTINCT stm.fund_ip_payrate) AS fund_ip_payrate,
     GROUP_CONCAT(DISTINCT stm.repno) AS repno
     FROM debtor_1102050101_202 d
-    LEFT JOIN finance_stm_ucs stm ON stm.an=d.an
+    LEFT JOIN stm_ucs stm ON stm.an=d.an
     WHERE d.dchdate BETWEEN ? AND ?
 		GROUP BY d.an',[$start_date,$end_date]);
 
@@ -3956,7 +3956,7 @@ public function _1102050101_202_daily_pdf(Request $request)
     SELECT dchdate AS vstdate,COUNT(DISTINCT an) AS anvn,
     SUM(debtor) AS debtor,SUM(receive_ip_compensate_pay) AS receive_total
     FROM (SELECT d.dchdate,d.an,d.debtor,stm.receive_ip_compensate_pay FROM debtor_1102050101_202 d
-    LEFT JOIN finance_stm_ucs stm ON stm.an=d.an    
+    LEFT JOIN stm_ucs stm ON stm.an=d.an    
     WHERE d.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
 		GROUP BY d.an) AS a
     GROUP BY dchdate ORDER BY dchdate');
@@ -4051,8 +4051,8 @@ public function _1102050101_217(Request $request )
 		stm.receive_total-stm.receive_ip_compensate_pay AS receive_cr,IFNULL(SUM(stm1.receive_total),0) AS receive_kidney,
 		stm.repno,stm1.repno AS repno_kidney		
     FROM debtor_1102050101_217 d
-    LEFT JOIN finance_stm_ucs stm ON stm.an=d.an
-		LEFT JOIN finance_stm_ucs_kidney stm1 ON stm1.cid=d.cid AND stm1.datetimeadm BETWEEN d.regdate AND d.dchdate
+    LEFT JOIN stm_ucs stm ON stm.an=d.an
+		LEFT JOIN stm_ucs_kidney stm1 ON stm1.cid=d.cid AND stm1.datetimeadm BETWEEN d.regdate AND d.dchdate
 		WHERE d.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" GROUP BY d.an');
 
   $debtor_search = DB::connection('hosxp')->select('
@@ -4105,8 +4105,8 @@ public function _1102050101_217_daily_pdf(Request $request)
 		stm.receive_total-stm.receive_ip_compensate_pay AS receive_cr,IFNULL(SUM(stm1.receive_total),0) AS receive_kidney,
 		stm.repno,stm1.repno AS repno_kidney		
     FROM debtor_1102050101_217 d
-    LEFT JOIN finance_stm_ucs stm ON stm.an=d.an
-		LEFT JOIN finance_stm_ucs_kidney stm1 ON stm1.cid=d.cid AND stm1.datetimeadm BETWEEN d.regdate AND d.dchdate
+    LEFT JOIN stm_ucs stm ON stm.an=d.an
+		LEFT JOIN stm_ucs_kidney stm1 ON stm1.cid=d.cid AND stm1.datetimeadm BETWEEN d.regdate AND d.dchdate
 		WHERE d.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" GROUP BY d.an) AS a 
 		GROUP BY dchdate ORDER BY dchdate');
 
@@ -4834,8 +4834,8 @@ public function _1102050101_402(Request $request )
     SELECT d.*,s.receive_total+IFNULL(SUM(s1.amount),0) AS receive_total ,
     SUM(s1.amount) AS receive_kidney, s.receive_total AS receive_eclaim,s.repno
     FROM debtor_1102050101_402 d    
-    LEFT JOIN htp_report.finance_stm_ofc s ON s.an=d.an
-    LEFT JOIN htp_report.finance_stm_ofc_kidney s1 ON s1.hn=d.hn AND s1.vstdate BETWEEN d.regdate AND d.dchdate
+    LEFT JOIN htp_report.stm_ofc s ON s.an=d.an
+    LEFT JOIN htp_report.stm_ofc_kidney s1 ON s1.hn=d.hn AND s1.vstdate BETWEEN d.regdate AND d.dchdate
     WHERE d.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" GROUP BY d.an');
 
   $debtor_search = DB::connection('hosxp')->select('
@@ -4883,8 +4883,8 @@ public function _1102050101_402_daily_pdf(Request $request)
     SUM(debtor) AS debtor,SUM(receive_total) AS receive_total
 		FROM (SELECT d.*,s.receive_total+IFNULL(SUM(s1.amount),0) AS receive_total 
     FROM debtor_1102050101_402 d    
-    LEFT JOIN htp_report.finance_stm_ofc s ON s.an=d.an
-    LEFT JOIN htp_report.finance_stm_ofc_kidney s1 ON s1.hn=d.hn AND s1.vstdate BETWEEN d.regdate AND d.dchdate
+    LEFT JOIN htp_report.stm_ofc s ON s.an=d.an
+    LEFT JOIN htp_report.stm_ofc_kidney s1 ON s1.hn=d.hn AND s1.vstdate BETWEEN d.regdate AND d.dchdate
     WHERE d.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" GROUP BY d.an) AS a 
 		GROUP BY dchdate ORDER BY dchdate');
 
@@ -5862,8 +5862,8 @@ public function _1102050102_802(Request $request )
     SELECT d.*,IFNULL(SUM(s.compensate_treatment),0)+IFNULL(SUM(s1.compensate_kidney),0) AS receive_total ,
     SUM(s1.compensate_kidney) AS receive_kidney,SUM(s.compensate_treatment) AS receive_eclaim,GROUP_CONCAT(DISTINCT s.repno) AS repno
     FROM debtor_1102050102_802 d    
-    LEFT JOIN htp_report.finance_stm_lgo s ON s.an=d.an
-    LEFT JOIN htp_report.finance_stm_lgo_kidney s1 ON s1.cid=d.cid AND DATE(s1.datetimeadm)  BETWEEN d.regdate AND d.dchdate
+    LEFT JOIN htp_report.stm_lgo s ON s.an=d.an
+    LEFT JOIN htp_report.stm_lgo_kidney s1 ON s1.cid=d.cid AND DATE(s1.datetimeadm)  BETWEEN d.regdate AND d.dchdate
     WHERE d.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" GROUP BY d.an');
 
   $debtor_search = DB::connection('hosxp')->select('
@@ -5912,8 +5912,8 @@ public function _1102050102_802_daily_pdf(Request $request)
 		FROM (SELECT d.*,s.compensate_treatment+IFNULL(SUM(s1.compensate_kidney),0) AS receive_total ,
     SUM(s1.compensate_kidney) AS receive_kidney, s.compensate_treatment AS receive_eclaim
     FROM debtor_1102050102_802 d    
-    LEFT JOIN htp_report.finance_stm_lgo s ON s.an=d.an
-    LEFT JOIN htp_report.finance_stm_lgo_kidney s1 ON s1.cid=d.cid AND DATE(s1.datetimeadm)  BETWEEN d.regdate AND d.dchdate
+    LEFT JOIN htp_report.stm_lgo s ON s.an=d.an
+    LEFT JOIN htp_report.stm_lgo_kidney s1 ON s1.cid=d.cid AND DATE(s1.datetimeadm)  BETWEEN d.regdate AND d.dchdate
     WHERE d.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" GROUP BY d.an ) AS a
 		GROUP BY dchdate ORDER BY dchdate');
 
@@ -6007,7 +6007,7 @@ public function _1102050102_804(Request $request )
   $debtor = DB::select('
     SELECT d.*,s.receive_total,s.repno
     FROM debtor_1102050102_804 d    
-    LEFT JOIN htp_report.finance_stm_ofc s ON s.an=d.an  
+    LEFT JOIN htp_report.stm_ofc s ON s.an=d.an  
     WHERE d.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" GROUP BY d.an');
 
   $debtor_search = DB::connection('hosxp')->select('
@@ -6055,7 +6055,7 @@ public function _1102050102_804_daily_pdf(Request $request)
     SUM(debtor) AS debtor,SUM(receive_total) AS receive_total
 		FROM (SELECT d.*,s.receive_total
     FROM debtor_1102050102_804 d    
-    LEFT JOIN htp_report.finance_stm_ofc s ON s.an=d.an  
+    LEFT JOIN htp_report.stm_ofc s ON s.an=d.an  
     WHERE d.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'" GROUP BY d.an)	AS a 
 		GROUP BY dchdate ORDER BY dchdate');
 

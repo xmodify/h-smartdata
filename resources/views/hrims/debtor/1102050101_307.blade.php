@@ -15,6 +15,14 @@
             }
         }
     </script>    
+    <script>
+        function toggle_ip(source) {
+            checkboxes = document.getElementsByName('checkbox_ip[]');
+            for (var i = 0; i < checkboxes.length; i++) {
+                checkboxes[i].checked = source.checked;
+            }
+        }
+    </script> 
 @section('content')
     <div class="container-fluid">        
         <form method="POST" enctype="multipart/form-data">
@@ -85,7 +93,7 @@
                     @foreach($debtor as $row) 
                     <tr>
                         <td class="text-center"><input type="checkbox" name="checkbox_d[]" value="{{$row->vn}}"></td>   
-                        <td align="right">{{ DateThai($row->vstdate) }} {{ $row->vsttime }}</td>
+                        <td align="right">{{ DateThai($row->visit_date) }} {{ $row->visit_time }}</td>
                         <td align="center">{{ $row->hn }}</td>
                         <td align="center">{{ $row->an }}</td>
                         <td align="left">{{ $row->ptname }}</td>
@@ -177,54 +185,129 @@
             </table>
         </div> 
         <hr>
-        <div style="overflow-x:auto;">
-            <form action="{{ url('hrims/debtor/1102050101_307_confirm') }}" method="POST" enctype="multipart/form-data">
-                @csrf                
-                <table id="debtor_search" class="table table-bordered table-striped my-3" width="100%">
-                    <thead>
-                    <tr class="table-secondary">
-                        <th class="text-center">
-                            <button type="button" class="btn btn-outline-success btn-sm"  onclick="confirmSubmit()">ยืนยันลูกหนี้</button></th>
-                        <th class="text-left text-primary" colspan = "13">1102050101.307-ลูกหนี้ค่ารักษา ประกันสังคม-กองทุนทดแทน รอยืนยัน วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }} รอยืนยันลูกหนี้</th>                         
-                    </tr>
-                    <tr class="table-secondary">
-                        <th class="text-center"><input type="checkbox" onClick="toggle(this)"> All</th> 
-                        <th class="text-center">วันที่</th>
-                        <th class="text-center">HN</th>
-                        <th class="text-center">ชื่อ-สกุล</th>
-                        <th class="text-center">สิทธิ</th>
-                        <th class="text-center">ICD10</th>
-                        <th class="text-center">ค่ารักษาทั้งหมด</th>  
-                        <th class="text-center">ชำระเอง</th>    
-                        <th class="text-center">กองทุนอื่น</th>   
-                        <th class="text-center">PPFS</th>                                     
-                        <th class="text-center">ลูกหนี้</th>
-                        <th class="text-center" width = "10%">รายการกองทุนอื่น</th> 
-                        <th class="text-center" width = "10%">รายการ PPFS</th>
-                    </tr>
-                    </thead>
-                    <?php $count = 1 ; ?>
-                    @foreach($debtor_search as $row)
-                    <tr>
-                        <td class="text-center"><input type="checkbox" name="checkbox[]" value="{{$row->vn}}"></td> 
-                        <td align="right">{{ DateThai($row->vstdate) }} {{ $row->vsttime }}</td>
-                        <td align="center">{{ $row->hn }}</td>
-                        <td align="left">{{ $row->ptname }}</td>
-                        <td align="left">{{ $row->pttype }} </td>
-                        <td align="right">{{ $row->pdx }}</td>                  
-                        <td align="right">{{ number_format($row->income,2) }}</td>
-                        <td align="right">{{ number_format($row->rcpt_money,2) }}</td>
-                        <td align="right">{{ number_format($row->other,2) }}</td>
-                        <td align="right">{{ number_format($row->ppfs,2) }}</td>
-                        <td align="right">{{ number_format($row->debtor,2) }}</td>
-                        <td align="left" width = "15%">{{ $row->other_list }}</td>
-                        <td align="left" width = "15%">{{ $row->ppfs_list }}</td>
-                    <?php $count++; ?>
-                    @endforeach 
-                </tr>   
-                </table>
-            </form>
-        </div> 
+        <!-- Pills Tabs -->
+        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="op-tab" data-bs-toggle="pill" data-bs-target="#op" type="button" role="tab" aria-controls="op" aria-selected="false">OPD</button>
+            </li>       
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="ip-tab" data-bs-toggle="pill" data-bs-target="#ip" type="button" role="tab" aria-controls="ip" aria-selected="false">IPD</button>
+            </li>
+        </ul>
+        <!-- Pills Tabs -->
+        <div class="tab-content pt-2" id="myTabContent">
+            <div class="tab-pane fade show active" id="op" role="tabpanel" aria-labelledby="op-tab">
+                <div style="overflow-x:auto;">
+                    <form action="{{ url('hrims/debtor/1102050101_307_confirm') }}" method="POST" enctype="multipart/form-data">
+                        @csrf                
+                        <table id="debtor_search" class="table table-bordered table-striped my-3" width="100%">
+                            <thead>
+                            <tr class="table-secondary">
+                                <th class="text-center">
+                                    <button type="button" class="btn btn-outline-success btn-sm"  onclick="confirmSubmit()">ยืนยันลูกหนี้</button></th>
+                                <th class="text-left text-primary" colspan = "13">1102050101.307-ลูกหนี้ค่ารักษา ประกันสังคม-กองทุนทดแทน รอยืนยัน วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }} รอยืนยันลูกหนี้</th>                         
+                            </tr>
+                            <tr class="table-secondary">
+                                <th class="text-center"><input type="checkbox" onClick="toggle(this)"> All</th> 
+                                <th class="text-center">วันที่</th>
+                                <th class="text-center">HN</th>
+                                <th class="text-center">ชื่อ-สกุล</th>
+                                <th class="text-center">สิทธิ</th>
+                                <th class="text-center">ICD10</th>
+                                <th class="text-center">ค่ารักษาทั้งหมด</th>  
+                                <th class="text-center">ชำระเอง</th>    
+                                <th class="text-center">กองทุนอื่น</th>   
+                                <th class="text-center">PPFS</th>                                     
+                                <th class="text-center">ลูกหนี้</th>
+                                <th class="text-center" width = "10%">รายการกองทุนอื่น</th> 
+                                <th class="text-center" width = "10%">รายการ PPFS</th>
+                            </tr>
+                            </thead>
+                            <?php $count = 1 ; ?>
+                            @foreach($debtor_search as $row)
+                            <tr>
+                                <td class="text-center"><input type="checkbox" name="checkbox[]" value="{{$row->vn}}"></td> 
+                                <td align="right">{{ DateThai($row->vstdate) }} {{ $row->vsttime }}</td>
+                                <td align="center">{{ $row->hn }}</td>
+                                <td align="left">{{ $row->ptname }}</td>
+                                <td align="left">{{ $row->pttype }} </td>
+                                <td align="right">{{ $row->pdx }}</td>                  
+                                <td align="right">{{ number_format($row->income,2) }}</td>
+                                <td align="right">{{ number_format($row->rcpt_money,2) }}</td>
+                                <td align="right">{{ number_format($row->other,2) }}</td>
+                                <td align="right">{{ number_format($row->ppfs,2) }}</td>
+                                <td align="right">{{ number_format($row->debtor,2) }}</td>
+                                <td align="left" width = "15%">{{ $row->other_list }}</td>
+                                <td align="left" width = "15%">{{ $row->ppfs_list }}</td>
+                            <?php $count++; ?>
+                            @endforeach 
+                        </tr>   
+                        </table>
+                    </form>
+                </div> 
+            </div> 
+
+            <div class="tab-pane fade" id="ip" role="tabpanel" aria-labelledby="ip-tab">
+                <div style="overflow-x:auto;">
+                    <form action="{{ url('hrims/debtor/1102050101_307_confirm_ip') }}" method="POST" enctype="multipart/form-data">
+                        @csrf                
+                        <table id="debtor_search_ip" class="table table-bordered table-striped my-3" width="100%">
+                            <thead>
+                            <tr class="table-secondary">
+                                <th class="text-center">
+                                    <button type="button" class="btn btn-outline-success btn-sm"  onclick="confirmSubmit_ip()">ยืนยันลูกหนี้</button></th>
+                                <th class="text-center" colspan = "17">ผู้มารับบริการประกันสังคม-กองทุนทดแทน IPD วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }} รอยืนยันลูกหนี้</th>                         
+                            </tr>
+                            <tr class="table-secondary">
+                                <th class="text-center"><input type="checkbox" onClick="toggle_ip(this)"> All</th>  
+                                <th class="text-center">ตึกผู้ป่วย</th>
+                                <th class="text-center">HN</th>
+                                <th class="text-center">AN</th>
+                                <th class="text-center">ชื่อ-สกุล</th>              
+                                <th class="text-center">อายุ</th>
+                                <th class="text-center" width ="8%">สิทธิ</th>
+                                <th class="text-center" width ="6%">Admit</th>
+                                <th class="text-center" width ="6%">Discharge</th>
+                                <th class="text-center">ICD10</th>
+                                <th class="text-center">AdjRW</th>
+                                <th class="text-center" width ="5%">ค่ารักษาทั้งหมด</th>  
+                                <th class="text-center">ชำระเอง</th>
+                                <th class="text-center">กองทุนอื่น</th>
+                                <th class="text-center">ลูกหนี้</th>
+                                <th class="text-center">รายการกองทุนอื่น</th> 
+                                <th class="text-center">สถานะ</th>  
+                            </tr>
+                            </thead>
+                            <?php $count = 1 ; ?>
+                            @foreach($debtor_search_ip as $row)
+                            <tr>
+                                <td class="text-center"><input type="checkbox" name="checkbox_ip[]" value="{{$row->an}}"></td> 
+                                <td align="left">{{$row->ward}}</td>
+                                <td align="center">{{ $row->hn }}</td>
+                                <td align="center">{{ $row->an }}</td>
+                                <td align="left">{{ $row->ptname }}</td>
+                                <td align="center">{{ $row->age_y }}</td>
+                                <td align="left" width ="8%">{{ $row->pttype }} [{{ $row->hospmain }}]</td>
+                                <td align="right" width ="6%">{{ DateThai($row->regdate) }}</td>
+                                <td align="right" width ="6%">{{ DateThai($row->dchdate) }}</td>
+                                <td align="right">{{ $row->pdx }}</td>      
+                                <td align="right">{{ $row->adjrw }}</td>                        
+                                <td align="right" width ="5%">{{ number_format($row->income,2) }}</td>
+                                <td align="right">{{ number_format($row->rcpt_money,2) }}</td>
+                                <td align="right">{{ number_format($row->other,2) }}</td>
+                                <td align="right">{{ number_format($row->debtor,2) }}</td>
+                                <td align="left">{{ $row->other_list }}</td>
+                                <td align="left">{{ $row->ipt_coll_status_type_name }}</td>
+                            <?php $count++; ?>
+                            @endforeach 
+                        </tr>   
+                        </table>
+                    </form>
+                </div> 
+            </div>
+
+        </div>
+
         <!-- Modal บันทึกชดเชย -->
         @foreach($debtor as $row)
             <div id="receive-{{ $row->vn }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="receive-{{ $row->vn }}" aria-hidden="true">
@@ -381,6 +464,29 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     document.querySelector("form[action='{{ url('hrims/debtor/1102050101_307_confirm') }}']").submit();
+                }
+            });
+        }
+    </script>
+    <script>
+        function confirmSubmit_ip() {
+            const selected = [...document.querySelectorAll('input[name="checkbox_ip[]"]:checked')].map(e => e.value);    
+            if (selected.length === 0) {
+                Swal.fire('แจ้งเตือน', 'กรุณาเลือกรายการที่จะยืนยัน', 'warning');
+                return;
+            }
+            Swal.fire({
+                title: 'ยืนยัน?',
+                text: "ต้องการยืนยันลูกหนี้รายการที่เลือกใช่หรือไม่?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'ยืนยัน',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.querySelector("form[action='{{ url('hrims/debtor/1102050101_307_confirm_ip') }}']").submit();
                 }
             });
         }
