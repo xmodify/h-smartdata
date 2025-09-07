@@ -396,7 +396,7 @@ class DebtorController extends Controller
                 AND o.vstdate BETWEEN ? AND ?
                 AND v.income-v.rcpt_money <>"0" 
                 AND vp.pttype IN ('.$pttype_checkup.')
-                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_103) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_103 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -564,7 +564,7 @@ class DebtorController extends Controller
 				INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
 				WHERE op.vstdate BETWEEN ? AND ? AND li.ems = "Y" GROUP BY op.vn) ems ON ems.vn=o.vn			
             WHERE o.vstdate BETWEEN ? AND ?            
-                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_109) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_109 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -751,7 +751,7 @@ class DebtorController extends Controller
                 AND p.hipdata_code = "UCS" 					
                 AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
                 AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
-                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_201) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_201 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -945,7 +945,7 @@ class DebtorController extends Controller
                 AND p.hipdata_code = "UCS" 					
                 AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y"	AND (hmain_ucs IS NULL OR hmain_ucs ="")) 
                 AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
-                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_203) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_203 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -1145,7 +1145,7 @@ class DebtorController extends Controller
                 AND p.hipdata_code NOT IN ("OFC","LGO")	
                 AND vp.pttype NOT IN ('.$pttype_checkup.')
                 AND v.pdx IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
-                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_209) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_209 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -1331,7 +1331,7 @@ class DebtorController extends Controller
                 AND o.vstdate BETWEEN ? AND ?
                 AND p.hipdata_code = "UCS"
 				AND o1.vn IS NOT NULL 
-                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_216) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_216 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date]); 
 
         $debtor_search_cr = DB::connection('hosxp')->select('
@@ -1357,7 +1357,7 @@ class DebtorController extends Controller
                 AND p.hipdata_code = "UCS"
 				AND o1.vn IS NOT NULL 
                 AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y") 
-                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_216) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_216 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date]); 
 
         $debtor_search_anywhere = DB::connection('hosxp')->select('
@@ -1378,7 +1378,7 @@ class DebtorController extends Controller
                 AND p.hipdata_code = "UCS" 
                 AND o1.vn IS NULL				
                 AND vp.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y") 
-                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_216) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_216 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -1691,7 +1691,7 @@ class DebtorController extends Controller
                 AND p.pttype NOT IN ('.$pttype_sss_fund.')					
                 AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_sss ="Y")
                 AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
-                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_301) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_301 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -1883,7 +1883,7 @@ class DebtorController extends Controller
                 AND p.pttype NOT IN ('.$pttype_sss_fund.')					
                 AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE (hmain_sss ="" OR hmain_sss IS NULL))
                 AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
-                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_303) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_303 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -2085,7 +2085,7 @@ class DebtorController extends Controller
                 AND o.vstdate BETWEEN ? AND ?
                 AND p.pttype IN ('.$pttype_sss_fund.')
                 AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
-                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_307) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_307 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         $debtor_search_ip = DB::connection('hosxp')->select('
@@ -2380,7 +2380,7 @@ class DebtorController extends Controller
             WHERE p.hipdata_code IN ("SSS","SSI")	
 			AND o1.vn IS NOT NULL	
             AND o.vstdate BETWEEN ? AND ?
-            AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_309) 
+            AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_309 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -2591,7 +2591,7 @@ class DebtorController extends Controller
 			    AND v.income-v.rcpt_money-COALESCE(o3.other_price, 0) <>"0"				
                 AND o.vstdate BETWEEN ? AND ?
                 AND p.pttype NOT IN ('.$pttype_checkup.')
-                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_401) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_401 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -2785,7 +2785,7 @@ class DebtorController extends Controller
                 AND v.income-v.rcpt_money <>"0" 
                 AND p.hipdata_code = "NRH"
                 AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
-                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_501) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_501 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -2944,7 +2944,7 @@ class DebtorController extends Controller
                 AND p.hipdata_code = "NRH"
                 AND (vp.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
                     OR vp.hospmain IS NULL OR vp.hospmain ="")
-                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_503) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_503 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -3129,7 +3129,7 @@ class DebtorController extends Controller
                 AND o.vstdate BETWEEN ? AND ?
                 AND p.hipdata_code = "STP"                 				
                 AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")                
-                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_701) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_701 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -3312,7 +3312,7 @@ class DebtorController extends Controller
                 AND p.hipdata_code = "STP"                 				
                 AND (vp.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
                     OR vp.hospmain IS NULL OR vp.hospmain ="")               
-                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_702) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_702 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -3497,7 +3497,7 @@ class DebtorController extends Controller
                 AND v.paid_money <>"0" 
                 AND v.rcpt_money <> v.paid_money 
                 AND o.vstdate BETWEEN ? AND ?
-                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_106)    
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_106 WHERE vn IS NOT NULL)    
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue ',[$start_date,$end_date]); 
 
         $debtor_search_iclaim = DB::connection('hosxp')->select('
@@ -3514,7 +3514,7 @@ class DebtorController extends Controller
             WHERE (o.an IS NULL OR o.an ="") 
                 AND vp.pttype = ?
 				AND o.vstdate BETWEEN ? AND ?
-				AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_106)
+				AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_106 WHERE vn IS NOT NULL)
             GROUP BY o.vn ORDER BY sum_price DESC ,o.vstdate,o.oqueue',[$pttype_iclaim,$start_date,$end_date]);
 
         $request->session()->put('start_date',$start_date);
@@ -3797,7 +3797,7 @@ class DebtorController extends Controller
                 AND v.paid_money = "0" 
                 AND p.hipdata_code IN ("BFC","GOF","PVT","WVO")
                 AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
-                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_108) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_108 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -3971,7 +3971,7 @@ class DebtorController extends Controller
                 AND o.vstdate BETWEEN ? AND ?
                 AND v.income-v.rcpt_money <> "0" 
                 AND vp.pttype IN ('.$pttype_act.')
-                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_602) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_602 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -4179,7 +4179,7 @@ class DebtorController extends Controller
 			    AND v.income-v.rcpt_money-COALESCE(o3.other_price, 0) <>"0"				
                 AND o.vstdate BETWEEN ? AND ?
                 AND p.pttype NOT IN ('.$pttype_checkup.')
-                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_801) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_801 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -4411,7 +4411,7 @@ class DebtorController extends Controller
 			    AND v.income-v.rcpt_money-COALESCE(o3.other_price, 0) <>"0"				
                 AND o.vstdate BETWEEN ? AND ?
                 AND p.pttype NOT IN ('.$pttype_checkup.')
-                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_803) 
+                AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_803 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -4623,7 +4623,7 @@ class DebtorController extends Controller
             WHERE i.confirm_discharge = "Y" 
             AND p.hipdata_code = "UCS" 
             AND i.dchdate BETWEEN ? AND ?
-            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_202) 
+            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_202 WHERE an IS NOT NULL) 
             GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -4814,7 +4814,7 @@ class DebtorController extends Controller
                 AND COALESCE(cr.cr_price,0) <> "0"
                 AND p.hipdata_code = "UCS" 
                 AND i.dchdate BETWEEN ? AND ?
-                AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_217) 
+                AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_217 WHERE an IS NOT NULL) 
             GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -5000,7 +5000,7 @@ class DebtorController extends Controller
 			AND ip.pttype NOT IN ('.$pttype_sss_72.') 
             AND i.dchdate BETWEEN ? AND ?
 			AND ip.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_sss ="Y")
-            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_302)
+            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_302 WHERE an IS NOT NULL)
             GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -5201,7 +5201,7 @@ class DebtorController extends Controller
 			AND ip.pttype NOT IN ('.$pttype_sss_72.') 
             AND i.dchdate BETWEEN ? AND ?
 			AND ip.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_sss ="Y")
-            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_304)
+            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_304 WHERE an IS NOT NULL)
             GROUP BY i.an,ip.pttype ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -5398,7 +5398,7 @@ class DebtorController extends Controller
             WHERE i.confirm_discharge = "Y" 
 			AND ip.pttype IN ('.$pttype_sss_72.') 
             AND i.dchdate BETWEEN ? AND ?
-            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_308)
+            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_308 WHERE an IS NOT NULL)
             GROUP BY i.an,ip.pttype ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -5592,7 +5592,7 @@ class DebtorController extends Controller
 			AND p.hipdata_code IN ("SSS","SSI") 
             AND COALESCE(kidney.kidney_price,0)<>"0"
             AND i.dchdate BETWEEN ? AND ?            
-            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_310)
+            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_310 WHERE an IS NOT NULL)
             GROUP BY i.an,ip.pttype ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -5794,7 +5794,7 @@ class DebtorController extends Controller
             WHERE i.confirm_discharge = "Y" 
             AND p.hipdata_code = "OFC" 
             AND i.dchdate BETWEEN ? AND ?
-            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_402) 
+            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_402 WHERE an IS NOT NULL) 
             GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -5973,7 +5973,7 @@ class DebtorController extends Controller
 			AND p.hipdata_code = "NRH"
             AND ip.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
             AND i.dchdate BETWEEN ? AND ?
-            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_502)
+            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_502 WHERE an IS NOT NULL)
             GROUP BY i.an,ip.pttype ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -6167,7 +6167,7 @@ class DebtorController extends Controller
             AND (ip.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
                     OR ip.hospmain IS NULL OR ip.hospmain ="")
             AND i.dchdate BETWEEN ? AND ?
-            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_504)
+            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_504 WHERE an IS NOT NULL)
             GROUP BY i.an,ip.pttype ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -6352,7 +6352,7 @@ class DebtorController extends Controller
             WHERE i.confirm_discharge = "Y" 
 			AND p.hipdata_code = "STP"            
             AND i.dchdate BETWEEN ? AND ?
-            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_704)
+            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_704 WHERE an IS NOT NULL)
             GROUP BY i.an,ip.pttype ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -6548,7 +6548,7 @@ class DebtorController extends Controller
             LEFT JOIN hospcode h ON h.hospcode=ip.hospmain
             WHERE i.dchdate BETWEEN ? AND ?
             AND a.paid_money <>"0" AND a.rcpt_money <> a.paid_money 
-            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_107)
+            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_107 WHERE an IS NOT NULL)
             GROUP BY i.an ORDER BY i.dchdate',[$start_date,$end_date]); 
 
         $debtor_search_iclaim = DB::connection('hosxp')->select('
@@ -6566,7 +6566,7 @@ class DebtorController extends Controller
             WHERE i.confirm_discharge = "Y" 
             AND p1.pttype = ?
             AND i.dchdate BETWEEN ? AND ?
-            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_107) 
+            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_107 WHERE an IS NOT NULL) 
             GROUP BY i.an ORDER BY i.ward,i.dchdate) AS a WHERE debtor <> "0"',[$pttype_iclaim,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -6816,7 +6816,7 @@ class DebtorController extends Controller
             WHERE i.confirm_discharge = "Y" 
 			AND p.hipdata_code = "GOF"            
             AND i.dchdate BETWEEN ? AND ?
-            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_109)
+            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_109 WHERE an IS NOT NULL)
             GROUP BY i.an,ip.pttype ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -7008,7 +7008,7 @@ class DebtorController extends Controller
             WHERE i.confirm_discharge = "Y" 
             AND p.pttype IN ('.$pttype_act.')           
             AND i.dchdate BETWEEN ? AND ?
-            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_603)
+            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_603 WHERE an IS NOT NULL)
             GROUP BY i.an,ip.pttype ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -7211,7 +7211,7 @@ class DebtorController extends Controller
             WHERE i.confirm_discharge = "Y" 
             AND p.hipdata_code = "LGO" 
             AND i.dchdate BETWEEN ? AND ?
-            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_802) 
+            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_802 WHERE an IS NOT NULL) 
             GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
@@ -7395,7 +7395,7 @@ class DebtorController extends Controller
             WHERE i.confirm_discharge = "Y" 
             AND p.hipdata_code IN ("BKK","BMT") 
             AND i.dchdate BETWEEN ? AND ?
-            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_804) 
+            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_804 WHERE an IS NOT NULL) 
             GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
