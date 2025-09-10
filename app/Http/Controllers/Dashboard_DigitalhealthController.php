@@ -753,7 +753,7 @@ public function ipd_mornitor(Request $request )
         FROM ipt i
         LEFT JOIN iptdiag id ON id.an = i.an AND id.diagtype = 1
 		LEFT JOIN an_stat a ON a.an=i.an
-        WHERE i.dchdate >= "'.$start_date.'" AND  i.ward NOT IN (SELECT ward FROM hrp_report.lookup_ward WHERE ward_homeward = "Y") 
+        WHERE i.dchdate >= "'.$start_date.'" AND  i.ward NOT IN (SELECT ward FROM htp_report.lookup_ward WHERE ward_homeward = "Y") 
         AND (a.diag_text_list ="" OR a.diag_text_list IS NULL 				
 		OR id.icd10 ="" OR id.icd10 IS NULL
 		OR a.pdx = "" OR a.pdx IS NULL)');         
