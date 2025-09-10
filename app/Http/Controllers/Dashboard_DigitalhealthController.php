@@ -283,7 +283,7 @@ public function opd_mornitor(Request $request )
         LEFT JOIN patient pt ON pt.hn=o.hn
         LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimType = "PG0140001"
         WHERE o.vstdate = DATE(NOW())
-        AND i.ward IN (SELECT ward FROM hrims.lookup_ward WHERE ward_homeward = "Y")');
+        AND i.ward IN (SELECT ward FROM htp_report.lookup_ward WHERE ward_homeward = "Y")');
     foreach($admit_homeward as $row){
         $homeward = $row->homeward;
         $homeward_auth = $row->homeward_auth;
@@ -549,7 +549,7 @@ public function opd_mornitor_opanywhere(Request $request )
         LEFT JOIN vn_stat v ON v.vn = o.vn
 		LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
         WHERE (o.an ="" OR o.an IS NULL) AND v.income-v.paid_money <> 0 AND o.vstdate BETWEEN ? AND ?
-        AND p.hipdata_code = "UCS" AND vp.hospmain NOT IN (SELECT hospcode FROM hrims.lookup_hospcode WHERE in_province ="Y")        
+        AND p.hipdata_code = "UCS" AND vp.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province ="Y")        
         GROUP BY o.vn ORDER BY ep.claimCode DESC,o.vstdate,o.vsttime',[$start_date,$end_date]);
 
     return view('dashboard.opd_mornitor_opanywhere',compact('start_date','end_date','sql'));
@@ -753,7 +753,7 @@ public function ipd_mornitor(Request $request )
         FROM ipt i
         LEFT JOIN iptdiag id ON id.an = i.an AND id.diagtype = 1
 		LEFT JOIN an_stat a ON a.an=i.an
-        WHERE i.dchdate >= "'.$start_date.'" AND  i.ward NOT IN (SELECT ward FROM hrims.lookup_ward WHERE ward_homeward = "Y") 
+        WHERE i.dchdate >= "'.$start_date.'" AND  i.ward NOT IN (SELECT ward FROM hrp_report.lookup_ward WHERE ward_homeward = "Y") 
         AND (a.diag_text_list ="" OR a.diag_text_list IS NULL 				
 		OR id.icd10 ="" OR id.icd10 IS NULL
 		OR a.pdx = "" OR a.pdx IS NULL)');         
