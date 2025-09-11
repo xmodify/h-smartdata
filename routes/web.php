@@ -12,6 +12,7 @@ use App\Http\Controllers\Hrims\ClaimIpController;
 use App\Http\Controllers\Hrims\ClaimOpController;
 use App\Http\Controllers\Hrims\MishosController;
 use App\Http\Controllers\Hrims\DebtorController;
+use App\Http\Controllers\Hnplus\HnplusController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Backoffice_AssetController;
 use App\Http\Controllers\Backoffice_HrdController;
@@ -1031,5 +1032,9 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
     Route::delete('debtor/1102050102_804_delete',[DebtorController::class,'_1102050102_804_delete']);
     Route::get('debtor/1102050102_804_daily_pdf',[DebtorController::class,'_1102050102_804_daily_pdf']);
     Route::get('debtor/1102050102_804_indiv_excel',[DebtorController::class,'_1102050102_804_indiv_excel']);
+});
 
+// HN-Plus ################################################################################################################################
+Route::prefix('hnplus')->middleware(['auth', 'hnplus'])->name('hnplus.')->group(function () {
+    Route::get('/', [HnplusController::class, 'index'])->name('dashboard');
 });

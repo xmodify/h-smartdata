@@ -16,6 +16,7 @@ class User_Access extends Model
         'ptname',
         'role',
         'del_product',
-        'h_rims'
+        'h_rims',
+        'hn_plus'
     ];
 }

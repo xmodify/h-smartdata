@@ -30,6 +30,13 @@ class User extends Authenticatable
                         ->where('h_rims', $hrims)
                         ->exists();
     }
+
+    public function hasAccessHnplus($hnplus)
+    {
+        return User_Access::where('username', $this->username)
+                        ->where('hn_plus', $hnplus)
+                        ->exists();
+    }
            
      protected $fillable = [
         'name',

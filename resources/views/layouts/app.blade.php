@@ -35,12 +35,13 @@
         left: 100%;
         margin-top: -1px;
         }
+        
     </style>
 
 </head>
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+        <nav class="navbar navbar-expand-lg bg-primary navbar-dark shadow-sm" >
             <div class="container-fluid">
                 <a class="navbar-brand btn btn-outline-info " href="{{ url('/') }}">
                      {{ config('app.name', 'H-SmartData') }} 
@@ -214,15 +215,26 @@
                     
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ms-auto">
-                        <!-- H-RiMS -->
-                        @auth                
+                        
+                        @auth  
+                        <div class="collapse navbar-collapse me-3" id="navbarSupportedContent"> 
+                            <!-- HN-PluS -->  
+                            @if (auth()->user()->hasAccessHnplus('Y'))  
+                                <li class="nav-item dropdown">                            
+                                    <a class="nav-link btn btn-outline-info text-white " href="{{ url('/hnplus') }}" aria-haspopup="true" aria-expanded="false" v-pre>
+                                        HN-PluS
+                                    </a>       
+                                </li>
+                            @endif   
+                            <!-- H-RiMS -->        
                             @if (auth()->user()->hasAccessHrims('Y'))  
-                                <li >                            
-                                    <a class="navbar-brand btn btn-outline-info " href="{{ url('/hrims') }}">
+                                <li class="nav-item dropdown">                            
+                                    <a class="nav-link btn btn-outline-info text-white" href="{{ url('/hrims') }}">
                                         H-RiMS
                                     </a>       
                                 </li>
                             @endif
+                        </div>
                         @endauth
                         <!-- Authentication Links -->
                         @guest
@@ -247,14 +259,14 @@
                                     <!-- Admin --> 
                                     @auth                
                                         @if (auth()->user()->hasAccessRole('admin'))
-                                        <a class="dropdown-item text-white" href="{{ route('admin.main_setting') }}">Main Setting</a>                                                                                            
-                                        <a class="dropdown-item text-white" href="{{ route('admin.user_access.index') }}">Manage User</a>
-                                        <a class="dropdown-item text-white" href="{{ route('admin.lookup_ward.index') }}">Lookup ward</a>
-                                        <a class="dropdown-item text-white" href="{{ route('admin.lookup_hospcode.index') }}">Lookup hospcode</a>
+                                        <a class="dropdown-item link-primary text-white" href="{{ route('admin.main_setting') }}">Main Setting</a>                                                                                            
+                                        <a class="dropdown-item link-primary text-white" href="{{ route('admin.user_access.index') }}">Manage User</a>
+                                        <a class="dropdown-item link-primary text-white" href="{{ route('admin.lookup_ward.index') }}">Lookup ward</a>
+                                        <a class="dropdown-item link-primary text-white" href="{{ route('admin.lookup_hospcode.index') }}">Lookup hospcode</a>
                                         @endif
                                     @endauth
                                     <!-- -->                                    
-                                    <a class="dropdown-item text-white" href="{{ route('logout') }}"
+                                    <a class="dropdown-item link-primary text-white" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
                                         {{ __('Logout') }}
