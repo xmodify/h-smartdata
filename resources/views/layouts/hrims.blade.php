@@ -345,8 +345,8 @@
                                 </li>
                             @endif -->
                         @else
-                            <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link btn btn-outline-success dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                            <li class="nav-item dropdown"> 
+                                <a id="navbarDropdown" class="nav-link btn btn-outline-info dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name }}
                                 </a>
 
@@ -354,11 +354,11 @@
                                     <!-- Admin --> 
                                     @auth                
                                         @if (auth()->user()->hasAccessRole('admin'))  
-                                            <a class="dropdown-item text-white" href="{{ route('admin.lookup_icode.index') }}">Lookup icode</a>                                            
+                                            <a class="dropdown-item link-primary text-white" href="{{ route('admin.lookup_icode.index') }}">Lookup icode</a>                                            
                                         @endif
                                     @endauth
                                     <!-- -->                                    
-                                    <a class="dropdown-item text-white" href="{{ route('logout') }}"
+                                    <a class="dropdown-item link-primary text-white" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
                                         {{ __('Logout') }}
