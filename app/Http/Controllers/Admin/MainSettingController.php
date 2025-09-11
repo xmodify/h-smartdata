@@ -86,22 +86,28 @@ class MainSettingController extends Controller
             }
         }
 
-    //Table lookup_icode-----------------------------------------------------------------------------------------------------------
-        $table = 'lookup_icode';
-        $columnsToAdd = [        
-            ['name' => 'herb32', 'definition' => 'VARCHAR(1) NULL'], 
-            ['name' => 'kidney', 'definition' => 'VARCHAR(1) NULL AFTER `herb32`'],
-            ['name' => 'ems', 'definition' => 'VARCHAR(1) NULL AFTER `kidney`']
+    //After Table-----------------------------------------------------------------------------------------------------------
+        $tables = [
+            'lookup_icode' => [
+                ['name' => 'ems', 'definition' => 'VARCHAR(1) NULL AFTER `kidney`'],
+            ],
+            'lookup_ward' => [               
+                ['name' => 'ward_normal', 'definition' => 'VARCHAR(1) NULL AFTER `ward_name`'],
+                ['name' => 'bed_qty', 'definition' => 'INT UNSIGNED NULL AFTER `ward_homeward`']
+            ],
         ];
 
         try {
-            foreach ($columnsToAdd as $col) {
-                if (!Schema::hasColumn($table, $col['name'])) {
-                    DB::statement("ALTER TABLE $table ADD COLUMN {$col['name']} {$col['definition']}");
+            foreach ($tables as $table => $columns) {
+                foreach ($columns as $col) {
+                    if (!Schema::hasColumn($table, $col['name'])) {
+                        DB::statement("ALTER TABLE `$table` ADD COLUMN `{$col['name']}` {$col['definition']}");
+                    }
                 }
             }
 
-            return redirect()->route('admin.main_setting')->with('success', 'Upgrade Structure สำเร็จ');
+            return redirect()->route('admin.main_setting')
+                ->with('success', 'Upgrade Structure สำเร็จ');
 
         } catch (\Exception $e) {
             return back()->with('error', 'เกิดข้อผิดพลาด: ' . $e->getMessage());

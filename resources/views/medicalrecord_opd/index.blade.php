@@ -16,13 +16,13 @@
             </thead> 
             <tbody> 
               <tr>
-                <td><a href="{{ url('medicalrecord_opd/nhso_endpoint') }}" target="_blank"><li>ข้อมูลการ ปิดสิทธิ สปสช.</li></a></td>
+                <td><a href="{{ url('dashboard/nhso_endpoint') }}" target="_blank"><li>ข้อมูลการ ปิดสิทธิ สปสช.</li></a></td>
               </tr>  
               <tr>
-                <td><a href="{{ url('medicalrecord_opd/non_authen') }}" target="_blank"><li>ไม่ขอ AuthenCode สปสช.</li></a></td>
+                <td><a href="{{ url('dashboard/opd_mornitor_non_authen') }}" target="_blank"><li>ไม่ขอ AuthenCode สปสช.</li></a></td>
               </tr>  
               <tr>
-                <td><a href="{{ url('medicalrecord_opd/non_hospmain') }}" target="_blank"><li>ไม่บันทึกรหัสสถานพยาบาลหลัก</li></a></td>
+                <td><a href="{{ url('dashboard/opd_mornitor_non_hospmain') }}" target="_blank"><li>ไม่บันทึกรหัสสถานพยาบาลหลัก</li></a></td>
               </tr>                   
             </tbody>
           </table>

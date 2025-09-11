@@ -248,7 +248,9 @@
                                     @auth                
                                         @if (auth()->user()->hasAccessRole('admin'))
                                         <a class="dropdown-item text-white" href="{{ route('admin.main_setting') }}">Main Setting</a>                                                                                            
-                                            <a class="dropdown-item text-white" href="{{ route('admin.user_access.index') }}">Manage User</a>
+                                        <a class="dropdown-item text-white" href="{{ route('admin.user_access.index') }}">Manage User</a>
+                                        <a class="dropdown-item text-white" href="{{ route('admin.lookup_ward.index') }}">Lookup ward</a>
+                                        <a class="dropdown-item text-white" href="{{ route('admin.lookup_hospcode.index') }}">Lookup hospcode</a>
                                         @endif
                                     @endauth
                                     <!-- -->                                    

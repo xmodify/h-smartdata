@@ -135,7 +135,7 @@ function pullNhsoData(vstdate, cid) {
         }
     });
     
-    fetch("{{ url('medicalrecord_opd/nhso_endpoint_pull') }}/" + vstdate + "/" + cid)
+    fetch("{{ url('dashboard/nhso_endpoint_pull') }}/" + vstdate + "/" + cid)
         .then(async response => {
             const data = await response.json();
             if (!response.ok) {

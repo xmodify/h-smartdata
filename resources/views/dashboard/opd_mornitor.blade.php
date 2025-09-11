@@ -73,10 +73,7 @@
                 ณ วันที่ <font style="color:red;">{{DateThai(date('Y-m-d'))}}</font> เวลา: <font style="color:red;"><span id="realtime-clock"></span></font> 
                 ทั้งหมด : <font style="color:red;">{{$total}}</font> Visit | 
                 ปิดสิทธิ สปสช : <font style="color:red;">{{$endpoint}}</font> Visit               
-                <!-- ปุ่มเรียก Modal -->
-                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#nhsoModal">
-                  ดึงปิดสิทธิ สปสช.
-                </button>
+                <a class="btn btn-outline-danger btn-sm" href="{{ url('dashboard/nhso_endpoint') }}" target="_blank">ดึงปิดสิทธิ สปสช.</a> 
               </h4>
             </div>
             <div class="col-2 mt-2" align="right">
@@ -441,62 +438,16 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // รีโหลดหน้าทุก 1.5 นาที (90000 ms)
+    // รีโหลดหน้าทุก 1 นาที (60000 ms)
     setTimeout(function() {
         location.reload();
-    }, 90000);
+    }, 60000);
 </script>
 
 </body>
 
 </body>
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const form = document.getElementById("nhsoForm");
-    const spinner = document.getElementById("loadingSpinner");
-    const resultMessage = document.getElementById("resultMessage");
-    const nhsoModal = document.getElementById('nhsoModal');
-
-    form.addEventListener("submit", function (e) {
-        e.preventDefault();
-        spinner.classList.remove("d-none");
-        resultMessage.classList.add("d-none");
-        resultMessage.innerHTML = "";
-
-        const formData = new FormData(form);
-
-        fetch("{{ url('medicalrecord_opd/nhso_endpoint_pull') }}", {
-            method: "POST",
-            headers: {
-                "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                "Accept": "application/json"
-            },
-            body: formData
-        })
-        .then(response => {
-            spinner.classList.add("d-none");
-            if (!response.ok) throw new Error("โหลดล้มเหลว");
-            return response.json();
-        })
-        .then(data => {
-            resultMessage.classList.remove("d-none");
-            resultMessage.classList.add("text-success");
-            resultMessage.innerHTML = "✅ " + (data.message || "ดึงข้อมูลสำเร็จ");
-        })
-        .catch(err => {
-            resultMessage.classList.remove("d-none");
-            resultMessage.classList.add("text-danger");
-            resultMessage.innerHTML = "❌ ดึงข้อมูลล้มเหลว";
-        });
-    });
-
-    nhsoModal.addEventListener('hide.bs.modal', function () {
-        // ✅ Redirect ไปหน้า /home เมื่อปิด Modal
-        window.location.href = "{{ url('/dashboard/opd_mornitor') }}";
-    });
-});
-</script>
 
 <!-- Vendor JS Files -->
 <script src="{{ asset('assets/vendor/apexcharts/apexcharts.min.js') }}"></script>

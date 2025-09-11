@@ -354,9 +354,7 @@
                                     <!-- Admin --> 
                                     @auth                
                                         @if (auth()->user()->hasAccessRole('admin'))  
-                                            <a class="dropdown-item text-white" href="{{ route('admin.lookup_icode.index') }}">Lookup icode</a>
-                                            <a class="dropdown-item text-white" href="{{ route('admin.lookup_ward.index') }}">Lookup ward</a>
-                                            <a class="dropdown-item text-white" href="{{ route('admin.lookup_hospcode.index') }}">Lookup hospcode</a>
+                                            <a class="dropdown-item text-white" href="{{ route('admin.lookup_icode.index') }}">Lookup icode</a>                                            
                                         @endif
                                     @endauth
                                     <!-- -->                                    
