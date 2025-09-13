@@ -581,7 +581,7 @@ public function opd_mornitor_non_authen(Request $request )
         LEFT JOIN kskdepartment k ON k.depcode=o.main_dep
         WHERE o.vstdate BETWEEN ? AND ?
         AND vp.pttype NOT IN ("10","11","12","13")
-        AND p.cid NOT LIKE "0%" AND vp.auth_code =""       
+        AND p.cid NOT LIKE "0%" AND (vp.auth_code ="" OR vp.auth_code IS NULL)       
         GROUP BY o.vn ORDER BY o.vsttime',[$start_date,$end_date]);
 
     return view('dashboard.opd_mornitor_non_authen',compact('start_date','end_date','sql'));
