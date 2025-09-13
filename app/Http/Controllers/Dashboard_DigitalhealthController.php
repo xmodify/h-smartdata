@@ -322,7 +322,7 @@ public function opd_mornitor(Request $request )
         IFNULL(SUM(CASE WHEN hipdata_code="OFC" THEN 1 ELSE 0 END),0) AS "ofc",
         IFNULL(SUM(CASE WHEN hipdata_code="OFC" AND edc_approve_list_text <> "" THEN 1 ELSE 0 END),0) AS "ofc_edc",
         IFNULL(SUM(CASE WHEN (auth_code="" OR auth_code IS NULL) AND cid NOT LIKE "0%" AND pttype NOT IN ("10","11","12","13") THEN 1 ELSE 0 END),0) AS "non_authen",
-        IFNULL(SUM(CASE WHEN hipdata_code IN ("UCS","SSS","STP") AND hospmain="" THEN 1 ELSE 0 END),0) AS "non_hospmain",
+        IFNULL(SUM(CASE WHEN hipdata_code IN ("UCS","SSS","STP") AND (hospmain="" OR hospmain IS NULL) THEN 1 ELSE 0 END),0) AS "non_hospmain",
         IFNULL(SUM(CASE WHEN tb="Y" AND paidst = "02" AND income-paid_money <> 0 THEN 1 ELSE 0 END),0) AS "tb",
         IFNULL(SUM(CASE WHEN tb="Y" AND paidst = "02" AND income-paid_money <> 0 AND endpoint ="Y" THEN 1 ELSE 0 END),0) AS "tb_endpoint",
         IFNULL(SUM(CASE WHEN hipdata_code="UCS" AND hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province ="Y")
