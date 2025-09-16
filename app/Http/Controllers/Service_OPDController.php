@@ -23,16 +23,14 @@ class Service_OPDController extends Controller
 //Create count
 public function count(Request $request)
 {
-      $budget_year_select = DB::connection('backoffice')->select('select LEAVE_YEAR_ID,LEAVE_YEAR_NAME FROM budget_year ORDER BY LEAVE_YEAR_ID DESC LIMIT 7');
+      $budget_year_select = DB::connection('backoffice')->table('budget_year')->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')->orderByDesc('LEAVE_YEAR_ID')->limit(7)->get();
       $budget_year_last = DB::connection('backoffice')->table('budget_year')->where('DATE_END','>=',date('Y-m-d'))->where('DATE_BEGIN','<=',date('Y-m-d'))->value('LEAVE_YEAR_ID');
-      $budget_year = $request->budget_year;
-      if($budget_year == '' || $budget_year == null)
-      {$budget_year = $budget_year_last;}else{$budget_year =$request->budget_year;} 
-      $start_date_y = DB::connection('backoffice')->table('budget_year')->where('LEAVE_YEAR_ID',$budget_year-4)->value('DATE_BEGIN');      
-      $start_date = DB::connection('backoffice')->table('budget_year')->where('LEAVE_YEAR_ID',$budget_year)->value('DATE_BEGIN');
-      $end_date = DB::connection('backoffice')->table('budget_year')->where('LEAVE_YEAR_ID',$budget_year)->value('DATE_END');  
-    
-      $opd_month_visit = DB::connection('hosxp')->select('
+      $budget_year = $request->budget_year ?? $budget_year_last;
+      $start_date_y = DB::connection('backoffice')->table('budget_year')->where('LEAVE_YEAR_ID', $budget_year - 4)->value('DATE_BEGIN');
+      $start_date = DB::connection('backoffice')->table('budget_year')->where('LEAVE_YEAR_ID', $budget_year)->value('DATE_BEGIN');
+      $end_date = DB::connection('backoffice')->table('budget_year')->where('LEAVE_YEAR_ID', $budget_year)->value('DATE_END');
+   
+      $visit_month = DB::connection('hosxp')->select('
             SELECT CASE WHEN MONTH(vstdate)="10" THEN CONCAT("ต.ค. ",RIGHT(YEAR(vstdate)+543,2))
             WHEN MONTH(vstdate)="11" THEN CONCAT("พ.ย. ",RIGHT(YEAR(vstdate)+543,2))
             WHEN MONTH(vstdate)="12" THEN CONCAT("ธ.ค. ",RIGHT(YEAR(vstdate)+543,2))
@@ -45,148 +43,87 @@ public function count(Request $request)
             WHEN MONTH(vstdate)="7" THEN CONCAT("ก.ค. ",RIGHT(YEAR(vstdate)+543,2))
             WHEN MONTH(vstdate)="8" THEN CONCAT("ส.ค. ",RIGHT(YEAR(vstdate)+543,2))
             WHEN MONTH(vstdate)="9" THEN CONCAT("ก.ย. ",RIGHT(YEAR(vstdate)+543,2))
-            END AS "month",
-            COUNT(vn) AS visit,
-            SUM(CASE WHEN hipdata_code IN ("UCS","DIS") THEN 1 ELSE 0 END) AS "ucs",
-		SUM(CASE WHEN hipdata_code IN ("UCS","DIS") THEN inc03 ELSE 0 END) AS "ucs_inc_lab",
-		SUM(CASE WHEN hipdata_code IN ("UCS","DIS") THEN inc12 ELSE 0 END) AS "ucs_inc_drug",
-            SUM(CASE WHEN pttype like "O%" OR pttype like "B%" OR pttype IN("14","H1") THEN 1 ELSE 0 END) AS "ofc",
-		SUM(CASE WHEN pttype like "O%" OR pttype like "B%" OR pttype IN("14","H1") THEN inc03 ELSE 0 END) AS "ofc_inc_lab",
-		SUM(CASE WHEN pttype like "O%" OR pttype like "B%" OR pttype IN("14","H1") THEN inc12 ELSE 0 END) AS "ofc_inc_drug",
-            SUM(CASE WHEN hipdata_code in ("SSS","SSI") THEN 1 ELSE 0 END) AS "sss",
-		SUM(CASE WHEN hipdata_code in ("SSS","SSI") THEN inc03 ELSE 0 END) AS "sss_inc_lab",
-		SUM(CASE WHEN hipdata_code in ("SSS","SSI") THEN inc12 ELSE 0 END) AS "sss_inc_drug",
-            SUM(CASE WHEN pttype like "L%" OR pttype ="H2" THEN 1 ELSE 0 END) AS "lgo",
-		SUM(CASE WHEN pttype like "L%" OR pttype ="H2" THEN inc03 ELSE 0 END) AS "lgo_inc_lab",
-		SUM(CASE WHEN pttype like "L%" OR pttype ="H2" THEN inc12 ELSE 0 END) AS "lgo_inc_drug",
-            SUM(CASE WHEN hipdata_code like "NR%" THEN 1 ELSE 0 END) AS "fss",
-		SUM(CASE WHEN hipdata_code like "NR%" THEN inc03 ELSE 0 END) AS "fss_inc_lab",
-		SUM(CASE WHEN hipdata_code like "NR%" THEN inc12 ELSE 0 END) AS "fss_inc_drug",
-            SUM(CASE WHEN hipdata_code IN ("ST","STP") THEN 1 ELSE 0 END) AS "stp",   
-		SUM(CASE WHEN hipdata_code IN ("ST","STP") THEN inc03 ELSE 0 END) AS "stp_inc_lab", 
-		SUM(CASE WHEN hipdata_code IN ("ST","STP") THEN inc12 ELSE 0 END) AS "stp_inc_drug", 
+            END AS "month",COUNT(vn) AS "visit",COUNT(DISTINCT hn) AS "hn",
+            SUM(CASE WHEN diagtype ="OP" THEN 1 ELSE 0 END) AS "visit_op",
+            SUM(CASE WHEN diagtype ="PP" THEN 1 ELSE 0 END) AS "visit_pp",SUM(income) AS "income",
+            SUM(inc12) AS "inc_drug",SUM(inc03) AS "inc_lab",
+            SUM(CASE WHEN hipdata_code IN ("UCS","DIS") AND paidst NOT IN ("01","03") THEN 1 ELSE 0 END) AS "ucs",
+            SUM(CASE WHEN hipdata_code IN ("UCS","DIS") AND paidst NOT IN ("01","03") THEN income ELSE 0 END) AS "ucs_income",            
+            SUM(CASE WHEN hipdata_code IN ("UCS","DIS") AND paidst NOT IN ("01","03") THEN inc12 ELSE 0 END) AS "ucs_inc_drug",
+            SUM(CASE WHEN hipdata_code IN ("UCS","DIS") AND paidst NOT IN ("01","03") THEN inc03 ELSE 0 END) AS "ucs_inc_lab",
+            SUM(CASE WHEN hipdata_code IN ("OFC","BKK","BMT") AND paidst NOT IN ("01","03") THEN 1 ELSE 0 END) AS "ofc",
+            SUM(CASE WHEN hipdata_code IN ("OFC","BKK","BMT") AND paidst NOT IN ("01","03") THEN income ELSE 0 END) AS "ofc_income",
+            SUM(CASE WHEN hipdata_code IN ("OFC","BKK","BMT") AND paidst NOT IN ("01","03") THEN inc12 ELSE 0 END) AS "ofc_inc_drug",
+            SUM(CASE WHEN hipdata_code IN ("OFC","BKK","BMT") AND paidst NOT IN ("01","03") THEN inc03 ELSE 0 END) AS "ofc_inc_lab",            
+            SUM(CASE WHEN hipdata_code IN ("SSS","SSI") AND paidst NOT IN ("01","03") THEN 1 ELSE 0 END) AS "sss",
+            SUM(CASE WHEN hipdata_code IN ("SSS","SSI") AND paidst NOT IN ("01","03") THEN income ELSE 0 END) AS "sss_income",
+            SUM(CASE WHEN hipdata_code IN ("SSS","SSI") AND paidst NOT IN ("01","03") THEN inc12 ELSE 0 END) AS "sss_inc_drug",
+            SUM(CASE WHEN hipdata_code IN ("SSS","SSI") AND paidst NOT IN ("01","03") THEN inc03 ELSE 0 END) AS "sss_inc_lab",            
+            SUM(CASE WHEN hipdata_code IN ("LGO") AND paidst NOT IN ("01","03") THEN 1 ELSE 0 END) AS "lgo",
+            SUM(CASE WHEN hipdata_code IN ("LGO") AND paidst NOT IN ("01","03") THEN income ELSE 0 END) AS "lgo_income",
+            SUM(CASE WHEN hipdata_code IN ("LGO") AND paidst NOT IN ("01","03") THEN inc12 ELSE 0 END) AS "lgo_inc_drug",
+            SUM(CASE WHEN hipdata_code IN ("LGO") AND paidst NOT IN ("01","03") THEN inc03 ELSE 0 END) AS "lgo_inc_lab",            
+            SUM(CASE WHEN hipdata_code IN ("NRD","NRH") AND paidst NOT IN ("01","03") THEN 1 ELSE 0 END) AS "fss",
+            SUM(CASE WHEN hipdata_code IN ("NRD","NRH") AND paidst NOT IN ("01","03") THEN income ELSE 0 END) AS "fss_income",
+            SUM(CASE WHEN hipdata_code IN ("NRD","NRH") AND paidst NOT IN ("01","03") THEN inc12 ELSE 0 END) AS "fss_inc_drug",
+            SUM(CASE WHEN hipdata_code IN ("NRD","NRH") AND paidst NOT IN ("01","03") THEN inc03 ELSE 0 END) AS "fss_inc_lab",            
+            SUM(CASE WHEN hipdata_code IN ("STP") AND paidst NOT IN ("01","03") THEN 1 ELSE 0 END) AS "stp",   
+            SUM(CASE WHEN hipdata_code IN ("STP") AND paidst NOT IN ("01","03") THEN income ELSE 0 END) AS "stp_income",
+            SUM(CASE WHEN hipdata_code IN ("STP") AND paidst NOT IN ("01","03") THEN inc12 ELSE 0 END) AS "stp_inc_drug", 
+            SUM(CASE WHEN hipdata_code IN ("STP") AND paidst NOT IN ("01","03") THEN inc03 ELSE 0 END) AS "stp_inc_lab",
             SUM(CASE WHEN (paidst IN ("01","03") OR hipdata_code IN ("A1","A9")) THEN 1 ELSE 0 END) AS "pay",
-		SUM(CASE WHEN (paidst IN ("01","03") OR hipdata_code IN ("A1","A9")) THEN inc03 ELSE 0 END) AS "pay_inc_lab",
-		SUM(CASE WHEN (paidst IN ("01","03") OR hipdata_code IN ("A1","A9")) THEN inc12 ELSE 0 END) AS "pay_inc_drug"
-            FROM (SELECT v.vstdate,v.vn,v.pttype,p.hipdata_code,p.paidst,v.inc03,v.inc12 FROM vn_stat v
+            SUM(CASE WHEN (paidst IN ("01","03") OR hipdata_code IN ("A1","A9")) THEN income ELSE 0 END) AS "pay_income",
+            SUM(CASE WHEN (paidst IN ("01","03") OR hipdata_code IN ("A1","A9")) THEN inc12 ELSE 0 END) AS "pay_inc_drug",
+            SUM(CASE WHEN (paidst IN ("01","03") OR hipdata_code IN ("A1","A9")) THEN inc03 ELSE 0 END) AS "pay_inc_lab"            
+            FROM (SELECT v.vstdate,v.vn,v.hn,v.pttype,p.hipdata_code,p.paidst,v.income,v.inc03,v.inc12 ,v.pdx,
+            IF(i.icd10 IS NULL,"OP","PP") AS diagtype
+            FROM vn_stat v
             LEFT JOIN pttype p ON p.pttype=v.pttype
-            WHERE v.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'") AS a									
-            GROUP BY MONTH(vstdate)
-            ORDER BY YEAR(vstdate) , MONTH(vstdate)');
-      $opd_m = array_column($opd_month_visit,'month');
-      $opd_visit_m = array_column($opd_month_visit,'visit');
+            LEFT JOIN htp_report.lookup_icd10 i ON i.icd10=v.pdx AND i.pp="Y"
+            WHERE v.vstdate BETWEEN ? AND ?) AS a									
+            GROUP BY YEAR(vstdate) , MONTH(vstdate)
+            ORDER BY YEAR(vstdate) , MONTH(vstdate)',[$start_date,$end_date]);
+      $month = array_column($visit_month,'month');
+      $visit = array_column($visit_month,'visit');
+      $hn = array_column($visit_month,'hn');
+      $visit_op = array_column($visit_month,'visit_op');
+      $visit_pp = array_column($visit_month,'visit_pp');
+      $ucs = array_column($visit_month,'ucs');
+      $ucs_inc_lab = array_column($visit_month,'ucs_inc_lab');         
+      $ucs_inc_drug = array_column($visit_month,'ucs_inc_drug'); 
+      $ofc = array_column($visit_month,'ofc');
+      $ofc_inc_lab = array_column($visit_month,'ofc_inc_lab');         
+      $ofc_inc_drug = array_column($visit_month,'ofc_inc_drug'); 
+      $sss = array_column($visit_month,'sss');
+      $sss_inc_lab = array_column($visit_month,'sss_inc_lab');         
+      $sss_inc_drug = array_column($visit_month,'sss_inc_drug'); 
+      $lgo = array_column($visit_month,'lgo');
+      $lgo_inc_lab = array_column($visit_month,'lgo_inc_lab');         
+      $lgo_inc_drug = array_column($visit_month,'lgo_inc_drug'); 
+      $fss = array_column($visit_month,'fss');
+      $fss_inc_lab = array_column($visit_month,'fss_inc_lab');         
+      $fss_inc_drug = array_column($visit_month,'fss_inc_drug'); 
+      $stp = array_column($visit_month,'stp');
+      $stp_inc_lab = array_column($visit_month,'stp_inc_lab');         
+      $stp_inc_drug = array_column($visit_month,'stp_inc_drug'); 
+      $pay = array_column($visit_month,'pay');
+      $pay_inc_lab = array_column($visit_month,'pay_inc_lab');         
+      $pay_inc_drug = array_column($visit_month,'pay_inc_drug');   
 
-      $opd_month_hn = DB::connection('hosxp')->select('select          
-            COUNT(hn) AS hn,
-            CASE WHEN MONTH(vstdate)="10" THEN CONCAT("ต.ค. ",RIGHT(YEAR(vstdate)+543,2))
-            WHEN MONTH(vstdate)="11" THEN CONCAT("พ.ย. ",RIGHT(YEAR(vstdate)+543,2))
-            WHEN MONTH(vstdate)="12" THEN CONCAT("ธ.ค. ",RIGHT(YEAR(vstdate)+543,2))
-            WHEN MONTH(vstdate)="1" THEN CONCAT("ม.ค. ",RIGHT(YEAR(vstdate)+543,2))
-            WHEN MONTH(vstdate)="2" THEN CONCAT("ก.พ. ",RIGHT(YEAR(vstdate)+543,2))
-            WHEN MONTH(vstdate)="3" THEN CONCAT("มี.ค. ",RIGHT(YEAR(vstdate)+543,2))
-            WHEN MONTH(vstdate)="4" THEN CONCAT("เม.ย. ",RIGHT(YEAR(vstdate)+543,2))
-            WHEN MONTH(vstdate)="5" THEN CONCAT("พ.ค. ",RIGHT(YEAR(vstdate)+543,2))
-            WHEN MONTH(vstdate)="6" THEN CONCAT("มิ.ย. ",RIGHT(YEAR(vstdate)+543,2))
-            WHEN MONTH(vstdate)="7" THEN CONCAT("ก.ค. ",RIGHT(YEAR(vstdate)+543,2))
-            WHEN MONTH(vstdate)="8" THEN CONCAT("ส.ค. ",RIGHT(YEAR(vstdate)+543,2))
-            WHEN MONTH(vstdate)="9" THEN CONCAT("ก.ย. ",RIGHT(YEAR(vstdate)+543,2))
-            END AS "month",
-            SUM(CASE WHEN hipdata_code IN ("UCS","DIS") THEN 1 ELSE 0 END) AS "ucs",
-            SUM(CASE WHEN pttype like "O%" OR pttype like "B%" OR pttype IN("14","H1") THEN 1 ELSE 0 END) AS "ofc",
-            SUM(CASE WHEN hipdata_code in ("SSS","SSI") THEN 1 ELSE 0 END) AS "sss",
-            SUM(CASE WHEN pttype like "L%" OR pttype ="H2" THEN 1 ELSE 0 END) AS "lgo",
-            SUM(CASE WHEN hipdata_code like "NR%" THEN 1 ELSE 0 END) AS "fss",
-            SUM(CASE WHEN hipdata_code IN ("ST","STP") THEN 1 ELSE 0 END) AS "stp",          
-            SUM(CASE WHEN hipdata_code in ("A1","A9") OR pttype like "C%" OR pttype like "E%"  
-		OR pttype like "P%" OR pttype IN ("A1","Z3","G1") THEN 1 ELSE 0 END) AS "pay"
-            FROM (SELECT v.vstdate,v.hn,v.pttype,p.hipdata_code FROM vn_stat v
-            LEFT JOIN pttype p ON p.pttype=v.pttype
-            WHERE v.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-            GROUP BY v.hn, MONTH(v.vstdate)) AS a									
-            GROUP BY MONTH(vstdate)
-            ORDER BY YEAR(vstdate) , MONTH(vstdate)');     
-      $opd_hn_m = array_column($opd_month_hn,'hn');
-      
-      $opd_year_visit = DB::connection('hosxp')->select('select 
-            IF(MONTH(vstdate)>9,YEAR(vstdate)+1,YEAR(vstdate)) + 543 AS year_bud,
-            COUNT(vn) AS visit,
-            SUM(CASE WHEN hipdata_code IN ("UCS","DIS") THEN 1 ELSE 0 END) AS "ucs",
-            SUM(CASE WHEN pttype like "O%" OR pttype like "B%" OR pttype IN("14","H1") THEN 1 ELSE 0 END) AS "ofc",
-            SUM(CASE WHEN hipdata_code in ("SSS","SSI") THEN 1 ELSE 0 END) AS "sss",
-            SUM(CASE WHEN pttype like "L%" OR pttype ="H2" THEN 1 ELSE 0 END) AS "lgo",
-            SUM(CASE WHEN hipdata_code like "NR%" THEN 1 ELSE 0 END) AS "fss",
-            SUM(CASE WHEN hipdata_code IN ("ST","STP") THEN 1 ELSE 0 END) AS "stp",          
-            SUM(CASE WHEN hipdata_code in ("A1","A9") OR pttype like "C%" OR pttype like "E%"  
-		OR pttype like "P%" OR pttype IN ("A1","Z3","G1") THEN 1 ELSE 0 END) AS "pay"   
-            FROM (SELECT v.vstdate,v.vn,v.pttype,p.hipdata_code FROM vn_stat v
-            LEFT JOIN pttype p ON p.pttype=v.pttype
-            WHERE v.vstdate BETWEEN "'.$start_date_y.'" AND "'.$end_date.'") AS a	           
-            GROUP BY year_bud');
-      $opd_y = array_column($opd_year_visit,'year_bud');
-      $opd_visit_y = array_column($opd_year_visit,'visit');
-      $opd_visit_ucs_y = array_column($opd_year_visit,'ucs');
-      $opd_visit_ofc_y = array_column($opd_year_visit,'ofc');
-      $opd_visit_sss_y = array_column($opd_year_visit,'sss');
-      $opd_visit_lgo_y = array_column($opd_year_visit,'lgo');
-      $opd_visit_fss_y = array_column($opd_year_visit,'fss');
-      $opd_visit_stp_y = array_column($opd_year_visit,'stp'); 
-      $opd_visit_pay_y = array_column($opd_year_visit,'pay');
-
-      $opd_year_hn = DB::connection('hosxp')->select('select 
-            IF(MONTH(vstdate)>9,YEAR(vstdate)+1,YEAR(vstdate)) + 543 AS year_bud,
-            COUNT(hn) AS hn,
-            SUM(CASE WHEN hipdata_code IN ("UCS","DIS") THEN 1 ELSE 0 END) AS "ucs",
-            SUM(CASE WHEN pttype like "O%" OR pttype like "B%" OR pttype IN("14","H1") THEN 1 ELSE 0 END) AS "ofc",
-            SUM(CASE WHEN hipdata_code in ("SSS","SSI") THEN 1 ELSE 0 END) AS "sss",
-            SUM(CASE WHEN pttype like "L%" OR pttype ="H2" THEN 1 ELSE 0 END) AS "lgo",
-            SUM(CASE WHEN hipdata_code like "NR%" THEN 1 ELSE 0 END) AS "fss",
-            SUM(CASE WHEN hipdata_code IN ("ST","STP") THEN 1 ELSE 0 END) AS "stp",          
-            SUM(CASE WHEN hipdata_code in ("A1","A9") OR pttype like "C%" OR pttype like "E%"  
-		    OR pttype like "P%" OR pttype IN ("A1","Z3","G1") THEN 1 ELSE 0 END) AS "pay"
-            FROM (SELECT v.vstdate,v.hn,v.pttype,p.hipdata_code FROM vn_stat v
-            LEFT JOIN pttype p ON p.pttype=v.pttype
-            WHERE v.vstdate BETWEEN "'.$start_date_y.'" AND "'.$end_date.'"
-            GROUP BY v.hn,IF(MONTH(v.vstdate)>9,YEAR(v.vstdate)+1,YEAR(v.vstdate))) AS a	           
-            GROUP BY year_bud');     
-      $opd_hn_y = array_column($opd_year_hn,'hn');   
-      $opd_hn_ucs_y = array_column($opd_year_hn,'ucs');
-      $opd_hn_ofc_y = array_column($opd_year_hn,'ofc');  
-      $opd_hn_sss_y = array_column($opd_year_hn,'sss');  
-      $opd_hn_lgo_y = array_column($opd_year_hn,'lgo');  
-      $opd_hn_fss_y = array_column($opd_year_hn,'fss');  
-      $opd_hn_stp_y = array_column($opd_year_hn,'stp');
-      $opd_hn_pay_y = array_column($opd_year_hn,'pay');    
-
-      $opd_spclty = DB::connection('hosxp')->select('
-            SELECT s.`name`,COUNT(o.vn) AS visit,COUNT(DISTINCT o.hn) AS hn
-            FROM ovst o 
-            INNER JOIN spclty s ON s.spclty=o.spclty
-            WHERE o.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-            GROUP BY o.spclty
-            ORDER BY visit DESC'); 
-      $opd_spclty_name = array_column($opd_spclty,'name'); 
-      $opd_spclty_visit = array_column($opd_spclty,'visit'); 
-      $opd_spclty_hn = array_column($opd_spclty,'hn');   
-
-      return view('service_opd.count',compact('budget_year_select','budget_year','opd_month_visit','opd_month_hn',
-            'opd_m','opd_visit_m','opd_hn_m','opd_y','opd_visit_y','opd_hn_y','opd_visit_ucs_y','opd_visit_ofc_y',
-            'opd_visit_sss_y','opd_visit_lgo_y','opd_visit_fss_y','opd_visit_stp_y','opd_visit_pay_y','opd_hn_ucs_y',
-            'opd_hn_ofc_y','opd_hn_sss_y','opd_hn_lgo_y','opd_hn_fss_y','opd_hn_stp_y','opd_hn_pay_y','opd_spclty_name',
-            'opd_spclty_visit','opd_spclty_hn'));          
+      return view('service_opd.count',compact('budget_year_select','budget_year','visit_month','month','hn','visit','visit_op','visit_pp','ucs',
+            'ucs_inc_lab','ucs_inc_drug','ofc','ofc_inc_lab','ofc_inc_drug','sss','sss_inc_lab','sss_inc_drug','lgo','lgo_inc_lab',
+            'lgo_inc_drug','fss','fss_inc_lab','fss_inc_drug','stp','stp_inc_lab','stp_inc_drug','pay','pay_inc_lab','pay_inc_drug',));        
 }
-
 
 //Create count_spclty
 public function count_spclty(Request $request)
 {
-      $budget_year_select = DB::connection('backoffice')->select('select LEAVE_YEAR_ID,LEAVE_YEAR_NAME FROM budget_year ORDER BY LEAVE_YEAR_ID DESC LIMIT 7');
+      $budget_year_select = DB::connection('backoffice')->table('budget_year')->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')->orderByDesc('LEAVE_YEAR_ID')->limit(7)->get();
       $budget_year_last = DB::connection('backoffice')->table('budget_year')->where('DATE_END','>=',date('Y-m-d'))->where('DATE_BEGIN','<=',date('Y-m-d'))->value('LEAVE_YEAR_ID');
-      $budget_year = $request->budget_year;
-      if($budget_year == '' || $budget_year == null)
-      {$budget_year = $budget_year_last;}else{$budget_year =$request->budget_year;} 
-      $start_date_y = DB::connection('backoffice')->table('budget_year')->where('LEAVE_YEAR_ID',$budget_year-4)->value('DATE_BEGIN');      
-      $start_date = DB::connection('backoffice')->table('budget_year')->where('LEAVE_YEAR_ID',$budget_year)->value('DATE_BEGIN');
-      $end_date = DB::connection('backoffice')->table('budget_year')->where('LEAVE_YEAR_ID',$budget_year)->value('DATE_END');  
+      $budget_year = $request->budget_year ?? $budget_year_last;
+      $start_date_y = DB::connection('backoffice')->table('budget_year')->where('LEAVE_YEAR_ID', $budget_year - 4)->value('DATE_BEGIN');
+      $start_date = DB::connection('backoffice')->table('budget_year')->where('LEAVE_YEAR_ID', $budget_year)->value('DATE_BEGIN');
+      $end_date = DB::connection('backoffice')->table('budget_year')->where('LEAVE_YEAR_ID', $budget_year)->value('DATE_END');
     
       $month_surgeon = DB::connection('hosxp')->select('select 
             CASE WHEN MONTH(vstdate)="10" THEN CONCAT("ต.ค. ",RIGHT(YEAR(vstdate)+543,2))
@@ -211,7 +148,8 @@ public function count_spclty(Request $request)
             SUM(CASE WHEN hipdata_code IN ("ST","STP") THEN 1 ELSE 0 END) AS "stp",          
             SUM(CASE WHEN hipdata_code in ("A1","A9") OR pttype like "C%" OR pttype like "E%"  
 		    OR pttype like "P%" OR pttype IN ("A1","Z3","G1") THEN 1 ELSE 0 END) AS "pay"
-            FROM (SELECT v.vstdate,v.hn,v.vn,v.pttype,p.hipdata_code FROM vn_stat v
+            FROM (SELECT v.vstdate,v.hn,v.vn,v.pttype,p.hipdata_code 
+            FROM vn_stat v
             LEFT JOIN pttype p ON p.pttype=v.pttype
             WHERE v.vstdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
             AND v.dx_doctor IN (SELECT `code` FROM doctor 
