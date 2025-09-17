@@ -754,35 +754,30 @@ public function drug_outside()
 }
 #############################################################################################################################
 //สิทธิการรักษา
-public function pttype()
-{
-    $pttype =  DB::connection('hosxp')->select('
-        SELECT p.`name` AS pttype, CONCAT( p.paidst, "-", p2.`name` ) AS paidst,
-        p4.pttype_price_group_name,	CONCAT( p.hipdata_code, "-", n.inscl_name ) AS hipdata_code,
-        CONCAT( p1.`code`, "-", p1.`name` ) AS pcode,
-        CONCAT( p3.`code`, "-", p3.`name`, "-", p3.pttype_std_code ) AS provis_instype,	p.pttype_std_code 
-        FROM pttype p LEFT JOIN pcode p1 ON p1.`code` = p.pcode
-        LEFT JOIN paidst p2 ON p2.paidst = p.paidst
-        LEFT JOIN provis_instype p3 ON p3.`code` = p.nhso_code
-        LEFT JOIN pttype_price_group p4 ON p4.pttype_price_group_id = p.pttype_price_group_id
-        LEFT JOIN nhso_inscl_code n ON n.inscl_code = hipdata_code
-        LEFT JOIN sks_benefit_plan_type s ON s.sks_benefit_plan_type_id = p.sks_benefit_plan_type_id 
-        WHERE p.isuse = "Y" ORDER BY p.pttype');
-    $pttype_non_use =  DB::connection('hosxp')->select('
-        SELECT p.`name` AS pttype, CONCAT( p.paidst, "-", p2.`name` ) AS paidst,
-        p4.pttype_price_group_name,	CONCAT( p.hipdata_code, "-", n.inscl_name ) AS hipdata_code,
-        CONCAT( p1.`code`, "-", p1.`name` ) AS pcode,
-        CONCAT( p3.`code`, "-", p3.`name`, "-", p3.pttype_std_code ) AS provis_instype,	p.pttype_std_code 
-        FROM pttype p LEFT JOIN pcode p1 ON p1.`code` = p.pcode
-        LEFT JOIN paidst p2 ON p2.paidst = p.paidst
-        LEFT JOIN provis_instype p3 ON p3.`code` = p.nhso_code
-        LEFT JOIN pttype_price_group p4 ON p4.pttype_price_group_id = p.pttype_price_group_id
-        LEFT JOIN nhso_inscl_code n ON n.inscl_code = hipdata_code
-        LEFT JOIN sks_benefit_plan_type s ON s.sks_benefit_plan_type_id = p.sks_benefit_plan_type_id 
-        WHERE p.isuse <> "Y" ORDER BY p.pttype');
+    public function pttype()
+    {
+        $pttype =  DB::connection('hosxp')->select('
+            SELECT p.pttype,inscl.nhso_subinscl,p.`name`,CONCAT(p1.paidst,SPACE(1),p1.`name`) AS paidst,p.export_eclaim,p.hipdata_code,p.pttype_std_code,
+            CONCAT(pi.`code`,SPACE(1),pi.`name`) AS pi_name,pi.pttype_std_code AS pi_pttype_std_code,pg.pttype_price_group_name
+            FROM pttype p
+            LEFT JOIN paidst p1 ON p1.paidst=p.paidst
+            LEFT JOIN pttype_price_group pg ON pg.pttype_price_group_id=p.pttype_price_group_id
+            LEFT JOIN provis_instype pi ON pi.`code`=p.nhso_code
+            LEFT JOIN pttype_nhso_subinscl inscl ON inscl.pttype=p.pttype
+            WHERE p.isuse = "Y" ORDER BY p.hipdata_code,p.pttype');
 
-    return view('hosxp_setting.pttype',compact('pttype','pttype_non_use'));            
-}
+        $pttype_close =  DB::connection('hosxp')->select('
+            SELECT p.pttype,inscl.nhso_subinscl,p.`name`,CONCAT(p1.paidst,SPACE(1),p1.`name`) AS paidst,p.export_eclaim,p.hipdata_code,p.pttype_std_code,
+            CONCAT(pi.`code`,SPACE(1),pi.`name`) AS pi_name,pi.pttype_std_code AS pi_pttype_std_code,pg.pttype_price_group_name
+            FROM pttype p
+            LEFT JOIN paidst p1 ON p1.paidst=p.paidst
+            LEFT JOIN pttype_price_group pg ON pg.pttype_price_group_id=p.pttype_price_group_id
+            LEFT JOIN provis_instype pi ON pi.`code`=p.nhso_code
+            LEFT JOIN pttype_nhso_subinscl inscl ON inscl.pttype=p.pttype
+            WHERE p.isuse <> "Y" ORDER BY p.hipdata_code,p.pttype');
+
+        return view('hosxp_setting.pttype',compact('pttype','pttype_close'));            
+    }
 //บุคลากรทางการแพทย์
 public function doctor()
 {

@@ -1,104 +1,164 @@
 @extends('layouts.app')
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
-<style>
-    table {
-    border-collapse: collapse;
-    border-spacing: 0;
-    width: 100%;
-    border: 1px solid #ddd;
-    }
-    th, td {
-    padding: 8px;
-    }
-    tr:nth-child(even){background-color: #f2f2f2}
-</style>
 
 @section('content')
-<div class="container-fluid">
-    <div class="card">
-    <div class="card-header bg-primary text-white">สิทธิการักษา เปิดการใช้งาน</div>  
-        <div class="card-body"> 
-            <div style="overflow-x:auto;">          
-                <div class="row">
-                    <div class="col-md-12">                          
-                        <table id="pttype" class="table table-bordered table-striped">
-                            <thead>
-                            <tr class="table-secondary">
-                                <th class="text-center">สิทธิการรักษา</th>
-                                <th class="text-center">การชำระเงิน</th>
-                                <th class="text-center">กลุ่มค่าบริการ</th>
-                                <th class="text-center">สิทธิมาตรฐาน</th>
-                                <th class="text-center">รหัสมาตรฐาน INSCL</th>
-                                <th class="text-center">รหัสมาตรฐาน สปสช.</th>   
-                                <th class="text-center">รหัสส่งออก สปสช.</th>   
-                            </thead>   
-                            @foreach($pttype as $row)          
-                            <tr>
-                                <td align="left">{{ $row->pttype }}</td>
-                                <td align="left">{{ $row->paidst }}</td>
-                                <td align="left">{{ $row->pttype_price_group_name }}</td>
-                                <td align="left">{{ $row->pcode }}</td>
-                                <td align="left">{{ $row->hipdata_code }}</td>
-                                <td align="left">{{ $row->provis_instype }}</td>
-                                <td align="center">{{ $row->pttype_std_code }}</td>
-                            </tr>
-                            @endforeach 
-                        </table> 
-                    </div> 
-                </div>        
-            </div>
-        </div>
+<div class="container-fluid">  
+  <div class="alert alert-primary text-primary" role="alert"><strong>สิทธิการรักษา ที่เปิดใช้งาน</strong></div>
+  
+  <div class="card-body">
+    <div style="overflow-x:auto;">            
+      <table id="pttype" class="table table-striped table-bordered" width = "100%">
+        <thead>
+          <tr class="table-primary">
+              <th class="text-center" colspan="8">ตาราง pttype</th>
+              <th class="text-center" colspan="2" style="background-color: #b3e5fc">ตาราง provis_instype</th>                
+          </tr>
+          <tr class="table-primary">
+              <th class="text-center">สปสช</th>  
+              <th class="text-center">รหัส</th>
+              <th class="text-center">ชื่อสิทธิ</th>  
+              <th class="text-center">ประเภทการชำระ</th>     
+              <th class="text-center">Ex_Eclaim</th>
+              <th class="text-center">Hipdata_code</th> 
+              <th class="text-center">รหัสส่งออก</th>
+              <th class="text-center">กลุ่มค่าบริการ</th>
+              <th class="text-center" style="background-color: #b3e5fc">ชื่อสิทธิ</th>
+              <th class="text-center" style="background-color: #b3e5fc">รหัสส่งออก</th>
+          </tr>
+        </thead> 
+        <tbody> 
+          @foreach($pttype as $row) 
+          <tr>
+              <td align="center">{{$row->nhso_subinscl}}</td> 
+              <td align="right">{{$row->pttype}}</td>                                
+              <td align="left">{{$row->name}}</td>            
+              <td align="left">{{ $row->paidst }}</td>
+              <td align="center">{{$row->export_eclaim}}</td>
+              <td align="left">{{$row->hipdata_code}}</td> 
+              <td align="left">{{$row->pttype_std_code}}</td>
+              <td align="left">{{$row->pttype_price_group_name}}</td>
+              <td align="left">{{$row->pi_name}}</td>  
+              <td align="left">{{$row->pi_pttype_std_code}}</td>
+          </tr>
+          @endforeach                 
+        </tbody>
+      </table>         
     </div>
-</div>
+  </div> 
+</div> 
+<br>     
+<hr>
 <br>
-<div class="container-fluid">
-    <div class="card">
-    <div class="card-header bg-primary text-white">สิทธิการรักษา ปิดการใช้งาน</div>  
-        <div class="card-body"> 
-            <div style="overflow-x:auto;">          
-                <div class="row">
-                    <div class="col-md-12">                          
-                    <table id="pttype" class="table table-bordered table-striped">
-                            <thead>
-                            <tr class="table-secondary">
-                                <th class="text-center">สิทธิการรักษา</th>
-                                <th class="text-center">การชำระเงิน</th>
-                                <th class="text-center">กลุ่มค่าบริการ</th>
-                                <th class="text-center">สิทธิมาตรฐาน</th>
-                                <th class="text-center">รหัสมาตรฐาน INSCL</th>
-                                <th class="text-center">รหัสมาตรฐาน สปสช.</th>    
-                                <th class="text-center">รหัสส่งออก สปสช.</th>     
-                            </thead>   
-                            @foreach($pttype_non_use as $row)          
-                            <tr>
-                                <td align="left">{{ $row->pttype }}</td>
-                                <td align="left">{{ $row->paidst }}</td>
-                                <td align="left">{{ $row->pttype_price_group_name }}</td>
-                                <td align="left">{{ $row->pcode }}</td>
-                                <td align="left">{{ $row->hipdata_code }}</td>
-                                <td align="left">{{ $row->provis_instype }}</td>
-                                <td align="center">{{ $row->pttype_std_code }}</td>
-                            </tr>
-                            @endforeach 
-                        </table> 
-                    </div> 
-                </div>        
-            </div>
-        </div>
+<div class="container-fluid">  
+  <div class="alert alert-secondary" role="alert"><strong>สิทธิการรักษา ที่ปิดใช้งาน</strong></div>
+  
+  <div class="card-body">
+    <div style="overflow-x:auto;">            
+      <table id="pttype_close" class="table table-striped table-bordered" width = "100%">
+        <thead>
+          <tr class="table-secondary">
+              <th class="text-center" colspan="8">ตาราง pttype</th>
+              <th class="text-center" colspan="2" >ตาราง provis_instype</th>                
+          </tr>
+          <tr class="table-secondary">
+              <th class="text-center">สปสช</th>  
+              <th class="text-center">รหัส</th>
+              <th class="text-center">ชื่อสิทธิ</th>  
+              <th class="text-center">ประเภทการชำระ</th>     
+              <th class="text-center">Ex_Eclaim</th>
+              <th class="text-center">Hipdata_code</th> 
+              <th class="text-center">รหัสส่งออก</th>
+              <th class="text-center">กลุ่มค่าบริการ</th>
+              <th class="text-center">ชื่อสิทธิ</th>
+              <th class="text-center">รหัสส่งออก</th>
+          </tr>
+        </thead> 
+        <tbody> 
+          @foreach($pttype_close as $row) 
+          <tr>
+              <td align="center">{{$row->nhso_subinscl}}</td> 
+              <td align="right">{{$row->pttype}}</td>                                
+              <td align="left">{{$row->name}}</td>            
+              <td align="left">{{ $row->paidst }}</td>
+              <td align="center">{{$row->export_eclaim}}</td>
+              <td align="left">{{$row->hipdata_code}}</td> 
+              <td align="left">{{$row->pttype_std_code}}</td>
+              <td align="left">{{$row->pttype_price_group_name}}</td>
+              <td align="left">{{$row->pi_name}}</td>  
+              <td align="left">{{$row->pi_pttype_std_code}}</td>
+          </tr>
+          @endforeach                 
+        </tbody>
+      </table>         
     </div>
-</div>
+  </div> 
+</div>  
+
 @endsection
-<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
-<script type="text/javascript" class="init">
+
+@push('scripts')  
+  <script>
     $(document).ready(function () {
-        $('#pttype').DataTable();
+      $('#pttype').DataTable({
+        dom: '<"row mb-3"' +
+                '<"col-md-6"l>' + // Show รายการ
+                '<"col-md-6 d-flex justify-content-end align-items-center gap-2"fB>' + // Search + Export
+              '>' +
+              'rt' +
+              '<"row mt-3"' +
+                '<"col-md-6"i>' + // Info
+                '<"col-md-6"p>' + // Pagination
+              '>',
+        buttons: [
+            {
+              extend: 'excelHtml5',
+              text: 'Excel',
+              className: 'btn btn-success',
+              title: 'สิทธิการรักษา ที่เปิดใช้งาน'
+            }
+        ],
+        language: {
+            search: "ค้นหา:",
+            lengthMenu: "แสดง _MENU_ รายการ",
+            info: "แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ",
+            paginate: {
+              previous: "ก่อนหน้า",
+              next: "ถัดไป"
+            }
+        }
+      });
     });
-</script>
-<script type="text/javascript" class="init">
+  </script>
+  <script>
     $(document).ready(function () {
-        $('#pttype_non_use').DataTable();
+      $('#pttype_close').DataTable({
+        dom: '<"row mb-3"' +
+                '<"col-md-6"l>' + // Show รายการ
+                '<"col-md-6 d-flex justify-content-end align-items-center gap-2"fB>' + // Search + Export
+              '>' +
+              'rt' +
+              '<"row mt-3"' +
+                '<"col-md-6"i>' + // Info
+                '<"col-md-6"p>' + // Pagination
+              '>',
+        buttons: [
+            {
+              extend: 'excelHtml5',
+              text: 'Excel',
+              className: 'btn btn-success',
+              title: 'สิทธิการรักษา ที่ปิดใช้งาน'
+            }
+        ],
+        language: {
+            search: "ค้นหา:",
+            lengthMenu: "แสดง _MENU_ รายการ",
+            info: "แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ",
+            paginate: {
+              previous: "ก่อนหน้า",
+              next: "ถัดไป"
+            }
+        }
+      });
     });
-</script>
+  </script>
+@endpush 
+
