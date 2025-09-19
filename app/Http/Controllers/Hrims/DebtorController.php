@@ -6772,10 +6772,10 @@ class DebtorController extends Controller
     public function _1102050102_107_tracking(Request $request, $an )
     {
         $debtor = DB::select('
-            SELECT * FROM debtor_1102050102_107 WHERE an = ?',[an]);
+            SELECT * FROM debtor_1102050102_107 WHERE an = ?',[$an]);
 
         $tracking = DB::select('
-            SELECT * FROM debtor_1102050102_107_tracking WHERE an = ?',[an]);
+            SELECT * FROM debtor_1102050102_107_tracking WHERE an = ?',[$an]);
 
     return view('hrims.debtor.1102050102_107_tracking',compact('debtor','tracking'));
     }
