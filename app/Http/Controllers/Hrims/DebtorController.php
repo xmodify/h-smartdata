@@ -3721,10 +3721,10 @@ class DebtorController extends Controller
     public function _1102050102_106_tracking(Request $request, $vn )
     {
         $debtor = DB::select('
-            SELECT * FROM debtor_1102050102_106 WHERE vn = "'.$vn.'"');
+            SELECT * FROM debtor_1102050102_106 WHERE vn = ?',[$vn]);
 
         $tracking = DB::select('
-            SELECT * FROM debtor_1102050102_106_tracking WHERE vn = "'.$vn.'"');
+            SELECT * FROM debtor_1102050102_106_tracking WHERE vn = ?',[$vn]);
 
         return view('finance_debtor.1102050102_106_tracking',compact('debtor','tracking'));
     }
@@ -6768,6 +6768,46 @@ class DebtorController extends Controller
         
         return view('hrims.debtor.1102050102_107_indiv_excel',compact('start_date','end_date','debtor'));
     } 
+//1102050102_107_tracking-------------------------------------------------------------------------------------------------------  
+    public function _1102050102_107_tracking(Request $request, $an )
+    {
+        $debtor = DB::select('
+            SELECT * FROM debtor_1102050102_107 WHERE an = ?',[an]);
+
+        $tracking = DB::select('
+            SELECT * FROM debtor_1102050102_107_tracking WHERE an = ?',[an]);
+
+    return view('hrims.debtor.1102050102_107_tracking',compact('debtor','tracking'));
+    }
+//1102050102_107_tracking_insert-------------------------------------------------------------------------------------------------------
+    public function _1102050102_107_tracking_insert(Request $request)
+    {
+        $item = new Debtor_1102050102_107_tracking;
+        $item->vn = $request->input('vn');
+        $item->an = $request->input('an');
+        $item->tracking_date = $request->input('tracking_date');
+        $item->tracking_type = $request->input('tracking_type');
+        $item->tracking_no = $request->input('tracking_no');
+        $item->tracking_officer = $request->input('tracking_officer');
+        $item->tracking_note = $request->input('tracking_note');  
+        $item->save();  
+
+        return redirect()->back()->with('success', 'บันทึกข้อมูลเรียบร้อย'); 
+    }
+//_1102050102_107_tracking_update-------------------------------------------------------------------------------------------------------
+    public function _1102050102_107_tracking_update(Request $request, $tracking_id)
+    {
+    Debtor_1102050102_107_tracking::where('tracking_id', $tracking_id)
+        ->update([
+        'tracking_date' => $request->input('tracking_date'),
+        'tracking_type' => $request->input('tracking_type'),
+        'tracking_no' => $request->input('tracking_no'),
+        'tracking_officer' => $request->input('tracking_officer'),
+        'tracking_note' => $request->input('tracking_note')
+        ]);
+
+    return redirect()->back()->with('success', 'บันทึกข้อมูลเรียบร้อย');  
+    }
 ##############################################################################################################################################################
 //_1102050102_109--------------------------------------------------------------------------------------------------------------
     public function _1102050102_109(Request $request )
