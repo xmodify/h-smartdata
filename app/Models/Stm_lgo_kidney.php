@@ -20,8 +20,9 @@ class Stm_lgo_kidney extends Model
         'pt_name',
         'dep',  
         'datetimeadm',
-        'compensate_total',
-        'note',        
+        'compensate_kidney',
+        'note',
+        'stm_filename',           
     ];
     public $timestamps = false;   
 }
