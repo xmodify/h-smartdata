@@ -766,8 +766,7 @@ class ClaimIpController extends Controller
                 WHEN MONTH(dchdate)=9 THEN CONCAT("ก.ย. ", RIGHT(YEAR(dchdate)+543, 2))
                 END AS month,COUNT(an) AS an,SUM(IFNULL(claim_price,0)) AS claim_price,SUM(IFNULL(receive_total,0)) AS receive_total
             FROM (SELECT i.regdate,i.dchdate,i.an,COALESCE(hc.claim_price, 0) AS claim_price,d.receive AS receive_total
-            FROM ipt i 
-           
+            FROM ipt i            
             LEFT JOIN ipt_pttype ip ON ip.an=i.an
             LEFT JOIN pttype p ON p.pttype=ip.pttype           
             INNER JOIN opitemrece o1 ON o1.an=i.an AND o1.paidst = "02"
@@ -791,7 +790,7 @@ class ClaimIpController extends Controller
 
         $search=DB::connection('hosxp')->select('
             SELECT w.`name` AS ward,i.regdate,i.dchdate,i.hn,i.an,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,
-            a.age_y, p.`name` AS pttype,a.diag_text_list,id.icd10,idx.icd9,a.income,a.rcpt_money,
+            a.age_y, p.`name` AS pttype,ip.hospmain,a.diag_text_list,id.icd10,idx.icd9,a.income,a.rcpt_money,
             GROUP_CONCAT(DISTINCT sd.`name`) AS claim_list,COALESCE(hc.claim_price, 0) AS claim_price
             FROM ipt i 
             LEFT JOIN patient pt ON pt.hn=i.hn

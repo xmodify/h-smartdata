@@ -61,7 +61,7 @@
             <td align="center">{{ $row->an }}</td>
             <td align="left" width = "10%">{{ $row->ptname }}</td>
             <td align="center">{{ $row->age_y }}</td>
-            <td align="left" width = "10%">{{ $row->pttype }}</td>
+            <td align="left" width = "10%">{{ $row->pttype }} [{{ $row->hospmain }}]</td>
             <td align="left" width = "10%">{{ $row->diag_text_list }}</td>
             <td align="right">{{ $row->icd10 }}</td>
             <td align="right">{{ $row->icd9 }}</td>
