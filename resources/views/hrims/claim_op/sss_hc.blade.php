@@ -59,7 +59,7 @@
               <td align="center">{{ $row->oqueue }}</td>   
               <td align="left" width = "10%">{{$row->ptname}}</td> 
               <td align="center">{{$row->hn}}</td>
-              <td align="left" width = "10%">{{$row->pttype}}</td> 
+              <td align="left" width = "10%">{{$row->pttype}} [{{$row->hospmain}}]</td> 
               <td align="left" width = "10%">{{ $row->cc }}</td>
               <td align="right">{{ $row->pdx }}</td>                  
               <td align="right" width = "5%">{{$row->icd9}}</td> 
