@@ -163,6 +163,9 @@
                                         <li>
                                             <a class="dropdown-item link-primary text-white" href="{{ url('hrims/claim_op/sss_kidney') }}">SS-OP ประกันสังคม ฟอกไต</a>
                                         </li>
+                                        <li>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/claim_op/sss_hc') }}">SS-OP ประกันสังคม ค่าใช้จ่ายสูง</a>
+                                        </li>
                                     </ul>
                                 </li>
                                 <!-- เมนูอื่น -->
