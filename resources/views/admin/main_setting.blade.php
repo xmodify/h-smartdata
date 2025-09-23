@@ -2,16 +2,22 @@
 
 @section('content')
 <div class="container mt-4">
-    <button class="btn btn-danger" id="gitPullBtn" style="display: inline;">Git Pull</button>   
-    <form id="structureForm" method="POST" action="{{ route('admin.up_structure') }}" style="display: inline;">
-        @csrf
-        <button type="submit" class="btn btn-primary" onclick="confirmAction(event)">Upgrade Structure</button>
-    </form>    
-    <form id="clearCacheForm" method="POST" action="{{ route('admin.clear_cache') }}" style="display: inline;">
-        @csrf
-        <button type="button" class="btn btn-warning text-primary" onclick="confirmClearCache()">🧹 ล้าง Cache</button>
-    </form>
-
+    <div class="row">
+        <div class="col-md-8">
+            <button class="btn btn-danger" id="gitPullBtn" style="display: inline;">Git Pull</button>   
+            <form id="structureForm" method="POST" action="{{ route('admin.up_structure') }}" style="display: inline;">
+                @csrf
+                <button type="submit" class="btn btn-primary" onclick="confirmAction(event)">Upgrade Structure</button>
+            </form>    
+            <form id="clearCacheForm" method="POST" action="{{ route('admin.clear_cache') }}" style="display: inline;">
+                @csrf
+                <button type="button" class="btn btn-warning text-primary" onclick="confirmClearCache()">🧹 ล้าง Cache</button>
+            </form>
+        </div>
+        <div class="col-md-4" align="right">
+            <h6 class="text-primary" style="display: inline;">V.68-09-23 : R01</h6>
+        </div>
+    </div>
     <pre id="gitOutput" style="background: #eeee; padding: 1rem; margin-top: 1rem;"></pre>
 
     <h3 class="text-primary">Main Setting</h3>  
