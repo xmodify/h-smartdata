@@ -43,8 +43,9 @@
     <div id="app">
         <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
             <div class="container-fluid">                
-                <a class="navbar-brand btn btn-outline-info " href="{{ url('/hrims') }}">
-                    H-RiMS
+                <a class="navbar-brand btn btn-outline-info " href="{{ url('/hrims') }}">                    
+                    <i class="bi bi-house-door"></i>
+                    <span>RiMS</span>
                 </a>
                 <!-- ปุ่มเมนูมือถือ -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
@@ -327,7 +328,8 @@
                             @if (auth()->user()->hasAccessHrims('Y'))  
                                 <li >                            
                                     <a class="navbar-brand btn btn-outline-info " href="{{ url('/') }}">
-                                        H-SmartData
+                                        <i class="bi bi-house-door"></i>
+                                        <span>SmartData</span>
                                     </a>       
                                 </li>
                             @endif

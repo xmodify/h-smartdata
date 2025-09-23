@@ -45,7 +45,8 @@
         <nav class="navbar navbar-expand-lg bg-primary navbar-dark shadow-sm" >
             <div class="container-fluid">
                 <a class="navbar-brand btn btn-outline-info " href="{{ url('/') }}">
-                     {{ config('app.name', 'H-SmartData') }} 
+                    <i class="bi bi-house-door"></i>
+                    <span>SmartData</span>
                 </a>
                 <!-- ปุ่มเมนูมือถือ -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
@@ -223,7 +224,8 @@
                             @if (auth()->user()->hasAccessHnplus('Y'))  
                                 <li class="nav-item dropdown">                            
                                     <a class="nav-link btn btn-outline-info text-white " href="{{ url('/hnplus') }}" aria-haspopup="true" aria-expanded="false" v-pre>
-                                        HN-PluS
+                                        <i class="bi bi-house-door"></i>
+                                        <span>HN-PluS</span>
                                     </a>       
                                 </li>
                             @endif   
@@ -231,7 +233,8 @@
                             @if (auth()->user()->hasAccessHrims('Y'))  
                                 <li class="nav-item dropdown">                            
                                     <a class="nav-link btn btn-outline-info text-white" href="{{ url('/hrims') }}">
-                                        H-RiMS
+                                        <i class="bi bi-house-door"></i>
+                                        <span>RiMS</span>
                                     </a>       
                                 </li>
                             @endif

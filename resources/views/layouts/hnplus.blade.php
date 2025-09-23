@@ -47,8 +47,9 @@
     <div id="app">
         <nav class="navbar navbar-expand-lg navbar-dark shadow-sm" style="background-color:#23A7A7;">
             <div class="container-fluid">                
-                <a class="navbar-brand btn btn-outline-info " href="{{ url('/hnplus') }}">
-                    HN-PluS
+                <a class="navbar-brand btn btn-outline-info " href="{{ url('/hnplus') }}">                    
+                    <i class="bi bi-house-door"></i>
+                    <span>HN-PluS</span>
                 </a>
                 <!-- ปุ่มเมนูมือถือ -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
@@ -81,8 +82,9 @@
                         @auth                
                             @if (auth()->user()->hasAccessHnplus('Y'))                                
                                 <li >                            
-                                    <a class="navbar-brand btn btn-outline-info " href="{{ url('/') }}">
-                                        H-SmartData
+                                    <a class="navbar-brand btn btn-outline-info " href="{{ url('/') }}">                                        
+                                        <i class="bi bi-house-door"></i>
+                                        <span>SmartData</span>
                                     </a>       
                                 </li>
                             @endif
