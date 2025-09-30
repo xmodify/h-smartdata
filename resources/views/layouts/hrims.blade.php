@@ -223,10 +223,10 @@
                                     </a>
                                     <ul class="bg-success dropdown-menu">
                                         <li>
-                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/claim_ip/sss') }}"> ทั่วไป </a>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/claim_ip/sss') }}"> SS-IP ประกันสังคม ทั่วไป </a>
                                         </li> 
                                         <li>
-                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/claim_ip/sss_hc') }}"> ค่าใช้จ่ายสูง </a>
+                                            <a class="dropdown-item link-primary text-white" href="{{ url('hrims/claim_ip/sss_hc') }}"> SS-IP ประกันสังคม ค่าใช้จ่ายสูง </a>
                                         </li> 
                                     </ul>
                                 </li>

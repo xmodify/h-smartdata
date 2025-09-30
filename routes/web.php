@@ -27,8 +27,6 @@ use App\Http\Controllers\Finance_StmController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\Form_CheckController;
 use App\Http\Controllers\Hosxp_SettingController;
-use App\Http\Controllers\LineNotify_InsuranceController;
-use App\Http\Controllers\LineNotifyController;
 use App\Http\Controllers\Medicalrecord_OpdController;
 use App\Http\Controllers\Medicalrecord_IpdController;
 use App\Http\Controllers\Medicalrecord_DiagController;
