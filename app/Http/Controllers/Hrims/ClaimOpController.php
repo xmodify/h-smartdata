@@ -18,12 +18,24 @@ class ClaimOpController extends Controller
     {
         ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
 
-        $year_data = DB::table('budget_year')
+        $budget_year_select = DB::table('budget_year')
+            ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
             ->orderByDesc('LEAVE_YEAR_ID')
-            ->first(['LEAVE_YEAR_ID', 'DATE_BEGIN', 'DATE_END']);
-        $budget_year = $year_data->LEAVE_YEAR_ID ?? null;
-        $start_date_b = $year_data->DATE_BEGIN ?? null;
-        $end_date_b   = $year_data->DATE_END ?? null;
+            ->limit(7)
+            ->get();
+        $budget_year_now = DB::table('budget_year')
+            ->whereDate('DATE_END', '>=', date('Y-m-d'))
+            ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+            ->value('LEAVE_YEAR_ID');       
+        $budget_year = $request->budget_year ?: $budget_year_now;
+        $year_data = DB::table('budget_year')
+            ->whereIn('LEAVE_YEAR_ID', [$budget_year, $budget_year - 4])
+            ->pluck('DATE_BEGIN', 'LEAVE_YEAR_ID');
+        $start_date_b   = $year_data[$budget_year] ?? null;
+        $end_date_b = DB::table('budget_year')
+            ->where('LEAVE_YEAR_ID', $budget_year)
+            ->value('DATE_END');
+
         $start_date = $request->start_date ?: date('Y-m-d');
         $end_date = $request->end_date ?: date('Y-m-d');
         $pttype_checkup = DB::table('main_setting')->where('name', 'pttype_checkup')->value('value');  
@@ -144,19 +156,31 @@ class ClaimOpController extends Controller
             AND oe.moph_finance_upload_status IS NOT NULL 
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]);
 
-        return view('hrims.claim_op.ucs_incup',compact('start_date','end_date','month','claim_price','receive_total','search','claim'));
+        return view('hrims.claim_op.ucs_incup',compact('budget_year_select','budget_year','start_date','end_date','month','claim_price','receive_total','search','claim'));
     }
 //----------------------------------------------------------------------------------------------------------------------------------------
     public function ucs_inprovince(Request $request )
     {
         ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
 
-        $year_data = DB::table('budget_year')
+        $budget_year_select = DB::table('budget_year')
+            ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
             ->orderByDesc('LEAVE_YEAR_ID')
-            ->first(['LEAVE_YEAR_ID', 'DATE_BEGIN', 'DATE_END']);
-        $budget_year = $year_data->LEAVE_YEAR_ID ?? null;
-        $start_date_b = $year_data->DATE_BEGIN ?? null;
-        $end_date_b   = $year_data->DATE_END ?? null;
+            ->limit(7)
+            ->get();
+        $budget_year_now = DB::table('budget_year')
+            ->whereDate('DATE_END', '>=', date('Y-m-d'))
+            ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+            ->value('LEAVE_YEAR_ID');       
+        $budget_year = $request->budget_year ?: $budget_year_now;
+        $year_data = DB::table('budget_year')
+            ->whereIn('LEAVE_YEAR_ID', [$budget_year, $budget_year - 4])
+            ->pluck('DATE_BEGIN', 'LEAVE_YEAR_ID');
+        $start_date_b   = $year_data[$budget_year] ?? null;
+        $end_date_b = DB::table('budget_year')
+            ->where('LEAVE_YEAR_ID', $budget_year)
+            ->value('DATE_END');
+
         $start_date = $request->start_date ?: date('Y-m-d');
         $end_date = $request->end_date ?: date('Y-m-d');
         $pttype_checkup = DB::table('main_setting')->where('name', 'pttype_checkup')->value('value');  
@@ -279,7 +303,7 @@ class ClaimOpController extends Controller
             AND oe.moph_finance_upload_status IS NOT NULL 
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]);
 
-        return view('hrims.claim_op.ucs_inprovince',compact('start_date','end_date','month','claim_price','receive_total','search','claim'));
+        return view('hrims.claim_op.ucs_inprovince',compact('budget_year_select','budget_year','start_date','end_date','month','claim_price','receive_total','search','claim'));
     }
 //----------------------------------------------------------------------------------------------------------------------------------------
     public function ucs_inprovince_va(Request $request )
@@ -348,19 +372,31 @@ class ClaimOpController extends Controller
             AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10)
             GROUP BY o.vn ORDER BY vp.hospmain,pt_status DESC,o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
         
-        return view('hrims.claim_op.ucs_inprovince_va',compact('start_date','end_date','sum','search'));
+        return view('hrims.claim_op.ucs_inprovince_va',compact('budget_year_select','budget_year','start_date','end_date','sum','search'));
     }
 //----------------------------------------------------------------------------------------------------------------------------------------
     public function ucs_outprovince(Request $request )
     {
         ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
 
-        $year_data = DB::table('budget_year')
+        $budget_year_select = DB::table('budget_year')
+            ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
             ->orderByDesc('LEAVE_YEAR_ID')
-            ->first(['LEAVE_YEAR_ID', 'DATE_BEGIN', 'DATE_END']);
-        $budget_year = $year_data->LEAVE_YEAR_ID ?? null;
-        $start_date_b = $year_data->DATE_BEGIN ?? null;
-        $end_date_b   = $year_data->DATE_END ?? null;
+            ->limit(7)
+            ->get();
+        $budget_year_now = DB::table('budget_year')
+            ->whereDate('DATE_END', '>=', date('Y-m-d'))
+            ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+            ->value('LEAVE_YEAR_ID');       
+        $budget_year = $request->budget_year ?: $budget_year_now;
+        $year_data = DB::table('budget_year')
+            ->whereIn('LEAVE_YEAR_ID', [$budget_year, $budget_year - 4])
+            ->pluck('DATE_BEGIN', 'LEAVE_YEAR_ID');
+        $start_date_b   = $year_data[$budget_year] ?? null;
+        $end_date_b = DB::table('budget_year')
+            ->where('LEAVE_YEAR_ID', $budget_year)
+            ->value('DATE_END');
+
         $start_date = $request->start_date ?: date('Y-m-d');
         $end_date = $request->end_date ?: date('Y-m-d');
 
@@ -461,19 +497,31 @@ class ClaimOpController extends Controller
             AND kidney.vn IS NULL AND oe.moph_finance_upload_status IS NOT NULL 
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date]);
 
-        return view('hrims.claim_op.ucs_outprovince',compact('start_date','end_date','month','claim_price','receive_total','search','claim'));
+        return view('hrims.claim_op.ucs_outprovince',compact('budget_year_select','budget_year','start_date','end_date','month','claim_price','receive_total','search','claim'));
     }
 //----------------------------------------------------------------------------------------------------------------------------------------
     public function ucs_kidney(Request $request )
     {
         ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
         
-        $year_data = DB::table('budget_year')
+        $budget_year_select = DB::table('budget_year')
+            ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
             ->orderByDesc('LEAVE_YEAR_ID')
-            ->first(['LEAVE_YEAR_ID', 'DATE_BEGIN', 'DATE_END']);
-        $budget_year = $year_data->LEAVE_YEAR_ID ?? null;
-        $start_date_b = $year_data->DATE_BEGIN ?? null;
-        $end_date_b   = $year_data->DATE_END ?? null;
+            ->limit(7)
+            ->get();
+        $budget_year_now = DB::table('budget_year')
+            ->whereDate('DATE_END', '>=', date('Y-m-d'))
+            ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+            ->value('LEAVE_YEAR_ID');       
+        $budget_year = $request->budget_year ?: $budget_year_now;
+        $year_data = DB::table('budget_year')
+            ->whereIn('LEAVE_YEAR_ID', [$budget_year, $budget_year - 4])
+            ->pluck('DATE_BEGIN', 'LEAVE_YEAR_ID');
+        $start_date_b   = $year_data[$budget_year] ?? null;
+        $end_date_b = DB::table('budget_year')
+            ->where('LEAVE_YEAR_ID', $budget_year)
+            ->value('DATE_END');
+
         $start_date = $request->start_date ?: date('Y-m-d');
         $end_date = $request->end_date ?: date('Y-m-d');
 
@@ -536,19 +584,31 @@ class ClaimOpController extends Controller
             WHERE p.hipdata_code = "UCS" AND o.vstdate BETWEEN ? AND ?
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]);
 
-        return view('hrims.claim_op.ucs_kidney',compact('start_date','end_date','month','claim_price','receive_total','claim'));
+        return view('hrims.claim_op.ucs_kidney',compact('budget_year_select','budget_year','start_date','end_date','month','claim_price','receive_total','claim'));
     }
 //----------------------------------------------------------------------------------------------------------------------------------------
     public function stp_incup(Request $request )
     {
         ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
 
-        $year_data = DB::table('budget_year')
+        $budget_year_select = DB::table('budget_year')
+            ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
             ->orderByDesc('LEAVE_YEAR_ID')
-            ->first(['LEAVE_YEAR_ID', 'DATE_BEGIN', 'DATE_END']);
-        $budget_year = $year_data->LEAVE_YEAR_ID ?? null;
-        $start_date_b = $year_data->DATE_BEGIN ?? null;
-        $end_date_b   = $year_data->DATE_END ?? null;
+            ->limit(7)
+            ->get();
+        $budget_year_now = DB::table('budget_year')
+            ->whereDate('DATE_END', '>=', date('Y-m-d'))
+            ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+            ->value('LEAVE_YEAR_ID');       
+        $budget_year = $request->budget_year ?: $budget_year_now;
+        $year_data = DB::table('budget_year')
+            ->whereIn('LEAVE_YEAR_ID', [$budget_year, $budget_year - 4])
+            ->pluck('DATE_BEGIN', 'LEAVE_YEAR_ID');
+        $start_date_b   = $year_data[$budget_year] ?? null;
+        $end_date_b = DB::table('budget_year')
+            ->where('LEAVE_YEAR_ID', $budget_year)
+            ->value('DATE_END');
+
         $start_date = $request->start_date ?: date('Y-m-d');
         $end_date = $request->end_date ?: date('Y-m-d');
 
@@ -640,19 +700,31 @@ class ClaimOpController extends Controller
             AND (oe.moph_finance_upload_status IS NOT NULL OR rep.vn IS NOT NULL OR stm.cid IS NOT NULL )
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
 
-        return view('hrims.claim_op.stp_incup',compact('start_date','end_date','month','claim_price','receive_total','search','claim'));
+        return view('hrims.claim_op.stp_incup',compact('budget_year_select','budget_year','start_date','end_date','month','claim_price','receive_total','search','claim'));
     }
 //----------------------------------------------------------------------------------------------------------------------------------------
     public function stp_outcup(Request $request )
     {
         ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
 
-        $year_data = DB::table('budget_year')
+        $budget_year_select = DB::table('budget_year')
+            ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
             ->orderByDesc('LEAVE_YEAR_ID')
-            ->first(['LEAVE_YEAR_ID', 'DATE_BEGIN', 'DATE_END']);
-        $budget_year = $year_data->LEAVE_YEAR_ID ?? null;
-        $start_date_b = $year_data->DATE_BEGIN ?? null;
-        $end_date_b   = $year_data->DATE_END ?? null;
+            ->limit(7)
+            ->get();
+        $budget_year_now = DB::table('budget_year')
+            ->whereDate('DATE_END', '>=', date('Y-m-d'))
+            ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+            ->value('LEAVE_YEAR_ID');       
+        $budget_year = $request->budget_year ?: $budget_year_now;
+        $year_data = DB::table('budget_year')
+            ->whereIn('LEAVE_YEAR_ID', [$budget_year, $budget_year - 4])
+            ->pluck('DATE_BEGIN', 'LEAVE_YEAR_ID');
+        $start_date_b   = $year_data[$budget_year] ?? null;
+        $end_date_b = DB::table('budget_year')
+            ->where('LEAVE_YEAR_ID', $budget_year)
+            ->value('DATE_END');
+
         $start_date = $request->start_date ?: date('Y-m-d');
         $end_date = $request->end_date ?: date('Y-m-d');
 
@@ -751,19 +823,31 @@ class ClaimOpController extends Controller
             AND kidney.vn IS NULL AND (oe.moph_finance_upload_status IS NOT NULL OR rep.vn IS NOT NULL OR stm.cid IS NOT NULL )
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date]);
 
-        return view('hrims.claim_op.stp_outcup',compact('start_date','end_date','month','claim_price','receive_total','search','claim'));
+        return view('hrims.claim_op.stp_outcup',compact('budget_year_select','budget_year','start_date','end_date','month','claim_price','receive_total','search','claim'));
     }
 //----------------------------------------------------------------------------------------------------------------------------------------
     public function ofc(Request $request )
     {
         ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
 
-        $year_data = DB::table('budget_year')
+        $budget_year_select = DB::table('budget_year')
+            ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
             ->orderByDesc('LEAVE_YEAR_ID')
-            ->first(['LEAVE_YEAR_ID', 'DATE_BEGIN', 'DATE_END']);
-        $budget_year = $year_data->LEAVE_YEAR_ID ?? null;
-        $start_date_b = $year_data->DATE_BEGIN ?? null;
-        $end_date_b   = $year_data->DATE_END ?? null;
+            ->limit(7)
+            ->get();
+        $budget_year_now = DB::table('budget_year')
+            ->whereDate('DATE_END', '>=', date('Y-m-d'))
+            ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+            ->value('LEAVE_YEAR_ID');       
+        $budget_year = $request->budget_year ?: $budget_year_now;
+        $year_data = DB::table('budget_year')
+            ->whereIn('LEAVE_YEAR_ID', [$budget_year, $budget_year - 4])
+            ->pluck('DATE_BEGIN', 'LEAVE_YEAR_ID');
+        $start_date_b   = $year_data[$budget_year] ?? null;
+        $end_date_b = DB::table('budget_year')
+            ->where('LEAVE_YEAR_ID', $budget_year)
+            ->value('DATE_END');
+
         $start_date = $request->start_date ?: date('Y-m-d');
         $end_date = $request->end_date ?: date('Y-m-d');
         $pttype_checkup = DB::table('main_setting')->where('name', 'pttype_checkup')->value('value');  
@@ -854,19 +938,31 @@ class ClaimOpController extends Controller
             AND v.income <>"0" AND kidney.vn IS NULL AND oe.upload_datetime IS NOT NULL
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
 
-        return view('hrims.claim_op.ofc',compact('start_date','end_date','month','claim_price','receive_total','search','claim'));
+        return view('hrims.claim_op.ofc',compact('budget_year_select','budget_year','start_date','end_date','month','claim_price','receive_total','search','claim'));
     }
 //----------------------------------------------------------------------------------------------------------------------------------------
     public function ofc_kidney(Request $request )
     {
         ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
 
-        $year_data = DB::table('budget_year')
+        $budget_year_select = DB::table('budget_year')
+            ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
             ->orderByDesc('LEAVE_YEAR_ID')
-            ->first(['LEAVE_YEAR_ID', 'DATE_BEGIN', 'DATE_END']);
-        $budget_year = $year_data->LEAVE_YEAR_ID ?? null;
-        $start_date_b = $year_data->DATE_BEGIN ?? null;
-        $end_date_b   = $year_data->DATE_END ?? null;
+            ->limit(7)
+            ->get();
+        $budget_year_now = DB::table('budget_year')
+            ->whereDate('DATE_END', '>=', date('Y-m-d'))
+            ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+            ->value('LEAVE_YEAR_ID');       
+        $budget_year = $request->budget_year ?: $budget_year_now;
+        $year_data = DB::table('budget_year')
+            ->whereIn('LEAVE_YEAR_ID', [$budget_year, $budget_year - 4])
+            ->pluck('DATE_BEGIN', 'LEAVE_YEAR_ID');
+        $start_date_b   = $year_data[$budget_year] ?? null;
+        $end_date_b = DB::table('budget_year')
+            ->where('LEAVE_YEAR_ID', $budget_year)
+            ->value('DATE_END');
+
         $start_date = $request->start_date ?: date('Y-m-d');
         $end_date = $request->end_date ?: date('Y-m-d');
        
@@ -929,19 +1025,31 @@ class ClaimOpController extends Controller
             WHERE p.hipdata_code = "OFC" AND o.vstdate BETWEEN ? AND ?
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]);
 
-        return view('hrims.claim_op.ofc_kidney',compact('start_date','end_date','month','claim_price','receive_total','claim'));
+        return view('hrims.claim_op.ofc_kidney',compact('budget_year_select','budget_year','start_date','end_date','month','claim_price','receive_total','claim'));
     }
 //----------------------------------------------------------------------------------------------------------------------------------------
     public function lgo(Request $request )
     {
         ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
 
-        $year_data = DB::table('budget_year')
+        $budget_year_select = DB::table('budget_year')
+            ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
             ->orderByDesc('LEAVE_YEAR_ID')
-            ->first(['LEAVE_YEAR_ID', 'DATE_BEGIN', 'DATE_END']);
-        $budget_year = $year_data->LEAVE_YEAR_ID ?? null;
-        $start_date_b = $year_data->DATE_BEGIN ?? null;
-        $end_date_b   = $year_data->DATE_END ?? null;
+            ->limit(7)
+            ->get();
+        $budget_year_now = DB::table('budget_year')
+            ->whereDate('DATE_END', '>=', date('Y-m-d'))
+            ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+            ->value('LEAVE_YEAR_ID');       
+        $budget_year = $request->budget_year ?: $budget_year_now;
+        $year_data = DB::table('budget_year')
+            ->whereIn('LEAVE_YEAR_ID', [$budget_year, $budget_year - 4])
+            ->pluck('DATE_BEGIN', 'LEAVE_YEAR_ID');
+        $start_date_b   = $year_data[$budget_year] ?? null;
+        $end_date_b = DB::table('budget_year')
+            ->where('LEAVE_YEAR_ID', $budget_year)
+            ->value('DATE_END');
+
         $start_date = $request->start_date ?: date('Y-m-d');
         $end_date = $request->end_date ?: date('Y-m-d');
 
@@ -1034,19 +1142,31 @@ class ClaimOpController extends Controller
             AND v.income <>"0" AND kidney.vn IS NULL AND oe.upload_datetime IS NOT NULL
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
 
-        return view('hrims.claim_op.lgo',compact('start_date','end_date','month','claim_price','receive_total','search','claim'));
+        return view('hrims.claim_op.lgo',compact('budget_year_select','budget_year','start_date','end_date','month','claim_price','receive_total','search','claim'));
     }
 //----------------------------------------------------------------------------------------------------------------------------------------
     public function lgo_kidney(Request $request )
     {
         ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
 
-        $year_data = DB::table('budget_year')
+        $budget_year_select = DB::table('budget_year')
+            ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
             ->orderByDesc('LEAVE_YEAR_ID')
-            ->first(['LEAVE_YEAR_ID', 'DATE_BEGIN', 'DATE_END']);
-        $budget_year = $year_data->LEAVE_YEAR_ID ?? null;
-        $start_date_b = $year_data->DATE_BEGIN ?? null;
-        $end_date_b   = $year_data->DATE_END ?? null;
+            ->limit(7)
+            ->get();
+        $budget_year_now = DB::table('budget_year')
+            ->whereDate('DATE_END', '>=', date('Y-m-d'))
+            ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+            ->value('LEAVE_YEAR_ID');       
+        $budget_year = $request->budget_year ?: $budget_year_now;
+        $year_data = DB::table('budget_year')
+            ->whereIn('LEAVE_YEAR_ID', [$budget_year, $budget_year - 4])
+            ->pluck('DATE_BEGIN', 'LEAVE_YEAR_ID');
+        $start_date_b   = $year_data[$budget_year] ?? null;
+        $end_date_b = DB::table('budget_year')
+            ->where('LEAVE_YEAR_ID', $budget_year)
+            ->value('DATE_END');
+
         $start_date = $request->start_date ?: date('Y-m-d');
         $end_date = $request->end_date ?: date('Y-m-d');
 
@@ -1109,19 +1229,31 @@ class ClaimOpController extends Controller
             WHERE p.hipdata_code = "LGO" AND o.vstdate BETWEEN ? AND ?
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]);
 
-        return view('hrims.claim_op.lgo_kidney',compact('start_date','end_date','month','claim_price','receive_total','claim'));
+        return view('hrims.claim_op.lgo_kidney',compact('budget_year_select','budget_year','start_date','end_date','month','claim_price','receive_total','claim'));
     }
 //----------------------------------------------------------------------------------------------------------------------------------------
     public function bkk(Request $request )
     {
         ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
 
-        $year_data = DB::table('budget_year')
+        $budget_year_select = DB::table('budget_year')
+            ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
             ->orderByDesc('LEAVE_YEAR_ID')
-            ->first(['LEAVE_YEAR_ID', 'DATE_BEGIN', 'DATE_END']);
-        $budget_year = $year_data->LEAVE_YEAR_ID ?? null;
-        $start_date_b = $year_data->DATE_BEGIN ?? null;
-        $end_date_b   = $year_data->DATE_END ?? null;
+            ->limit(7)
+            ->get();
+        $budget_year_now = DB::table('budget_year')
+            ->whereDate('DATE_END', '>=', date('Y-m-d'))
+            ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+            ->value('LEAVE_YEAR_ID');       
+        $budget_year = $request->budget_year ?: $budget_year_now;
+        $year_data = DB::table('budget_year')
+            ->whereIn('LEAVE_YEAR_ID', [$budget_year, $budget_year - 4])
+            ->pluck('DATE_BEGIN', 'LEAVE_YEAR_ID');
+        $start_date_b   = $year_data[$budget_year] ?? null;
+        $end_date_b = DB::table('budget_year')
+            ->where('LEAVE_YEAR_ID', $budget_year)
+            ->value('DATE_END');
+
         $start_date = $request->start_date ?: date('Y-m-d');
         $end_date = $request->end_date ?: date('Y-m-d');
 
@@ -1214,19 +1346,31 @@ class ClaimOpController extends Controller
             AND v.income <>"0" AND kidney.vn IS NULL AND oe.upload_datetime IS NOT NULL
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
 
-        return view('hrims.claim_op.bkk',compact('start_date','end_date','month','claim_price','receive_total','search','claim'));
+        return view('hrims.claim_op.bkk',compact('budget_year_select','budget_year','start_date','end_date','month','claim_price','receive_total','search','claim'));
     }
 //----------------------------------------------------------------------------------------------------------------------------------------
     public function bmt(Request $request )
     {
         ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
 
-        $year_data = DB::table('budget_year')
+        $budget_year_select = DB::table('budget_year')
+            ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
             ->orderByDesc('LEAVE_YEAR_ID')
-            ->first(['LEAVE_YEAR_ID', 'DATE_BEGIN', 'DATE_END']);
-        $budget_year = $year_data->LEAVE_YEAR_ID ?? null;
-        $start_date_b = $year_data->DATE_BEGIN ?? null;
-        $end_date_b   = $year_data->DATE_END ?? null;
+            ->limit(7)
+            ->get();
+        $budget_year_now = DB::table('budget_year')
+            ->whereDate('DATE_END', '>=', date('Y-m-d'))
+            ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+            ->value('LEAVE_YEAR_ID');       
+        $budget_year = $request->budget_year ?: $budget_year_now;
+        $year_data = DB::table('budget_year')
+            ->whereIn('LEAVE_YEAR_ID', [$budget_year, $budget_year - 4])
+            ->pluck('DATE_BEGIN', 'LEAVE_YEAR_ID');
+        $start_date_b   = $year_data[$budget_year] ?? null;
+        $end_date_b = DB::table('budget_year')
+            ->where('LEAVE_YEAR_ID', $budget_year)
+            ->value('DATE_END');
+
         $start_date = $request->start_date ?: date('Y-m-d');
         $end_date = $request->end_date ?: date('Y-m-d');
 
@@ -1318,19 +1462,31 @@ class ClaimOpController extends Controller
             AND v.income <>"0" AND kidney.vn IS NULL AND oe.upload_datetime IS NOT NULL
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
 
-        return view('hrims.claim_op.bmt',compact('start_date','end_date','month','claim_price','receive_total','search','claim'));
+        return view('hrims.claim_op.bmt',compact('budget_year_select','budget_year','start_date','end_date','month','claim_price','receive_total','search','claim'));
     }
 //----------------------------------------------------------------------------------------------------------------------------------------
     public function sss_ppfs(Request $request )
     {
         ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
 
-        $year_data = DB::table('budget_year')
+        $budget_year_select = DB::table('budget_year')
+            ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
             ->orderByDesc('LEAVE_YEAR_ID')
-            ->first(['LEAVE_YEAR_ID', 'DATE_BEGIN', 'DATE_END']);
-        $budget_year = $year_data->LEAVE_YEAR_ID ?? null;
-        $start_date_b = $year_data->DATE_BEGIN ?? null;
-        $end_date_b   = $year_data->DATE_END ?? null;
+            ->limit(7)
+            ->get();
+        $budget_year_now = DB::table('budget_year')
+            ->whereDate('DATE_END', '>=', date('Y-m-d'))
+            ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+            ->value('LEAVE_YEAR_ID');       
+        $budget_year = $request->budget_year ?: $budget_year_now;
+        $year_data = DB::table('budget_year')
+            ->whereIn('LEAVE_YEAR_ID', [$budget_year, $budget_year - 4])
+            ->pluck('DATE_BEGIN', 'LEAVE_YEAR_ID');
+        $start_date_b   = $year_data[$budget_year] ?? null;
+        $end_date_b = DB::table('budget_year')
+            ->where('LEAVE_YEAR_ID', $budget_year)
+            ->value('DATE_END');
+
         $start_date = $request->start_date ?: date('Y-m-d');
         $end_date = $request->end_date ?: date('Y-m-d');
 
@@ -1427,19 +1583,31 @@ class ClaimOpController extends Controller
             AND (oe.upload_datetime IS NOT NULL OR stm.cid IS NOT NULL)
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
 
-        return view('hrims.claim_op.sss_ppfs',compact('start_date','end_date','month','claim_price','receive_total','search','claim'));
+        return view('hrims.claim_op.sss_ppfs',compact('budget_year_select','budget_year','start_date','end_date','month','claim_price','receive_total','search','claim'));
     }
 //----------------------------------------------------------------------------------------------------------------------------------------
     public function sss_fund(Request $request )
     {
         ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
 
-        $year_data = DB::table('budget_year')
+        $budget_year_select = DB::table('budget_year')
+            ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
             ->orderByDesc('LEAVE_YEAR_ID')
-            ->first(['LEAVE_YEAR_ID', 'DATE_BEGIN', 'DATE_END']);
-        $budget_year = $year_data->LEAVE_YEAR_ID ?? null;
-        $start_date_b = $year_data->DATE_BEGIN ?? null;
-        $end_date_b   = $year_data->DATE_END ?? null;
+            ->limit(7)
+            ->get();
+        $budget_year_now = DB::table('budget_year')
+            ->whereDate('DATE_END', '>=', date('Y-m-d'))
+            ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+            ->value('LEAVE_YEAR_ID');       
+        $budget_year = $request->budget_year ?: $budget_year_now;
+        $year_data = DB::table('budget_year')
+            ->whereIn('LEAVE_YEAR_ID', [$budget_year, $budget_year - 4])
+            ->pluck('DATE_BEGIN', 'LEAVE_YEAR_ID');
+        $start_date_b   = $year_data[$budget_year] ?? null;
+        $end_date_b = DB::table('budget_year')
+            ->where('LEAVE_YEAR_ID', $budget_year)
+            ->value('DATE_END');
+
         $start_date = $request->start_date ?: date('Y-m-d');
         $end_date = $request->end_date ?: date('Y-m-d');
         $pttype_sss_fund = DB::table('main_setting')->where('name', 'pttype_sss_fund')->value('value');    
@@ -1487,7 +1655,7 @@ class ClaimOpController extends Controller
             WHERE p.pttype IN ('.$pttype_sss_fund.') AND o.vstdate BETWEEN ? AND ?
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date]);
 
-        return view('hrims.claim_op.sss_fund',compact('start_date','end_date','month','claim_price','receive_total','claim'));
+        return view('hrims.claim_op.sss_fund',compact('budget_year_select','budget_year','start_date','end_date','month','claim_price','receive_total','claim'));
     }
 
 //----------------------------------------------------------------------------------------------------------------------------------------
@@ -1495,12 +1663,24 @@ class ClaimOpController extends Controller
     {
         ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
 
-        $year_data = DB::table('budget_year')
+        $budget_year_select = DB::table('budget_year')
+            ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
             ->orderByDesc('LEAVE_YEAR_ID')
-            ->first(['LEAVE_YEAR_ID', 'DATE_BEGIN', 'DATE_END']);
-        $budget_year = $year_data->LEAVE_YEAR_ID ?? null;
-        $start_date_b = $year_data->DATE_BEGIN ?? null;
-        $end_date_b   = $year_data->DATE_END ?? null;
+            ->limit(7)
+            ->get();
+        $budget_year_now = DB::table('budget_year')
+            ->whereDate('DATE_END', '>=', date('Y-m-d'))
+            ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+            ->value('LEAVE_YEAR_ID');       
+        $budget_year = $request->budget_year ?: $budget_year_now;
+        $year_data = DB::table('budget_year')
+            ->whereIn('LEAVE_YEAR_ID', [$budget_year, $budget_year - 4])
+            ->pluck('DATE_BEGIN', 'LEAVE_YEAR_ID');
+        $start_date_b   = $year_data[$budget_year] ?? null;
+        $end_date_b = DB::table('budget_year')
+            ->where('LEAVE_YEAR_ID', $budget_year)
+            ->value('DATE_END');
+
         $start_date = $request->start_date ?: date('Y-m-d');
         $end_date = $request->end_date ?: date('Y-m-d');
 
@@ -1560,19 +1740,31 @@ class ClaimOpController extends Controller
             WHERE p.hipdata_code = "SSS" AND o.vstdate BETWEEN ? AND ?
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]);
 
-        return view('hrims.claim_op.sss_kidney',compact('start_date','end_date','month','claim_price','receive_total','claim'));
+        return view('hrims.claim_op.sss_kidney',compact('budget_year_select','budget_year','start_date','end_date','month','claim_price','receive_total','claim'));
     }
 //----------------------------------------------------------------------------------------------------------------------------------------
     public function sss_hc(Request $request )
     {
         ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
 
-        $year_data = DB::table('budget_year')
+        $budget_year_select = DB::table('budget_year')
+            ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
             ->orderByDesc('LEAVE_YEAR_ID')
-            ->first(['LEAVE_YEAR_ID', 'DATE_BEGIN', 'DATE_END']);
-        $budget_year = $year_data->LEAVE_YEAR_ID ?? null;
-        $start_date_b = $year_data->DATE_BEGIN ?? null;
-        $end_date_b   = $year_data->DATE_END ?? null;
+            ->limit(7)
+            ->get();
+        $budget_year_now = DB::table('budget_year')
+            ->whereDate('DATE_END', '>=', date('Y-m-d'))
+            ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+            ->value('LEAVE_YEAR_ID');       
+        $budget_year = $request->budget_year ?: $budget_year_now;
+        $year_data = DB::table('budget_year')
+            ->whereIn('LEAVE_YEAR_ID', [$budget_year, $budget_year - 4])
+            ->pluck('DATE_BEGIN', 'LEAVE_YEAR_ID');
+        $start_date_b   = $year_data[$budget_year] ?? null;
+        $end_date_b = DB::table('budget_year')
+            ->where('LEAVE_YEAR_ID', $budget_year)
+            ->value('DATE_END');
+
         $start_date = $request->start_date ?: date('Y-m-d');
         $end_date = $request->end_date ?: date('Y-m-d');
 
@@ -1636,19 +1828,31 @@ class ClaimOpController extends Controller
 			WHERE p.hipdata_code = "SSS" AND o.vstdate BETWEEN ? AND ?
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
 
-        return view('hrims.claim_op.sss_hc',compact('start_date','end_date','month','claim_price','receive_total','claim'));
+        return view('hrims.claim_op.sss_hc',compact('budget_year_select','budget_year','start_date','end_date','month','claim_price','receive_total','claim'));
     }
 //----------------------------------------------------------------------------------------------------------------------------------------
     public function rcpt(Request $request )
     {
         ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
 
-        $year_data = DB::table('budget_year')
+        $budget_year_select = DB::table('budget_year')
+            ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
             ->orderByDesc('LEAVE_YEAR_ID')
-            ->first(['LEAVE_YEAR_ID', 'DATE_BEGIN', 'DATE_END']);
-        $budget_year = $year_data->LEAVE_YEAR_ID ?? null;
-        $start_date_b = $year_data->DATE_BEGIN ?? null;
-        $end_date_b   = $year_data->DATE_END ?? null;
+            ->limit(7)
+            ->get();
+        $budget_year_now = DB::table('budget_year')
+            ->whereDate('DATE_END', '>=', date('Y-m-d'))
+            ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+            ->value('LEAVE_YEAR_ID');       
+        $budget_year = $request->budget_year ?: $budget_year_now;
+        $year_data = DB::table('budget_year')
+            ->whereIn('LEAVE_YEAR_ID', [$budget_year, $budget_year - 4])
+            ->pluck('DATE_BEGIN', 'LEAVE_YEAR_ID');
+        $start_date_b   = $year_data[$budget_year] ?? null;
+        $end_date_b = DB::table('budget_year')
+            ->where('LEAVE_YEAR_ID', $budget_year)
+            ->value('DATE_END');
+
         $start_date = $request->start_date ?: date('Y-m-d');
         $end_date = $request->end_date ?: date('Y-m-d');
         
@@ -1746,19 +1950,31 @@ class ClaimOpController extends Controller
             AND v.paid_money <>"0" AND v.rcpt_money = v.paid_money 
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date]);
 
-        return view('hrims.claim_op.rcpt',compact('start_date','end_date','month','claim_price','receive_total','search','claim'));
+        return view('hrims.claim_op.rcpt',compact('budget_year_select','budget_year','start_date','end_date','month','claim_price','receive_total','search','claim'));
     }
 //----------------------------------------------------------------------------------------------------------------------------------------
     public function act(Request $request )
     {
         ini_set('max_execution_time', 300); // เพิ่มเป็น 5 นาที
 
-        $year_data = DB::table('budget_year')
+        $budget_year_select = DB::table('budget_year')
+            ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
             ->orderByDesc('LEAVE_YEAR_ID')
-            ->first(['LEAVE_YEAR_ID', 'DATE_BEGIN', 'DATE_END']);
-        $budget_year = $year_data->LEAVE_YEAR_ID ?? null;
-        $start_date_b = $year_data->DATE_BEGIN ?? null;
-        $end_date_b   = $year_data->DATE_END ?? null;
+            ->limit(7)
+            ->get();
+        $budget_year_now = DB::table('budget_year')
+            ->whereDate('DATE_END', '>=', date('Y-m-d'))
+            ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+            ->value('LEAVE_YEAR_ID');       
+        $budget_year = $request->budget_year ?: $budget_year_now;
+        $year_data = DB::table('budget_year')
+            ->whereIn('LEAVE_YEAR_ID', [$budget_year, $budget_year - 4])
+            ->pluck('DATE_BEGIN', 'LEAVE_YEAR_ID');
+        $start_date_b   = $year_data[$budget_year] ?? null;
+        $end_date_b = DB::table('budget_year')
+            ->where('LEAVE_YEAR_ID', $budget_year)
+            ->value('DATE_END');
+
         $start_date = $request->start_date ?: date('Y-m-d');
         $end_date = $request->end_date ?: date('Y-m-d');
         $pttype_act = DB::table('main_setting')->where('name', 'pttype_act')->value('value');   
@@ -1806,7 +2022,7 @@ class ClaimOpController extends Controller
             WHERE p.pttype IN ('.$pttype_act.') AND o.vstdate BETWEEN ? AND ?
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date]);
 
-        return view('hrims.claim_op.act',compact('start_date','end_date','month','claim_price','receive_total','claim'));
+        return view('hrims.claim_op.act',compact('budget_year_select','budget_year','start_date','end_date','month','claim_price','receive_total','claim'));
     }
 
 }

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\MainSettingController;
+use App\Http\Controllers\Admin\BudgetYearController;
 use App\Http\Controllers\Admin\LookupIcodeController;
 use App\Http\Controllers\Admin\LookupWardController;
 use App\Http\Controllers\Admin\LookupHospcodeController;
@@ -73,6 +74,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::resource('lookup_ward', LookupWardController::class)->parameters(['lookup_ward' => 'ward']);
     Route::post('insert_lookup_ward', [LookupWardController::class, 'insert_lookup_ward'])->name('insert_lookup_ward');
     Route::resource('lookup_hospcode', LookupHospcodeController::class)->parameters(['lookup_hospcode' => 'hospcode']);
+    Route::resource('budget_year', BudgetYearController::class)->parameters(['LEAVE_YEAR_ID' => 'LEAVE_YEAR_ID']);
 });
 
 // home ------------------------------------------------------------------------------------------------------------------------------

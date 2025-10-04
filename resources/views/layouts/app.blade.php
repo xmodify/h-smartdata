@@ -267,6 +267,7 @@
                                         <a class="dropdown-item link-primary text-white" href="{{ route('admin.user_access.index') }}">Manage User</a>
                                         <a class="dropdown-item link-primary text-white" href="{{ route('admin.lookup_ward.index') }}">Lookup ward</a>
                                         <a class="dropdown-item link-primary text-white" href="{{ route('admin.lookup_hospcode.index') }}">Lookup hospcode</a>
+                                        <a class="dropdown-item link-primary text-white" href="{{ route('admin.budget_year.index') }}">Budget Year</a>
                                         @endif
                                     @endauth
                                     <!-- -->                                    
