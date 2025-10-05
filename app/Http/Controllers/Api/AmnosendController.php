@@ -217,7 +217,7 @@ class AmnosendController extends Controller
             SELECT ? AS hospcode,dchdate,COUNT(DISTINCT an) AS an_total ,sum(admdate) AS admdate,        
             ROUND((SUM(admdate)*100)/(?*DAY(LAST_DAY(dchdate))),2) AS "bed_occupancy",
             ROUND(((SUM(admdate)*100)/(?*DAY(LAST_DAY(dchdate)))*?)/100,2) AS "active_bed",
-			ROUND(SUM(rw)/COUNT(DISTINCT an),2) AS cmi,ROUND(SUM(rw),2) AS adjrw, 
+			ROUND(SUM(rw)/COUNT(DISTINCT an),2) AS cmi,ROUND(SUM(rw),5) AS adjrw, 
             SUM(income) AS inc_total,
 			SUM(inc03) AS inc_lab_total,
             SUM(inc12) AS inc_drug_total
@@ -330,7 +330,7 @@ class AmnosendController extends Controller
         ];
 
         foreach ($chunks as $i => $chunk) {
-            // $dates = array_column($chunk, $prefix === 'OPD' ? 'vstdate' : 'admdate');
+            // $dates = array_column($chunk, $prefix === 'OPD' ? 'vstdate' : 'dchdate');
             $dates = match($prefix) {
                 'OPD' => array_column($chunk, 'vstdate'),
                 'IPD' => array_column($chunk, 'dchdate'),
