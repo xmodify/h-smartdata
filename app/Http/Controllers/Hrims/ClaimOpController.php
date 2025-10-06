@@ -1193,7 +1193,7 @@ class ClaimOpController extends Controller
             INNER JOIN opitemrece o1 ON o1.vn=o.vn
             INNER JOIN htp_report.lookup_icode li ON o1.icode = li.icode AND li.kidney = "Y"            
             LEFT JOIN (SELECT op.vn, SUM(op.sum_price) AS claim_price	FROM opitemrece op
-				INNER JOIN hto_report.lookup_icode li ON op.icode = li.icode
+				INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
                 WHERE op.vstdate BETWEEN ? AND ? AND li.kidney = "Y" GROUP BY op.vn) kidney ON kidney.vn=o.vn           
             LEFT JOIN (SELECT cid,datetimeadm,sum(compensate_kidney) AS receive_total,repno FROM htp_report.stm_lgo_kidney
             WHERE datetimeadm BETWEEN ? AND ? GROUP BY cid,datetimeadm) stm ON stm.cid=pt.cid AND stm.datetimeadm = o.vstdate
