@@ -372,7 +372,7 @@ class ClaimOpController extends Controller
             AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10)
             GROUP BY o.vn ORDER BY vp.hospmain,pt_status DESC,o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
         
-        return view('hrims.claim_op.ucs_inprovince_va',compact('budget_year_select','budget_year','start_date','end_date','sum','search'));
+        return view('hrims.claim_op.ucs_inprovince_va',compact('start_date','end_date','sum','search'));
     }
 //----------------------------------------------------------------------------------------------------------------------------------------
     public function ucs_outprovince(Request $request )
