@@ -47,9 +47,10 @@ public function office(Request $request)
     $request->session()->put('asset',$asset);
     $request->session()->put('budget_year',$budget_year);
     $request->session()->save();
-
+ 
     return view('backoffice_asset.office',compact('asset','budget_year_select','budget_year'));            
 }
+
 //office_excel
 public function office_excel(Request $request)
 {
@@ -58,11 +59,14 @@ public function office_excel(Request $request)
 }
 public function office_pdf()
 {
-      $asset = Session::get('asset');
-      $budget_year = Session::get('budget_year');  
-      $pdf = PDF::loadView('backoffice_asset.office_pdf', compact('asset','budget_year'))
+    ini_set('memory_limit', '1024M'); // ✅ เพิ่มหน่วยความจำ
+
+    $asset = Session::get('asset');
+    $budget_year = Session::get('budget_year');  
+    $pdf = PDF::loadView('backoffice_asset.office_pdf', compact('asset','budget_year'))
                   ->setPaper('A4', 'landscape');
-      return @$pdf->stream();
+          // ✅ ใส่ชื่อไฟล์ที่ต้องการดาวน์โหลด
+   return @$pdf->stream();
 }
 ################################################################################################################
 //car
@@ -92,7 +96,7 @@ public function car(Request $request)
 
     $request->session()->put('asset',$asset);
     $request->session()->put('budget_year',$budget_year);
-    $request->session()->save();
+    $request->session()->save();   
 
     return view('backoffice_asset.car',compact('asset','budget_year_select','budget_year'));            
 }
@@ -103,11 +107,12 @@ public function car_excel(Request $request)
 }
 public function car_pdf()
 {
-      $asset = Session::get('asset');
-      $budget_year = Session::get('budget_year');  
-      $pdf = PDF::loadView('backoffice_asset.car_pdf', compact('asset','budget_year'))
+    ini_set('memory_limit', '1024M'); // ✅ เพิ่มหน่วยความจำ
+    $asset = Session::get('asset');
+    $budget_year = Session::get('budget_year');  
+    $pdf = PDF::loadView('backoffice_asset.car_pdf', compact('asset','budget_year'))
                   ->setPaper('A4', 'landscape');
-      return @$pdf->stream();
+    return @$pdf->stream();
 }
 ##############################################################################################################################
 public function electric(Request $request)
@@ -147,11 +152,12 @@ public function electric_excel(Request $request)
 }
 public function electric_pdf()
 {
-      $asset = Session::get('asset');
-      $budget_year = Session::get('budget_year');  
-      $pdf = PDF::loadView('backoffice_asset.electric_pdf', compact('asset','budget_year'))
-                  ->setPaper('A4', 'landscape');
-      return @$pdf->stream();
+    ini_set('memory_limit', '1024M'); // ✅ เพิ่มหน่วยความจำ
+    $asset = Session::get('asset');
+    $budget_year = Session::get('budget_year');  
+    $pdf = PDF::loadView('backoffice_asset.electric_pdf', compact('asset','budget_year'))
+                ->setPaper('A4', 'landscape');
+    return @$pdf->stream();
 }
 ##############################################################################################################################
 public function generator(Request $request)
@@ -191,11 +197,12 @@ public function generator_excel(Request $request)
 }
 public function generator_pdf()
 {
-      $asset = Session::get('asset');
-      $budget_year = Session::get('budget_year');  
-      $pdf = PDF::loadView('backoffice_asset.generator_pdf', compact('asset','budget_year'))
-                  ->setPaper('A4', 'landscape');
-      return @$pdf->stream();
+    ini_set('memory_limit', '1024M'); // ✅ เพิ่มหน่วยความจำ
+    $asset = Session::get('asset');
+    $budget_year = Session::get('budget_year');  
+    $pdf = PDF::loadView('backoffice_asset.generator_pdf', compact('asset','budget_year'))
+                ->setPaper('A4', 'landscape');
+    return @$pdf->stream();
 }
 ##############################################################################################################################
 public function advert(Request $request)
@@ -235,11 +242,12 @@ public function advert_excel(Request $request)
 }
 public function advert_pdf()
 {
-      $asset = Session::get('asset');
-      $budget_year = Session::get('budget_year');  
-      $pdf = PDF::loadView('backoffice_asset.advert_pdf', compact('asset','budget_year'))
-                  ->setPaper('A4', 'landscape');
-      return @$pdf->stream();
+    ini_set('memory_limit', '1024M'); // ✅ เพิ่มหน่วยความจำ
+    $asset = Session::get('asset');
+    $budget_year = Session::get('budget_year');  
+    $pdf = PDF::loadView('backoffice_asset.advert_pdf', compact('asset','budget_year'))
+                ->setPaper('A4', 'landscape');
+    return @$pdf->stream();
 }
 ##############################################################################################################################
 public function agriculture_tool(Request $request)
@@ -279,11 +287,12 @@ public function agriculture_tool_excel(Request $request)
 }
 public function agriculture_tool_pdf()
 {
-      $asset = Session::get('asset');
-      $budget_year = Session::get('budget_year');  
-      $pdf = PDF::loadView('backoffice_asset.agriculture_tool_pdf', compact('asset','budget_year'))
-                  ->setPaper('A4', 'landscape');
-      return @$pdf->stream();
+    ini_set('memory_limit', '1024M'); // ✅ เพิ่มหน่วยความจำ
+    $asset = Session::get('asset');
+    $budget_year = Session::get('budget_year');  
+    $pdf = PDF::loadView('backoffice_asset.agriculture_tool_pdf', compact('asset','budget_year'))
+                ->setPaper('A4', 'landscape');
+    return @$pdf->stream();
 }
 ##############################################################################################################################
 public function agriculture_mechanical(Request $request)
@@ -323,11 +332,12 @@ public function agriculture_mechanical_excel(Request $request)
 }
 public function agriculture_mechanical_pdf()
 {
-      $asset = Session::get('asset');
-      $budget_year = Session::get('budget_year');  
-      $pdf = PDF::loadView('backoffice_asset.agriculture_mechanical_pdf', compact('asset','budget_year'))
-                  ->setPaper('A4', 'landscape');
-      return @$pdf->stream();
+    ini_set('memory_limit', '1024M'); // ✅ เพิ่มหน่วยความจำ
+    $asset = Session::get('asset');
+    $budget_year = Session::get('budget_year');  
+    $pdf = PDF::loadView('backoffice_asset.agriculture_mechanical_pdf', compact('asset','budget_year'))
+                ->setPaper('A4', 'landscape');
+    return @$pdf->stream();
 }
 ##############################################################################################################################
 public function factory_tool(Request $request)
@@ -367,11 +377,12 @@ public function factory_tool_excel(Request $request)
 }
 public function factory_tool_pdf()
 {
-      $asset = Session::get('asset');
-      $budget_year = Session::get('budget_year');  
-      $pdf = PDF::loadView('backoffice_asset.factory_tool_pdf', compact('asset','budget_year'))
-                  ->setPaper('A4', 'landscape');
-      return @$pdf->stream();
+    ini_set('memory_limit', '1024M'); // ✅ เพิ่มหน่วยความจำ
+    $asset = Session::get('asset');
+    $budget_year = Session::get('budget_year');  
+    $pdf = PDF::loadView('backoffice_asset.factory_tool_pdf', compact('asset','budget_year'))
+                ->setPaper('A4', 'landscape');
+    return @$pdf->stream();
 }
 ##############################################################################################################################
 public function science(Request $request)
@@ -411,11 +422,12 @@ public function science_excel(Request $request)
 }
 public function science_pdf()
 {
-      $asset = Session::get('asset');
-      $budget_year = Session::get('budget_year');  
-      $pdf = PDF::loadView('backoffice_asset.science_pdf', compact('asset','budget_year'))
-                  ->setPaper('A4', 'landscape');
-      return @$pdf->stream();
+    ini_set('memory_limit', '1024M'); // ✅ เพิ่มหน่วยความจำ
+    $asset = Session::get('asset');
+    $budget_year = Session::get('budget_year');  
+    $pdf = PDF::loadView('backoffice_asset.science_pdf', compact('asset','budget_year'))
+                ->setPaper('A4', 'landscape');
+    return @$pdf->stream();
 }
 ##############################################################################################################################
 public function house(Request $request)
@@ -455,11 +467,12 @@ public function house_excel(Request $request)
 }
 public function house_pdf()
 {
-      $asset = Session::get('asset');
-      $budget_year = Session::get('budget_year');  
-      $pdf = PDF::loadView('backoffice_asset.house_pdf', compact('asset','budget_year'))
-                  ->setPaper('A4', 'landscape');
-      return @$pdf->stream();
+    ini_set('memory_limit', '1024M'); // ✅ เพิ่มหน่วยความจำ
+    $asset = Session::get('asset');
+    $budget_year = Session::get('budget_year');  
+    $pdf = PDF::loadView('backoffice_asset.house_pdf', compact('asset','budget_year'))
+                ->setPaper('A4', 'landscape');
+    return @$pdf->stream();
 }
 ##############################################################################################################################
 public function physical(Request $request)
@@ -499,11 +512,12 @@ public function physical_excel(Request $request)
 }
 public function physical_pdf()
 {
-      $asset = Session::get('asset');
-      $budget_year = Session::get('budget_year');  
-      $pdf = PDF::loadView('backoffice_asset.physical_pdf', compact('asset','budget_year'))
-                  ->setPaper('A4', 'landscape');
-      return @$pdf->stream();
+    ini_set('memory_limit', '1024M'); // ✅ เพิ่มหน่วยความจำ
+    $asset = Session::get('asset');
+    $budget_year = Session::get('budget_year');  
+    $pdf = PDF::loadView('backoffice_asset.physical_pdf', compact('asset','budget_year'))
+                ->setPaper('A4', 'landscape');
+    return @$pdf->stream();
 }
 ############################################################################################################################
 //computer
@@ -658,11 +672,12 @@ public function computer_excel(Request $request)
 }
 public function computer_pdf()
 {
-      $asset = Session::get('asset');
-      $budget_year = Session::get('budget_year');  
-      $pdf = PDF::loadView('backoffice_asset.computer_pdf', compact('asset','budget_year'))
-                  ->setPaper('A4', 'landscape');
-      return @$pdf->stream();
+    ini_set('memory_limit', '1024M'); // ✅ เพิ่มหน่วยความจำ
+    $asset = Session::get('asset');
+    $budget_year = Session::get('budget_year');  
+    $pdf = PDF::loadView('backoffice_asset.computer_pdf', compact('asset','budget_year'))
+                ->setPaper('A4', 'landscape');
+    return @$pdf->stream();
 }
 //computer_7440_001_excel
 public function computer_7440_001_excel(Request $request)
