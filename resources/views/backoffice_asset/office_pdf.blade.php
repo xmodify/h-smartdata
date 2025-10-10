@@ -92,6 +92,7 @@
                 padding-right:10px; */
                 }                     
                 table{
+                    width: 100%; table-layout: fixed;
                     border-collapse: collapse;  //กรอบด้านในหายไป
                 }
                 table.one{
@@ -100,6 +101,10 @@
                 /* padding: 15px; */
                 }
                 td {
+                        word-wrap: break-word;  /* ตัดคำยาว */
+                        white-space: normal;    /* อนุญาตให้ขึ้นบรรทัดใหม่ */
+                        overflow-wrap: break-word; /* รองรับ browser อื่น */
+                        vertical-align: top;    /* ข้อความชิดบน (จะดูเรียบร้อยขึ้น) */
                     margin: .2rem;
                 /* height: 3px; */
                 /* padding: 5px; */
@@ -169,8 +174,8 @@
             <table id="office" class="table table-bordered table-striped">
                 <thead>
                 <tr class="table-secondary">
-                    <td align="center"><strong>ลำดับ</strong></td>   
-                    <td align="center"><strong>ชื่อครุภัณฑ์</strong></td>
+                    <td align="center" width="4%"><strong>ลำดับ</strong></td>   
+                    <td align="center" width="20%"><strong>ชื่อครุภัณฑ์</strong></td>
                     <td align="center" width="10%"><strong>รหัสครุภัณฑ์</strong></td>
                     <td align="center"><strong>รหัสทรัพย์สิน</strong></td>
                     <td align="center"><strong>วันที่ได้มา</strong></td>
@@ -187,15 +192,15 @@
                 <?php $months = floor(($diff - $years * 365*60*60*24) / (30*60*60*24));  ?> 
                 <?php $days = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24)/ (60*60*24));  ?> 
                 <tr>                          
-                    <td align="left">&nbsp;{{ $count }}</td>      
-                    <td align="left">&nbsp;{{ $row->ARTICLE_NAME }}</td>
-                    <td align="left">&nbsp;{{ $row->ARTICLE_NUM }}</td>
-                    <td align="left">&nbsp;{{ $row->SUP_FSN }}</td>
+                    <td align="center" width="4%">{{ $count }}</td>      
+                    <td align="left" width="20%">{{ $row->ARTICLE_NAME }}</td>
+                    <td align="left" width="10%">{{ $row->ARTICLE_NUM }}</td>
+                    <td align="left">{{ $row->SUP_FSN }}</td>
                     <td align="center">{{ DateThai($row->RECEIVE_DATE) }}</td>
-                    <td align="left">&nbsp;{{ $row->BUDGET_NAME }}</td>
-                    <td align="left">&nbsp;{{ $row->BUY_NAME }}</td>
+                    <td align="left">{{ $row->BUDGET_NAME }}</td>
+                    <td align="left">{{ $row->BUY_NAME }}</td>
                     <td align="right">{{ number_format($row->PRICE_PER_UNIT,2) }}</td>   
-                    <td align="left">&nbsp;{{ $row->HR_DEPARTMENT_SUB_SUB_NAME }}</td>
+                    <td align="left">{{ $row->HR_DEPARTMENT_SUB_SUB_NAME }}</td>
                     <td align="center">{{$years}} ปี {{$months}} เดือน {{$days}} วัน</td>
                     <?php $count++; ?>
                 @endforeach 
