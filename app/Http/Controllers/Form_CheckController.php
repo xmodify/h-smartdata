@@ -11,7 +11,7 @@ class Form_CheckController extends Controller
 {
     public function __construct()
 {
-        $this->middleware('auth')->only(['index','check_asset_report','check_nurse_report']);
+        $this->middleware('auth')->only(['index','check_asset_report','check_nurse_report']); 
 }
      
 //Create index

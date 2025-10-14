@@ -9,6 +9,12 @@ use App\Models\Nurse_inspection_shift;
 
 class HnplusController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth')->only(['index','inspection_report']); 
+    }
+//-----------------------------------------------------------------------------------------------------------------
     public function index() 
     {
         return view('hnplus.dashboard');
