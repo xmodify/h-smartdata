@@ -1034,9 +1034,13 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
 });
 
 // HN-Plus ################################################################################################################################
-Route::prefix('hnplus')->middleware(['auth', 'hnplus'])->name('hnplus.')->group(function () {
-    Route::get('/', [HnplusController::class, 'index'])->name('dashboard');
-    Route::match(['get','post'],'/inspection/report', [HnplusController::class, 'inspection_report']);
-    Route::get('/inspection/create/{depart}', [HnplusController::class, 'inspection_create'])->name('inspection_create');
-    Route::post('/inspection/save', [HnplusController::class, 'inspection_save'])->name('inspection_save');
-});
+    // ✅ กลุ่มที่ต้องล็อกอิน
+    Route::prefix('hnplus')->middleware(['auth', 'hnplus'])->name('hnplus.')->group(function () {
+        Route::get('/', [HnplusController::class, 'index'])->name('dashboard');
+        Route::match(['get','post'],'/inspection/report', [HnplusController::class, 'inspection_report']);
+    });
+    // ✅ กลุ่มที่ไม่ต้องล็อกอิน (public)
+    Route::prefix('hnplus')->name('hnplus.')->group(function () {
+        Route::get('/inspection/create/{depart}', [HnplusController::class, 'inspection_create'])->name('inspection_create');
+        Route::post('/inspection/save', [HnplusController::class, 'inspection_save'])->name('inspection_save');
+    });
