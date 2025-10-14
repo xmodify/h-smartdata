@@ -71,7 +71,17 @@
                                     แผนกผู้ป่วยนอก OPD
                                 </a> 
                             </div>                 
-                        </li>                       
+                        </li>    
+                        <li class="nav-item dropdown">
+                            <a id="navbarDropdown" class="btn btn-outline-info dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                ระบบรายงาน
+                            </a>
+                            <div class=" btn btn-outline-info dropdown-menu dropdown-menu-end">                                       
+                                <a class="dropdown-item link-primary text-white " href="{{ url('hnplus/inspection/report') }}" >
+                                    รายงานเวรตรวจการพยาบาล
+                                </a> 
+                            </div>                 
+                        </li>            
                        
                     @endguest
                     </ul>

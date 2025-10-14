@@ -18,9 +18,6 @@
                 <tr>
                   <td><a  href="{{ url('/form/check_asset_report') }}" target="_blank"><li>รายงานการตรวจสอบเครื่องมือแพทย์และอุปกรณ์ฉุกเฉิน</li></a></td>
                 </tr>
-                <tr>
-                  <td><a  href="{{ url('/form/check_nurse_report') }}" target="_blank"><li>รายงานเวรตรวจการพยาบาล</li></a></td>
-                </tr>
               </tbody>
             </table>
           </div> 

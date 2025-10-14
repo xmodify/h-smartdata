@@ -495,9 +495,6 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::match(['get','post'],'form/check_asset_report',[Form_CheckController::class,'check_asset_report']);
     Route::get('form/check_asset_create/{depart}',[Form_CheckController::class,'check_asset_create'])->name('check_asset_create');
     Route::post('form/check_asset_save',[Form_CheckController::class,'check_asset_save'])->name('check_asset_save');
-    Route::match(['get','post'],'form/check_nurse_report',[Form_CheckController::class,'check_nurse_report']);
-    Route::get('form/check_nurse_create/{depart}',[Form_CheckController::class,'check_nurse_create'])->name('check_nurse_create');
-    Route::post('form/check_nurse_save',[Form_CheckController::class,'check_nurse_save'])->name('check_nurse_save');
 
 // hosxp_setting -------------------------------------------------------------------------------------------------------------------------------
     Route::get('hosxp_setting',[Hosxp_settingController::class,'index']);
@@ -1039,4 +1036,7 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
 // HN-Plus ################################################################################################################################
 Route::prefix('hnplus')->middleware(['auth', 'hnplus'])->name('hnplus.')->group(function () {
     Route::get('/', [HnplusController::class, 'index'])->name('dashboard');
+    Route::match(['get','post'],'/inspection/report', [HnplusController::class, 'inspection_report']);
+    Route::get('/inspection/create/{depart}', [HnplusController::class, 'inspection_create'])->name('inspection_create');
+    Route::post('/inspection/save', [HnplusController::class, 'inspection_save'])->name('inspection_save');
 });
