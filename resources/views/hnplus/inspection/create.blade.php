@@ -15,7 +15,16 @@
 <body>
     <div class="card">        
         <h5 class="alert alert-primary text-center">
-            <strong>ระบบบันทึกเวรตรวจการพยาบาล</strong><br>
+            <strong>ระบบบันทึกเวรตรวจการพยาบาล<br><br>
+            @if($depart =='er') งานอุบัติเหตุ-ฉุกเฉิน ER 
+            @elseif($depart =='opd') งานผู้ป่วยนอก 
+            @elseif($depart =='ipd') งานผู้ป่วยในสามัญ
+            @elseif($depart =='vip') งานผู้ป่วยใน VIP 
+            @elseif($depart =='hd') ศูนย์ฟอกไต HD รพ.
+            @elseif($depart =='hd_outsource') ศูนย์ฟอกไต HD เอกชน 
+            @elseif($depart =='lr') งานห้องคลอด 
+            @endif
+            </strong><br><br>
             วันที่ {{ DatetimeThai(date('Y-m-d H:i:s')) }}
         </h5> 
 
