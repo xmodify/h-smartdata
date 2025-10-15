@@ -101,10 +101,10 @@
                 /* padding: 15px; */
                 }
                 td {
-                        word-wrap: break-word;  /* ตัดคำยาว */
-                        white-space: normal;    /* อนุญาตให้ขึ้นบรรทัดใหม่ */
-                        overflow-wrap: break-word; /* รองรับ browser อื่น */
-                        vertical-align: top;    /* ข้อความชิดบน (จะดูเรียบร้อยขึ้น) */
+                    word-wrap: break-word;  /* ตัดคำยาว */
+                    white-space: normal;    /* อนุญาตให้ขึ้นบรรทัดใหม่ */
+                    overflow-wrap: break-word; /* รองรับ browser อื่น */
+                    vertical-align: top;    /* ข้อความชิดบน (จะดูเรียบร้อยขึ้น) */
                     margin: .2rem;
                 /* height: 3px; */
                 /* padding: 5px; */
