@@ -21,7 +21,7 @@
                       </option> 
                     @endforeach
                   </select>
-                  <button type="submit" class="btn btn-primary">{{ __('ค้นหา') }}</button>
+                  <button type="submit" class="btn btn-primary ">{{ __('ค้นหา') }}</button>
                 </div>
               </div>
           </div>

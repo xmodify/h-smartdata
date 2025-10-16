@@ -830,14 +830,23 @@ public function opd_mornitor_healthmed(Request $request )
 ###############################################################################################################################
 public function ipd_mornitor(Request $request )
 {
-    $budget_year_last = DB::connection('backoffice')->table('budget_year')
-        ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+    $budget_year_select = DB::table('budget_year')
+        ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
+        ->orderByDesc('LEAVE_YEAR_ID')
+        ->limit(7)
+        ->get();
+    $budget_year_now = DB::table('budget_year')
         ->whereDate('DATE_END', '>=', date('Y-m-d'))
-        ->value('LEAVE_YEAR_ID');
-    $budget_year = $request->budget_year ?: $budget_year_last;
-    $start_date = DB::connection('backoffice')->table('budget_year')
+        ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+        ->value('LEAVE_YEAR_ID');       
+    $budget_year = $request->budget_year ?: $budget_year_now;
+    $year_data = DB::table('budget_year')
+        ->whereIn('LEAVE_YEAR_ID', [$budget_year, $budget_year - 4])
+        ->pluck('DATE_BEGIN', 'LEAVE_YEAR_ID');
+    $start_date   = $year_data[$budget_year] ?? null;
+    $end_date = DB::table('budget_year')
         ->where('LEAVE_YEAR_ID', $budget_year)
-        ->value('DATE_BEGIN');
+        ->value('DATE_END');
    
     $sql=DB::connection('hosxp')->select('
         SELECT COUNT(DISTINCT an) AS total,
@@ -862,10 +871,10 @@ public function ipd_mornitor(Request $request )
         FROM ipt i
         LEFT JOIN iptdiag id ON id.an = i.an AND id.diagtype = 1
 		LEFT JOIN an_stat a ON a.an=i.an
-        WHERE i.dchdate >= "'.$start_date.'" AND  i.ward NOT IN (SELECT ward FROM htp_report.lookup_ward WHERE ward_homeward = "Y") 
+        WHERE i.dchdate >= ? AND  i.ward NOT IN (SELECT ward FROM htp_report.lookup_ward WHERE ward_homeward = "Y") 
         AND (a.diag_text_list ="" OR a.diag_text_list IS NULL 				
 		OR id.icd10 ="" OR id.icd10 IS NULL
-		OR a.pdx = "" OR a.pdx IS NULL)');         
+		OR a.pdx = "" OR a.pdx IS NULL)',[$start_date]);         
 
     foreach ($sql2 as $row){ 
         $non_diagtext=$row->non_diagtext;
@@ -964,7 +973,7 @@ public function ipd_mornitor(Request $request )
         ORDER BY YEAR(i.dchdate) , MONTH(i.dchdate)',[$start_date]);
 
 
-    return view('dashboard.ipd_mornitor',compact('total','ipd','vip','lr','homeward','non_diagtext','non_icd10','not_transfer',
+    return view('dashboard.ipd_mornitor',compact('budget_year','budget_year_select','total','ipd','vip','lr','homeward','non_diagtext','non_icd10','not_transfer',
             'wait_paid_money','sum_wait_paid_money','sql4','month','bed_occupancy','ip_normal','ip_homeward'));
 }
 

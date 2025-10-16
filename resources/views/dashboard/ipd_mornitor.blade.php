@@ -196,10 +196,31 @@
       </div>
     </div> <!-- //row --> 
     <hr>
+    <form method="POST" enctype="multipart/form-data">
+    @csrf
+      <div class="row">                          
+          <div class="col-md-9" align="center">  
+                
+          </div>
+          <div class="col-lg-3 d-flex justify-content-lg-end">
+            <div class="d-flex align-items-center gap-3">
+              <select class="form-select" name="budget_year">
+                @foreach ($budget_year_select as $row)
+                  <option value="{{ $row->LEAVE_YEAR_ID }}"
+                    {{ (int)$budget_year === (int)$row->LEAVE_YEAR_ID ? 'selected' : '' }}>
+                    {{ $row->LEAVE_YEAR_NAME }}
+                  </option> 
+                @endforeach
+              </select>
+              <button type="submit" class="btn btn-primary btn-sm">{{ __('ค้นหา') }}</button>
+            </div>
+          </div>
+      </div>
+    </form>
     <div class="row" align="center">
-      <div id="bed_occupancy" style="width: 100%; height: 200px"><font color="#4154f1"><strong>อัตราครองเตียงรวม Homeward ปีงบประมาณ 2568</strong></font></div>
+      <div id="bed_occupancy" style="width: 100%; height: 200px"><font color="#4154f1"><strong>อัตราครองเตียงรวม Homeward ปีงบประมาณ {{ $budget_year }}</strong></font></div>
     </div> <!-- //row -->  
-    <hr>
+    <hr>    
     <div class="row" align="center">  
       <div class="col-sm-12">
         <h6 class="text-primary" align="left"><strong>ข้อมูลผู้ปวยในรวม Homeward</strong></h6>     
