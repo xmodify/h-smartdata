@@ -1045,10 +1045,14 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
     Route::prefix('hnplus')->name('hnplus.')->group(function () {
         Route::get('inspection/create/{depart}', [HnplusController::class, 'inspection_create'])->name('inspection_create');
         Route::post('inspection/save', [HnplusController::class, 'inspection_save'])->name('inspection_save');
-        Route::get('product/er_night',[ProductERController::class,'er_night'])->name('product.er_night');
-        Route::post('product/er_night_save',[ProductERController::class,'er_night_save'])->name('product.er_night_save');
-        Route::get('product/er_morning',[ProductERController::class,'er_morning'])->name('product.er_morning');
-        Route::post('product/er_morning_save',[ProductERController::class,'er_morning_save'])->name('product.er_morning_save');
-        Route::get('product/er_afternoon',[ProductERController::class,'er_afternoon'])->name('product.er_afternoon');
-        Route::post('product/er_afternoon_save',[ProductERController::class,'er_afternoon_save'])->name('product.er_afternoon_save');
+        //product ER-----------------------------------------------------------------------------------------------------------
+        Route::get('product/er_night_notify',[ProductERController::class,'er_night_notify']);
+        Route::get('product/er_night',[ProductERController::class,'er_night']);
+        Route::post('product/er_night_save',[ProductERController::class,'er_night_save']);
+        Route::get('product/er_morning_notify',[ProductERController::class,'er_morning_notify']);
+        Route::get('product/er_morning',[ProductERController::class,'er_morning']);
+        Route::post('product/er_morning_save',[ProductERController::class,'er_morning_save']);
+        Route::get('product/er_afternoon_notify',[ProductERController::class,'er_afternoon_notify']);
+        Route::get('product/er_afternoon',[ProductERController::class,'er_afternoon']);
+        Route::post('product/er_afternoon_save',[ProductERController::class,'er_afternoon_save']);
     });

@@ -173,8 +173,10 @@ class AmnosendController extends Controller
                 'visit_healthmed'      => (int)$r->visit_healthmed,
                 'visit_dent'           => (int)$r->visit_dent,
                 'visit_physic'         => (int)$r->visit_physic,
-                'visit_referout_inprov'     => (int)$r->visit_referout_inprov,
-                'visit_referout_outprov'    => (int)$r->visit_referout_outprov,
+                'visit_referout_inprov'    => (int)$r->visit_referout_inprov,
+                'visit_referout_outprov'   => (int)$r->visit_referout_outprov,
+                'visit_referin_inprov'     => (int)$r->visit_referin_inprov,
+                'visit_referin_outprov'    => (int)$r->visit_referin_outprov,
                 'inc_total'            => (float)$r->inc_total,
                 'inc_lab_total'        => (float)$r->inc_lab_total,
                 'inc_drug_total'       => (float)$r->inc_drug_total,
@@ -282,14 +284,17 @@ class AmnosendController extends Controller
 
         // ---- OPD ----
         $urlOpd = config('services.opoh.opd_url', 'http://1.179.128.29:3394/api/opd');
+        //$urlOpd = config('services.opoh.opd_url', 'http://127.0.0.1:8837/api/opd');
         $summaryOpd = $this->sendChunks($opdRecords, $urlOpd, $token, $hospcode, 'OPD', $chunkSize);
 
         // ---- IPD ----
         $urlIpd = config('services.opoh.ipd_url', 'http://1.179.128.29:3394/api/ipd');
+        //$urlIpd = config('services.opoh.ipd_url', 'http://127.0.0.1:8837/api/ipd');
         $summaryIpd = $this->sendChunks($ipdRecords, $urlIpd, $token, $hospcode, 'IPD', $chunkSize);
 
         // ---- HOSPITAL ----
         $urlhospital = config('services.opoh.hospital_url', 'http://1.179.128.29:3394/api/hospital_config');
+        //$urlhospital = config('services.opoh.hospital_url', 'http://127.0.0.1:8837/api/hospital_config');
         $summaryHospital = $this->sendChunks($hospitalRecords, $urlhospital, $token, $hospcode, 'HOSPITAL', $chunkSize);
 
         // กัน error ถ้าไม่ส่ง IPD
