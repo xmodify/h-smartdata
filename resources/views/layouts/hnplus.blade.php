@@ -67,8 +67,8 @@
                                 ผลิตภาพทางการพยาบาล
                             </a>
                             <div class=" btn btn-outline-info dropdown-menu dropdown-menu-end">                                       
-                                <a class="dropdown-item link-primary text-white " href="#" >
-                                    แผนกผู้ป่วยนอก OPD
+                                <a class="dropdown-item link-primary text-white " href="{{ url('hnplus/product/er_report') }}" >
+                                    งานอุบัติเหตุ-ฉุกเฉิน ER
                                 </a> 
                             </div>                 
                         </li>    

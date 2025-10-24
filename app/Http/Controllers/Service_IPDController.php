@@ -23,15 +23,25 @@ public function index()
 //Create count
 public function count(Request $request)
 {
-
-$budget_year_select = DB::connection('backoffice')->select('select LEAVE_YEAR_ID,LEAVE_YEAR_NAME FROM budget_year ORDER BY LEAVE_YEAR_ID DESC LIMIT 7');
-$budget_year_last = DB::connection('backoffice')->table('budget_year')->where('DATE_END','>=',date('Y-m-d'))->where('DATE_BEGIN','<=',date('Y-m-d'))->value('LEAVE_YEAR_ID');
-$budget_year = $request->budget_year;
-if($budget_year == '' || $budget_year == null)
-{$budget_year = $budget_year_last;}else{$budget_year =$request->budget_year;}
-$start_date_y = DB::connection('backoffice')->table('budget_year')->where('LEAVE_YEAR_ID',$budget_year-4)->value('DATE_BEGIN');
-$start_date = DB::connection('backoffice')->table('budget_year')->where('LEAVE_YEAR_ID',$budget_year)->value('DATE_BEGIN');
-$end_date = DB::connection('backoffice')->table('budget_year')->where('LEAVE_YEAR_ID',$budget_year)->value('DATE_END');
+ 
+$budget_year_select = DB::table('budget_year')
+        ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
+        ->orderByDesc('LEAVE_YEAR_ID')
+        ->limit(7)
+        ->get();
+$budget_year_now = DB::table('budget_year')
+        ->whereDate('DATE_END', '>=', date('Y-m-d'))
+        ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+        ->value('LEAVE_YEAR_ID');       
+$budget_year = $request->budget_year ?: $budget_year_now;
+$year_data = DB::table('budget_year')
+        ->whereIn('LEAVE_YEAR_ID', [$budget_year, $budget_year - 4])
+        ->pluck('DATE_BEGIN', 'LEAVE_YEAR_ID');       
+$start_date   = $year_data[$budget_year] ?? null;
+$end_date = DB::table('budget_year')
+        ->where('LEAVE_YEAR_ID', $budget_year)
+        ->value('DATE_END');
+$start_date_y = $year_data[$budget_year - 4] ?? DB::table('budget_year')->orderBy('LEAVE_YEAR_ID')->value('DATE_BEGIN');
 
 $ipd_month = DB::connection('hosxp')->select('select
         CASE WHEN MONTH(i.dchdate)="10" THEN CONCAT("ต.ค. ",RIGHT(YEAR(i.dchdate)+543,2))
@@ -48,30 +58,34 @@ $ipd_month = DB::connection('hosxp')->select('select
         WHEN MONTH(i.dchdate)="9" THEN CONCAT("ก.ย. ",RIGHT(YEAR(i.dchdate)+543,2))
         END AS "month",
         COUNT(DISTINCT i.an) AS an ,sum(a.admdate) AS admdate,
-        ROUND((SUM(a.admdate)*100)/(60*DAY(LAST_DAY(a.dchdate))),2) AS "bed_occupancy",
-        ROUND(((SUM(a.admdate)*100)/(60*DAY(LAST_DAY(a.dchdate)))*60)/100,2) AS "active_bed",
-        ROUND(SUM(i.adjrw),2) AS adjrw ,SUM(a.income-a.rcpt_money)/SUM(i.adjrw) AS "income_rw",
+        ROUND((SUM(a.admdate) * 100) / (60 * CASE WHEN YEAR(a.dchdate) = YEAR(CURDATE()) AND MONTH(a.dchdate) = MONTH(CURDATE()) 
+                THEN DAY(CURDATE()) ELSE DAY(LAST_DAY(a.dchdate))END), 2) AS bed_occupancy,
+        ROUND((SUM(a.admdate) / CASE WHEN YEAR(a.dchdate) = YEAR(CURDATE()) AND MONTH(a.dchdate) = MONTH(CURDATE()) 
+                THEN DAY(CURDATE()) ELSE DAY(LAST_DAY(a.dchdate)) END), 2) AS active_bed, 
+        ROUND(SUM(i.adjrw),2) AS adjrw ,
+        SUM(a.income-a.rcpt_money)/SUM(i.adjrw) AS "income_rw",
         ROUND(SUM(i.adjrw)/COUNT(DISTINCT i.an),2) AS cmi,
         SUM(CASE WHEN i.regtime BETWEEN "08:00:00" AND "15:59:59" THEN 1 ELSE 0 END) AS "visit_i",
         SUM(CASE WHEN i.regtime BETWEEN "16:00:00" AND "23:59:59" THEN 1 ELSE 0 END) AS "visit_o",
         SUM(CASE WHEN i.regtime BETWEEN "00:00:00" AND "07:59:59" THEN 1 ELSE 0 END) AS "visit_s"
         FROM ipt i
         INNER JOIN an_stat a ON a.an=i.an
-        WHERE i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
+        WHERE i.dchdate BETWEEN ? AND ?
         AND a.pdx NOT IN ("Z290","Z208")
         GROUP BY MONTH(i.dchdate)
-        ORDER BY YEAR(i.dchdate) , MONTH(i.dchdate)');
+        ORDER BY YEAR(i.dchdate) , MONTH(i.dchdate)',[$start_date,$end_date]);
 
 $ipd_month_sum = DB::connection('hosxp')->select('select
         COUNT(DISTINCT i.an) AS an,sum(a.admdate) AS admdate,
-        ROUND((SUM(admdate)*100)/(60*DATEDIFF(IF("'.$end_date.'" >= DATE(NOW()),DATE(NOW()),"'.$end_date.'"),"'.$start_date.'")),2) AS "bed_occupancy",
-        ROUND(((SUM(admdate)*100)/(60*DATEDIFF(IF("'.$end_date.'" >= DATE(NOW()),DATE(NOW()),"'.$end_date.'"),"'.$start_date.'"))*60)/100,2) AS "active_bed",
-        ROUND(SUM(i.adjrw),2) AS adjrw ,SUM(a.income-a.rcpt_money)/SUM(i.adjrw) AS "income_rw",
+        ROUND((SUM(a.admdate) * 100) / (60 * (DATEDIFF(LEAST(?, CURDATE()), ?) + 1)),2) AS bed_occupancy,
+        ROUND(SUM(a.admdate) / (DATEDIFF(LEAST(?, CURDATE()), ?) + 1),2) AS active_bed,
+        ROUND(SUM(i.adjrw),2) AS adjrw ,
+        SUM(a.income-a.rcpt_money)/SUM(i.adjrw) AS "income_rw",
         ROUND(SUM(i.adjrw)/COUNT(DISTINCT i.an),2) AS cmi
         FROM an_stat a
         INNER JOIN ipt i ON a.an=i.an
-        WHERE i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-        AND a.pdx NOT IN ("Z290","Z208")');
+        WHERE i.dchdate BETWEEN ? AND ?
+        AND a.pdx NOT IN ("Z290","Z208")',[$end_date,$start_date,$end_date,$start_date,$start_date,$end_date]);
 
 $ipd_month_normal = DB::connection('hosxp')->select('select
         CASE WHEN MONTH(i.dchdate)="10" THEN CONCAT("ต.ค. ",RIGHT(YEAR(i.dchdate)+543,2))
@@ -88,30 +102,33 @@ $ipd_month_normal = DB::connection('hosxp')->select('select
         WHEN MONTH(i.dchdate)="9" THEN CONCAT("ก.ย. ",RIGHT(YEAR(i.dchdate)+543,2))
         END AS "month",
         COUNT(DISTINCT i.an) AS an ,sum(a.admdate) AS admdate,
-        ROUND((SUM(a.admdate)*100)/(60*DAY(LAST_DAY(a.dchdate))),2) AS "bed_occupancy",
-        ROUND(((SUM(a.admdate)*100)/(60*DAY(LAST_DAY(a.dchdate)))*60)/100,2) AS "active_bed",
-        ROUND(SUM(i.adjrw),2) AS adjrw ,SUM(a.income-a.rcpt_money)/SUM(i.adjrw) AS "income_rw",
+        ROUND((SUM(a.admdate) * 100) / (60 * CASE WHEN YEAR(a.dchdate) = YEAR(CURDATE()) AND MONTH(a.dchdate) = MONTH(CURDATE()) 
+                THEN DAY(CURDATE()) ELSE DAY(LAST_DAY(a.dchdate))END), 2) AS bed_occupancy,
+        ROUND((SUM(a.admdate) / CASE WHEN YEAR(a.dchdate) = YEAR(CURDATE()) AND MONTH(a.dchdate) = MONTH(CURDATE()) 
+                THEN DAY(CURDATE()) ELSE DAY(LAST_DAY(a.dchdate)) END), 2) AS active_bed, 
+        ROUND(SUM(i.adjrw),2) AS adjrw ,
+        SUM(a.income-a.rcpt_money)/SUM(i.adjrw) AS "income_rw",
         ROUND(SUM(i.adjrw)/COUNT(DISTINCT i.an),2) AS cmi,
         SUM(CASE WHEN i.regtime BETWEEN "08:00:00" AND "15:59:59" THEN 1 ELSE 0 END) AS "visit_i",
         SUM(CASE WHEN i.regtime BETWEEN "16:00:00" AND "23:59:59" THEN 1 ELSE 0 END) AS "visit_o",
         SUM(CASE WHEN i.regtime BETWEEN "00:00:00" AND "07:59:59" THEN 1 ELSE 0 END) AS "visit_s"
         FROM ipt i
         INNER JOIN an_stat a ON a.an=i.an
-        WHERE i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
+        WHERE i.dchdate BETWEEN ? AND ?
         AND a.pdx NOT IN ("Z290","Z208") AND a.ward <> "06"
         GROUP BY MONTH(i.dchdate)
-        ORDER BY YEAR(i.dchdate) , MONTH(i.dchdate)');
+        ORDER BY YEAR(i.dchdate) , MONTH(i.dchdate)',[$start_date,$end_date]);
 
 $ipd_month_normal_sum = DB::connection('hosxp')->select('select
         COUNT(DISTINCT i.an) AS an,sum(a.admdate) AS admdate,
-        ROUND((SUM(admdate)*100)/(60*DATEDIFF(IF("'.$end_date.'" >= DATE(NOW()),DATE(NOW()),"'.$end_date.'"),"'.$start_date.'")),2) AS "bed_occupancy",
-        ROUND(((SUM(admdate)*100)/(60*DATEDIFF(IF("'.$end_date.'" >= DATE(NOW()),DATE(NOW()),"'.$end_date.'"),"'.$start_date.'"))*60)/100,2) AS "active_bed",
+        ROUND((SUM(a.admdate) * 100) / (60 * (DATEDIFF(LEAST(?, CURDATE()), ?) + 1)),2) AS bed_occupancy,
+        ROUND(SUM(a.admdate) / (DATEDIFF(LEAST(?, CURDATE()), ?) + 1),2) AS active_bed,
         ROUND(SUM(i.adjrw),2) AS adjrw ,SUM(a.income-a.rcpt_money)/SUM(i.adjrw) AS "income_rw",
         ROUND(SUM(i.adjrw)/COUNT(DISTINCT i.an),2) AS cmi
         FROM an_stat a
         INNER JOIN ipt i ON a.an=i.an
-        WHERE i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-        AND a.pdx NOT IN ("Z290","Z208")  AND a.ward <> "06" ');
+        WHERE i.dchdate BETWEEN ? AND ?
+        AND a.pdx NOT IN ("Z290","Z208")  AND a.ward <> "06" ',[$end_date,$start_date,$end_date,$start_date,$start_date,$end_date]);
 
 $ipd_month_homeward = DB::connection('hosxp')->select('select
         CASE WHEN MONTH(i.dchdate)="10" THEN CONCAT("ต.ค. ",RIGHT(YEAR(i.dchdate)+543,2))
@@ -128,30 +145,33 @@ $ipd_month_homeward = DB::connection('hosxp')->select('select
         WHEN MONTH(i.dchdate)="9" THEN CONCAT("ก.ย. ",RIGHT(YEAR(i.dchdate)+543,2))
         END AS "month",
         COUNT(DISTINCT i.an) AS an ,sum(a.admdate) AS admdate,
-        ROUND((SUM(a.admdate)*100)/(60*DAY(LAST_DAY(a.dchdate))),2) AS "bed_occupancy",
-        ROUND(((SUM(a.admdate)*100)/(60*DAY(LAST_DAY(a.dchdate)))*60)/100,2) AS "active_bed",
-        ROUND(SUM(i.adjrw),2) AS adjrw ,SUM(a.income-a.rcpt_money)/SUM(i.adjrw) AS "income_rw",
+        ROUND((SUM(a.admdate) * 100) / (60 * CASE WHEN YEAR(a.dchdate) = YEAR(CURDATE()) AND MONTH(a.dchdate) = MONTH(CURDATE()) 
+                THEN DAY(CURDATE()) ELSE DAY(LAST_DAY(a.dchdate))END), 2) AS bed_occupancy,
+        ROUND((SUM(a.admdate) / CASE WHEN YEAR(a.dchdate) = YEAR(CURDATE()) AND MONTH(a.dchdate) = MONTH(CURDATE()) 
+                THEN DAY(CURDATE()) ELSE DAY(LAST_DAY(a.dchdate)) END), 2) AS active_bed, 
+        ROUND(SUM(i.adjrw),2) AS adjrw ,
+        SUM(a.income-a.rcpt_money)/SUM(i.adjrw) AS "income_rw",
         ROUND(SUM(i.adjrw)/COUNT(DISTINCT i.an),2) AS cmi,
         SUM(CASE WHEN i.regtime BETWEEN "08:00:00" AND "15:59:59" THEN 1 ELSE 0 END) AS "visit_i",
         SUM(CASE WHEN i.regtime BETWEEN "16:00:00" AND "23:59:59" THEN 1 ELSE 0 END) AS "visit_o",
         SUM(CASE WHEN i.regtime BETWEEN "00:00:00" AND "07:59:59" THEN 1 ELSE 0 END) AS "visit_s"
         FROM ipt i
         INNER JOIN an_stat a ON a.an=i.an
-        WHERE i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
+        WHERE i.dchdate BETWEEN ? AND ?
         AND a.pdx NOT IN ("Z290","Z208") AND a.ward = "06"
         GROUP BY MONTH(i.dchdate)
-        ORDER BY YEAR(i.dchdate) , MONTH(i.dchdate)');
+        ORDER BY YEAR(i.dchdate) , MONTH(i.dchdate)',[$start_date,$end_date]);
 
 $ipd_month_homeward_sum = DB::connection('hosxp')->select('select
         COUNT(DISTINCT i.an) AS an,sum(a.admdate) AS admdate,
-        ROUND((SUM(admdate)*100)/(60*DATEDIFF(IF("'.$end_date.'" >= DATE(NOW()),DATE(NOW()),"'.$end_date.'"),"'.$start_date.'")),2) AS "bed_occupancy",
-        ROUND(((SUM(admdate)*100)/(60*DATEDIFF(IF("'.$end_date.'" >= DATE(NOW()),DATE(NOW()),"'.$end_date.'"),"'.$start_date.'"))*60)/100,2) AS "active_bed",
+        ROUND((SUM(a.admdate) * 100) / (60 * (DATEDIFF(LEAST(?, CURDATE()), ?) + 1)),2) AS bed_occupancy,
+        ROUND(SUM(a.admdate) / (DATEDIFF(LEAST(?, CURDATE()), ?) + 1),2) AS active_bed,
         ROUND(SUM(i.adjrw),2) AS adjrw ,SUM(a.income-a.rcpt_money)/SUM(i.adjrw) AS "income_rw",
         ROUND(SUM(i.adjrw)/COUNT(DISTINCT i.an),2) AS cmi
         FROM an_stat a
         INNER JOIN ipt i ON a.an=i.an
-        WHERE i.dchdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-        AND a.pdx NOT IN ("Z290","Z208")  AND a.ward = "06" ');
+        WHERE i.dchdate BETWEEN ? AND ?
+        AND a.pdx NOT IN ("Z290","Z208")  AND a.ward = "06" ',[$end_date,$start_date,$end_date,$start_date,$start_date,$end_date]);
 
 $ipd_m = array_column($ipd_month,'month');
 $ipd_an_m = array_column($ipd_month,'an');

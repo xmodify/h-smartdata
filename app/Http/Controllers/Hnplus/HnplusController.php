@@ -19,6 +19,7 @@ class HnplusController extends Controller
     {
         return view('hnplus.dashboard');
     }
+//###########################################################################################################################################
 //inspection_report------------------------------------------------------------------------------------------------
     public function inspection_report(Request $request) 
     {

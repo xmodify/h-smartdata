@@ -61,6 +61,8 @@ class AmnosendController extends Controller
 			SUM(CASE WHEN physic = "Y" THEN 1 ELSE 0 END) AS visit_physic,
 			SUM(CASE WHEN referout_inprov = "Y" THEN 1 ELSE 0 END) AS visit_referout_inprov,
 			SUM(CASE WHEN referout_outprov = "Y" THEN 1 ELSE 0 END) AS visit_referout_outprov,
+            SUM(CASE WHEN referin_inprov = "Y" THEN 1 ELSE 0 END) AS visit_referin_inprov,
+			SUM(CASE WHEN referin_outprov = "Y" THEN 1 ELSE 0 END) AS visit_referin_outprov,
             SUM(income) AS inc_total,
             SUM(inc03) AS inc_lab_total,
             SUM(inc12) AS inc_drug_total,
@@ -107,7 +109,8 @@ class AmnosendController extends Controller
             IF(op.vn IS NOT NULL,"Y","") AS ppfs,IF(op1.vn IS NOT NULL,"Y","") AS uccr,IF(op2.vn IS NOT NULL,"Y","") AS herb,
             COALESCE(inc_ppfs.inc, 0) AS inc_ppfs,COALESCE(inc_uccr.inc, 0) AS inc_uccr,COALESCE(inc_herb.inc, 0) AS inc_herb,
 			IF(dt.vn IS NOT NULL,"Y","") AS dent,IF(pl.vn IS NOT NULL,"Y","") AS physic,IF(hm.vn IS NOT NULL,"Y","") AS healthmed,
-			IF(r.vn IS NOT NULL,"Y","") AS referout_inprov,IF(r1.vn IS NOT NULL,"Y","") AS referout_outprov
+			IF(r.vn IS NOT NULL,"Y","") AS referout_inprov,IF(r1.vn IS NOT NULL,"Y","") AS referout_outprov,
+            IF(ri.vn IS NOT NULL,"Y","") AS referin_inprov,IF(ri1.vn IS NOT NULL,"Y","") AS referin_outprov
             FROM vn_stat v
             LEFT JOIN pttype p ON p.pttype=v.pttype
             LEFT JOIN visit_pttype vp ON vp.vn =v.vn 
@@ -124,6 +127,8 @@ class AmnosendController extends Controller
 			LEFT JOIN dtmain dt ON dt.vn=v.vn
 			LEFT JOIN referout r ON r.vn=v.vn AND r.refer_hospcode IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y")
 			LEFT JOIN referout r1 ON r1.vn=v.vn AND r1.refer_hospcode NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y")
+            LEFT JOIN referin ri ON ri.vn=v.vn AND ri.refer_hospcode IN (SELECT hospcode FROM hrims.lookup_hospcode WHERE in_province = "Y")
+			LEFT JOIN referin ri1 ON ri1.vn=v.vn AND ri1.refer_hospcode NOT IN (SELECT hospcode FROM hrims.lookup_hospcode WHERE in_province = "Y")
             LEFT JOIN htp_report.lookup_icd10 i ON i.icd10=v.pdx AND i.pp="Y"
 			LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=v.cid AND ep.vstdate=v.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN (SELECT o.vn,SUM(o.sum_price) AS inc FROM opitemrece o
@@ -214,10 +219,13 @@ class AmnosendController extends Controller
         
         // 3.2 ข้อมูล IPD-----------------------------------------------------------------------------------------------------------
         $sqlIpd = '
-            SELECT ? AS hospcode,dchdate,COUNT(DISTINCT an) AS an_total ,sum(admdate) AS admdate,        
-            ROUND((SUM(admdate)*100)/(?*DAY(LAST_DAY(dchdate))),2) AS "bed_occupancy",
-            ROUND(((SUM(admdate)*100)/(?*DAY(LAST_DAY(dchdate)))*?)/100,2) AS "active_bed",
-			ROUND(SUM(rw)/COUNT(DISTINCT an),2) AS cmi,ROUND(SUM(rw),5) AS adjrw, 
+            SELECT ? AS hospcode,dchdate,COUNT(DISTINCT an) AS an_total ,sum(admdate) AS admdate, 
+            ROUND((SUM(a.admdate) * 100) / (? * CASE WHEN YEAR(a.dchdate) = YEAR(CURDATE()) AND MONTH(a.dchdate) = MONTH(CURDATE()) 
+                THEN DAY(CURDATE()) ELSE DAY(LAST_DAY(a.dchdate))END), 2) AS bed_occupancy,
+            ROUND((SUM(a.admdate) / CASE WHEN YEAR(a.dchdate) = YEAR(CURDATE()) AND MONTH(a.dchdate) = MONTH(CURDATE()) 
+                THEN DAY(CURDATE()) ELSE DAY(LAST_DAY(a.dchdate)) END), 2) AS active_bed, 
+			ROUND(SUM(rw)/COUNT(DISTINCT an),2) AS cmi,
+            ROUND(SUM(rw),5) AS adjrw, 
             SUM(income) AS inc_total,
 			SUM(inc03) AS inc_lab_total,
             SUM(inc12) AS inc_drug_total
@@ -229,7 +237,7 @@ class AmnosendController extends Controller
             GROUP BY a.an ) AS a
 			GROUP BY dchdate';
 
-        $rowsIpd = DB::connection('hosxp')->select($sqlIpd, [$hospcode, $bed_qty, $bed_qty, $bed_qty, $start, $end]);
+        $rowsIpd = DB::connection('hosxp')->select($sqlIpd, [$hospcode, $bed_qty, $start, $end]);
 
         $ipdRecords = array_map(function ($r) {
             return [
