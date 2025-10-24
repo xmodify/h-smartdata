@@ -23,37 +23,35 @@ class ProductERController extends Controller
         $start_date = $request->start_date ?: date('Y-m-d', strtotime("first day of this month"));
         $end_date = $request->end_date ?: date('Y-m-d');  
         
-        $er_product=Nurse_productivity_er::whereBetween('report_date',[$start_date, $end_date])->get(); 
+        $er_product=Nurse_productivity_er::whereBetween('report_date',[$start_date, $end_date])
+            ->orderBy('report_date', 'desc')->get(); 
         $er_product_summary=DB::select('
-                SELECT CASE WHEN shift_time = "เวรเช้า" THEN "1" WHEN shift_time = "เวรบ่าย" THEN "2"
-                WHEN shift_time = "เวรดึก" THEN "3" END AS "id",shift_time,COUNT(shift_time) AS shift_time_sum,
-                SUM(patient_all) AS patient_all, SUM(emergent) AS emergent,SUM(urgent) AS urgent,SUM(acute_illness) AS acute_illness,
-                SUM(non_acute_illness) AS non_acute_illness,SUM(patient_hr) AS patient_hr,SUM(nurse_oncall) AS nurse_oncall,
-                SUM(nurse_partime) AS nurse_partime,SUM(nurse_fulltime) AS nurse_fulltime, SUM(nurse_hr) AS nurse_hr,
-                ((SUM(patient_hr)*100)/SUM(nurse_hr)) AS productivity,(SUM(patient_hr)/SUM(patient_all)) AS hhpuos,
-                (SUM(patient_all)*(SUM(patient_hr)/SUM(patient_all))*(1.4/7))/COUNT(shift_time) AS nurse_shift_time
-                FROM nurse_productivity_ers
-                WHERE report_date BETWEEN ? AND ?
-                GROUP BY shift_time ORDER BY id',[$start_date,$end_date]);
-        $day_er_night=DB::select('
-                SELECT report_date,ROUND(((SUM(patient_hr)*100)/SUM(nurse_hr)),2) AS productivity
-                FROM nurse_productivity_ers
-                WHERE report_date BETWEEN ? AND ? AND shift_time = "เวรดึก"
-                GROUP BY report_date ORDER BY report_date ',[$start_date,$end_date]);
-        $report_date = array_column($day_er_night,'report_date');
-        $night = array_column($day_er_night,'productivity');
-        $day_er_morning=DB::select('
-                SELECT report_date,ROUND(((SUM(patient_hr)*100)/SUM(nurse_hr)),2) AS productivity
-                FROM nurse_productivity_ers
-                WHERE report_date BETWEEN ? AND ? AND shift_time = "เวรเช้า"
-                GROUP BY report_date ORDER BY report_date ',[$start_date,$end_date]);
-        $morning = array_column($day_er_morning,'productivity');
-        $day_er_afternoon=DB::select('
-                SELECT report_date,ROUND(((SUM(patient_hr)*100)/SUM(nurse_hr)),2) AS productivity
-                FROM nurse_productivity_ers
-                WHERE report_date BETWEEN ? AND ? AND shift_time = "เวรบ่าย"
-                GROUP BY report_date ORDER BY report_date ',[$start_date,$end_date]);
-        $afternoon = array_column($day_er_afternoon,'productivity');
+            SELECT CASE WHEN shift_time = "เวรเช้า" THEN "1" WHEN shift_time = "เวรบ่าย" THEN "2"
+            WHEN shift_time = "เวรดึก" THEN "3" END AS "id",shift_time,COUNT(shift_time) AS shift_time_sum,
+            SUM(patient_all) AS patient_all, SUM(emergent) AS emergent,SUM(urgent) AS urgent,SUM(acute_illness) AS acute_illness,
+            SUM(non_acute_illness) AS non_acute_illness,SUM(patient_hr) AS patient_hr,SUM(nurse_oncall) AS nurse_oncall,
+            SUM(nurse_partime) AS nurse_partime,SUM(nurse_fulltime) AS nurse_fulltime, SUM(nurse_hr) AS nurse_hr,
+            ((SUM(patient_hr)*100)/SUM(nurse_hr)) AS productivity,(SUM(patient_hr)/SUM(patient_all)) AS hhpuos,
+            (SUM(patient_all)*(SUM(patient_hr)/SUM(patient_all))*(1.4/7))/COUNT(shift_time) AS nurse_shift_time
+            FROM nurse_productivity_ers
+            WHERE report_date BETWEEN ? AND ?
+            GROUP BY shift_time ORDER BY id',[$start_date,$end_date]);
+
+        // เตรียมข้อมูลสำหรับกราฟ
+        $er_product_asc=Nurse_productivity_er::whereBetween('report_date',[$start_date, $end_date])
+            ->orderBy('report_date', 'asc')->get(); 
+        $grouped = $er_product_asc->groupBy('report_date');
+        $report_date = [];
+        $night = [];
+        $morning = [];
+        $afternoon = [];
+        foreach ($grouped as $date => $rows) {
+            $report_date[] = DateThai($date);
+            // ค้นหาค่า productivity ของแต่ละเวร
+            $night[]     = optional($rows->firstWhere('shift_time', 'เวรดึก'))->productivity ?? 0;
+            $morning[]   = optional($rows->firstWhere('shift_time', 'เวรเช้า'))->productivity ?? 0;
+            $afternoon[] = optional($rows->firstWhere('shift_time', 'เวรบ่าย'))->productivity ?? 0;
+        }
 
         $username=Auth::user()->username;
         $del_product=DB::table('users_access')->where('username',$username)->where('del_product','Y')->value("username"); 

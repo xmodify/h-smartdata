@@ -72,18 +72,6 @@
     </div>
 </div>
 <br>
- <!-- row -->
- <div class="container-fluid">
-  <div class="row justify-content-center">
-    <div class="col-md-12">
-      <div class="card">
-        <div class="card-header text-white" style="background-color:#23A7A7;">Productivity วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</div>
-        <canvas id="productivity" style="width: 100%; height: 350px"></canvas>
-      </div>
-    </div>    
-  </div>
-</div>
-<br>
 <!--row-->
 <div class="container-fluid"> 
     <div class="card">
@@ -159,6 +147,19 @@
         </div>         
     </div>
 </div>
+ <!-- row -->
+ <div class="container-fluid">
+  <div class="row justify-content-center">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header text-white" style="background-color:#23A7A7;">
+          กราฟ Productivity แยกตามเวร วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</div>
+        <canvas id="productivity" style="width: 100%; height: 350px"></canvas>
+      </div>
+    </div>    
+  </div>
+</div>
+<br>
 @endsection
 
 <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
@@ -169,43 +170,36 @@
         $('#nurse_productivity_er').DataTable();
     });
 </script>
-
-<!-- Vendor JS Files -->
-<script src="{{ asset('assets/vendor/apexcharts/apexcharts.min.js') }}"></script>
-<script src="{{ asset('assets/vendor/chart.js/chart.min.js') }}"></script>
-<script src="{{ asset('assets/vendor/echarts/echarts.min.js') }}"></script>
-
-<!-- Bar Chart -->
+<!-- กราฟแท่งแยกตามเวร -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const ctx = document.querySelector('#productivity');
-    
     new Chart(ctx, {
       type: 'bar',
       data: {
         labels: <?php echo json_encode($report_date); ?>,
         datasets: [
           {
-            label: 'เวรดึก',
-            data: <?php echo json_encode($night); ?>,
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            borderColor: 'rgb(255, 99, 132)',
-            borderWidth: 1
-          },
-          {
             label: 'เวรเช้า',
             data: <?php echo json_encode($morning); ?>,
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            backgroundColor: 'rgba(75, 192, 192, 0.4)',
             borderColor: 'rgb(75, 192, 192)',
             borderWidth: 1
           },
           {
             label: 'เวรบ่าย',
             data: <?php echo json_encode($afternoon); ?>,
-            backgroundColor: 'rgba(255, 159, 64, 0.2)',
+            backgroundColor: 'rgba(255, 159, 64, 0.4)',
             borderColor: 'rgb(255, 159, 64)',
+            borderWidth: 1
+          },
+          {
+            label: 'เวรดึก',
+            data: <?php echo json_encode($night); ?>,
+            backgroundColor: 'rgba(255, 99, 132, 0.4)',
+            borderColor: 'rgb(255, 99, 132)',
             borderWidth: 1
           }
         ]
@@ -216,30 +210,24 @@
             anchor: 'end',
             align: 'top',
             color: '#000',
-            font: {
-              weight: 'bold'
-            },
-            formatter: (value) => value // แสดงค่าตัวเลขบนแท่ง
+            font: { weight: 'bold' },
+            formatter: (value) => value
           },
           legend: {
             position: 'top'
           },
           title: {
             display: true,
-            text: 'สรุปจำนวนเวรแต่ละช่วงเวลา'
+            text: 'กราฟ Productivity แยกตามเวร'
           }
         },
         scales: {
           y: {
-            beginAtZero: true,
-            ticks: {
-              stepSize: 1
-            }
+            beginAtZero: true
           }
         }
       },
-      plugins: [ChartDataLabels] // 🔹 เปิดใช้งานปลั๊กอินแสดงค่า
+      plugins: [ChartDataLabels]
     });
   });
 </script>
-<!-- End Bar CHart -->
