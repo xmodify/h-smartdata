@@ -29,11 +29,13 @@
     <div class="container py-4">
         <div class="card mx-auto" style="max-width: 700px;">
             <div class="card-header text-white text-center" style="background-color:#23A7A7;">
-                <h5 class="mb-0"><strong>ระบบบันทึกผลิตภาพทางการพยาบาล<br>แผนกอุบัติเหตุ-ฉุกเฉิน (ER)</strong></h5>
+                <h5 class="mb-0"><strong>ระบบบันทึกผลิตภาพทางการพยาบาล<br>แผนกอุบัติเหตุ-ฉุกเฉิน (ER)ิ<br>เวรดึก</strong></h5>
             </div>
 
             <div class="card-body">
-                <h6 class="text-primary mb-3">วันที่ {{ DateThai(date('Y-m-d')) }} <strong>สรุปเวรดึก</strong></h6>
+                <h6 class="text-primary text-center mb-3">
+                    วันที่ {{ DateThai(date('Y-m-d')) }} <br> ช่วงเวลา 00.00-08.00 น.
+                </h6>
 
                 <form id="productForm" action="{{ url('hnplus/product/er_night_save') }}" method="POST">
                     @csrf 
