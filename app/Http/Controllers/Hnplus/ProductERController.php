@@ -215,9 +215,7 @@ class ProductERController extends Controller
 
         // ✅ ส่งข้อความ Telegram
         $token = DB::table('nurse_setting')->where('name', 'telegram_token')->value('value');
-        $chat_ids = explode(',', DB::table('nurse_setting')
-            ->where('name', 'telegram_chat_id_product_er')
-            ->value('value'));
+        $chat_ids = explode(',', DB::table('nurse_setting')->where('name', 'telegram_chat_id_product_er_save')->value('value'));
 
         foreach ($chat_ids as $chat_id) {
             Http::asForm()->post("https://api.telegram.org/bot{$token}/sendMessage", [
@@ -376,9 +374,7 @@ class ProductERController extends Controller
 
         // ✅ ส่งข้อความผ่าน Telegram
         $token = DB::table('nurse_setting')->where('name', 'telegram_token')->value('value');
-        $chat_ids = explode(',', DB::table('nurse_setting')
-            ->where('name', 'telegram_chat_id_product_er')
-            ->value('value'));
+        $chat_ids = explode(',', DB::table('nurse_setting')->where('name', 'telegram_chat_id_product_er_save')->value('value'));
 
         foreach ($chat_ids as $chat_id) {
             Http::asForm()->post("https://api.telegram.org/bot{$token}/sendMessage", [
@@ -538,9 +534,7 @@ class ProductERController extends Controller
 
         // ✅ ส่งข้อความผ่าน Telegram
         $token = DB::table('nurse_setting')->where('name', 'telegram_token')->value('value');
-        $chat_ids = explode(',', DB::table('nurse_setting')
-            ->where('name', 'telegram_chat_id_product_er')
-            ->value('value'));
+        $chat_ids = explode(',', DB::table('nurse_setting')->where('name', 'telegram_chat_id_product_er_save')->value('value'));
 
         foreach ($chat_ids as $chat_id) {
             Http::asForm()->post("https://api.telegram.org/bot{$token}/sendMessage", [
