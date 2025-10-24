@@ -33,7 +33,7 @@
             </div>
 
             <div class="card-body">
-                <h6 class="text-primary mb-3">วันที่ {{ DateThai(date('Y-m-d')) }} <strong>สรุปเวรบ่าย</strong></h6>
+                <h6 class="text-primary mb-3">วันที่ {{DateThai(date('Y-m-d',strtotime('-1 day')))}} <strong>สรุปเวรบ่าย</strong></h6>
 
                 <form id="productForm" action="{{ url('hnplus/product/er_afternoon_save') }}" method="POST">
                     @csrf 
