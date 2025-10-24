@@ -392,14 +392,14 @@ class ProductERController extends Controller
     public function er_afternoon_notify()
     {
         $service = DB::connection('hosxp')->select("
-            SELECT DATE(NOW()) AS vstdate,
+            SELECT date(DATE_ADD(now(), INTERVAL -1 DAY )) AS vstdate,
                 COALESCE(COUNT(DISTINCT vn), 0) AS visit,
                 COALESCE(SUM(CASE WHEN er_emergency_type IN ('1','2') THEN 1 ELSE 0 END), 0) AS Emergent,
                 COALESCE(SUM(CASE WHEN er_emergency_type = '3' THEN 1 ELSE 0 END), 0) AS Urgent,
                 COALESCE(SUM(CASE WHEN er_emergency_type = '4' THEN 1 ELSE 0 END), 0) AS Acute_illness,
                 COALESCE(SUM(CASE WHEN er_emergency_type = '5' THEN 1 ELSE 0 END), 0) AS Non_acute_illness
             FROM er_regist
-            WHERE DATE(enter_er_time) = DATE(NOW())
+            WHERE DATE(enter_er_time) = date(DATE_ADD(now(), INTERVAL -1 DAY ))
             AND TIME(enter_er_time) BETWEEN '16:00:00' AND '23:59:59'");         
 
         foreach ($service as $row){
