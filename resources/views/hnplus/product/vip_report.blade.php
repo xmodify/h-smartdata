@@ -1,6 +1,4 @@
-@extends('layouts.app')
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
+@extends('layouts.hnplus')
 
 @section('content')
 <div class="container-fluid">
@@ -27,11 +25,11 @@
 <!--row-->
 <div class="container-fluid"> 
     <div class="card">
-        <div class="card-header bg-primary bg-opacity-75 text-white"><strong>รายงานสรุปผลิตภาพทางการพยาบาล วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</strong></div> 
+        <div class="card-header text-white" style="background-color:#23A7A7;"><strong>รายงานสรุปผลิตภาพทางการพยาบาล วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</strong></div> 
         <div class="card-body">
         <table class="table table-bordered table-striped my-3">
                 <thead>
-                    <tr class="table-secondary">
+                    <tr class="table-primary">
                         <th class="text-center">เวร</th>
                         <th class="text-center">ผู้ป่วยในเวร</th>
                         <th class="text-center">Convalescent</th>
@@ -49,7 +47,7 @@
                     </tr>
                 </thead>
                 <?php $count = 1 ; ?>
-                @foreach($sum_productivity_vip as $row)
+                @foreach($product_summary as $row)
                     <tr>
                         <td align="right">{{ $row->shift_time }} {{ $row->shift_time_sum }} เวร</td>
                         <td align="right">{{ $row->patient_all }}</td>
@@ -76,7 +74,7 @@
 <!--row-->
 <div class="container-fluid"> 
     <div class="card">
-        <div class="card-header bg-primary bg-opacity-75 text-white"><strong>การบันทึกข้อมูลผลิตภาพทางการพยาบาล วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</strong></div> 
+        <div class="card-header text-white" style="background-color:#23A7A7;"><strong>การบันทึกข้อมูลผลิตภาพทางการพยาบาล วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</strong></div> 
         <div class="card-body">
             <div class="row mb-3"> 
                 @if ($message = Session::get('danger'))
@@ -84,12 +82,12 @@
                 <h5><strong>{{ $message }}</strong></h5>
                 </div>
                 @endif
-            </div>          
-            <table id="nurse_productivity_vip" class="table table-bordered table-striped my-3">
+            </div>        
+            <table id="productivity_day" class="table table-bordered table-striped my-3">
                 <thead>
-                    <tr class="table-secondary">
+                    <tr class="table-primary">
                         <th class="text-center">ลำดับ</th>                        
-                        <th class="text-center">วันที่</th>
+                        <th class="text-center">วันที่-เวลา</th>
                         <th class="text-center">เวร</th>
                         <th class="text-center">ผู้ป่วยในเวร</th>
                         <th class="text-center">Convalescent</th>
@@ -112,7 +110,7 @@
                     </tr>
                 </thead>
                 <?php $count = 1 ; ?>
-                @foreach($nurse_productivity_vip as $row)
+                @foreach($product as $row)
                     <tr>
                         <td align="right">{{ $count }}</td>
                         <td align="right">{{ DateThai($row->report_date) }}</td>   
@@ -130,13 +128,14 @@
                         <td align="right">{{ number_format($row->productivity,2) }}</td> 
                         <td align="right">{{ number_format($row->hhpuos,2) }}</td> 
                         <td align="right">{{ number_format($row->nurse_shift_time,2) }}</td> 
-                        <td align="right">{{ $row->recorder }}</td> 
-                        <td align="right">{{ $row->note }}</td> 
+                        <td align="left">{{ $row->recorder }}</td> 
+                        <td align="left">{{ $row->note }}</td> 
                         @if(Auth::user()->username == $del_product)   
                         <td class="text-center">
-                            <form action="{{url('backoffice_hrd/nurse_productivity_vip_delete',$row->id)}}" method="GET">
-                                @csrf @method('DELETE')<button type ="submit" class="btn btn-danger btn-sm"
-                                onclick="return confirm('ต้องการลบข้อมูล {{ DateThai($row->report_date) }} {{ $row->shift_time }} Product {{ number_format($row->productivity,2) }}')">Delete</button>
+                            <form action="{{ url('hnplus/product/vip_product_delete/'.$row->id) }}" method="POST" onsubmit="return confirm('ต้องการลบข้อมูล {{ DateThai($row->report_date) }} {{ $row->shift_time }} Product {{ number_format($row->productivity,2) }}?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                             </form>
                         </td>
                         @endif    
@@ -147,6 +146,20 @@
         </div>         
     </div>
 </div>
+<br>
+ <!-- row -->
+ <div class="container-fluid">
+  <div class="row justify-content-center">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header text-white" style="background-color:#23A7A7;">
+          กราฟ Productivity แยกตามเวร วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</div>
+        <canvas id="productivity" style="width: 100%; height: 350px"></canvas>
+      </div>
+    </div>    
+  </div>
+</div>
+<br>
 @endsection
 
 <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
@@ -154,6 +167,68 @@
 <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
 <script type="text/javascript" class="init">
     $(document).ready(function () {
-        $('#nurse_productivity_vip').DataTable();
+        $('#productivity_day').DataTable();
     });
 </script>
+<!-- กราฟแท่งแยกตามเวร -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const ctx = document.querySelector('#productivity');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: <?php echo json_encode($report_date); ?>,
+        datasets: [
+          {
+            label: 'เวรเช้า',
+            data: <?php echo json_encode($morning); ?>,
+            backgroundColor: 'rgba(75, 192, 192, 0.4)',
+            borderColor: 'rgb(75, 192, 192)',
+            borderWidth: 1
+          },
+          {
+            label: 'เวรบ่าย',
+            data: <?php echo json_encode($afternoon); ?>,
+            backgroundColor: 'rgba(255, 159, 64, 0.4)',
+            borderColor: 'rgb(255, 159, 64)',
+            borderWidth: 1
+          },
+          {
+            label: 'เวรดึก',
+            data: <?php echo json_encode($night); ?>,
+            backgroundColor: 'rgba(255, 99, 132, 0.4)',
+            borderColor: 'rgb(255, 99, 132)',
+            borderWidth: 1
+          }
+        ]
+      },
+      options: {
+        plugins: {
+          datalabels: {
+            anchor: 'end',
+            align: 'top',
+            color: '#000',
+            font: { weight: 'bold' },
+            formatter: (value) => value
+          },
+          legend: {
+            position: 'top'
+          },
+          title: {
+            display: true,
+            text: 'กราฟ Productivity แยกตามเวร'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      },
+      plugins: [ChartDataLabels]
+    });
+  });
+</script>
+

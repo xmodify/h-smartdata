@@ -70,6 +70,12 @@
                                 <a class="dropdown-item link-primary text-white " href="{{ url('hnplus/product/er_report') }}" >
                                     งานอุบัติเหตุ-ฉุกเฉิน ER
                                 </a> 
+                                <a class="dropdown-item link-primary text-white " href="{{ url('hnplus/product/ipd_report') }}" >
+                                    งานผู้ป่วยในสามัญ IPD
+                                </a> 
+                                <a class="dropdown-item link-primary text-white " href="{{ url('hnplus/product/vip_report') }}" >
+                                    งานผู้ป่วยในสามัญ VIP
+                                </a> 
                             </div>                 
                         </li>    
                         <li class="nav-item dropdown">

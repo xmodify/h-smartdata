@@ -15,6 +15,8 @@ use App\Http\Controllers\Hrims\MishosController;
 use App\Http\Controllers\Hrims\DebtorController;
 use App\Http\Controllers\Hnplus\HnplusController;
 use App\Http\Controllers\Hnplus\ProductERController;
+use App\Http\Controllers\Hnplus\ProductIPDController;
+use App\Http\Controllers\Hnplus\ProductVIPController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Backoffice_AssetController;
 use App\Http\Controllers\Backoffice_HrdController;
@@ -136,31 +138,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::get('backoffice_hrd/health_notscreen_pdf',[Backoffice_HrdController::class,'health_notscreen_pdf']);
     Route::match(['get','post'],'backoffice_hrd/checkin',[Backoffice_HrdController::class,'checkin']);
     Route::get('backoffice_hrd/checkin_indiv_pdf/{id}',[Backoffice_HrdController::class,'checkin_indiv_pdf']);
-    Route::get('backoffice_hrd/checkin_indiv_detail_pdf/{id}',[Backoffice_HrdController::class,'checkin_indiv_detail_pdf']);
-    Route::match(['get','post'],'backoffice_hrd/nurse_productivity_er',[Backoffice_HrdController::class,'nurse_productivity_er'])->name('nurse_productivity_er');
-    Route::get('backoffice_hrd/nurse_productivity_er_delete/{id}',[Backoffice_HrdController::class,'nurse_productivity_er_delete']);
-    Route::get('backoffice_hrd/nurse_productivity_er_night',[Backoffice_HrdController::class,'nurse_productivity_er_night'])->name('nurse_productivity_er_night');
-    Route::post('backoffice_hrd/nurse_productivity_er_night_save',[Backoffice_HrdController::class,'nurse_productivity_er_night_save'])->name('nurse_productivity_er_night_save');
-    Route::get('backoffice_hrd/nurse_productivity_er_morning',[Backoffice_HrdController::class,'nurse_productivity_er_morning'])->name('nurse_productivity_er_morning');
-    Route::post('backoffice_hrd/nurse_productivity_er_morning_save',[Backoffice_HrdController::class,'nurse_productivity_er_morning_save'])->name('nurse_productivity_er_morning_save');
-    Route::get('backoffice_hrd/nurse_productivity_er_afternoon',[Backoffice_HrdController::class,'nurse_productivity_er_afternoon'])->name('nurse_productivity_er_afternoon');
-    Route::post('backoffice_hrd/nurse_productivity_er_afternoon_save',[Backoffice_HrdController::class,'nurse_productivity_er_afternoon_save'])->name('nurse_productivity_er_afternoon_save');
-    Route::match(['get','post'],'backoffice_hrd/nurse_productivity_ipd',[Backoffice_HrdController::class,'nurse_productivity_ipd'])->name('nurse_productivity_ipd');
-    Route::get('backoffice_hrd/nurse_productivity_ipd_delete/{id}',[Backoffice_HrdController::class,'nurse_productivity_ipd_delete']);
-    Route::get('backoffice_hrd/nurse_productivity_ipd_night',[Backoffice_HrdController::class,'nurse_productivity_ipd_night'])->name('nurse_productivity_ipd_night');
-    Route::post('backoffice_hrd/nurse_productivity_ipd_night_save',[Backoffice_HrdController::class,'nurse_productivity_ipd_night_save'])->name('nurse_productivity_ipd_night_save');
-    Route::get('backoffice_hrd/nurse_productivity_ipd_morning',[Backoffice_HrdController::class,'nurse_productivity_ipd_morning'])->name('nurse_productivity_ipd_morning');
-    Route::post('backoffice_hrd/nurse_productivity_ipd_morning_save',[Backoffice_HrdController::class,'nurse_productivity_ipd_morning_save'])->name('nurse_productivity_ipd_morning_save');
-    Route::get('backoffice_hrd/nurse_productivity_ipd_afternoon',[Backoffice_HrdController::class,'nurse_productivity_ipd_afternoon'])->name('nurse_productivity_ipd_afternoon');
-    Route::post('backoffice_hrd/nurse_productivity_ipd_afternoon_save',[Backoffice_HrdController::class,'nurse_productivity_ipd_afternoon_save'])->name('nurse_productivity_ipd_afternoon_save');
-    Route::match(['get','post'],'backoffice_hrd/nurse_productivity_vip',[Backoffice_HrdController::class,'nurse_productivity_vip'])->name('nurse_productivity_vip');
-    Route::get('backoffice_hrd/nurse_productivity_vip_delete/{id}',[Backoffice_HrdController::class,'nurse_productivity_vip_delete']);
-    Route::get('backoffice_hrd/nurse_productivity_vip_night',[Backoffice_HrdController::class,'nurse_productivity_vip_night'])->name('nurse_productivity_vip_night');
-    Route::post('backoffice_hrd/nurse_productivity_vip_night_save',[Backoffice_HrdController::class,'nurse_productivity_vip_night_save'])->name('nurse_productivity_vip_night_save');
-    Route::get('backoffice_hrd/nurse_productivity_vip_morning',[Backoffice_HrdController::class,'nurse_productivity_vip_morning'])->name('nurse_productivity_vip_morning');
-    Route::post('backoffice_hrd/nurse_productivity_vip_morning_save',[Backoffice_HrdController::class,'nurse_productivity_vip_morning_save'])->name('nurse_productivity_vip_morning_save');
-    Route::get('backoffice_hrd/nurse_productivity_vip_afternoon',[Backoffice_HrdController::class,'nurse_productivity_vip_afternoon'])->name('nurse_productivity_vip_afternoon');
-    Route::post('backoffice_hrd/nurse_productivity_vip_afternoon_save',[Backoffice_HrdController::class,'nurse_productivity_vip_afternoon_save'])->name('nurse_productivity_vip_afternoon_save');
+    Route::get('backoffice_hrd/checkin_indiv_detail_pdf/{id}',[Backoffice_HrdController::class,'checkin_indiv_detail_pdf']);    
     Route::match(['get','post'],'backoffice_hrd/nurse_productivity_opd',[Backoffice_HrdController::class,'nurse_productivity_opd'])->name('nurse_productivity_opd');
     Route::get('backoffice_hrd/nurse_productivity_opd_delete/{id}',[Backoffice_HrdController::class,'nurse_productivity_opd_delete']);
     Route::get('backoffice_hrd/nurse_productivity_opd_morning',[Backoffice_HrdController::class,'nurse_productivity_opd_morning'])->name('nurse_productivity_opd_morning'); 
@@ -1039,6 +1017,10 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
         Route::match(['get','post'],'inspection/report', [HnplusController::class, 'inspection_report']);
         Route::match(['get','post'],'product/er_report', [ProductERController::class, 'er_report'])->name('product.er_report');       
         Route::delete('product/er_product_delete/{id}', [ProductERController::class, 'er_product_delete']);
+        Route::match(['get','post'],'product/ipd_report', [ProductIPDController::class, 'ipd_report'])->name('product.ipd_report');       
+        Route::delete('product/ipd_product_delete/{id}', [ProductIPDController::class, 'ipd_product_delete']);
+        Route::match(['get','post'],'product/vip_report', [ProductVIPController::class, 'vip_report'])->name('product.vip_report');       
+        Route::delete('product/vip_product_delete/{id}', [ProductVIPController::class, 'vip_product_delete']);
     });
 
     // ✅ กลุ่มที่ไม่ต้องล็อกอิน (public)
@@ -1055,4 +1037,24 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
         Route::get('product/er_afternoon_notify',[ProductERController::class,'er_afternoon_notify']);
         Route::get('product/er_afternoon',[ProductERController::class,'er_afternoon']);
         Route::post('product/er_afternoon_save',[ProductERController::class,'er_afternoon_save']);
+        //product ipd-----------------------------------------------------------------------------------------------------------
+        Route::get('product/ipd_night_notify',[ProductIPDController::class,'ipd_night_notify']);
+        Route::get('product/ipd_night',[ProductIPDController::class,'ipd_night']);
+        Route::post('product/ipd_night_save',[ProductIPDController::class,'ipd_night_save']);
+        Route::get('product/ipd_morning_notify',[ProductIPDController::class,'ipd_morning_notify']);
+        Route::get('product/ipd_morning',[ProductIPDController::class,'ipd_morning']);
+        Route::post('product/ipd_morning_save',[ProductIPDController::class,'ipd_morning_save']);
+        Route::get('product/ipd_afternoon_notify',[ProductIPDController::class,'ipd_afternoon_notify']);
+        Route::get('product/ipd_afternoon',[ProductIPDController::class,'ipd_afternoon']);
+        Route::post('product/ipd_afternoon_save',[ProductIPDController::class,'ipd_afternoon_save']);
+        //product vip-----------------------------------------------------------------------------------------------------------
+        Route::get('product/vip_night_notify',[ProductVIPController::class,'vip_night_notify']);
+        Route::get('product/vip_night',[ProductVIPController::class,'vip_night']);
+        Route::post('product/vip_night_save',[ProductVIPController::class,'vip_night_save']);
+        Route::get('product/vip_morning_notify',[ProductVIPController::class,'vip_morning_notify']);
+        Route::get('product/vip_morning',[ProductVIPController::class,'vip_morning']);
+        Route::post('product/vip_morning_save',[ProductVIPController::class,'vip_morning_save']);
+        Route::get('product/vip_afternoon_notify',[ProductVIPController::class,'vip_afternoon_notify']);
+        Route::get('product/vip_afternoon',[ProductVIPController::class,'vip_afternoon']);
+        Route::post('product/vip_afternoon_save',[ProductVIPController::class,'vip_afternoon_save']);
     });

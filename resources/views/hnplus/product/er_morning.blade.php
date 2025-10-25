@@ -40,11 +40,11 @@
                 <form id="productForm" action="{{ url('hnplus/product/er_morning_save') }}" method="POST">
                     @csrf 
                     <input type="hidden" name="report_date" value="{{ date('Y-m-d') }}">
-                    <input type="hidden" name="shift_time" value="เวรดึก">
+                    <input type="hidden" name="shift_time" value="เวรเช้า">
 
                     @foreach($shift as $row)
                     <div class="row mb-2">
-                        <div class="col-8">จำนวนผู้ป่วยเวรเช้า</div>
+                        <div class="col-8">จำนวนผู้ป่วย</div>
                         <div class="col text-end"><strong>{{ $row->visit }}</strong> ราย</div>
                     </div>
                     <input type="hidden" name="patient_all" value="{{ $row->visit }}">

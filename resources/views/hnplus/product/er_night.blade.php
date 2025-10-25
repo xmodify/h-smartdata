@@ -24,12 +24,12 @@
             font-weight: 600;
         }
     </style>
-</head>
+</head> 
 <body>
     <div class="container py-4">
         <div class="card mx-auto" style="max-width: 700px;">
             <div class="card-header text-white text-center" style="background-color:#23A7A7;">
-                <h5 class="mb-0"><strong>ระบบบันทึกผลิตภาพทางการพยาบาล<br>แผนกอุบัติเหตุ-ฉุกเฉิน (ER)ิ<br>เวรดึก</strong></h5>
+                <h5 class="mb-0"><strong>ระบบบันทึกผลิตภาพทางการพยาบาล<br>แผนกอุบัติเหตุ-ฉุกเฉิน (ER)<br>เวรดึก</strong></h5>
             </div>
 
             <div class="card-body">
@@ -44,7 +44,7 @@
 
                     @foreach($shift as $row)
                     <div class="row mb-2">
-                        <div class="col-8">จำนวนผู้ป่วยเวรดึก</div>
+                        <div class="col-8">จำนวนผู้ป่วย</div>
                         <div class="col text-end"><strong>{{ $row->visit }}</strong> ราย</div>
                     </div>
                     <input type="hidden" name="patient_all" value="{{ $row->visit }}">

@@ -1,6 +1,5 @@
 @extends('layouts.hnplus')
 
-
 @section('content')
 <div class="container-fluid">
     <h5 class="alert alert-primary"><strong>รายงานผลิตภาพทางการพยาบาลแผนกอุบัติเหตุ-ฉุกเฉิน ER</strong></h5>  
@@ -22,7 +21,7 @@
             </div>
         </div>
     </form>    
-</div>
+</div> 
 <!--row-->
 <div class="container-fluid"> 
     <div class="card">
@@ -147,6 +146,7 @@
         </div>         
     </div>
 </div>
+<br>
  <!-- row -->
  <div class="container-fluid">
   <div class="row justify-content-center">
