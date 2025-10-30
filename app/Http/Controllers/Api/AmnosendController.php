@@ -295,7 +295,8 @@ class AmnosendController extends Controller
 
     // 3.4 ข้อมูล IPD_bed-----------------------------------------------------------------------------------------------------------
         $sqlIpd_bed = '
-            SELECT ? AS hospcode,b.export_code AS bed_code,
+            SELECT ? AS hospcode,
+            IFNULL(b.export_code,0) AS bed_code,
             IFNULL(COUNT(DISTINCT b.bedno),0) AS bed_qty,
             IFNULL(b1.bed_use,0) AS bed_use
             FROM bedno b
