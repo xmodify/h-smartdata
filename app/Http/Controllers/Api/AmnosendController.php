@@ -325,23 +325,23 @@ class AmnosendController extends Controller
         $chunkSize = (int)($request->query('chunk', 200));
 
         // ---- OPD ----
-        $urlOpd = config('services.opoh.opd_url', 'http://127.0.0.1:8837/api/opd');
-        //$urlOpd = config('services.opoh.opd_url', 'http://1.179.128.29:3394/api/opd');        
+        //$urlOpd = config('services.opoh.opd_url', 'http://127.0.0.1:8837/api/opd');
+        $urlOpd = config('services.opoh.opd_url', 'http://1.179.128.29:3394/api/opd');        
         $summaryOpd = $this->sendChunks($opdRecords, $urlOpd, $token, $hospcode, 'OPD', $chunkSize);
 
         // ---- IPD ----
-        $urlIpd = config('services.opoh.ipd_url', 'http://127.0.0.1:8837/api/ipd');
-        //$urlIpd = config('services.opoh.ipd_url', 'http://1.179.128.29:3394/api/ipd');        
+        //$urlIpd = config('services.opoh.ipd_url', 'http://127.0.0.1:8837/api/ipd');
+        $urlIpd = config('services.opoh.ipd_url', 'http://1.179.128.29:3394/api/ipd');        
         $summaryIpd = $this->sendChunks($ipdRecords, $urlIpd, $token, $hospcode, 'IPD', $chunkSize);
 
         // ---- IPD BED ----
-        $urlIpd_bed = config('services.opoh.ipd_bed_url', 'http://127.0.0.1:8837/api/ipd_bed_dep');
-        //$urlIpd = config('services.opoh.ipd_bed_url', 'http://1.179.128.29:3394/api/ipd_bed_dep');
+        //$urlIpd_bed = config('services.opoh.ipd_bed_url', 'http://127.0.0.1:8837/api/ipd_bed_dep');
+        $urlIpd = config('services.opoh.ipd_bed_url', 'http://1.179.128.29:3394/api/ipd_bed_dep');
         $summaryIpd_bed = $this->sendChunks($ipdbedRecords, $urlIpd_bed, $token, $hospcode, 'IPD_BED', $chunkSize);
 
         // ---- HOSPITAL ----
-        $urlhospital = config('services.opoh.hospital_url', 'http://127.0.0.1:8837/api/hospital_config');
-        //$urlhospital = config('services.opoh.hospital_url', 'http://1.179.128.29:3394/api/hospital_config');        
+        //$urlhospital = config('services.opoh.hospital_url', 'http://127.0.0.1:8837/api/hospital_config');
+        $urlhospital = config('services.opoh.hospital_url', 'http://1.179.128.29:3394/api/hospital_config');        
         $summaryHospital = $this->sendChunks($hospitalRecords, $urlhospital, $token, $hospcode, 'HOSPITAL', $chunkSize);
 
         // กัน error ถ้าไม่ส่ง IPD
