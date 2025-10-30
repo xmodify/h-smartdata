@@ -275,12 +275,13 @@ class AmnosendController extends Controller
         $sqlhospital = '
             SELECT ? AS hospcode,IFNULL((SELECT SUM(bed_qty) FROM htp_report.lookup_ward 
             WHERE (ward_normal = "Y" OR ward_m ="Y" OR ward_f ="Y" OR ward_vip="Y")),0) AS bed_qty,
-            IFNULL(COUNT(DISTINCT an),0) AS bed_use
-            FROM (SELECT i.an,i.regdate,i.regtime,i.ward 
+            IFNULL(COUNT(DISTINCT bedno),0) AS bed_use
+            FROM (SELECT i.an,i.regdate,i.regtime,i.ward,b.bedno,b.export_code
             FROM ipt i 
 			INNER JOIN iptadm ia ON ia.an = i.an
-			WHERE confirm_discharge = "N" 
-			AND ia.roomno IN (SELECT roomno FROM roomno WHERE roomtype IN (1,2))) AS a ';
+            LEFT JOIN bedno b ON b.bedno=ia.bedno
+			WHERE i.confirm_discharge = "N" 
+			AND b.export_code IS NOT NULL AND b.export_code <>"") AS a ';
 
         $rowshospital = DB::connection('hosxp')->select($sqlhospital, [$hospcode]);
 
@@ -303,7 +304,7 @@ class AmnosendController extends Controller
             INNER JOIN iptadm ia ON ia.an=i.an
             LEFT JOIN bedno b ON b.bedno=ia.bedno
             WHERE b.export_code IS NOT NULL AND b.export_code <>""
-            AND (i.dchdate IS NULL OR i.dchdate >= CURDATE())
+            AND i.confirm_discharge = "N"
             GROUP BY b.export_code) b1 ON b1.export_code=b.export_code
             WHERE b.export_code IS NOT NULL AND b.export_code <>""
             GROUP BY b.export_code 
