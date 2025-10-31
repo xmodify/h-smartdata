@@ -76,6 +76,9 @@
                                 <a class="dropdown-item link-primary text-white " href="{{ url('hnplus/product/vip_report') }}" >
                                     งานผู้ป่วยในสามัญ VIP
                                 </a> 
+                                <a class="dropdown-item link-primary text-white " href="{{ url('hnplus/product/lr_report') }}" >
+                                    งานห้องคลอด LR
+                                </a> 
                             </div>                 
                         </li>    
                         <li class="nav-item dropdown">

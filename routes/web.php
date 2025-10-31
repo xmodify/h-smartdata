@@ -17,6 +17,7 @@ use App\Http\Controllers\Hnplus\HnplusController;
 use App\Http\Controllers\Hnplus\ProductERController;
 use App\Http\Controllers\Hnplus\ProductIPDController;
 use App\Http\Controllers\Hnplus\ProductVIPController;
+use App\Http\Controllers\Hnplus\ProductLRController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Backoffice_AssetController;
 use App\Http\Controllers\Backoffice_HrdController;
@@ -1021,6 +1022,8 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
         Route::delete('product/ipd_product_delete/{id}', [ProductIPDController::class, 'ipd_product_delete']);
         Route::match(['get','post'],'product/vip_report', [ProductVIPController::class, 'vip_report'])->name('product.vip_report');       
         Route::delete('product/vip_product_delete/{id}', [ProductVIPController::class, 'vip_product_delete']);
+        Route::match(['get','post'],'product/lr_report', [ProductLRController::class, 'lr_report'])->name('product.lr_report');       
+        Route::delete('product/lr_product_delete/{id}', [ProductLRController::class, 'lr_product_delete']);
     });
 
     // ✅ กลุ่มที่ไม่ต้องล็อกอิน (public)
@@ -1057,4 +1060,14 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
         Route::get('product/vip_afternoon_notify',[ProductVIPController::class,'vip_afternoon_notify']);
         Route::get('product/vip_afternoon',[ProductVIPController::class,'vip_afternoon']);
         Route::post('product/vip_afternoon_save',[ProductVIPController::class,'vip_afternoon_save']);
+        //product lr-----------------------------------------------------------------------------------------------------------
+        Route::get('product/lr_night_notify',[ProductLRController::class,'lr_night_notify']);
+        Route::get('product/lr_night',[ProductLRController::class,'lr_night']);
+        Route::post('product/lr_night_save',[ProductLRController::class,'lr_night_save']);
+        Route::get('product/lr_morning_notify',[ProductLRController::class,'lr_morning_notify']);
+        Route::get('product/lr_morning',[ProductLRController::class,'lr_morning']);
+        Route::post('product/lr_morning_save',[ProductLRController::class,'lr_morning_save']);
+        Route::get('product/lr_afternoon_notify',[ProductLRController::class,'lr_afternoon_notify']);
+        Route::get('product/lr_afternoon',[ProductLRController::class,'lr_afternoon']);
+        Route::post('product/lr_afternoon_save',[ProductLRController::class,'lr_afternoon_save']);
     });

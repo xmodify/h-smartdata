@@ -1713,7 +1713,7 @@ public function nurse_productivity_lr_night()
             THEN 1 ELSE 0 END),0) AS "severe_type_null" 
             FROM ipt i LEFT JOIN an_stat a ON a.an=i.an
             LEFT JOIN patient p ON p.hn=i.hn
-            WHERE i.ward IN ("02") AND i.confirm_discharge = "N"'); 
+            WHERE i.ward IN ("02") AND i.confirm_discharge = "N"');  
       $shift_night_opd_normal = DB::connection('hosxp')->select('
             SELECT IFNULL(COUNT(DISTINCT o1.vn),0) AS opd_normal FROM opd_dep_queue o1, ovst o2 
             WHERE o1.depcode IN ("021","015") AND o1.vn = o2.vn  AND o2.pt_priority = "0"
