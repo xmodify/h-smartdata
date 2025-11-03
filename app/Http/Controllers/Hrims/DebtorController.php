@@ -1144,7 +1144,6 @@ class DebtorController extends Controller
                 AND o.vstdate BETWEEN ? AND ?
                 AND p.hipdata_code NOT IN ("OFC","LGO")	
                 AND vp.pttype NOT IN ('.$pttype_checkup.')
-                AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y")
                 AND v.pdx IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
                 AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_209 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
@@ -1197,8 +1196,7 @@ class DebtorController extends Controller
                 AND v.income-v.rcpt_money-COALESCE(o1.other_price, 0) <> "0" 
                 AND o.vstdate BETWEEN ? AND ?
                 AND p.hipdata_code NOT IN ("OFC","LGO")	
-                AND vp.pttype NOT IN ('.$pttype_checkup.')
-                AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y")
+                AND vp.pttype NOT IN ('.$pttype_checkup.')               
                 AND v.pdx IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
                 AND o.vn IN ('.$checkbox_string.')                 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
