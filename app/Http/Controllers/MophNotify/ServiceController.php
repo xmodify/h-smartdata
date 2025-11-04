@@ -97,7 +97,7 @@ class ServiceController extends Controller
 
     //3. ดึงรายการ client จากตาราง moph_notify
         $clients = DB::table('moph_notify')
-            ->whereIn('id', [1]) // 👈 เลือกเฉพาะ id ที่ต้องการส่ง
+            ->whereIn('id', [1,3]) // 👈 เลือกเฉพาะ id ที่ต้องการส่ง
             ->get(['id', 'name', 'client_id', 'secret']);
         $endpoint = "https://morpromt2f.moph.go.th/api/notify/send";
         $results = [];
@@ -232,7 +232,7 @@ class ServiceController extends Controller
 
     //3. ดึงรายการ client จากตาราง moph_notify
         $clients = DB::table('moph_notify')
-            ->whereIn('id', [1]) // 👈 เลือกเฉพาะ id ที่ต้องการส่ง
+            ->whereIn('id', [1,3]) // 👈 เลือกเฉพาะ id ที่ต้องการส่ง
             ->get(['id', 'name', 'client_id', 'secret']);
         $endpoint = "https://morpromt2f.moph.go.th/api/notify/send";
         $results = [];
@@ -366,7 +366,7 @@ class ServiceController extends Controller
 
     //3. ดึงรายการ client จากตาราง moph_notify
         $clients = DB::table('moph_notify')
-            ->whereIn('id', [1]) // 👈 เลือกเฉพาะ id ที่ต้องการส่ง
+            ->whereIn('id', [1,3]) // 👈 เลือกเฉพาะ id ที่ต้องการส่ง
             ->get(['id', 'name', 'client_id', 'secret']);
         $endpoint = "https://morpromt2f.moph.go.th/api/notify/send";
         $results = [];
