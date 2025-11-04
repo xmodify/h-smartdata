@@ -18,6 +18,7 @@ use App\Http\Controllers\Hnplus\ProductERController;
 use App\Http\Controllers\Hnplus\ProductIPDController;
 use App\Http\Controllers\Hnplus\ProductVIPController;
 use App\Http\Controllers\Hnplus\ProductLRController;
+use App\Http\Controllers\Mophnotify\ServiceController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Backoffice_AssetController;
 use App\Http\Controllers\Backoffice_HrdController;
@@ -709,6 +710,11 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::post('skpcard/store',[SkpcardController::class,'store'])->name('skpcard.store');
     Route::get('skpcard/edit/{id}',[SkpcardController::class,'edit'])->name('skpcard.edit');
     Route::put('skpcard/update/{id}',[SkpcardController::class,'update'])->name('skpcard.update');
+
+// Moph Notify ###########################################################################################################################
+    Route::get('/mophnotify/service_night', [ServiceController::class, 'service_night']);
+    Route::get('/mophnotify/service_morning', [ServiceController::class, 'service_morning']);
+    Route::get('/mophnotify/service_afternoon', [ServiceController::class, 'service_afternoon']);
 
 // H-RiMS ################################################################################################################################
 Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(function () {
