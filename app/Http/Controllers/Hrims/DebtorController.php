@@ -1377,7 +1377,8 @@ class DebtorController extends Controller
                 AND o.vstdate BETWEEN ? AND ?
                 AND p.hipdata_code = "UCS" 
                 AND o1.vn IS NULL				
-                AND vp.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y") 
+                AND vp.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y")
+                AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y") 
                 AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_216 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date]); 
 
