@@ -18,7 +18,7 @@ use App\Http\Controllers\Hnplus\ProductERController;
 use App\Http\Controllers\Hnplus\ProductIPDController;
 use App\Http\Controllers\Hnplus\ProductVIPController;
 use App\Http\Controllers\Hnplus\ProductLRController;
-use App\Http\Controllers\Mophnotify\ServiceController;
+use App\Http\Controllers\MophNotify\ServiceController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Backoffice_AssetController;
 use App\Http\Controllers\Backoffice_HrdController;
