@@ -39,7 +39,7 @@ class ServiceController extends Controller
             ROUND((ipd.ipd_normal / bed.bed_normal) * 100, 2) AS occ_ipd_normal_rate,
             ROUND((ipd.ipd_vip / bed.bed_vip) * 100, 2) AS occ_ipd_vip_rate
             FROM ovst o
-            LEFT JOIN opdscreen os ON os.vn = o.vn 
+            LEFT JOIN opdscreen_bp os ON os.vn = o.vn 
             LEFT JOIN er_regist er ON er.vn = o.vn
             LEFT JOIN physic_list ps ON ps.vn = o.vn
             LEFT JOIN health_med_service hm ON hm.vn = o.vn
@@ -68,7 +68,7 @@ class ServiceController extends Controller
                     AND r.ward NOT IN ('06')
                 ) bed ON 1=1
             WHERE o.vstdate = CURDATE()
-            AND TIME(os.update_datetime) BETWEEN '00:00:01' AND '07:59:59' ");    
+            AND os.screen_time BETWEEN '00:00:01' AND '07:59:59' ");    
 
     //2. สร้างข้อความสรุป
         $message = "สรุปข้อมูลบริการ " .DateThai(date('Y-m-d')) ."\n"
@@ -92,12 +92,12 @@ class ServiceController extends Controller
             . "Admit อยู่ " . $service->ipd_all ." | occ " . $service->occ_ipd_all_rate ." %" ."\n"
             . " - สามัญ " . $service->ipd_normal ." | occ " . $service->occ_ipd_normal_rate ." %" ."\n"
             . " - VIP " . $service->ipd_vip ." | occ " . $service->occ_ipd_vip_rate ." %" ."\n"
-            . " - LR " . $service->ipd_labor ." an" . "\n"
-            . " - Homeward " . $service->homeward ." an" . "\n";
+            . " - LR " . $service->ipd_labor ."\n"
+            . " - Homeward " . $service->homeward ."\n";
 
     //3. ดึงรายการ client จากตาราง moph_notify
         $clients = DB::table('moph_notify')
-            ->whereIn('id', [1,3]) // 👈 เลือกเฉพาะ id ที่ต้องการส่ง
+            ->whereIn('id', [3]) // 👈 เลือกเฉพาะ id ที่ต้องการส่ง
             ->get(['id', 'name', 'client_id', 'secret']);
         $endpoint = "https://morpromt2f.moph.go.th/api/notify/send";
         $results = [];
@@ -174,7 +174,7 @@ class ServiceController extends Controller
             ROUND((ipd.ipd_normal / bed.bed_normal) * 100, 2) AS occ_ipd_normal_rate,
             ROUND((ipd.ipd_vip / bed.bed_vip) * 100, 2) AS occ_ipd_vip_rate
             FROM ovst o
-            LEFT JOIN opdscreen os ON os.vn = o.vn 
+            LEFT JOIN opdscreen_bp os ON os.vn = o.vn 
             LEFT JOIN er_regist er ON er.vn = o.vn
             LEFT JOIN physic_list ps ON ps.vn = o.vn
             LEFT JOIN health_med_service hm ON hm.vn = o.vn
@@ -203,7 +203,7 @@ class ServiceController extends Controller
                     AND r.ward NOT IN ('06')
                 ) bed ON 1=1
             WHERE o.vstdate = CURDATE()
-            AND TIME(os.update_datetime) BETWEEN '08:00:01' AND '15:59:59' ");    
+            AND os.screen_time BETWEEN '08:00:01' AND '15:59:59' ");    
 
     //2. สร้างข้อความสรุป
         $message = "สรุปข้อมูลบริการ " .DateThai(date('Y-m-d')) ."\n"
@@ -227,12 +227,12 @@ class ServiceController extends Controller
             . "Admit อยู่ " . $service->ipd_all ." | occ " . $service->occ_ipd_all_rate ." %" ."\n"
             . " - สามัญ " . $service->ipd_normal ." | occ " . $service->occ_ipd_normal_rate ." %" ."\n"
             . " - VIP " . $service->ipd_vip ." | occ " . $service->occ_ipd_vip_rate ." %" ."\n"
-            . " - LR " . $service->ipd_labor ." an" . "\n"
-            . " - Homeward " . $service->homeward ." an" . "\n";
+            . " - LR " . $service->ipd_labor ."\n"
+            . " - Homeward " . $service->homeward ."\n";
 
     //3. ดึงรายการ client จากตาราง moph_notify
         $clients = DB::table('moph_notify')
-            ->whereIn('id', [1,3]) // 👈 เลือกเฉพาะ id ที่ต้องการส่ง
+            ->whereIn('id', [3]) // 👈 เลือกเฉพาะ id ที่ต้องการส่ง
             ->get(['id', 'name', 'client_id', 'secret']);
         $endpoint = "https://morpromt2f.moph.go.th/api/notify/send";
         $results = [];
@@ -308,7 +308,7 @@ class ServiceController extends Controller
             ROUND((ipd.ipd_normal / bed.bed_normal) * 100, 2) AS occ_ipd_normal_rate,
             ROUND((ipd.ipd_vip / bed.bed_vip) * 100, 2) AS occ_ipd_vip_rate
             FROM ovst o
-            LEFT JOIN opdscreen os ON os.vn = o.vn 
+            LEFT JOIN opdscreen_bp os ON os.vn = o.vn 
             LEFT JOIN er_regist er ON er.vn = o.vn
             LEFT JOIN physic_list ps ON ps.vn = o.vn
             LEFT JOIN health_med_service hm ON hm.vn = o.vn
@@ -337,7 +337,7 @@ class ServiceController extends Controller
                     AND r.ward NOT IN ('06')
                 ) bed ON 1=1
             WHERE o.vstdate = CURDATE() - INTERVAL 1 DAY
-            AND TIME(os.update_datetime) BETWEEN '16:00:01' AND '23:59:59' ");    
+            AND os.screen_time BETWEEN '16:00:01' AND '23:59:59' ");    
 
     //2. สร้างข้อความสรุป
         $message = "สรุปข้อมูลบริการ " .DateThai(date("Y-m-d", strtotime("-1 day"))) ."\n"
@@ -361,12 +361,12 @@ class ServiceController extends Controller
             . "Admit อยู่ " . $service->ipd_all ." | occ " . $service->occ_ipd_all_rate ." %" ."\n"
             . " - สามัญ " . $service->ipd_normal ." | occ " . $service->occ_ipd_normal_rate ." %" ."\n"
             . " - VIP " . $service->ipd_vip ." | occ " . $service->occ_ipd_vip_rate ." %" ."\n"
-            . " - LR " . $service->ipd_labor ." an" . "\n"
-            . " - Homeward " . $service->homeward ." an" . "\n";
+            . " - LR " . $service->ipd_labor ."\n"
+            . " - Homeward " . $service->homeward ."\n";
 
     //3. ดึงรายการ client จากตาราง moph_notify
         $clients = DB::table('moph_notify')
-            ->whereIn('id', [1,3]) // 👈 เลือกเฉพาะ id ที่ต้องการส่ง
+            ->whereIn('id', [3]) // 👈 เลือกเฉพาะ id ที่ต้องการส่ง
             ->get(['id', 'name', 'client_id', 'secret']);
         $endpoint = "https://morpromt2f.moph.go.th/api/notify/send";
         $results = [];
