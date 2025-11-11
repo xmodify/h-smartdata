@@ -15,7 +15,7 @@
             </form>
         </div>
         <div class="col-md-4" align="right">
-            <h6 class="text-primary" style="display: inline;">V.68-10-31 17:00</h6>
+            <h6 class="text-primary" style="display: inline;">V.68-11-11 15:10</h6>
         </div>
     </div>
     <pre id="gitOutput" style="background: #eeee; padding: 1rem; margin-top: 1rem;"></pre>
