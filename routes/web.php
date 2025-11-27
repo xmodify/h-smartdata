@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\LookupHospcodeController;
 use App\Http\Controllers\Admin\User_AccessController;
 use App\Http\Controllers\Hrims\HrimsController;
 use App\Http\Controllers\Hrims\ImportStmController;
+use App\Http\Controllers\Hrims\CheckController;
 use App\Http\Controllers\Hrims\ClaimIpController;
 use App\Http\Controllers\Hrims\ClaimOpController;
 use App\Http\Controllers\Hrims\MishosController;
@@ -744,6 +745,19 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
     Route::post('import_stm/ucs_kidney_save',[ImportStmController::class,'ucs_kidney_save']);
     Route::match(['get','post'],'import_stm/ucs_kidneydetail',[ImportStmController::class,'ucs_kidneydetail']);
 
+    //Check------------------------------------------------------------------------------------------------------------------------------
+    Route::match(['get','post'],'check/nhso_endpoint',[CheckController::class,'nhso_endpoint']);
+    Route::match(['get','post'],'check/fdh_claim_status',[CheckController::class,'fdh_claim_status']);
+    Route::post('check/drug_cat_nhso_save',[CheckController::class,'drug_cat_nhso_save']);
+    Route::get('check/drug_cat',[CheckController::class,'drug_cat'])->name('drug_cat');;
+    Route::get('check/drug_cat_non_nhso',[CheckController::class,'drug_cat_non_nhso']);
+    Route::get('check/drug_cat_nhso_price_notmatch_hosxp',[CheckController::class,'drug_cat_nhso_price_notmatch_hosxp']);
+    Route::get('check/drug_cat_nhso_tmt_notmatch_hosxp',[CheckController::class,'drug_cat_nhso_tmt_notmatch_hosxp']);
+    Route::get('check/drug_cat_nhso_code24_notmatch_hosxp',[CheckController::class,'drug_cat_nhso_code24_notmatch_hosxp']);
+    Route::get('check/drug_cat_herb',[CheckController::class,'drug_cat_herb']);
+    Route::get('check/pttype',[CheckController::class,'pttype']);
+    Route::get('check/nhso_subinscl',[CheckController::class,'nhso_subinscl']);
+
     // Claim_OP -------------------------------------------------------------------------------------------------------------------------
     Route::match(['get','post'],'claim_op/ucs_incup',[ClaimOpController::class,'ucs_incup']);
     Route::match(['get','post'],'claim_op/ucs_inprovince',[ClaimOpController::class,'ucs_inprovince']);
@@ -988,7 +1002,7 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
     Route::post('debtor/1102050102_107_confirm',[DebtorController::class,'_1102050102_107_confirm']);
     Route::delete('debtor/1102050102_107_delete',[DebtorController::class,'_1102050102_107_delete']);
     Route::put('debtor/1102050102_107/update/{an}',[DebtorController::class,'_1102050102_107_update']);
-     Route::get('debtor/1102050102_107/tracking/{an}',[DebtorController::class,'_1102050102_107_tracking']);
+    Route::get('debtor/1102050102_107/tracking/{an}',[DebtorController::class,'_1102050102_107_tracking']);
     Route::post('debtor/1102050102_107/tracking_insert',[DebtorController::class,'_1102050102_107_tracking_insert']);
     Route::put('debtor/1102050102_107/tracking_update/{tracking_id}',[DebtorController::class,'_1102050102_107_tracking_update']);
     Route::get('debtor/1102050102_107_daily_pdf',[DebtorController::class,'_1102050102_107_daily_pdf']);

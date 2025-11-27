@@ -8,6 +8,7 @@ use App\Models\MainSetting;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Crypt; 
 
 class MainSettingController extends Controller
 {
@@ -29,15 +30,15 @@ class MainSettingController extends Controller
 //-----------------------------------------------------------------------------------------------------------------------------
     public function update(Request $request, $id)
     {
-        $request->validate([           
-            'value' => 'required|string',
+        $request->validate([
+            'value' => 'nullable|string',
         ]);
 
-        $setting = MainSetting::findOrFail($id);        
+        $setting = MainSetting::findOrFail($id);
         $setting->value = $request->value;
         $setting->save();
 
-    return redirect()->back()->with('success', 'แก้ไขข้อมูลสำเร็จ');
+        return back()->with('success', 'แก้ไขข้อมูลสำเร็จ');
     }
 #######################################################################################################################################    
 // UP Structure -----------------------------------------------------------------------------------------------------------------------        
@@ -65,10 +66,15 @@ class MainSettingController extends Controller
             ['id' => 18, 'name_th' => 'ชื่อโรงพยาบาล', 'name' => 'hospital_name', 'value' => 'โรงพยาบาลหัวตะพาน'],
             ['id' => 19, 'name_th' => 'รหัส 5 หลักโรงพยาบาล', 'name' => 'hospital_code', 'value' => '10989'],
             ['id' => 20, 'name_th' => 'OPOH Token', 'name' => 'opoh_token', 'value' => ''],
+            ['id' => 21, 'name_th' => 'FDH User', 'name' => 'fdh_user', 'value' => ''],
+            ['id' => 22, 'name_th' => 'FDH Pass', 'name' => 'fdh_pass', 'value' => ''],
+            ['id' => 23, 'name_th' => 'FDH Secret Key', 'name' => 'fdh_secretKey', 'value' => ''],
         ];
         
         foreach ($main_setting as $row) {
+
             $check = MainSetting::where('id', $row['id'])->count();
+
             if ($check > 0) {
                 DB::table('main_setting')
                 ->where('id', $row['id']) 

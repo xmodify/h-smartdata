@@ -68,7 +68,35 @@
                                 </a> 
                             </div>                 
                         </li> 
-                       
+                        <li class="nav-item dropdown">
+                            <a id="navbarDropdown" class="btn btn-outline-info dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                ตรวจสอบข้อมูล
+                            </a>
+                            <ul class="bg-success dropdown-menu dropdown-menu-end">                                 
+                                <!-- เมนูอื่น -->
+                                <li>
+                                    <a class="link-primary dropdown-item text-white" href="{{ url('hrims/check/nhso_endpoint') }}">
+                                        ปิดสิทธิ สปสช.
+                                    </a>
+                                    <a class="link-primary dropdown-item text-white" href="{{ url('hrims/check/fdh_claim_status') }}">
+                                        FDH Claim Status
+                                    </a>
+                                    <a class="link-primary dropdown-item text-white" href="{{ url('hrims/check/drug_cat') }}">
+                                        Drug Catalog สปสช.
+                                    </a>
+                                </li>
+                                <!-- ชี้ขวา -->
+                                <li class="dropend">
+                                    <a class="link-primary dropdown-item dropdown-toggle text-white" href="#" data-bs-toggle="dropdown">
+                                        สิทธิการรักษา
+                                    </a>
+                                    <ul class="bg-success dropdown-menu">
+                                        <li><a class="dropdown-item link-primary text-white" href="{{ url('hrims/check/pttype') }}">HOSxP</a></li>
+                                        <li><a class="dropdown-item link-primary text-white" href="{{ url('hrims/check/nhso_subinscl') }}">สปสช.</a></li>                                       
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li> 
                         <li class="nav-item dropdown">
                             <a id="navbarDropdown" class="btn btn-outline-info dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                 เรียกเก็บ OP
@@ -340,6 +368,11 @@
                     
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ms-auto">
+                        <li > 
+                            <div class="btn text-info">
+                                V. 68-11-27 22:00
+                            </div>   
+                        </li> 
                         <!-- H-RiMS -->
                         @auth                
                             @if (auth()->user()->hasAccessHrims('Y'))  

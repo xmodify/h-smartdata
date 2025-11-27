@@ -38,11 +38,18 @@
             @foreach ($data as $row)
                 <tr>
                     <td>{{ $row->name_th }}</td>
-                    <td>{{ $row->value }}</td>
+                    <td>
+                    @if(in_array($row->name, ['fdh_pass', 'fdh_secretKey']))
+                        •••••••••••••••
+                    @else
+                        {{ $row->value }}
+                    @endif
+                </td>
                     <td>
                         <!-- ปุ่ม Edit -->
                         <button class="btn btn-warning btn-sm btn-edit" 
                             data-id="{{ $row->id }}"    
+                            data-name="{{ $row->name }}"
                             data-value="{{ $row->value }}"   
                             data-bs-toggle="modal"
                             data-bs-target="#editModal">
@@ -77,29 +84,29 @@
     <br>
     <!-- Modal เลือกช่วงวันที่ -->
     <div class="modal fade" id="sendAOPODModal" tabindex="-1" aria-labelledby="sendAOPODLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-        <div class="modal-header bg-success text-white">
-            <h5 class="modal-title">ส่งข้อมูล AOPOD</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">ส่งข้อมูล AOPOD</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
 
-        <div class="modal-body">
-            <div class="mb-3">
-            <label for="start_date" class="form-label">วันที่เริ่มต้น</label>
-            <input type="date" id="start_date" class="form-control" required>
+                <div class="modal-body">
+                    <div class="mb-3">
+                    <label for="start_date" class="form-label">วันที่เริ่มต้น</label>
+                    <input type="date" id="start_date" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                    <label for="end_date" class="form-label">วันที่สิ้นสุด</label>
+                    <input type="date" id="end_date" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="button" class="btn btn-success" id="sendAOPODBtn">ส่งข้อมูล</button>
+                </div>
             </div>
-            <div class="mb-3">
-            <label for="end_date" class="form-label">วันที่สิ้นสุด</label>
-            <input type="date" id="end_date" class="form-control" required>
-            </div>
         </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
-            <button type="button" class="btn btn-success" id="sendAOPODBtn">ส่งข้อมูล</button>
-        </div>
-        </div>
-    </div>
     </div>
     <br>
     <!-- แจ้ง Git Pull -->
@@ -194,7 +201,13 @@
         document.querySelectorAll('.btn-edit').forEach(button => {
             button.addEventListener('click', function () {
                 const id = this.dataset.id;
-                const value = this.dataset.value;                
+                const name = this.dataset.name;
+                let value = this.dataset.value;    
+                
+                // ถ้าเป็นข้อมูลลับ → ไม่เอาค่าไปโชว์
+                if (name === 'fdh_pass' || name === 'fdh_secretKey') {
+                    value = "******";
+                }
 
                 document.getElementById('editValue').value = value;
                 // document.getElementById('editForm').action = `/admin/main_setting/${id}`;
