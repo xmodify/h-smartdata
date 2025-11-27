@@ -103,15 +103,22 @@ class FdhClaimStatusController extends Controller
 
         // 3) ดึงข้อมูล UCS จาก HOSxP
         $items = DB::connection('hosxp')->select("
-            SELECT o.hn, o.vn AS seq, o.an
+            SELECT o.hn, o.vn AS seq, '' AS an
             FROM ovst o
-            LEFT JOIN visit_pttype vp ON vp.vn = o.vn
-			LEFT JOIN ipt_pttype ip ON ip.an = o.an
-            LEFT JOIN pttype p ON p.pttype = vp.pttype
-			LEFT JOIN pttype pi ON pi.pttype = ip.pttype	
+            LEFT JOIN visit_pttype vp ON vp.vn = o.vn			
+            LEFT JOIN pttype p ON p.pttype = vp.pttype	
             WHERE o.vstdate BETWEEN ? AND ?
-            AND (p.hipdata_code = 'UCS' OR pi.hipdata_code = 'UCS')
-			GROUP BY o.vn,o.an ", [ $dateStart, $dateEnd ]);
+			AND o.an IS NULL
+            AND p.hipdata_code = 'UCS' 
+			GROUP BY o.vn
+			UNION
+			SELECT i.hn, '' AS seq, i.an
+            FROM ipt i
+            LEFT JOIN ipt_pttype ip ON ip.an = i.an			
+            LEFT JOIN pttype p ON p.pttype = ip.pttype	
+            WHERE i.dchdate BETWEEN ? AND ?
+            AND p.hipdata_code = 'UCS' 
+			GROUP BY i.an ", [ $dateStart, $dateEnd,$dateStart, $dateEnd ]);
 
         if (empty($items)) {
             return response()->json([
