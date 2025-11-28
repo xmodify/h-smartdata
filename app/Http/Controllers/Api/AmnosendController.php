@@ -186,7 +186,7 @@ class AmnosendController extends Controller
                 LEFT JOIN referin rii ON rii.vn = ip.vn AND rii.refer_hospcode IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y")
                 LEFT JOIN referin rii1 ON rii1.vn = ip.vn AND rii1.refer_hospcode NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y")
                 LEFT JOIN htp_report.lookup_icd10 i ON i.icd10 = v.pdx AND i.pp = "Y"
-                LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid = v.cid AND ep.vstdate = v.vstdate AND ep.claimCode LIKE "EP%"
+                LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid = v.cid AND ep.vstdate = v.vstdate AND ep.claimCode LIKE "EP%"
                 LEFT JOIN (SELECT o.vn,CASE WHEN oe.vn IS NOT NULL OR rep.vn IS NOT NULL THEN "Y" ELSE "N" END AS vn_claim,
                     SUM(o.sum_price) AS inc,SUM(CASE WHEN oe.vn IS NOT NULL OR rep.vn IS NOT NULL THEN o.sum_price ELSE 0 END) AS inc_claim,
                     stm.receive_pp AS inc_receive FROM opitemrece o
