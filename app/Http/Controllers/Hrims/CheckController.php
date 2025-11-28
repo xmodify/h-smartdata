@@ -24,7 +24,7 @@ class CheckController extends Controller
         Session::put('end_date', $end_date);
 
         $sql=DB::select('
-            SELECT * FROM nhso_endpoint_indiv WHERE vstdate BETWEEN ? AND ?'
+            SELECT * FROM nhso_endpoint WHERE vstdate BETWEEN ? AND ?'
             ,[$start_date,$end_date]);
 
         return view('hrims.check.nhso_endpoint',compact('start_date','end_date','sql'));            

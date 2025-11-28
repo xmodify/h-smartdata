@@ -112,7 +112,7 @@ class ClaimOpController extends Controller
             LEFT JOIN opitemrece proj ON proj.vn=o.vn AND proj.icode 
                 IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("WALKIN","UCEP24"))
             LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
-            LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
+            LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
             LEFT JOIN htp_report.fdh_claim_status fdh ON fdh.seq=o.vn
             LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
@@ -150,7 +150,7 @@ class ClaimOpController extends Controller
             LEFT JOIN opitemrece proj ON proj.vn=o.vn AND proj.icode 
                 IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("WALKIN","UCEP24"))
             LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
-            LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
+            LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
             LEFT JOIN htp_report.fdh_claim_status fdh ON fdh.seq=o.vn
             LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
@@ -261,7 +261,7 @@ class ClaimOpController extends Controller
             LEFT JOIN opitemrece proj ON proj.vn=o.vn AND proj.icode 
                 IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("WALKIN","UCEP24"))
             LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
-            LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
+            LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
             LEFT JOIN htp_report.fdh_claim_status fdh ON fdh.seq=o.vn
             LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate	AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
@@ -300,7 +300,7 @@ class ClaimOpController extends Controller
             LEFT JOIN opitemrece proj ON proj.vn=o.vn AND proj.icode 
                 IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("WALKIN","UCEP24"))
             LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
-            LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
+            LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
             LEFT JOIN htp_report.fdh_claim_status fdh ON fdh.seq=o.vn
             LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate	AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
@@ -464,7 +464,7 @@ class ClaimOpController extends Controller
             LEFT JOIN opitemrece proj ON proj.vn=o.vn AND proj.icode 
                 IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("WALKIN","UCEP24"))
             LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
-            LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
+            LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
             LEFT JOIN htp_report.fdh_claim_status fdh ON fdh.seq=o.vn
             LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
@@ -499,7 +499,7 @@ class ClaimOpController extends Controller
             LEFT JOIN opitemrece proj ON proj.vn=o.vn AND proj.icode 
                 IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("WALKIN","UCEP24"))
             LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
-            LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
+            LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
             LEFT JOIN htp_report.fdh_claim_status fdh ON fdh.seq=o.vn
             LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate	AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
@@ -590,7 +590,7 @@ class ClaimOpController extends Controller
             LEFT JOIN (SELECT op.vn, SUM(op.sum_price) AS claim_price	FROM opitemrece op
             INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
                 WHERE op.vstdate BETWEEN ? AND ? AND li.kidney = "Y" GROUP BY op.vn) kidney ON kidney.vn=o.vn
-            LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
+            LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN (SELECT cid,datetimeadm,sum(receive_total) AS receive_total,repno FROM htp_report.stm_ucs_kidney
                 WHERE datetimeadm BETWEEN ? AND ? GROUP BY cid,datetimeadm) stm ON stm.cid=pt.cid AND stm.datetimeadm = o.vstdate
             WHERE p.hipdata_code = "UCS" AND o.vstdate BETWEEN ? AND ?
@@ -677,7 +677,7 @@ class ClaimOpController extends Controller
             LEFT JOIN (SELECT op.vn, SUM(op.sum_price) AS claim_price FROM opitemrece op
             INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
                 WHERE op.vstdate BETWEEN ? AND ? AND li.ppfs = "Y" GROUP BY op.vn) o2 ON o2.vn=o.vn            
-            LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
+            LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
             LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN ? AND ?
@@ -704,7 +704,7 @@ class ClaimOpController extends Controller
             LEFT JOIN (SELECT op.vn, SUM(op.sum_price) AS claim_price FROM opitemrece op
             INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
                 WHERE op.vstdate BETWEEN ? AND ? AND li.ppfs = "Y" GROUP BY op.vn) o2 ON o2.vn=o.vn            
-            LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
+            LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
             LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN ? AND ?
@@ -795,7 +795,7 @@ class ClaimOpController extends Controller
             LEFT JOIN opitemrece proj ON proj.vn=o.vn AND proj.icode 
                 IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("WALKIN","UCEP24"))
             LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
-            LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
+            LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
             LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND p.hipdata_code = "STP" AND o.vstdate BETWEEN ? AND ?
@@ -827,7 +827,7 @@ class ClaimOpController extends Controller
             LEFT JOIN opitemrece proj ON proj.vn=o.vn AND proj.icode 
                 IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("WALKIN","UCEP24"))
             LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
-            LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
+            LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
             LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND p.hipdata_code = "STP" AND o.vstdate BETWEEN ? AND ?
@@ -915,7 +915,7 @@ class ClaimOpController extends Controller
             LEFT JOIN (SELECT op.vn,SUM(op.sum_price) AS claim_price	FROM opitemrece op
             INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
                 WHERE op.vstdate BETWEEN ? AND ? AND li.ppfs = "Y" GROUP BY op.vn) o2 ON o2.vn=o.vn
-            LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
+            LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             WHERE (o.an ="" OR o.an IS NULL) AND p.hipdata_code = "OFC" AND o.vstdate BETWEEN ? AND ?
             AND v.income <>"0" AND kidney.vn IS NULL AND oe.upload_datetime IS NULL 
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
@@ -943,7 +943,7 @@ class ClaimOpController extends Controller
             LEFT JOIN (SELECT op.vn,SUM(op.sum_price) AS claim_price	FROM opitemrece op
             INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
                 WHERE op.vstdate BETWEEN ? AND ? AND li.ppfs = "Y" GROUP BY op.vn) o2 ON o2.vn=o.vn
-            LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
+            LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN htp_report.stm_ofc stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
             LEFT JOIN htp_report.stm_ucs stm_uc ON stm_uc.cid=pt.cid AND stm_uc.vstdate = o.vstdate AND LEFT(stm_uc.vsttime,5) =LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND p.hipdata_code = "OFC" AND o.vstdate BETWEEN ? AND ?
@@ -1031,7 +1031,7 @@ class ClaimOpController extends Controller
             LEFT JOIN (SELECT op.vn, SUM(op.sum_price) AS claim_price	FROM opitemrece op
             INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
                 WHERE op.vstdate BETWEEN ? AND ? AND li.kidney = "Y" GROUP BY op.vn) kidney ON kidney.vn=o.vn
-            LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
+            LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN (SELECT hn,vstdate,sum(amount) AS receive_total,rid AS repno FROM htp_report.stm_ofc_kidney
                 WHERE vstdate BETWEEN ? AND ? GROUP BY hn,vstdate) stm ON stm.hn=pt.hn AND stm.vstdate = o.vstdate
             WHERE p.hipdata_code = "OFC" AND o.vstdate BETWEEN ? AND ?
@@ -1119,7 +1119,7 @@ class ClaimOpController extends Controller
             LEFT JOIN (SELECT op.vn,SUM(op.sum_price) AS claim_price	FROM opitemrece op
             INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
                 WHERE op.vstdate BETWEEN ? AND ? AND li.ppfs = "Y" GROUP BY op.vn) o2 ON o2.vn=o.vn
-            LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
+            LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             WHERE (o.an ="" OR o.an IS NULL) AND p.hipdata_code = "LGO" AND o.vstdate BETWEEN ? AND ?
             AND v.income <>"0" AND kidney.vn IS NULL AND oe.upload_datetime IS NULL 
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
@@ -1147,7 +1147,7 @@ class ClaimOpController extends Controller
             LEFT JOIN (SELECT op.vn,SUM(op.sum_price) AS claim_price	FROM opitemrece op
             INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
                 WHERE op.vstdate BETWEEN ? AND ? AND li.ppfs = "Y" GROUP BY op.vn) o2 ON o2.vn=o.vn
-            LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
+            LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN htp_report.stm_lgo stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
             LEFT JOIN htp_report.stm_ucs stm_uc ON stm_uc.cid=pt.cid AND stm_uc.vstdate = o.vstdate AND LEFT(stm_uc.vsttime,5) =LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND p.hipdata_code = "LGO" AND o.vstdate BETWEEN ? AND ?
@@ -1235,7 +1235,7 @@ class ClaimOpController extends Controller
             LEFT JOIN (SELECT op.vn, SUM(op.sum_price) AS claim_price	FROM opitemrece op
             INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
                 WHERE op.vstdate BETWEEN ? AND ? AND li.kidney = "Y" GROUP BY op.vn) kidney ON kidney.vn=o.vn
-            LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
+            LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN (SELECT cid,datetimeadm,sum(compensate_kidney) AS receive_total,repno FROM htp_report.stm_lgo_kidney
                 WHERE datetimeadm BETWEEN ? AND ? GROUP BY cid,datetimeadm) stm ON stm.cid=pt.cid AND stm.datetimeadm = o.vstdate
             WHERE p.hipdata_code = "LGO" AND o.vstdate BETWEEN ? AND ?
@@ -1323,7 +1323,7 @@ class ClaimOpController extends Controller
             LEFT JOIN (SELECT op.vn,SUM(op.sum_price) AS claim_price	FROM opitemrece op
             INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
                 WHERE op.vstdate BETWEEN ? AND ? AND li.ppfs = "Y" GROUP BY op.vn) o2 ON o2.vn=o.vn
-            LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
+            LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             WHERE (o.an ="" OR o.an IS NULL) AND p.hipdata_code = "BKK" AND o.vstdate BETWEEN ? AND ?
             AND v.income <>"0" AND kidney.vn IS NULL AND oe.upload_datetime IS NULL 
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
@@ -1351,7 +1351,7 @@ class ClaimOpController extends Controller
             LEFT JOIN (SELECT op.vn,SUM(op.sum_price) AS claim_price	FROM opitemrece op
             INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
                 WHERE op.vstdate BETWEEN ? AND ? AND li.ppfs = "Y" GROUP BY op.vn) o2 ON o2.vn=o.vn
-            LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
+            LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN htp_report.stm_ofc stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
             LEFT JOIN htp_report.stm_ucs stm_uc ON stm_uc.cid=pt.cid AND stm_uc.vstdate = o.vstdate AND LEFT(stm_uc.vsttime,5) =LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND p.hipdata_code = "BKK" AND o.vstdate BETWEEN ? AND ?
@@ -1439,7 +1439,7 @@ class ClaimOpController extends Controller
             LEFT JOIN (SELECT op.vn,SUM(op.sum_price) AS claim_price	FROM opitemrece op
             INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
                 WHERE op.vstdate BETWEEN ? AND ? AND li.ppfs = "Y" GROUP BY op.vn) o2 ON o2.vn=o.vn
-            LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
+            LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             WHERE (o.an ="" OR o.an IS NULL) AND p.hipdata_code = "BMT" AND o.vstdate BETWEEN ? AND ?
             AND v.income <>"0" AND kidney.vn IS NULL AND oe.upload_datetime IS NULL 
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
@@ -1467,7 +1467,7 @@ class ClaimOpController extends Controller
             LEFT JOIN (SELECT op.vn,SUM(op.sum_price) AS claim_price	FROM opitemrece op
             INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
                 WHERE op.vstdate BETWEEN ? AND ? AND li.ppfs = "Y" GROUP BY op.vn) o2 ON o2.vn=o.vn
-            LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
+            LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN htp_report.stm_ofc stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
             LEFT JOIN htp_report.stm_ucs stm_uc ON stm_uc.cid=pt.cid AND stm_uc.vstdate = o.vstdate AND LEFT(stm_uc.vsttime,5) =LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND p.hipdata_code = "BMT" AND o.vstdate BETWEEN ? AND ?
@@ -1559,7 +1559,7 @@ class ClaimOpController extends Controller
             LEFT JOIN (SELECT op.vn, SUM(op.sum_price) AS claim_price FROM opitemrece op
             INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
                 WHERE op.vstdate BETWEEN ? AND ? AND li.ppfs = "Y" GROUP BY op.vn) o2 ON o2.vn=o.vn            
-            LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
+            LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
             LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN ? AND ?
@@ -1587,7 +1587,7 @@ class ClaimOpController extends Controller
             LEFT JOIN (SELECT op.vn, SUM(op.sum_price) AS claim_price	FROM opitemrece op
             INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
                 WHERE op.vstdate BETWEEN ? AND ? AND li.ppfs = "Y" GROUP BY op.vn) ppfs ON ppfs.vn=o.vn
-            LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
+            LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
             LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN ? AND ?
@@ -1663,7 +1663,7 @@ class ClaimOpController extends Controller
             LEFT JOIN opdscreen os ON os.vn=o.vn
             LEFT JOIN ovstdiag od ON od.vn = o.vn AND od.hn=o.hn AND od.diagtype = "2"
             LEFT JOIN vn_stat v ON v.vn = o.vn
-            LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
+            LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             WHERE p.pttype IN ('.$pttype_sss_fund.') AND o.vstdate BETWEEN ? AND ?
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date]);
 
@@ -2030,7 +2030,7 @@ class ClaimOpController extends Controller
             LEFT JOIN opdscreen os ON os.vn=o.vn
             LEFT JOIN ovstdiag od ON od.vn = o.vn AND od.hn=o.hn AND od.diagtype = "2"
             LEFT JOIN vn_stat v ON v.vn = o.vn
-            LEFT JOIN htp_report.nhso_endpoint_indiv ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
+            LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             WHERE p.pttype IN ('.$pttype_act.') AND o.vstdate BETWEEN ? AND ?
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date]);
 

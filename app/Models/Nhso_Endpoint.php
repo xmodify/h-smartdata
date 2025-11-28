@@ -10,35 +10,20 @@ class Nhso_Endpoint extends Model
     use HasFactory;
 
     protected $table = 'nhso_endpoint'; 
-    protected $primaryKey = 'transId';
+    protected $primaryKey = 'id';
     protected $fillable = [  
-        'transId',
-        'hmain', 
-        'hname', 
-        'personalId',
-        'patientName', 
-        'addrNo', 
-        'moo',  
-        'moonanName',
-        'tumbonName',
-        'amphurName',
-        'changwatName',
-        'birthdate',
-        'tel',
-        'mainInscl',
-        'mainInsclName',
-        'subInscl',
+        'cid',
+        'firstName',          
+        'lastName',          
+        'mainInscl',          
+        'mainInsclName',          
+        'subInscl',          
         'subInsclName',
-        'claimStatus',
-        'patientType', 
+        'serviceDateTime', 
+        'vstdate', 
+        'sourceChannel', 
         'claimCode',  
-        'claimType',
-        'claimTypeName',
-        'claimDate', 
-        'createDate',     
-        'updateBy',
-        'updateDate',   
-        'mainInsclWithName',           
+        'claimType',                        
     ];
     public $timestamps = false;   
 }
