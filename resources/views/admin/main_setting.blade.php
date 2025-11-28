@@ -39,12 +39,12 @@
                 <tr>
                     <td>{{ $row->name_th }}</td>
                     <td>
-                    @if(in_array($row->name, ['fdh_pass', 'fdh_secretKey']))
-                        •••••••••••••••
-                    @else
-                        {{ $row->value }}
-                    @endif
-                </td>
+                        @if(in_array($row->name, ['fdh_pass', 'fdh_secretKey']))
+                            •••••••••••••••
+                        @else
+                            {{ $row->value }}
+                        @endif
+                    </td>
                     <td>
                         <!-- ปุ่ม Edit -->
                         <button class="btn btn-warning btn-sm btn-edit" 

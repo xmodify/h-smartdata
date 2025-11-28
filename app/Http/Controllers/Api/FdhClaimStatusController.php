@@ -217,6 +217,10 @@ class FdhClaimStatusController extends Controller
 
     public function check_indiv(Request $request)
     {
+        // อนุญาตให้รันยาว
+        ini_set('max_execution_time', 0);
+        ini_set('memory_limit', '-1');
+        
         $request->validate([
             'hn'  => 'required|string',
             'seq' => 'nullable|string',

@@ -94,7 +94,9 @@ class ClaimIpController extends Controller
             AND i.dchdate BETWEEN ? AND ?
             AND p.hipdata_code = "UCS" 
             AND ip.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
-            AND (i.data_exp_date IS NULL OR fdh.status = "500")
+            AND i.data_exp_date IS NULL 
+            AND fdh.status = "500"
+            AND stm.an IS NULL
             AND (ic.an IS NULL OR (ic.an IS NOT NULL AND ict.ipt_coll_status_type_id NOT IN ("4","5")))  
             GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date]);
 
@@ -207,7 +209,9 @@ class ClaimIpController extends Controller
             LEFT JOIN htp_report.stm_ucs stm ON stm.an=i.an
             WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN ? AND ?
             AND p.hipdata_code = "UCS" AND ip.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
-            AND i.data_exp_date IS NULL
+            AND i.data_exp_date IS NULL 
+            AND fdh.status = "500"
+            AND stm.an IS NULL
             GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date]);
 
         $claim=DB::connection('hosxp')->select('
@@ -233,7 +237,7 @@ class ClaimIpController extends Controller
             LEFT JOIN htp_report.stm_ucs stm ON stm.an=i.an
             WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN ? AND ?
             AND p.hipdata_code = "UCS" AND ip.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
-            AND i.data_exp_date IS NOT NULL 
+            AND (i.data_exp_date IS NOT NULL OR fdh.status <> "500" OR stm.an IS NOT NULL)
             GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date]);
 
         return view('hrims.claim_ip.ucs_outcup',compact('budget_year_select','budget_year','start_date','end_date','month','claim_price','receive_total','search','claim'));
