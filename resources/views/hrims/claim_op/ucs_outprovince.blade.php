@@ -258,17 +258,18 @@
       showLoading();
   }
 </script>
-{{-- ✅ FDH Check Claim------------------------------------------------------------ --}}
+
+{{-- ✅ FDH Check Claim ------------------------------------------------------------ --}}
 <script>
   function checkFdh(hn, seq) {
+
       Swal.fire({
           title: 'กำลังตรวจสอบสถานะ...',
           text: 'กรุณารอสักครู่',
           allowOutsideClick: false,
-          didOpen: () => {
-              Swal.showLoading();
-          }
+          didOpen: () => Swal.showLoading()
       });
+
       $.ajax({
           url: "{{ url('/api/fdh/check-claim-indiv') }}",
           type: "POST",
@@ -278,21 +279,51 @@
               _token: "{{ csrf_token() }}"
           },
           success: function (res) {
-              Swal.fire({
-                  icon: 'success',
-                  title: 'ตรวจสอบสำเร็จ',
-                  timer: 1800,
-                  showConfirmButton: false
-              }).then(() => {
-                  location.reload();   // ⬅⬅ รีเฟรชตรงนี้!
-              });
+
+              // ------------------------------
+              // ✔ FDH ตอบสำเร็จ (200)
+              // ------------------------------
+              if (res.status === 200) {
+                  Swal.fire({
+                      icon: 'success',
+                      title: 'ตรวจสอบสำเร็จ',
+                      text: 'พบข้อมูลในระบบ FDH',
+                      timer: 1500,
+                      showConfirmButton: false
+                  }).then(() => location.reload());
+                  return;
+              }
+
+              // ------------------------------
+              // ✔ ไม่พบข้อมูล FDH (404)
+              // ------------------------------
+              if (res.status === 404 || res.status === 500) {
+                  Swal.fire({
+                      icon: 'warning',
+                      title: 'ไม่พบข้อมูลในระบบ FDH',
+                      text: res.body?.message_th ?? "ไม่มีรายการนี้ส่ง"
+                  });
+                  return;
+              }
+
+              // ------------------------------
+              // ✔ ปัญหาฝั่งระบบ หรือ token/validate
+              // ------------------------------
+              if (res.status === 400) {
+                  Swal.fire({
+                      icon: 'error',
+                      title: 'เกิดข้อผิดพลาด',
+                      text: res.body?.message ?? res.error ?? 'ไม่สามารถตรวจสอบได้'
+                  });
+                  return;
+              }
           },
-          error: function (xhr) {
+
+          error: function () {
               Swal.fire({
                   icon: 'error',
-                  title: 'เกิดข้อผิดพลาด',
-                  text: xhr.responseJSON?.message ?? 'ไม่สามารถตรวจสอบได้',
-                  confirmButtonText: 'ปิด'
+                  title: 'การเชื่อมต่อล้มเหลว',
+                  text: 'ไม่สามารถเรียก API ได้ (Network Error)'
               });
           }
       });
