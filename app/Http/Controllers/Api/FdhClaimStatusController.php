@@ -217,10 +217,9 @@ class FdhClaimStatusController extends Controller
 
     public function check_indiv(Request $request)
     {
-        // อนุญาตให้รันยาว
         ini_set('max_execution_time', 0);
         ini_set('memory_limit', '-1');
-        
+
         $request->validate([
             'hn'  => 'required|string',
             'seq' => 'nullable|string',
@@ -228,9 +227,7 @@ class FdhClaimStatusController extends Controller
         ]);
 
         if (!$request->an && !$request->seq) {
-            return response()->json([
-                'error' => 'seq_or_an_required'
-            ], 400);
+            return response()->json(['error' => 'seq_or_an_required'], 400);
         }
 
         // โหลด hcode
@@ -239,6 +236,7 @@ class FdhClaimStatusController extends Controller
             ->toArray();
 
         $hcode = $settings['hospital_code'] ?? null;
+
         if (!$hcode) {
             return response()->json(['error' => 'hospital_code_not_found'], 400);
         }
@@ -255,19 +253,16 @@ class FdhClaimStatusController extends Controller
             'hn'    => $request->hn,
         ];
 
-        if (!empty($request->an)) {
-            $payload['an'] = $request->an;     // IPD
+        if ($request->an) {
+            $payload['an'] = $request->an;
         } else {
-            $payload['seq'] = $request->seq;   // OPD
+            $payload['seq'] = $request->seq;
         }
 
         $apiUrl = 'https://fdh.moph.go.th/api/v1/ucs/track_trans';
 
-        // ยิง API
         try {
-            $response = Http::withOptions([
-                    'verify' => false
-                ])
+            $response = Http::withOptions(['verify' => false])
                 ->withToken($token)
                 ->retry(3, 2000)
                 ->timeout(60)
@@ -277,80 +272,53 @@ class FdhClaimStatusController extends Controller
             $body   = $response->json();
 
         } catch (\Exception $e) {
-            $status = 500;
-            $body = [
-                'error' => 'request_failed',
-                'message' => $e->getMessage()
-            ];
+            return response()->json([
+                'input'  => $payload,
+                'status' => 500,
+                'error'  => 'request_failed',
+                'message'=> $e->getMessage(),
+                'saved'  => false,
+            ], 500);
         }
 
-        // ✔️ บันทึกเฉพาะเมื่อ status = 200 ---------------------------------------------------------------
-        // if ($status == 200 && isset($body['data'][0])) {
+        // ------------------------------
+        // ✔ บันทึกเฉพาะเมื่อ status = 200 และมี data[0]
+        // ------------------------------
+        if ($status == 200 && isset($body['data'][0])) {
 
-        //     $d = $body['data'][0];
+            $d   = $body['data'][0];
 
-        //     DB::table('fdh_claim_status')->updateOrInsert(
-        //         [
-        //             'hn'  => $d['hn'] ?? $request->hn,
-        //             'seq' => $d['seq'] ?? $request->seq,   
-        //             'an'  => $d['an']  ?? $request->an,
-        //         ],
-        //         [
-        //             'hcode'             => $d['hcode']             ?? $hcode,
-        //             'status'            => $d['status']            ?? null,
-        //             'process_status'    => $d['process_status']    ?? null,
-        //             'status_message_th' => $d['status_message_th'] ?? null,
-        //             'updated_at'        => now(),
-        //             'created_at'        => DB::raw('COALESCE(created_at, NOW())'),
-        //         ]
-        //     );
-        // }
-        //----------------------------------------------------------------------------------------------
+            $hn  = $d['hn']  ?? $request->hn;
+            $seq = $d['seq'] ?? $request->seq;
+            $an  = $d['an']  ?? $request->an;
 
-    // บันทึกทุกสถานะ-------------------------------------------------------------------------------------
-        $d = $body['data'][0] ?? [];
+            DB::table('fdh_claim_status')->updateOrInsert(
+                [
+                    'hn'  => $hn,
+                    'seq' => $seq,
+                    'an'  => $an,
+                ],
+                [
+                    'hcode'             => $d['hcode']          ?? $hcode,
+                    'status'            => $d['status']         ?? null,
+                    'process_status'    => $d['process_status'] ?? null,
+                    'status_message_th' => $d['status_message_th'] ?? null,
+                    'stm_period'        => $d['stm_period']     ?? null,
+                    'updated_at'        => now(),
+                    'created_at'        => DB::raw('COALESCE(created_at, NOW())'),
+                ]
+            );
 
-        // คีย์หลัก (ใช้ request เป็น fallback)
-        $hn  = $request->hn;
-        $seq = $request->seq;
-        $an  = $request->an;
-
-        if (!empty($d['an'])) {
-            $an = $d['an'];
-        }
-
-        // 🟩 จัดการข้อความไทยตามสถานะ
-        if ($status == 500) {
-            // ถ้า API error → บันทึกเฉพาะคำนี้
-            $status_message_th = "ไม่มีรายการนี้ส่ง";
+            $saved = true;
         } else {
-            // สถานะอื่น: 200 / 400 / 404 / 409 ฯลฯ
-            $status_message_th = $d['status_message_th'] 
-                                ?? ($body['message'] ?? null);
+            $saved = false;
         }
-        // บันทึกข้อมูล   
-        DB::table('fdh_claim_status')->updateOrInsert(
-            [
-                'hn'  => $hn,
-                'seq' => $seq,
-                'an'  => $an,
-            ],
-            [
-                'hcode'             => $d['hcode']             ?? $hcode,
-                'status'            => $d['status']            ?? $status,  
-                'process_status'    => $d['process_status']    ?? null,
-                'status_message_th' => $status_message_th,
-                'stm_period'        => $d['stm_period']    ?? null,
-                'updated_at'        => now(),
-                'created_at'        => DB::raw('COALESCE(created_at, NOW())'),
-            ]
-        ); 
-        //----------------------------------------------------------------------------------------------
+
         return response()->json([
-            'input'   => $payload,
-            'status'  => $status,
-            'body'    => $body,
-            'saved'   => ($status == 200),
+            'input'  => $payload,
+            'status' => $status,
+            'body'   => $body,
+            'saved'  => $saved,
         ]);
     }
     
