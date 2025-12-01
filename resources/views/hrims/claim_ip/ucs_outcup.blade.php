@@ -62,7 +62,8 @@
           <table id="t_search" class="table table-striped table-bordered" width = "100%">
             <thead>
               <tr class="table-primary">
-                <th class="text-center">ลำดับ</th>                
+                <th class="text-center">ลำดับ</th>
+                <th class="text-center" width="6%">Action</th>             
                 <th class="text-center" width = "5%">ตึกผู้ป่วย</th>
                 <th class="text-center" width = "5%">วันที่ Admit</th>
                 <th class="text-center" width = "5%">วันที่ Discharge</th>
@@ -82,9 +83,7 @@
                 <th class="text-center" width = "5%">สถานะ</th>
                 <th class="text-center">Authen</th>      
                 <th class="text-center">สรุป Chart</th>
-                <th class="text-center">พร้อมส่ง</th>
-                <th class="text-center">FDH Status</th> 
-                <th class="text-center" width="6%">Action</th> 
+                <th class="text-center">พร้อมส่ง</th>                
               </tr>
             </thead> 
             <tbody> 
@@ -94,7 +93,14 @@
               <?php $sum_claim_price = 0 ; ?> 
               @foreach($search as $row) 
               <tr>
-                <td align="center">{{ $count }}</td>            
+                <td align="center">{{ $count }}</td> 
+                <td class="text-center">
+                  <button 
+                      class="btn btn-sm btn-outline-success"
+                      onclick="checkFdh('{{ $row->hn }}','{{ $row->an }}')">
+                      FDH
+                  </button> 
+                </td>
                 <td align="right" width = "5%">{{$row->ward}}</td>
                 <td align="center" width = "5%">{{ DateThai($row->regdate) }}</td>
                 <td align="center" width = "5%">{{ DateThai($row->dchdate) }}</td>
@@ -123,15 +129,7 @@
                 <td align="center" @if($row->data_ok == 'Y') style="color:green"
                   @elseif($row->data_ok == 'N') style="color:red" @endif>
                   <strong>{{ $row->data_ok }}</strong>
-                </td>
-                <td align="left">{{ $row->fdh_status }}</td>  
-                  <td class="text-center">
-                    <button 
-                        class="btn btn-sm btn-outline-success"
-                        onclick="checkFdh('{{ $row->hn }}','{{ $row->an }}')">
-                        FDH
-                    </button> 
-                  </td> 
+                </td>                
               </tr>
               <?php $count++; ?>
               <?php $sum_income += $row->income ; ?>
@@ -155,6 +153,8 @@
               <thead>
                 <tr class="table-primary">
                   <th class="text-center">ลำดับ</th>
+                  <th class="text-center" width="6%">Action</th> 
+                  <th class="text-center">FDH Status</th>
                   <th class="text-center" width = "5%">ตึกผู้ป่วย</th>
                   <th class="text-center" width = "5%">วันที่ Admit</th>
                   <th class="text-center" width = "5%">วันที่ Discharge</th>
@@ -179,9 +179,7 @@
                   <th class="text-center">ชดเชย Other</th>
                   <th class="text-center">ชดเชยทั้งหมด</th> 
                   <th class="text-center">ส่วนต่าง</th> 
-                  <th class="text-center">REP No.</th> 
-                  <th class="text-center">FDH Status</th> 
-                  <th class="text-center" width="6%">Action</th> 
+                  <th class="text-center">REP No.</th>
                 </tr>
               </thead> 
               <tbody> 
@@ -193,7 +191,15 @@
                 <?php $sum_receive_total = 0 ; ?>
                 @foreach($claim as $row) 
                 <tr>
-                  <td align="center">{{ $count }}</td>                                  
+                  <td align="center">{{ $count }}</td> 
+                  <td class="text-center">
+                    <button 
+                        class="btn btn-sm btn-outline-success"
+                        onclick="checkFdh('{{ $row->hn }}','{{ $row->an }}')">
+                        FDH
+                    </button> 
+                  </td> 
+                  <td align="left">{{ $row->fdh_status }}</td>                                 
                   <td align="right" width = "5%">{{$row->ward}}</td>
                   <td align="center" width = "5%">{{ DateThai($row->regdate) }}</td>
                   <td align="center" width = "5%">{{ DateThai($row->dchdate) }}</td>
@@ -221,15 +227,7 @@
                     @elseif($row->receive_total-$row->claim_price <0) style="color:red" @endif>
                     {{ number_format($row->receive_total-$row->claim_price,2) }}
                   </td>
-                  <td align="center">{{ $row->repno }}</td>
-                  <td align="left">{{ $row->fdh_status }}</td>  
-                  <td class="text-center">
-                    <button 
-                        class="btn btn-sm btn-outline-success"
-                        onclick="checkFdh('{{ $row->hn }}','{{ $row->an }}')">
-                        FDH
-                    </button> 
-                  </td> 
+                  <td align="center">{{ $row->repno }}</td> 
                 </tr>
                 <?php $count++; ?>
                 <?php $sum_income += $row->income ; ?>
