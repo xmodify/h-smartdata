@@ -6650,11 +6650,11 @@ class DebtorController extends Controller
         $start_date = Session::get('start_date');
         $end_date = Session::get('end_date');
         $request->validate([
-        'checkbox' => 'required|array',
+        'checkbox_iclaim' => 'required|array',
         ], [
-            'checkbox.required' => 'กรุณาเลือกรายการที่ต้องการยืนยันลูกหนี้'
+            'checkbox_iclaim.required' => 'กรุณาเลือกรายการที่ต้องการยืนยันลูกหนี้'
         ]);
-        $checkbox = $request->input('checkbox'); // รับ array
+        $checkbox = $request->input('checkbox_iclaim'); // รับ array
         $checkbox_string = implode(",", $checkbox); // แปลงเป็น string สำหรับ SQL IN
        
         $debtor = DB::connection('hosxp')->select('
