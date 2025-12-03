@@ -6554,7 +6554,7 @@ class DebtorController extends Controller
 
         $debtor_search_iclaim = DB::connection('hosxp')->select('
             SELECT * FROM (SELECT w.`name` AS ward,i.regdate,i.regtime,i.dchdate,i.dchtime,i.vn,i.hn,i.an,
-                CONCAT(p.pname,p.fname,SPACE(1),p.lname) AS ptname,a.pdx,p.cid,a.age_y,p1.name AS pttype,
+                CONCAT(p.pname,p.fname,SPACE(1),p.lname) AS ptname,p.mobile_phone_number,a.pdx,p.cid,a.age_y,p1.name AS pttype,
                 ip.hospmain,p1.hipdata_code,i.adjrw,a.income,a.rcpt_money,IFNULL(SUM(o1.sum_price),0) AS other,
                 a.income-a.rcpt_money-IFNULL(SUM(o1.sum_price),0) AS debtor
             FROM ipt i 
@@ -6660,7 +6660,7 @@ class DebtorController extends Controller
        
         $debtor = DB::connection('hosxp')->select('
             SELECT * FROM (SELECT w.`name` AS ward,i.regdate,i.regtime,i.dchdate,i.dchtime,i.vn,i.hn,i.an,
-                CONCAT(p.pname,p.fname,SPACE(1),p.lname) AS ptname,a.pdx,p.cid,a.age_y,p1.name AS pttype,
+                CONCAT(p.pname,p.fname,SPACE(1),p.lname) AS ptname,p.mobile_phone_number,a.pdx,p.cid,a.age_y,p1.name AS pttype,
                 ip.hospmain,p1.hipdata_code,i.adjrw,a.income,a.rcpt_money,IFNULL(SUM(o1.sum_price),0) AS other,
                 a.income-a.rcpt_money-IFNULL(SUM(o1.sum_price),0) AS debtor,"ยืนยันลูกหนี้" AS status  
             FROM ipt i 
