@@ -14,7 +14,15 @@
                 checkboxes[i].checked = source.checked;
             }
         }
-    </script>    
+    </script>   
+    <script>
+        function toggle_iclaim(source) {
+            checkboxes = document.getElementsByName('checkbox_iclaim[]');
+            for (var i = 0; i < checkboxes.length; i++) {
+                checkboxes[i].checked = source.checked;
+            }
+        }
+    </script>   
 @section('content')
     <div class="container-fluid">        
         <form method="POST" enctype="multipart/form-data">
