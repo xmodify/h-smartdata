@@ -1000,6 +1000,7 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
     Route::get('debtor/1102050101_704_indiv_excel',[DebtorController::class,'_1102050101_704_indiv_excel']);
     Route::match(['get','post'],'debtor/1102050102_107',[DebtorController::class,'_1102050102_107']);
     Route::post('debtor/1102050102_107_confirm',[DebtorController::class,'_1102050102_107_confirm']);
+    Route::post('debtor/1102050102_107_confirm_iclaim',[DebtorController::class,'_1102050102_107_confirm_iclaim']);
     Route::delete('debtor/1102050102_107_delete',[DebtorController::class,'_1102050102_107_delete']);
     Route::put('debtor/1102050102_107/update/{an}',[DebtorController::class,'_1102050102_107_update']);
     Route::get('debtor/1102050102_107/tracking/{an}',[DebtorController::class,'_1102050102_107_tracking']);
