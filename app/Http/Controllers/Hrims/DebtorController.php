@@ -6673,7 +6673,7 @@ class DebtorController extends Controller
             AND p1.pttype = ?
             AND i.dchdate BETWEEN ? AND ?
             AND i.an IN ('.$checkbox_string.') 
-            GROUP BY i.an,ip.pttype ORDER BY i.ward,i.dchdate',[$start_date,$end_date]); 
+            GROUP BY i.an,ip.pttype ORDER BY i.ward,i.dchdate ) AS a',[$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
             Debtor_1102050102_107::insert([
