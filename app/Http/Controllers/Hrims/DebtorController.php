@@ -6649,6 +6649,7 @@ class DebtorController extends Controller
     {
         $start_date = Session::get('start_date');
         $end_date = Session::get('end_date');
+        $pttype_iclaim = DB::table('main_setting')->where('name', 'pttype_iclaim')->value('value'); 
         $request->validate([
         'checkbox_iclaim' => 'required|array',
         ], [
@@ -6673,7 +6674,7 @@ class DebtorController extends Controller
             AND p1.pttype = ?
             AND i.dchdate BETWEEN ? AND ?
             AND i.an IN ('.$checkbox_string.') 
-            GROUP BY i.an,ip.pttype ORDER BY i.ward,i.dchdate ) AS a',[$start_date,$end_date]); 
+            GROUP BY i.an,ip.pttype ORDER BY i.ward,i.dchdate ) AS a',[$pttype_iclaim,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
             Debtor_1102050102_107::insert([
