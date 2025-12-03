@@ -232,7 +232,7 @@
 
             <div class="tab-pane fade" id="iclaim" role="tabpanel" aria-labelledby="iclaim-tab">
                 <div style="overflow-x:auto;">
-                    <form action="{{ url('finance_debtor/1102050102_107_confirm_iclaim') }}" method="POST" enctype="multipart/form-data"> 
+                    <form action="{{ url('hrims/debtor/1102050102_107_confirm_iclaim') }}" method="POST" enctype="multipart/form-data"> 
                         @csrf                
                         <table id="debtor_search_iclaim" class="table table-bordered table-striped my-3" width="100%">
                             <thead>
