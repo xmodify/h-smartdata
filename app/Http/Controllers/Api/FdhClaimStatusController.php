@@ -79,13 +79,14 @@ class FdhClaimStatusController extends Controller
 
     public function check(Request $request)
     {
-        // อนุญาตให้รันยาว
+        // อนุญาตให้รันนาน
         ini_set('max_execution_time', 0);
         ini_set('memory_limit', '-1');
 
         // 1) วันที่ default = วันนี้
         $dateStart = $request->date_start ?? date('Y-m-d');
         $dateEnd   = $request->date_end   ?? date('Y-m-d');
+
         $request->validate([
             'date_start' => 'nullable|date',
             'date_end'   => 'nullable|date',
@@ -95,6 +96,7 @@ class FdhClaimStatusController extends Controller
         $settings = DB::table('main_setting')
             ->pluck('value', 'name')
             ->toArray();
+
         $hcode = $settings['hospital_code'] ?? null;
 
         if (!$hcode) {
@@ -108,17 +110,18 @@ class FdhClaimStatusController extends Controller
             LEFT JOIN visit_pttype vp ON vp.vn = o.vn			
             LEFT JOIN pttype p ON p.pttype = vp.pttype	
             WHERE o.vstdate BETWEEN ? AND ?
-			AND o.an IS NULL
-            AND p.hipdata_code = 'UCS' 
-			GROUP BY o.vn
-			UNION
-			SELECT i.hn, '' AS seq, i.an
+            AND o.an IS NULL
+            AND p.hipdata_code = 'UCS'
+            GROUP BY o.vn
+            UNION
+            SELECT i.hn, '' AS seq, i.an
             FROM ipt i
             LEFT JOIN ipt_pttype ip ON ip.an = i.an			
             LEFT JOIN pttype p ON p.pttype = ip.pttype	
             WHERE i.dchdate BETWEEN ? AND ?
-            AND p.hipdata_code = 'UCS' 
-			GROUP BY i.an ", [ $dateStart, $dateEnd,$dateStart, $dateEnd ]);
+            AND p.hipdata_code = 'UCS'
+            GROUP BY i.an
+        ", [ $dateStart, $dateEnd, $dateStart, $dateEnd ]);
 
         if (empty($items)) {
             return response()->json([
@@ -132,79 +135,83 @@ class FdhClaimStatusController extends Controller
         if (!$token) {
             return response()->json(['error' => 'token_unavailable'], 500);
         }
+
         $apiUrl = 'https://fdh.moph.go.th/api/v1/ucs/track_trans';
         $results = [];
 
-        // 5) Chunk = 10 record
-        $chunks = array_chunk($items, 10);
-        foreach ($chunks as $chunk) {
-            foreach ($chunk as $item) {
-                // payload
-                $payload = [
-                    'hcode' => $hcode,
-                    'hn'    => $item->hn,
-                ];
+        // 5) ส่งทีละ 1 record
+        foreach ($items as $item) {
 
-                if (!empty($item->an)) {
-                    $payload['an'] = $item->an;
-                } else {
-                    $payload['seq'] = $item->seq;
-                }
+            // ---- Payload ----
+            $payload = [
+                'hcode' => $hcode,
+                'hn'    => $item->hn,
+            ];
 
-                try {
-                    $response = Http::withOptions([
-                            'verify' => false
-                        ])
-                        ->retry(3, 2000)
-                        ->withToken($token)
-                        ->timeout(120)
-                        ->post($apiUrl, $payload);
-                    $status = $response->status();
-                    $body   = $response->json();
+            if (!empty($item->an)) {
+                $payload['an'] = $item->an;
+            } else {
+                $payload['seq'] = $item->seq;
+            }
 
-                } catch (\Exception $e) {
+            // ---- Request ----
+            try {
+                $response = Http::withOptions([
+                        'verify' => false
+                    ])
+                    ->retry(5, 1500)   // retry 5 ครั้ง ห่างกัน 1.5 วินาที
+                    ->withToken($token)
+                    ->timeout(120)
+                    ->post($apiUrl, $payload);
 
-                    $status = 500;
-                    $body = [
-                        'error' => 'request_failed',
-                        'message' => $e->getMessage()
-                    ];
-                }
+                $status = $response->status();
+                $body   = $response->json();
 
-                // บันทึกเฉพาะ status = 200 และมี data
-                if ($status == 200 && isset($body['data'][0])) {
-                    $d = $body['data'][0];
-
-                    DB::table('fdh_claim_status')->updateOrInsert(
-                        [
-                            'hn'  => $d['hn']  ?? $item->hn,
-                            'seq' => $d['seq'] ?? $item->seq,   
-                            'an'  => $d['an']  ?? $item->an,  
-                        ],
-                        [
-                            'hcode'             => $d['hcode']             ?? $hcode,
-                            'status'            => $d['status']            ?? null,
-                            'process_status'    => $d['process_status']    ?? null,
-                            'status_message_th' => $d['status_message_th'] ?? null,
-                            'stm_period'        => $d['stm_period'] ?? null,
-                            'updated_at'        => now(),
-                            'created_at'        => DB::raw('COALESCE(created_at, NOW())'),
-                        ]
-                    );
-                }
-                // เก็บผล
-                $results[] = [
-                    'hn'     => $item->hn,
-                    'seq'    => $item->seq,
-                    'an'     => $item->an,
-                    'payload_used' => $payload,
-                    'status' => $status,
-                    'body'   => $body
+            } catch (\Exception $e) {
+                $status = 500;
+                $body = [
+                    'error' => 'request_failed',
+                    'message' => $e->getMessage()
                 ];
             }
-            // หน่วงป้องกัน spam server
-            usleep(300000); // 0.3s
+
+            // ---- บันทึกลงฐานข้อมูลเฉพาะ status 200 ----
+            if ($status == 200 && isset($body['data'][0])) {
+                $d = $body['data'][0];
+
+                DB::table('fdh_claim_status')->updateOrInsert(
+                    [
+                        'hn'  => $d['hn']  ?? $item->hn,
+                        'seq' => $d['seq'] ?? $item->seq,
+                        'an'  => $d['an']  ?? $item->an,
+                    ],
+                    [
+                        'hcode'             => $d['hcode'] ?? $hcode,
+                        'status'            => $d['status'] ?? null,
+                        'process_status'    => $d['process_status'] ?? null,
+                        'status_message_th' => $d['status_message_th'] ?? null,
+                        'stm_period'        => $d['stm_period'] ?? null,
+                        'updated_at'        => now(),
+                        'created_at'        => DB::raw('COALESCE(created_at, NOW())'),
+                    ]
+                );
+            }
+
+            // ---- เก็บผลลัพธ์ของแต่ละ record ----
+            $results[] = [
+                'hn'     => $item->hn,
+                'seq'    => $item->seq,
+                'an'     => $item->an,
+                'payload_used' => $payload,
+                'status' => $status,
+                'body'   => $body
+            ];
+
+            // ---- ชะลอเพื่อป้องกัน 503 ----
+            usleep(300000); // 0.3 วินาที (แนะนำ 1 วินาทีถ้ายังมี error)
         }
+
+        // ---- ส่งออกผลลัพธ์ ----
         return response()->json([
             'date_start' => $dateStart,
             'date_end'   => $dateEnd,
