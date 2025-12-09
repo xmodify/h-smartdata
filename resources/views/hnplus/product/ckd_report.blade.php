@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container-fluid">
-    <h5 class="alert alert-primary"><strong>รายงานผลิตภาพทางการพยาบาลแผนกผู้ป่วย NCD</strong></h5>  
+    <h5 class="alert alert-primary"><strong>รายงานผลิตภาพทางการพยาบาลแผนกผู้ป่วย CKD</strong></h5>  
 </div> 
 
 <div class="container-fluid">  
@@ -83,7 +83,7 @@
                 @endif
             </div> 
 
-            <table id="productivity_ncd" class="table table-bordered table-striped my-3">
+            <table id="productivity_ckd" class="table table-bordered table-striped my-3">
                 <thead>
                     <tr class="table-primary">
                         <th class="text-center">ลำดับ</th>                        
@@ -124,7 +124,7 @@
                     <td align="right">{{ $row->note }}</td> 
                     @if(Auth::user()->username == $del_product)   
                     <td class="text-center">
-                        <form action="{{ url('hnplus/product/ncd_product_delete/'.$row->id) }}" method="POST" onsubmit="return confirm('ต้องการลบข้อมูล {{ DateThai($row->report_date) }} {{ $row->shift_time }} Product {{ number_format($row->productivity,2) }}?')">
+                        <form action="{{ url('hnplus/product/ckd_product_delete/'.$row->id) }}" method="POST" onsubmit="return confirm('ต้องการลบข้อมูล {{ DateThai($row->report_date) }} {{ $row->shift_time }} Product {{ number_format($row->productivity,2) }}?')">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
@@ -165,7 +165,7 @@
 
 <script>
 $(document).ready(function () {
-    $('#productivity_ncd').DataTable(); 
+    $('#productivity_ckd').DataTable(); 
 });
 
 // 📊 กราฟ Productivity แยกตามเวร

@@ -170,7 +170,7 @@
     <div class="col-md-12">
       <div class="card">
         <div class="card-header text-white" style="background-color:#23A7A7;">
-          กราฟ Productivity แผนกห้องคลอด แยกตามเวร วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}
+          กราฟ Productivity แยกตามเวร วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}
         </div>
         <canvas id="productivity_chart" style="width: 100%; height: 350px"></canvas>
       </div>

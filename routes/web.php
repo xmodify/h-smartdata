@@ -19,6 +19,11 @@ use App\Http\Controllers\Hnplus\ProductERController;
 use App\Http\Controllers\Hnplus\ProductIPDController;
 use App\Http\Controllers\Hnplus\ProductVIPController;
 use App\Http\Controllers\Hnplus\ProductLRController;
+use App\Http\Controllers\Hnplus\ProductOPDController;
+use App\Http\Controllers\Hnplus\ProductNCDController;
+use App\Http\Controllers\Hnplus\ProductCKDController;
+use App\Http\Controllers\Hnplus\ProductHDController;
+use App\Http\Controllers\Hnplus\ProductORController;
 use App\Http\Controllers\MophNotify\ServiceController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Backoffice_AssetController;
@@ -1045,6 +1050,16 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
         Route::delete('product/vip_product_delete/{id}', [ProductVIPController::class, 'vip_product_delete']);
         Route::match(['get','post'],'product/lr_report', [ProductLRController::class, 'lr_report'])->name('product.lr_report');       
         Route::delete('product/lr_product_delete/{id}', [ProductLRController::class, 'lr_product_delete']);
+        Route::match(['get','post'],'product/opd_report', [ProductOPDController::class, 'opd_report'])->name('product.opd_report');       
+        Route::delete('product/opd_product_delete/{id}', [ProductOPDController::class, 'opd_product_delete']);
+        Route::match(['get','post'],'product/ncd_report', [ProductNCDController::class, 'ncd_report'])->name('product.ncd_report');       
+        Route::delete('product/ncd_product_delete/{id}', [ProductNCDController::class, 'ncd_product_delete']);
+        Route::match(['get','post'],'product/ckd_report', [ProductCKDController::class, 'ckd_report'])->name('product.ckd_report');       
+        Route::delete('product/ckd_product_delete/{id}', [ProductCKDController::class, 'ckd_product_delete']);
+        Route::match(['get','post'],'product/hd_report', [ProductHDController::class, 'hd_report'])->name('product.hd_report');       
+        Route::delete('product/hd_product_delete/{id}', [ProductHDController::class, 'hd_product_delete']);
+        Route::match(['get','post'],'product/or_report', [ProductORController::class, 'or_report'])->name('product.or_report');       
+        Route::delete('product/or_product_delete/{id}', [ProductORController::class, 'or_product_delete']);
     });
 
     // ✅ กลุ่มที่ไม่ต้องล็อกอิน (public)
@@ -1091,4 +1106,27 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
         Route::get('product/lr_afternoon_notify',[ProductLRController::class,'lr_afternoon_notify']);
         Route::get('product/lr_afternoon',[ProductLRController::class,'lr_afternoon']);
         Route::post('product/lr_afternoon_save',[ProductLRController::class,'lr_afternoon_save']);
+        //product OPD-----------------------------------------------------------------------------------------------------------
+        Route::get('product/opd_morning_notify',[ProductOPDController::class,'opd_morning_notify']);
+        Route::get('product/opd_morning',[ProductOPDController::class,'opd_morning']);
+        Route::post('product/opd_morning_save',[ProductOPDController::class,'opd_morning_save']);
+        Route::get('product/opd_bd_notify',[ProductOPDController::class,'opd_bd_notify']);
+        Route::get('product/opd_bd',[ProductOPDController::class,'opd_bd']);
+        Route::post('product/opd_bd_save',[ProductOPDController::class,'opd_bd_save']);
+        //product NCD-----------------------------------------------------------------------------------------------------------
+        Route::get('product/ncd_morning_notify',[ProductNCDController::class,'ncd_morning_notify']);
+        Route::get('product/ncd_morning',[ProductNCDController::class,'ncd_morning']);
+        Route::post('product/ncd_morning_save',[ProductNCDController::class,'ncd_morning_save']);
+        //product CKD-----------------------------------------------------------------------------------------------------------
+        Route::get('product/ckd_morning_notify',[ProductCKDController::class,'ckd_morning_notify']);
+        Route::get('product/ckd_morning',[ProductCKDController::class,'ckd_morning']);
+        Route::post('product/ckd_morning_save',[ProductCKDController::class,'ckd_morning_save']);
+        //product HD-----------------------------------------------------------------------------------------------------------
+        Route::get('product/hd_morning_notify',[ProductHDController::class,'hd_morning_notify']);
+        Route::get('product/hd_morning',[ProductHDController::class,'hd_morning']);
+        Route::post('product/hd_morning_save',[ProductHDController::class,'hd_morning_save']);
+        //product OR-----------------------------------------------------------------------------------------------------------
+        Route::get('product/or_morning_notify',[ProductORController::class,'or_morning_notify']);
+        Route::get('product/or_morning',[ProductORController::class,'or_morning']);
+        Route::post('product/or_morning_save',[ProductORController::class,'or_morning_save']);
     });

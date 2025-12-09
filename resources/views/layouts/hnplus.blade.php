@@ -79,6 +79,21 @@
                                 <a class="dropdown-item link-primary text-white " href="{{ url('hnplus/product/lr_report') }}" >
                                     งานห้องคลอด LR
                                 </a> 
+                                <a class="dropdown-item link-primary text-white " href="{{ url('hnplus/product/opd_report') }}" >
+                                    งานผู้ป่วยนอก OPD
+                                </a> 
+                                <a class="dropdown-item link-primary text-white " href="{{ url('hnplus/product/ncd_report') }}" >
+                                    งานผู้ป่วย NCD
+                                </a>
+                                <a class="dropdown-item link-primary text-white " href="{{ url('hnplus/product/ckd_report') }}" >
+                                    งานผู้ป่วย CKD
+                                </a>
+                                <a class="dropdown-item link-primary text-white " href="{{ url('hnplus/product/hd_report') }}" >
+                                    งานผู้ป่วยฟอกไต HD
+                                </a>
+                                <a class="dropdown-item link-primary text-white " href="{{ url('hnplus/product/or_report') }}" >
+                                    งานผู้ป่วยผ่าตัด OR
+                                </a>
                             </div>                 
                         </li>    
                         <li class="nav-item dropdown">
@@ -97,6 +112,11 @@
                     
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ms-auto">
+                        <li > 
+                            <div class="btn text-white">
+                                V. 68-12-09 11:00
+                            </div>   
+                        </li> 
                         <!-- H-RiMS -->
                         @auth                
                             @if (auth()->user()->hasAccessHnplus('Y'))                                
