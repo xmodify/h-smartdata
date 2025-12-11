@@ -16,8 +16,8 @@
         }
     </script>    
 @section('content')
-    <div class="container-fluid">        
-        <form method="POST" enctype="multipart/form-data">
+    <div class="container-fluid"> 
+        <form id="searchForm" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="row" >
                     <label class="col-md-2 col-form-label text-md-end my-1">{{ __('วันที่') }}</label>
@@ -33,8 +33,8 @@
                     <input id="search" type="text" class="form-control my-1" name="search" value="{{ $search }}" >
                 </div>
                 <div class="col-md-1" >
-                    <button onclick="fetchData()" type="submit" class="btn btn-primary my-1 ">{{ __('ค้นหา') }}</button>
-                    <a class="btn btn-warning my-1 text-primary" href="{{ url('hrims/debtor/forget_search') }}">Reset</a>
+                    <button onclick="fetchData(event)" type="submit" class="btn btn-primary my-1">ค้นหา</button>
+                    <a class="btn btn-warning my-1 text-primary" href="{{ url('hrims/debtor/forget_search') }}">Reset</a>                    
                 </div> 
             </div>
         </form> 
@@ -49,7 +49,11 @@
                             <button type="button" class="btn btn-outline-danger btn-sm" onclick="confirmDelete()">ลบลูกหนี้</button>
                         </th>
                         <th class="text-left text-primary" colspan = "9">1102050101.301-ลูกหนี้ค่ารักษา ประกันสังคม OP-เครือข่าย วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</th> 
-                        <th class="text-center text-primary" colspan = "7">การชดเชย</th>                                                 
+                        <th class="text-center text-primary" colspan = "7">การชดเชย
+                            <button type="button" class="btn btn-success btn-sm float-end" data-bs-toggle="modal" data-bs-target="#modalAverageReceive">
+                                กระทบยอดแบบกลุ่ม
+                            </button> 
+                        </th>                                        
                     </tr>
                     <tr class="table-success">
                         <th class="text-center"><input type="checkbox" onClick="toggle_d(this)"> All</th> 
@@ -66,7 +70,7 @@
                         <th class="text-center text-primary">ชดเชย</th>
                         <th class="text-center text-primary">ชดเชย PPFS</th>                        
                         <th class="text-center text-primary">ผลต่าง</th>
-                        <th class="text-center text-primary">REP</th>  
+                        <th class="text-center text-primary">เลขที่ใบเสร็จ</th>  
                         <th class="text-center text-primary">อายุหนี้</th>
                         <th class="text-center text-primary">Lock</th>                                       
                     </tr>
@@ -104,7 +108,7 @@
                             @elseif(($row->receive-$row->debtor) < 0) style="color:red" @endif>
                             {{ number_format($row->receive-$row->debtor,2) }}
                         </td>
-                        <td align="right">{{ $row->repno_pp }}</td> 
+                        <td align="right">{{ $row->repno }}</td> 
                         <td align="right" @if($row->days < 90) style="background-color: #90EE90;"  {{-- เขียวอ่อน --}}
                             @elseif($row->days >= 90 && $row->days <= 365) style="background-color: #FFFF99;" {{-- เหลือง --}}
                             @else style="background-color: #FF7F7F;" {{-- แดง --}} @endif >
@@ -214,38 +218,70 @@
                 </tr>   
                 </table>
             </form>
-        </div>  
-        
+        </div>          
     </div>
 
-<!-- สำเร็จ -->
-    @if (session('success'))
-        <script>
-            Swal.fire({
-                icon: 'success',
-                title: 'สำเร็จ',
-                text: '{{ session('success') }}',
-                timer: 2000,
-                showConfirmButton: false
-            });
-        </script>
-    @endif
+<!-- Modal กระทบยอด (AJAX Version) -->
+    <div class="modal fade" id="modalAverageReceive" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">        
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">กระทบยอดแบบกลุ่ม</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+                <form id="averageReceiveForm">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="mb-2">
+                            <label>วันที่เริ่มต้น</label>
+                            <input type="date" name="date_start" class="form-control" required>
+                        </div>
+                        <div class="mb-2">
+                            <label>วันที่สิ้นสุด</label>
+                            <input type="date" name="date_end" class="form-control" required>
+                        </div>
+                        <div class="mb-2">
+                            <label>เลขที่ใบเสร็จ</label>
+                            <input type="text" name="repno" class="form-control" required>
+                        </div>
+                        <div class="mb-2">
+                            <label>ยอดชดเชย (บาท)</label>
+                            <input type="number" step="0.01" name="total_receive" class="form-control" required>
+                        </div>
+                        <!-- ข้อความผลลัพธ์ -->
+                        <div id="avgResultMessage" class="mt-2 d-none"></div>
+                        <!-- Loading -->
+                        <div id="avgLoadingSpinner" class="text-center d-none">
+                            <div class="spinner-border text-success"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                        <button type="submit" class="btn btn-success" id="avgSubmitBtn">ยืนยัน</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
  <!-- กำลังโหลด -->
     <script>
-        function showLoading() {
+        function fetchData(event) {
+            event.preventDefault();
+
             Swal.fire({
-                title: 'กำลังโหลด...',
-                text: 'กรุณารอสักครู่',
+                title: "กำลังโหลด...",
+                text: "กรุณารอสักครู่",
                 allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
+                didOpen: () => Swal.showLoading()
             });
-        }
-        function fetchData() {
-            showLoading();
+            setTimeout(() => {
+                document.getElementById("searchForm").submit();
+            }, 80);
         }
     </script>
+ 
 <!-- ลบลูกหนี้ -->
     <script>
         function confirmDelete() { 
@@ -295,13 +331,49 @@
         }
     </script>
 
+
 @endsection
 
-<!-- Modal -->
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-
 @push('scripts')
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("averageReceiveForm");
+            const modalEl = document.getElementById("modalAverageReceive");
+            const bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            // Reset form ทุกครั้งที่เปิด modal
+            modalEl.addEventListener("show.bs.modal", function () {
+                form.reset();
+            });
+            // AJAX submit
+            form.addEventListener("submit", function(e){
+                e.preventDefault();
+                const data = new FormData(form);
+                fetch("{{ url('hrims/debtor/1102050101_301_average_receive') }}", {
+                    method: "POST",
+                    headers: { "X-CSRF-TOKEN": "{{ csrf_token() }}" },
+                    body: data
+                })
+                .then(res => res.json())
+                .then(response => {
+
+                    // แสดง SweetAlert พร้อมปุ่ม OK
+                    Swal.fire({
+                        icon: "success",                   
+                        html: response.message,
+                        confirmButtonText: "ตกลง",
+                    }).then(() => {
+                        // ผู้ใช้กด OK → ปิด modal
+                        bsModal.hide();                    
+                        // reload หน้าเมื่อ modal ปิด
+                        modalEl.addEventListener("hidden.bs.modal", function () {
+                            location.reload();
+                        }, { once: true });
+                    });
+                });
+            });
+        });
+    </script>
+
     <script>
         $(document).ready(function () {
             $('#debtor').DataTable({

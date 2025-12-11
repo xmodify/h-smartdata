@@ -880,6 +880,98 @@ class DebtorController extends Controller
         
         return view('hrims.debtor.1102050101_201_indiv_excel',compact('start_date','end_date','debtor'));
     }
+//_1102050101_201_average_receive-------------------------------------------------------------------------------------------------------   
+    public function _1102050101_201_average_receive(Request $request)
+    {
+        $request->validate([
+            'date_start'    => 'required|date',
+            'date_end'      => 'required|date',
+            'repno'         => 'required|string',
+            'total_receive' => 'required|numeric|min:0.01',
+        ]);
+
+        $dateStart = $request->date_start;
+        $dateEnd   = $request->date_end;
+        $repno     = $request->repno;
+        $total     = (float)$request->total_receive;
+
+        // ดึงข้อมูล
+        $rows = DB::table('debtor_1102050101_201')
+            ->whereBetween('vstdate', [$dateStart, $dateEnd])
+            ->get();
+
+        $count = $rows->count();
+        if ($count === 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => "ไม่พบข้อมูล"
+            ]);
+        }
+
+        // ===== 1) คำนวณน้ำหนักตาม debtor =====
+        $sumDebtor = $rows->sum('debtor');
+
+        $items = [];
+        foreach ($rows as $row) {
+
+            // น้ำหนักตามสัดส่วน debtor
+            $weight = $row->debtor / $sumDebtor;
+
+            // ยอดที่ควรได้รับตามสัดส่วน
+            $assign = round($total * $weight, 2);
+
+            $items[] = [
+                'vn'     => $row->vn,
+                'assign' => $assign,
+            ];
+        }
+
+        // ===== 2) ปรับ diff ให้ผลรวมตรง total_receive =====
+        $sumAssigned = array_sum(array_column($items, 'assign'));
+        $diff = round($total - $sumAssigned, 2);
+
+        $i = 0;
+        while (abs($diff) >= 0.01) {
+
+            // เพิ่มทีละ 1 สตางค์ให้ record ตามลำดับ
+            if ($diff > 0) {
+                $items[$i]['assign'] = round($items[$i]['assign'] + 0.01, 2);
+                $diff = round($diff - 0.01, 2);
+            }
+            // หรือลดทีละ 1 สตางค์
+            else {
+                if ($items[$i]['assign'] > 0.01) {
+                    $items[$i]['assign'] = round($items[$i]['assign'] - 0.01, 2);
+                    $diff = round($diff + 0.01, 2);
+                }
+            }
+
+            $i = ($i + 1) % $count;
+        }
+
+        // ===== 3) บันทึกจริงลงฐานข้อมูล =====
+        foreach ($items as $it) {
+            DB::table('debtor_1102050101_201')
+                ->where('vn', $it['vn'])
+                ->update([
+                    'receive' => $it['assign'],
+                    'repno'   => $repno,
+                    'status'  => 'กระทบยอดแล้ว',
+                ]);
+        }
+
+        $finalSum = array_sum(array_column($items, 'assign'));
+
+        return response()->json([
+            'status' => 'success',
+            'message' => "
+                วันที่ : <b>{$dateStart}</b> ถึง <b>{$dateEnd}</b><br>
+                จำนวน Visit : <b>{$count}</b><br>
+                ยอดชดเชย : <b>".number_format($total,2)."</b><br>
+                ยอดที่จัดสรรได้จริง : <b>".number_format($finalSum,2)."</b> ✔ ตรง 100%
+            "
+        ]);
+    }
 ##############################################################################################################################################################
 //_1102050101_203--------------------------------------------------------------------------------------------------------------
     public function _1102050101_203(Request $request )
@@ -1090,6 +1182,98 @@ class DebtorController extends Controller
         $debtor = Session::get('debtor');
         
         return view('hrims.debtor.1102050101_203_indiv_excel',compact('start_date','end_date','debtor'));
+    }
+//_1102050101_203_average_receive-------------------------------------------------------------------------------------------------------   
+    public function _1102050101_203_average_receive(Request $request)
+    {
+        $request->validate([
+            'date_start'    => 'required|date',
+            'date_end'      => 'required|date',
+            'repno'         => 'required|string',
+            'total_receive' => 'required|numeric|min:0.01',
+        ]);
+
+        $dateStart = $request->date_start;
+        $dateEnd   = $request->date_end;
+        $repno     = $request->repno;
+        $total     = (float)$request->total_receive;
+
+        // ดึงข้อมูล
+        $rows = DB::table('debtor_1102050101_203')
+            ->whereBetween('vstdate', [$dateStart, $dateEnd])
+            ->get();
+
+        $count = $rows->count();
+        if ($count === 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => "ไม่พบข้อมูล"
+            ]);
+        }
+
+        // ===== 1) คำนวณน้ำหนักตาม debtor =====
+        $sumDebtor = $rows->sum('debtor');
+
+        $items = [];
+        foreach ($rows as $row) {
+
+            // น้ำหนักตามสัดส่วน debtor
+            $weight = $row->debtor / $sumDebtor;
+
+            // ยอดที่ควรได้รับตามสัดส่วน
+            $assign = round($total * $weight, 2);
+
+            $items[] = [
+                'vn'     => $row->vn,
+                'assign' => $assign,
+            ];
+        }
+
+        // ===== 2) ปรับ diff ให้ผลรวมตรง total_receive =====
+        $sumAssigned = array_sum(array_column($items, 'assign'));
+        $diff = round($total - $sumAssigned, 2);
+
+        $i = 0;
+        while (abs($diff) >= 0.01) {
+
+            // เพิ่มทีละ 1 สตางค์ให้ record ตามลำดับ
+            if ($diff > 0) {
+                $items[$i]['assign'] = round($items[$i]['assign'] + 0.01, 2);
+                $diff = round($diff - 0.01, 2);
+            }
+            // หรือลดทีละ 1 สตางค์
+            else {
+                if ($items[$i]['assign'] > 0.01) {
+                    $items[$i]['assign'] = round($items[$i]['assign'] - 0.01, 2);
+                    $diff = round($diff + 0.01, 2);
+                }
+            }
+
+            $i = ($i + 1) % $count;
+        }
+
+        // ===== 3) บันทึกจริงลงฐานข้อมูล =====
+        foreach ($items as $it) {
+            DB::table('debtor_1102050101_203')
+                ->where('vn', $it['vn'])
+                ->update([
+                    'receive' => $it['assign'],
+                    'repno'   => $repno,
+                    'status'  => 'กระทบยอดแล้ว',
+                ]);
+        }
+
+        $finalSum = array_sum(array_column($items, 'assign'));
+
+        return response()->json([
+            'status' => 'success',
+            'message' => "
+                วันที่ : <b>{$dateStart}</b> ถึง <b>{$dateEnd}</b><br>
+                จำนวน Visit : <b>{$count}</b><br>
+                ยอดชดเชย : <b>".number_format($total,2)."</b><br>
+                ยอดที่จัดสรรได้จริง : <b>".number_format($finalSum,2)."</b> ✔ ตรง 100%
+            "
+        ]);
     }
 ##############################################################################################################################################################
 //_1102050101_209--------------------------------------------------------------------------------------------------------------
@@ -1814,7 +1998,7 @@ class DebtorController extends Controller
                     ->setPaper('A4', 'portrait');
         return @$pdf->stream();
     }
- //1102050101_301_indiv_excel-------------------------------------------------------------------------------------------------------   
+//1102050101_301_indiv_excel-------------------------------------------------------------------------------------------------------   
     public function _1102050101_301_indiv_excel(Request $request)
         {
         $start_date = Session::get('start_date');
@@ -1823,6 +2007,98 @@ class DebtorController extends Controller
         
         return view('hrims.debtor.1102050101_301_indiv_excel',compact('start_date','end_date','debtor'));
     }
+//_1102050101_301_average_receive-------------------------------------------------------------------------------------------------------   
+public function _1102050101_301_average_receive(Request $request)
+{
+    $request->validate([
+        'date_start'    => 'required|date',
+        'date_end'      => 'required|date',
+        'repno'         => 'required|string',
+        'total_receive' => 'required|numeric|min:0.01',
+    ]);
+
+    $dateStart = $request->date_start;
+    $dateEnd   = $request->date_end;
+    $repno     = $request->repno;
+    $total     = (float)$request->total_receive;
+
+    // ดึงข้อมูล
+    $rows = DB::table('debtor_1102050101_301')
+        ->whereBetween('vstdate', [$dateStart, $dateEnd])
+        ->get();
+
+    $count = $rows->count();
+    if ($count === 0) {
+        return response()->json([
+            'status' => 'error',
+            'message' => "ไม่พบข้อมูล"
+        ]);
+    }
+
+    // ===== 1) คำนวณน้ำหนักตาม debtor =====
+    $sumDebtor = $rows->sum('debtor');
+
+    $items = [];
+    foreach ($rows as $row) {
+
+        // น้ำหนักตามสัดส่วน debtor
+        $weight = $row->debtor / $sumDebtor;
+
+        // ยอดที่ควรได้รับตามสัดส่วน
+        $assign = round($total * $weight, 2);
+
+        $items[] = [
+            'vn'     => $row->vn,
+            'assign' => $assign,
+        ];
+    }
+
+    // ===== 2) ปรับ diff ให้ผลรวมตรง total_receive =====
+    $sumAssigned = array_sum(array_column($items, 'assign'));
+    $diff = round($total - $sumAssigned, 2);
+
+    $i = 0;
+    while (abs($diff) >= 0.01) {
+
+        // เพิ่มทีละ 1 สตางค์ให้ record ตามลำดับ
+        if ($diff > 0) {
+            $items[$i]['assign'] = round($items[$i]['assign'] + 0.01, 2);
+            $diff = round($diff - 0.01, 2);
+        }
+        // หรือลดทีละ 1 สตางค์
+        else {
+            if ($items[$i]['assign'] > 0.01) {
+                $items[$i]['assign'] = round($items[$i]['assign'] - 0.01, 2);
+                $diff = round($diff + 0.01, 2);
+            }
+        }
+
+        $i = ($i + 1) % $count;
+    }
+
+    // ===== 3) บันทึกจริงลงฐานข้อมูล =====
+    foreach ($items as $it) {
+        DB::table('debtor_1102050101_301')
+            ->where('vn', $it['vn'])
+            ->update([
+                'receive' => $it['assign'],
+                'repno'   => $repno,
+                'status'  => 'กระทบยอดแล้ว',
+            ]);
+    }
+
+    $finalSum = array_sum(array_column($items, 'assign'));
+
+    return response()->json([
+        'status' => 'success',
+        'message' => "
+            วันที่ : <b>{$dateStart}</b> ถึง <b>{$dateEnd}</b><br>
+            จำนวน Visit : <b>{$count}</b><br>
+            ยอดชดเชย : <b>".number_format($total,2)."</b><br>
+            ยอดที่จัดสรรได้จริง : <b>".number_format($finalSum,2)."</b> ✔ ตรง 100%
+        "
+    ]);
+}
 ##############################################################################################################################################################
 //_1102050101_303--------------------------------------------------------------------------------------------------------------
     public function _1102050101_303(Request $request )
