@@ -19,7 +19,7 @@
                 </div>
             </div>
         </form> 
-        <div class="alert alert-success text-primary" role="alert"><strong>ข้อมูลการใช้ยา ESRD วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</strong></div>
+        <div class="alert alert-success text-primary" role="alert"><strong>ข้อมูลการใช้ยา HD วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}</strong></div>
     
         <div class="card-body">
             <!-- Pills Tabs -->
@@ -325,7 +325,7 @@
                 extend: 'excelHtml5',
                 text: 'Excel',
                 className: 'btn btn-success',
-                title: 'ข้อมูลการใช้ยา ESRD ผู้ป่วยนอก วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}'
+                title: 'ข้อมูลการใช้ยา HD ผู้ป่วยนอก วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}'
                 }
             ],
             language: {
@@ -357,7 +357,7 @@
                 extend: 'excelHtml5',
                 text: 'Excel',
                 className: 'btn btn-success',
-                title: 'ข้อมูลการใช้ยา ESRD ผู้ป่วยใน วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}'
+                title: 'ข้อมูลการใช้ยา HD ผู้ป่วยใน วันที่ {{ DateThai($start_date) }} ถึง {{ DateThai($end_date) }}'
                 }
             ],
             language: {

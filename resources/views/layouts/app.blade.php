@@ -217,7 +217,11 @@
                     
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ms-auto">
-                        
+                        <li > 
+                            <div class="btn text-info">
+                                V. 68-12-12 14:30
+                            </div>   
+                        </li> 
                         @auth  
                         <div class="collapse navbar-collapse me-3" id="navbarSupportedContent"> 
                             <!-- HN-PluS -->  

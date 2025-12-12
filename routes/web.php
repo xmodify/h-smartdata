@@ -568,14 +568,11 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::match(['get','post'],'service_drug/value',[Service_DrugController::class,'value']);
     Route::match(['get','post'],'service_drug/value_diag_opd',[Service_DrugController::class,'value_diag_opd']);
     Route::match(['get','post'],'service_drug/value_diag_ipd',[Service_DrugController::class,'value_diag_ipd']);
-    Route::match(['get','post'],'service_drug/value_drug_herb',[Service_DrugController::class,'value_drug_herb']);
-    Route::get('service_drug/value_drug_herb_excel',[Service_DrugController::class,'value_drug_herb_excel']);
-    Route::match(['get','post'],'service_drug/value_drug_herb_9',[Service_DrugController::class,'value_drug_herb_9']);
-    Route::get('service_drug/value_drug_herb_9_excel',[Service_DrugController::class,'value_drug_herb_9_excel']);
-    Route::match(['get','post'],'service_drug/value_drug_herb_32',[Service_DrugController::class,'value_drug_herb_32']);
-    Route::get('service_drug/value_drug_herb_32_excel',[Service_DrugController::class,'value_drug_herb_32_excel']);
+    Route::match(['get','post'],'service_drug/herb',[Service_DrugController::class,'herb']);
+    Route::match(['get','post'],'service_drug/herb9',[Service_DrugController::class,'herb9']);   
+    Route::match(['get','post'],'service_drug/herb32',[Service_DrugController::class,'herb32']);
     Route::match(['get','post'],'service_drug/esrd',[Service_DrugController::class,'esrd']);
-    Route::get('service_drug/esrd_excel',[Service_DrugController::class,'esrd_excel']);
+    Route::match(['get','post'],'service_drug/hd',[Service_DrugController::class,'hd']);
     Route::match(['get','post'],'service_drug/dmht',[Service_DrugController::class,'dmht']);
     Route::get('service_drug/dmht_excel',[Service_DrugController::class,'dmht_excel']);
     Route::match(['get','post'],'service_drug/due',[Service_DrugController::class,'due']);

@@ -45,16 +45,19 @@
                 <table class="table table-hover">
                   <tbody>                       
                     <tr>
-                      <td><a href="{{ url('service_drug/value_drug_herb') }}" target="_blank"><li>มูลค่าการใช้ยาสมุนไพร</li></a></td>
+                      <td><a href="{{ url('service_drug/herb') }}" target="_blank"><li>มูลค่าการใช้ยาสมุนไพร</li></a></td>
                     </tr>
                     <tr>
-                      <td><a href="{{ url('service_drug/value_drug_herb_9') }}" target="_blank"><li>มูลค่าการใช้ยาสมุนไพร 9 รายการ</li></a></td>
+                      <td><a href="{{ url('service_drug/herb9') }}" target="_blank"><li>มูลค่าการใช้ยาสมุนไพร 9 รายการ</li></a></td>
                     </tr>
                     <tr>
-                      <td><a href="{{ url('service_drug/value_drug_herb_32') }}" target="_blank"><li>มูลค่าการใช้ยาสมุนไพร 32 รายการ</li></a></td>
+                      <td><a href="{{ url('service_drug/herb32') }}" target="_blank"><li>มูลค่าการใช้ยาสมุนไพร 32 รายการ</li></a></td>
                     </tr>
                     <tr>
-                      <td><a href="{{ url('service_drug/esrd') }}" target="_blank"><li>ข้อมูลการใช้ยา ESRD</li></a></td>
+                      <td><a href="{{ url('service_drug/esrd') }}" target="_blank"><li>มูลค่าการใช้ยา ESRD</li></a></td>
+                    </tr>
+                    <tr>
+                      <td><a href="{{ url('service_drug/hd') }}" target="_blank"><li>มูลค่าการใช้ยา HD</li></a></td>
                     </tr>
                     <tr>
                       <td><a href="{{ url('service_drug/dmht') }}" target="_blank"><li>ข้อมูลการใช้ยา DM-HT</li></a></td>

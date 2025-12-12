@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Session;
+use Illuminate\Support\Facades\Session;
 use PDF;
 
 class Service_DrugController extends Controller
@@ -181,271 +181,442 @@ public function value_diag_ipd(Request $request)
 }
 ################################################################################################################
 //Create มูลค่าการใช้ยาสมุนไพร
-public function value_drug_herb(Request $request)
-{
-        $start_date = $request->start_date;
-        $end_date = $request->end_date;
-        if($start_date == '' || $end_date == null)
-        {$start_date = date('Y-m-d');}else{$start_date =$request->start_date;}
-        if($end_date == '' || $end_date == null)
-        {$end_date = date('Y-m-d');}else{$end_date =$request->end_date;}
+        public function herb(Request $request) 
+        {
+                $start_date = $request->start_date ?: Session::get('start_date') ?: date('Y-m-d');
+                $end_date = $request->end_date ?: Session::get('end_date') ?: date('Y-m-d');
 
-        $drug = DB::connection('hosxp')->select('
-                SELECT icode,CONCAT(dname,SPACE(1),strength," / ",units) AS dname,SUM(qty) AS qty,SUM(cost) AS cost,SUM(sum_price) AS sum_price,
-		SUM(CASE WHEN hipdata_code IN ("UCS","DIS") THEN sum_price ELSE 0 END) AS ucs_price,
-		SUM(CASE WHEN pttype like "O%" OR pttype like "B%" OR pttype IN ("14","H1") THEN sum_price ELSE 0 END) AS ofc_price,
-		SUM(CASE WHEN hipdata_code in ("SSS","SSI") THEN sum_price ELSE 0 END) AS sss_price,
-		SUM(CASE WHEN pttype like "L%" OR pttype ="H2" THEN sum_price ELSE 0 END) AS lgo_price,
-		SUM(CASE WHEN (hipdata_code like "NR%" OR hipdata_code IN ("ST","STP","A1","A9") OR paidst IN ("01","03"))
-		        THEN sum_price ELSE 0 END) AS other_price
-		FROM (SELECT o.vn,o.an,d.icode,d.`name` AS dname,d.strength,d.units,o.qty,o.cost,o.sum_price,
-		IF((d.drugaccount="-" OR d.drugaccount IS NULL OR d.drugaccount =""),"NED","ED") AS account,
-		d.drugaccount,d2.ref_code AS code_24,d3.ref_code AS code_tmt,o.pttype,p.hipdata_code,p.paidst
-                FROM opitemrece o 
-		LEFT JOIN drugitems d ON d.icode = o.icode
-		LEFT JOIN drugitems_property_list d1 ON d1.icode=d.icode
-		LEFT JOIN drugitems_ref_code d2 ON d2.icode=d.icode AND d2.drugitems_ref_code_type_id=1
-                LEFT JOIN drugitems_ref_code d3 ON d3.icode=d.icode AND d3.drugitems_ref_code_type_id=3
-		LEFT JOIN pttype p ON p.pttype=o.pttype
-                WHERE o.rxdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-                AND o.icode LIKE "1%" AND (d1.drugitems_property_id="1" OR d2.ref_code LIKE "4%")
-		AND (o.an IS NULL OR o.an ="") GROUP BY o.vn,o.an,o.icode ) AS a WHERE qty <> "0" GROUP BY icode ORDER BY sum_price DESC');
+                $opd = collect(DB::connection('hosxp')->select('
+                        SELECT o.icode,
+                        CONCAT(d.`name`,SPACE(1),d.strength) AS `name`,
+                        d.generic_name,
+                        COUNT(DISTINCT o.hn) AS total_hn ,
+                        COUNT(DISTINCT o.vn) AS total_visit ,
+                        SUM(qty) AS total_qty,
+                        SUM(qty*cost) AS total_cost,
+                        SUM(sum_price) AS total_price,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN 1 ELSE 0 END) AS ucs_visit,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN qty ELSE 0 END) AS ucs_qty,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN qty * cost ELSE 0 END) AS ucs_cost,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN sum_price ELSE 0 END) AS ucs_price,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN 1 ELSE 0 END) AS ofc_visit,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN qty ELSE 0 END) AS ofc_qty,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN qty * cost ELSE 0 END) AS ofc_cost,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN sum_price ELSE 0 END) AS ofc_price,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN 1 ELSE 0 END) AS lgo_visit,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN qty ELSE 0 END) AS lgo_qty,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN qty * cost ELSE 0 END) AS lgo_cost,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN sum_price ELSE 0 END) AS lgo_price,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN 1 ELSE 0 END) AS sss_visit,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN qty ELSE 0 END) AS sss_qty,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN qty * cost ELSE 0 END) AS sss_cost,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN sum_price ELSE 0 END) AS sss_price,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN 1 ELSE 0 END) AS other_visit,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN qty ELSE 0 END) AS other_qty,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN qty * cost ELSE 0 END) AS other_cost,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN sum_price ELSE 0 END) AS other_price
+                        FROM opitemrece o                        
+                        LEFT JOIN pttype p ON p.pttype=o.pttype
+                        LEFT JOIN drugitems d ON d.icode=o.icode
+                        LEFT JOIN drugitems_ref_code d2 ON d2.icode=d.icode AND d2.drugitems_ref_code_type_id=1
+                        LEFT JOIN drugitems_property_list dpl ON dpl.icode= o.icode AND dpl.drugitems_property_id = 1								
+                        WHERE o.rxdate BETWEEN ? AND ?
+                        AND (o.vn IS NOT NULL OR o.vn <> "")
+                        AND (d2.ref_code LIKE "4%" OR dpl.drugitems_property_id="1")
+                        GROUP BY o.icode
+                        ORDER BY d.`name`',[$start_date, $end_date]));
 
-        $drug_ipd = DB::connection('hosxp')->select('
-                SELECT icode,CONCAT(dname,SPACE(1),strength," / ",units) AS dname,SUM(qty) AS qty,SUM(cost) AS cost,SUM(sum_price) AS sum_price,
-		SUM(CASE WHEN hipdata_code IN ("UCS","DIS") THEN sum_price ELSE 0 END) AS ucs_price,
-		SUM(CASE WHEN pttype like "O%" OR pttype like "B%" OR pttype IN ("14","H1") THEN sum_price ELSE 0 END) AS ofc_price,
-		SUM(CASE WHEN hipdata_code in ("SSS","SSI") THEN sum_price ELSE 0 END) AS sss_price,
-		SUM(CASE WHEN pttype like "L%" OR pttype ="H2" THEN sum_price ELSE 0 END) AS lgo_price,
-		SUM(CASE WHEN (hipdata_code like "NR%" OR hipdata_code IN ("ST","STP","A1","A9") OR paidst IN ("01","03"))
-		        THEN sum_price ELSE 0 END) AS other_price
-		FROM (SELECT o.vn,o.an,d.icode,d.`name` AS dname,d.strength,d.units,o.qty,o.cost,o.sum_price,
-		IF((d.drugaccount="-" OR d.drugaccount IS NULL OR d.drugaccount =""),"NED","ED") AS account,
-		d.drugaccount,d2.ref_code AS code_24,d3.ref_code AS code_tmt,o.pttype,p.hipdata_code,p.paidst
-                FROM opitemrece o 
-		LEFT JOIN drugitems d ON d.icode = o.icode
-		LEFT JOIN drugitems_property_list d1 ON d1.icode=d.icode
-		LEFT JOIN drugitems_ref_code d2 ON d2.icode=d.icode AND d2.drugitems_ref_code_type_id=1
-                LEFT JOIN drugitems_ref_code d3 ON d3.icode=d.icode AND d3.drugitems_ref_code_type_id=3
-		LEFT JOIN pttype p ON p.pttype=o.pttype
-                WHERE o.rxdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-                AND o.icode LIKE "1%" AND (d1.drugitems_property_id="1" OR d2.ref_code LIKE "4%")
-		AND (o.vn IS NULL OR o.vn ="") GROUP BY o.vn,o.an,o.icode ) AS a WHERE qty <> "0" GROUP BY icode ORDER BY sum_price DESC');
+                $ipd = collect(DB::connection('hosxp')->select('
+                        SELECT o.icode,
+                        CONCAT(d.`name`,SPACE(1),d.strength) AS `name`,
+                        d.generic_name,
+                        COUNT(DISTINCT o.hn) AS total_hn ,
+                        COUNT(DISTINCT o.an) AS total_an ,
+                        SUM(qty) AS total_qty,
+                        SUM(qty*cost) AS total_cost,
+                        SUM(sum_price) AS total_price,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN 1 ELSE 0 END) AS ucs_an,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN qty ELSE 0 END) AS ucs_qty,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN qty * cost ELSE 0 END) AS ucs_cost,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN sum_price ELSE 0 END) AS ucs_price,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN 1 ELSE 0 END) AS ofc_an,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN qty ELSE 0 END) AS ofc_qty,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN qty * cost ELSE 0 END) AS ofc_cost,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN sum_price ELSE 0 END) AS ofc_price,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN 1 ELSE 0 END) AS lgo_an,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN qty ELSE 0 END) AS lgo_qty,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN qty * cost ELSE 0 END) AS lgo_cost,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN sum_price ELSE 0 END) AS lgo_price,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN 1 ELSE 0 END) AS sss_an,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN qty ELSE 0 END) AS sss_qty,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN qty * cost ELSE 0 END) AS sss_cost,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN sum_price ELSE 0 END) AS sss_price,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN 1 ELSE 0 END) AS other_an,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN qty ELSE 0 END) AS other_qty,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN qty * cost ELSE 0 END) AS other_cost,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN sum_price ELSE 0 END) AS other_price
+                        FROM opitemrece o                        
+                        LEFT JOIN pttype p ON p.pttype=o.pttype
+                        LEFT JOIN drugitems d ON d.icode=o.icode
+                        LEFT JOIN drugitems_ref_code d2 ON d2.icode=d.icode AND d2.drugitems_ref_code_type_id=1
+                        LEFT JOIN drugitems_property_list dpl ON dpl.icode= o.icode AND dpl.drugitems_property_id = 1								
+                        WHERE o.rxdate BETWEEN ? AND ?
+                        AND (o.an IS NOT NULL OR o.an <> "")
+                        AND (d2.ref_code LIKE "4%" OR dpl.drugitems_property_id="1")	
+                        GROUP BY o.icode
+                        ORDER BY d.`name`',[$start_date, $end_date]));
 
-        $request->session()->put('drug',$drug);
-        $request->session()->put('drug_ipd',$drug_ipd);
-        $request->session()->put('start_date',$start_date);
-        $request->session()->put('end_date',$end_date);
-        $request->session()->save();
-
-      return view('service_drug.value_drug_herb',compact('start_date','end_date','drug','drug_ipd'));
-}
-public function value_drug_herb_excel()
-{
-        $drug = Session::get('drug');
-        $drug_ipd = Session::get('drug_ipd');
-        $start_date = Session::get('start_date');
-        $end_date = Session::get('end_date');
-
-      return view('service_drug.value_drug_herb_excel',compact('start_date','end_date','drug','drug_ipd'));
-}
+        return view('service_drug.herb',compact('opd','ipd','start_date','end_date'));
+        }
 ################################################################################################################
-//Create มูลค่าการใช้ยาสมุนไพร 9 รายการ
-public function value_drug_herb_9(Request $request)
-{
-        $start_date = $request->start_date;
-        $end_date = $request->end_date;
-        if($start_date == '' || $end_date == null)
-        {$start_date = date('Y-m-d');}else{$start_date =$request->start_date;}
-        if($end_date == '' || $end_date == null)
-        {$end_date = date('Y-m-d');}else{$end_date =$request->end_date;}
+//Create การใช้ยาสมุนไพร 9 รายการ
+public function herb9(Request $request) 
+        {
+                $start_date = $request->start_date ?: Session::get('start_date') ?: date('Y-m-d');
+                $end_date = $request->end_date ?: Session::get('end_date') ?: date('Y-m-d');
 
-        $drug = DB::connection('hosxp')->select('
-                SELECT icode,CONCAT(dname,SPACE(1),strength," / ",units) AS dname,SUM(qty) AS qty,SUM(cost) AS cost,SUM(sum_price) AS sum_price,
-		SUM(CASE WHEN hipdata_code IN ("UCS","DIS") THEN sum_price ELSE 0 END) AS ucs_price,
-		SUM(CASE WHEN pttype like "O%" OR pttype like "B%" OR pttype IN ("14","H1") THEN sum_price ELSE 0 END) AS ofc_price,
-		SUM(CASE WHEN hipdata_code in ("SSS","SSI") THEN sum_price ELSE 0 END) AS sss_price,
-		SUM(CASE WHEN pttype like "L%" OR pttype ="H2" THEN sum_price ELSE 0 END) AS lgo_price,
-		SUM(CASE WHEN (hipdata_code like "NR%" OR hipdata_code IN ("ST","STP","A1","A9") OR paidst IN ("01","03"))
-		        THEN sum_price ELSE 0 END) AS other_price
-		FROM (SELECT o.vn,o.an,d.icode,d.`name` AS dname,d.strength,d.units,o.qty,o.cost,o.sum_price,
-		IF((d.drugaccount="-" OR d.drugaccount IS NULL OR d.drugaccount =""),"NED","ED") AS account,
-		d.drugaccount,d2.ref_code AS code_24,d3.ref_code AS code_tmt,o.pttype,p.hipdata_code,p.paidst
-                FROM opitemrece o 
-		LEFT JOIN drugitems d ON d.icode = o.icode
-		LEFT JOIN drugitems_property_list d1 ON d1.icode=d.icode
-		LEFT JOIN drugitems_ref_code d2 ON d2.icode=d.icode AND d2.drugitems_ref_code_type_id=1
-                LEFT JOIN drugitems_ref_code d3 ON d3.icode=d.icode AND d3.drugitems_ref_code_type_id=3
-		LEFT JOIN pttype p ON p.pttype=o.pttype
-                WHERE o.rxdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-                AND (o.an IS NULL OR o.an ="") AND o.icode LIKE "1%" AND d1.drugitems_property_id="13"
-		GROUP BY o.vn,o.an,o.icode ) AS a WHERE qty <> "0" GROUP BY icode ORDER BY sum_price DESC');
+                $opd = collect(DB::connection('hosxp')->select('
+                        SELECT o.icode,
+                        CONCAT(d.`name`,SPACE(1),d.strength) AS `name`,
+                        d.generic_name,
+                        COUNT(DISTINCT o.hn) AS total_hn ,
+                        COUNT(DISTINCT o.vn) AS total_visit ,
+                        SUM(qty) AS total_qty,
+                        SUM(qty*cost) AS total_cost,
+                        SUM(sum_price) AS total_price,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN 1 ELSE 0 END) AS ucs_visit,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN qty ELSE 0 END) AS ucs_qty,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN qty * cost ELSE 0 END) AS ucs_cost,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN sum_price ELSE 0 END) AS ucs_price,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN 1 ELSE 0 END) AS ofc_visit,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN qty ELSE 0 END) AS ofc_qty,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN qty * cost ELSE 0 END) AS ofc_cost,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN sum_price ELSE 0 END) AS ofc_price,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN 1 ELSE 0 END) AS lgo_visit,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN qty ELSE 0 END) AS lgo_qty,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN qty * cost ELSE 0 END) AS lgo_cost,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN sum_price ELSE 0 END) AS lgo_price,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN 1 ELSE 0 END) AS sss_visit,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN qty ELSE 0 END) AS sss_qty,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN qty * cost ELSE 0 END) AS sss_cost,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN sum_price ELSE 0 END) AS sss_price,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN 1 ELSE 0 END) AS other_visit,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN qty ELSE 0 END) AS other_qty,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN qty * cost ELSE 0 END) AS other_cost,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN sum_price ELSE 0 END) AS other_price
+                        FROM opitemrece o
+                        INNER JOIN drugitems_property_list dpl ON dpl.icode= o.icode 
+                                AND dpl.drugitems_property_id = 13
+                        LEFT JOIN pttype p ON p.pttype=o.pttype
+                        LEFT JOIN drugitems d ON d.icode=o.icode								
+                        WHERE o.rxdate BETWEEN ? AND ?
+                        AND (o.vn IS NOT NULL OR o.vn <> "")	
+                        GROUP BY o.icode
+                        ORDER BY d.`name`',[$start_date, $end_date]));
 
-        $drug_ipd = DB::connection('hosxp')->select('
-                SELECT icode,CONCAT(dname,SPACE(1),strength," / ",units) AS dname,SUM(qty) AS qty,SUM(cost) AS cost,SUM(sum_price) AS sum_price,
-		SUM(CASE WHEN hipdata_code IN ("UCS","DIS") THEN sum_price ELSE 0 END) AS ucs_price,
-		SUM(CASE WHEN pttype like "O%" OR pttype like "B%" OR pttype IN ("14","H1") THEN sum_price ELSE 0 END) AS ofc_price,
-		SUM(CASE WHEN hipdata_code in ("SSS","SSI") THEN sum_price ELSE 0 END) AS sss_price,
-		SUM(CASE WHEN pttype like "L%" OR pttype ="H2" THEN sum_price ELSE 0 END) AS lgo_price,
-		SUM(CASE WHEN (hipdata_code like "NR%" OR hipdata_code IN ("ST","STP","A1","A9") OR paidst IN ("01","03"))
-		        THEN sum_price ELSE 0 END) AS other_price
-		FROM (SELECT o.vn,o.an,d.icode,d.`name` AS dname,d.strength,d.units,o.qty,o.cost,o.sum_price,
-		IF((d.drugaccount="-" OR d.drugaccount IS NULL OR d.drugaccount =""),"NED","ED") AS account,
-		d.drugaccount,d2.ref_code AS code_24,d3.ref_code AS code_tmt,o.pttype,p.hipdata_code,p.paidst
-                FROM opitemrece o 
-		LEFT JOIN drugitems d ON d.icode = o.icode
-		LEFT JOIN drugitems_property_list d1 ON d1.icode=d.icode
-		LEFT JOIN drugitems_ref_code d2 ON d2.icode=d.icode AND d2.drugitems_ref_code_type_id=1
-                LEFT JOIN drugitems_ref_code d3 ON d3.icode=d.icode AND d3.drugitems_ref_code_type_id=3
-		LEFT JOIN pttype p ON p.pttype=o.pttype
-                WHERE o.rxdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-                AND (o.vn IS NULL OR o.vn ="") AND o.icode LIKE "1%" AND d1.drugitems_property_id="13"
-		 GROUP BY o.vn,o.an,o.icode ) AS a WHERE qty <> "0" GROUP BY icode ORDER BY sum_price DESC');
+                $ipd = collect(DB::connection('hosxp')->select('
+                        SELECT o.icode,
+                        CONCAT(d.`name`,SPACE(1),d.strength) AS `name`,
+                        d.generic_name,
+                        COUNT(DISTINCT o.hn) AS total_hn ,
+                        COUNT(DISTINCT o.an) AS total_an ,
+                        SUM(qty) AS total_qty,
+                        SUM(qty*cost) AS total_cost,
+                        SUM(sum_price) AS total_price,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN 1 ELSE 0 END) AS ucs_an,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN qty ELSE 0 END) AS ucs_qty,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN qty * cost ELSE 0 END) AS ucs_cost,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN sum_price ELSE 0 END) AS ucs_price,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN 1 ELSE 0 END) AS ofc_an,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN qty ELSE 0 END) AS ofc_qty,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN qty * cost ELSE 0 END) AS ofc_cost,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN sum_price ELSE 0 END) AS ofc_price,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN 1 ELSE 0 END) AS lgo_an,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN qty ELSE 0 END) AS lgo_qty,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN qty * cost ELSE 0 END) AS lgo_cost,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN sum_price ELSE 0 END) AS lgo_price,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN 1 ELSE 0 END) AS sss_an,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN qty ELSE 0 END) AS sss_qty,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN qty * cost ELSE 0 END) AS sss_cost,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN sum_price ELSE 0 END) AS sss_price,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN 1 ELSE 0 END) AS other_an,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN qty ELSE 0 END) AS other_qty,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN qty * cost ELSE 0 END) AS other_cost,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN sum_price ELSE 0 END) AS other_price
+                        FROM opitemrece o
+                        INNER JOIN drugitems_property_list dpl ON dpl.icode= o.icode 
+                                AND dpl.drugitems_property_id = 13
+                        LEFT JOIN pttype p ON p.pttype=o.pttype
+                        LEFT JOIN drugitems d ON d.icode=o.icode								
+                        WHERE o.rxdate BETWEEN ? AND ?
+                        AND (o.an IS NOT NULL OR o.an <> "")	
+                        GROUP BY o.icode
+                        ORDER BY d.`name`',[$start_date, $end_date]));
 
-        $request->session()->put('drug',$drug);
-        $request->session()->put('drug_ipd',$drug_ipd);
-        $request->session()->put('start_date',$start_date);
-        $request->session()->put('end_date',$end_date);
-        $request->session()->save();
-
-      return view('service_drug.value_drug_herb_9',compact('start_date','end_date','drug','drug_ipd'));
-}
-public function value_drug_herb_9_excel()
-{
-        $drug = Session::get('drug');
-        $drug_ipd = Session::get('drug_ipd');
-        $start_date = Session::get('start_date');
-        $end_date = Session::get('end_date');
-
-      return view('service_drug.value_drug_herb_9_excel',compact('start_date','end_date','drug','drug_ipd'));
-}
+        return view('service_drug.herb9',compact('opd','ipd','start_date','end_date'));
+        }
 ################################################################################################################
-//Create มูลค่าการใช้ยาสมุนไพร 32 รายการ
-public function value_drug_herb_32(Request $request)
-{
-        $start_date = $request->start_date;
-        $end_date = $request->end_date;
-        if($start_date == '' || $end_date == null)
-        {$start_date = date('Y-m-d');}else{$start_date =$request->start_date;}
-        if($end_date == '' || $end_date == null)
-        {$end_date = date('Y-m-d');}else{$end_date =$request->end_date;}
+//Create การใช้ยาสมุนไพร 32 รายการ
+        public function herb32(Request $request) 
+        {
+                $start_date = $request->start_date ?: Session::get('start_date') ?: date('Y-m-d');
+                $end_date = $request->end_date ?: Session::get('end_date') ?: date('Y-m-d');
 
-        $drug = DB::connection('hosxp')->select('
-                SELECT icode,CONCAT(dname,SPACE(1),strength," / ",units) AS dname,SUM(qty) AS qty,SUM(cost) AS cost,SUM(sum_price) AS sum_price,
-		SUM(CASE WHEN hipdata_code IN ("UCS","DIS") THEN sum_price ELSE 0 END) AS ucs_price,
-		SUM(CASE WHEN pttype like "O%" OR pttype like "B%" OR pttype IN ("14","H1") THEN sum_price ELSE 0 END) AS ofc_price,
-		SUM(CASE WHEN hipdata_code in ("SSS","SSI") THEN sum_price ELSE 0 END) AS sss_price,
-		SUM(CASE WHEN pttype like "L%" OR pttype ="H2" THEN sum_price ELSE 0 END) AS lgo_price,
-		SUM(CASE WHEN (hipdata_code like "NR%" OR hipdata_code IN ("ST","STP","A1","A9") OR paidst IN ("01","03"))
-		        THEN sum_price ELSE 0 END) AS other_price
-		FROM (SELECT o.vn,o.an,d.icode,d.`name` AS dname,d.strength,d.units,o.qty,o.cost,o.sum_price,
-		IF((d.drugaccount="-" OR d.drugaccount IS NULL OR d.drugaccount =""),"NED","ED") AS account,
-		d.drugaccount,d2.ref_code AS code_24,d3.ref_code AS code_tmt,o.pttype,p.hipdata_code,p.paidst
-                FROM opitemrece o 
-		LEFT JOIN drugitems d ON d.icode = o.icode
-		LEFT JOIN drugitems_property_list d1 ON d1.icode=d.icode
-		LEFT JOIN drugitems_ref_code d2 ON d2.icode=d.icode AND d2.drugitems_ref_code_type_id=1
-                LEFT JOIN drugitems_ref_code d3 ON d3.icode=d.icode AND d3.drugitems_ref_code_type_id=3
-		LEFT JOIN pttype p ON p.pttype=o.pttype
-                WHERE o.rxdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-                AND (o.an IS NULL OR o.an ="") AND o.icode LIKE "1%" AND d1.drugitems_property_id="12"
-		 GROUP BY o.vn,o.an,o.icode ) AS a WHERE qty <> "0" GROUP BY icode ORDER BY sum_price DESC');
+                $opd = collect(DB::connection('hosxp')->select('
+                        SELECT o.icode,
+                        CONCAT(d.`name`,SPACE(1),d.strength) AS `name`,
+                        d.generic_name,
+                        COUNT(DISTINCT o.hn) AS total_hn ,
+                        COUNT(DISTINCT o.vn) AS total_visit ,
+                        SUM(qty) AS total_qty,
+                        SUM(qty*cost) AS total_cost,
+                        SUM(sum_price) AS total_price,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN 1 ELSE 0 END) AS ucs_visit,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN qty ELSE 0 END) AS ucs_qty,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN qty * cost ELSE 0 END) AS ucs_cost,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN sum_price ELSE 0 END) AS ucs_price,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN 1 ELSE 0 END) AS ofc_visit,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN qty ELSE 0 END) AS ofc_qty,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN qty * cost ELSE 0 END) AS ofc_cost,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN sum_price ELSE 0 END) AS ofc_price,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN 1 ELSE 0 END) AS lgo_visit,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN qty ELSE 0 END) AS lgo_qty,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN qty * cost ELSE 0 END) AS lgo_cost,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN sum_price ELSE 0 END) AS lgo_price,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN 1 ELSE 0 END) AS sss_visit,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN qty ELSE 0 END) AS sss_qty,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN qty * cost ELSE 0 END) AS sss_cost,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN sum_price ELSE 0 END) AS sss_price,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN 1 ELSE 0 END) AS other_visit,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN qty ELSE 0 END) AS other_qty,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN qty * cost ELSE 0 END) AS other_cost,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN sum_price ELSE 0 END) AS other_price
+                        FROM opitemrece o
+                        INNER JOIN drugitems_property_list dpl ON dpl.icode= o.icode 
+                                AND dpl.drugitems_property_id = 12
+                        LEFT JOIN pttype p ON p.pttype=o.pttype
+                        LEFT JOIN drugitems d ON d.icode=o.icode								
+                        WHERE o.rxdate BETWEEN ? AND ?
+                        AND (o.vn IS NOT NULL OR o.vn <> "")	
+                        GROUP BY o.icode
+                        ORDER BY d.`name`',[$start_date, $end_date]));
 
-        $drug_ipd = DB::connection('hosxp')->select('
-                SELECT icode,CONCAT(dname,SPACE(1),strength," / ",units) AS dname,SUM(qty) AS qty,SUM(cost) AS cost,SUM(sum_price) AS sum_price,
-		SUM(CASE WHEN hipdata_code IN ("UCS","DIS") THEN sum_price ELSE 0 END) AS ucs_price,
-		SUM(CASE WHEN pttype like "O%" OR pttype like "B%" OR pttype IN ("14","H1") THEN sum_price ELSE 0 END) AS ofc_price,
-		SUM(CASE WHEN hipdata_code in ("SSS","SSI") THEN sum_price ELSE 0 END) AS sss_price,
-		SUM(CASE WHEN pttype like "L%" OR pttype ="H2" THEN sum_price ELSE 0 END) AS lgo_price,
-		SUM(CASE WHEN (hipdata_code like "NR%" OR hipdata_code IN ("ST","STP","A1","A9") OR paidst IN ("01","03"))
-		        THEN sum_price ELSE 0 END) AS other_price
-		FROM (SELECT o.vn,o.an,d.icode,d.`name` AS dname,d.strength,d.units,o.qty,o.cost,o.sum_price,
-		IF((d.drugaccount="-" OR d.drugaccount IS NULL OR d.drugaccount =""),"NED","ED") AS account,
-		d.drugaccount,d2.ref_code AS code_24,d3.ref_code AS code_tmt,o.pttype,p.hipdata_code,p.paidst
-                FROM opitemrece o 
-		LEFT JOIN drugitems d ON d.icode = o.icode
-		LEFT JOIN drugitems_property_list d1 ON d1.icode=d.icode
-		LEFT JOIN drugitems_ref_code d2 ON d2.icode=d.icode AND d2.drugitems_ref_code_type_id=1
-                LEFT JOIN drugitems_ref_code d3 ON d3.icode=d.icode AND d3.drugitems_ref_code_type_id=3
-		LEFT JOIN pttype p ON p.pttype=o.pttype
-                WHERE o.rxdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-                AND (o.vn IS NULL OR o.vn ="") AND o.icode LIKE "1%" AND d1.drugitems_property_id="12" 
-		 GROUP BY o.vn,o.an,o.icode ) AS a WHERE qty <> "0" GROUP BY icode ORDER BY sum_price DESC');
+                $ipd = collect(DB::connection('hosxp')->select('
+                        SELECT o.icode,
+                        CONCAT(d.`name`,SPACE(1),d.strength) AS `name`,
+                        d.generic_name,
+                        COUNT(DISTINCT o.hn) AS total_hn ,
+                        COUNT(DISTINCT o.an) AS total_an ,
+                        SUM(qty) AS total_qty,
+                        SUM(qty*cost) AS total_cost,
+                        SUM(sum_price) AS total_price,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN 1 ELSE 0 END) AS ucs_an,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN qty ELSE 0 END) AS ucs_qty,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN qty * cost ELSE 0 END) AS ucs_cost,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN sum_price ELSE 0 END) AS ucs_price,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN 1 ELSE 0 END) AS ofc_an,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN qty ELSE 0 END) AS ofc_qty,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN qty * cost ELSE 0 END) AS ofc_cost,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN sum_price ELSE 0 END) AS ofc_price,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN 1 ELSE 0 END) AS lgo_an,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN qty ELSE 0 END) AS lgo_qty,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN qty * cost ELSE 0 END) AS lgo_cost,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN sum_price ELSE 0 END) AS lgo_price,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN 1 ELSE 0 END) AS sss_an,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN qty ELSE 0 END) AS sss_qty,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN qty * cost ELSE 0 END) AS sss_cost,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN sum_price ELSE 0 END) AS sss_price,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN 1 ELSE 0 END) AS other_an,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN qty ELSE 0 END) AS other_qty,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN qty * cost ELSE 0 END) AS other_cost,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN sum_price ELSE 0 END) AS other_price
+                        FROM opitemrece o
+                        INNER JOIN drugitems_property_list dpl ON dpl.icode= o.icode 
+                                AND dpl.drugitems_property_id = 12
+                        LEFT JOIN pttype p ON p.pttype=o.pttype
+                        LEFT JOIN drugitems d ON d.icode=o.icode								
+                        WHERE o.rxdate BETWEEN ? AND ?
+                        AND (o.an IS NOT NULL OR o.an <> "")	
+                        GROUP BY o.icode
+                        ORDER BY d.`name`',[$start_date, $end_date]));
 
-        $request->session()->put('drug',$drug);
-        $request->session()->put('drug_ipd',$drug_ipd);
-        $request->session()->put('start_date',$start_date);
-        $request->session()->put('end_date',$end_date);
-        $request->session()->save();
+        return view('service_drug.herb32',compact('opd','ipd','start_date','end_date'));
+        }
 
-      return view('service_drug.value_drug_herb_32',compact('start_date','end_date','drug','drug_ipd'));
-}
-public function value_drug_herb_32_excel()
-{
-        $drug = Session::get('drug');
-        $drug_ipd = Session::get('drug_ipd');
-        $start_date = Session::get('start_date');
-        $end_date = Session::get('end_date');
-
-      return view('service_drug.value_drug_herb_32_excel',compact('start_date','end_date','drug','drug_ipd'));
-}
 ################################################################################################################
 //Create esrd
-public function esrd(Request $request)
-{
-    $start_date = $request->start_date;
-    $end_date = $request->end_date;
-    if($start_date == '' || $end_date == null)
-    {$start_date = date('Y-m-d', strtotime("first day of previous month"));}else{$start_date =$request->start_date;}
-    if($end_date == '' || $end_date == null)
-    {$end_date = date('Y-m-d', strtotime("last day of previous month"));}else{$end_date =$request->end_date;}
+        public function esrd(Request $request) 
+        {
+                $start_date = $request->start_date ?: Session::get('start_date') ?: date('Y-m-d');
+                $end_date = $request->end_date ?: Session::get('end_date') ?: date('Y-m-d');
 
-    $esrd_opd = DB::connection('hosxp')->select('select
-            p.hipdata_code,o.icode,d.`name`,d.generic_name,d.strength,COUNT(DISTINCT o.hn) AS hn,
-            COUNT(DISTINCT o.vn) AS visit,COUNT(DISTINCT o.an) AS an ,SUM(qty) AS qty,SUM(qty*cost) AS cost,SUM(sum_price) AS price
-            FROM opitemrece o
-            LEFT JOIN pttype p ON p.pttype=o.pttype
-            LEFT JOIN drugitems d ON d.icode=o.icode
-            LEFT JOIN ovstdiag o1 ON o1.vn=o.vn
-            WHERE o.rxdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-            AND o.vn IS NOT NULL AND o1.icd10 BETWEEN "N185" AND  "N185" AND o1.diagtype = "1"
-            AND o.icode IN ("1611211","1611217","1610723","1610725","1611207","1611106","1611108","1630803",
-            "1610719","1611219","1611209","1611225","1611214","1611221","1611223","1610721","1611227")
-            GROUP BY p.hipdata_code,o.icode
-            ORDER BY p.hipdata_code,d.`name`');
+                $opd = collect(DB::connection('hosxp')->select('
+                        SELECT o.icode,
+                        CONCAT(d.`name`,SPACE(1),d.strength) AS `name`,
+                        d.generic_name,
+                        COUNT(DISTINCT o.hn) AS total_hn ,
+                        COUNT(DISTINCT o.vn) AS total_visit ,
+                        SUM(qty) AS total_qty,
+                        SUM(qty*cost) AS total_cost,
+                        SUM(sum_price) AS total_price,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN 1 ELSE 0 END) AS ucs_visit,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN qty ELSE 0 END) AS ucs_qty,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN qty * cost ELSE 0 END) AS ucs_cost,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN sum_price ELSE 0 END) AS ucs_price,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN 1 ELSE 0 END) AS ofc_visit,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN qty ELSE 0 END) AS ofc_qty,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN qty * cost ELSE 0 END) AS ofc_cost,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN sum_price ELSE 0 END) AS ofc_price,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN 1 ELSE 0 END) AS lgo_visit,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN qty ELSE 0 END) AS lgo_qty,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN qty * cost ELSE 0 END) AS lgo_cost,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN sum_price ELSE 0 END) AS lgo_price,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN 1 ELSE 0 END) AS sss_visit,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN qty ELSE 0 END) AS sss_qty,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN qty * cost ELSE 0 END) AS sss_cost,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN sum_price ELSE 0 END) AS sss_price,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN 1 ELSE 0 END) AS other_visit,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN qty ELSE 0 END) AS other_qty,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN qty * cost ELSE 0 END) AS other_cost,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN sum_price ELSE 0 END) AS other_price
+                        FROM opitemrece o
+                        INNER JOIN drugitems_property_list dpl ON dpl.icode= o.icode 
+                                AND dpl.drugitems_property_id = 7
+                        LEFT JOIN pttype p ON p.pttype=o.pttype
+                        LEFT JOIN drugitems d ON d.icode=o.icode								
+                        WHERE o.rxdate BETWEEN ? AND ?
+                        AND (o.vn IS NOT NULL OR o.vn <> "")	
+                        GROUP BY o.icode
+                        ORDER BY d.`name`',[$start_date, $end_date]));
 
-    $esrd_ipd = DB::connection('hosxp')->select('select
-            p.hipdata_code,o.icode,d.`name`,d.generic_name,d.strength,COUNT(DISTINCT o.hn) AS hn,
-            COUNT(DISTINCT o.vn) AS visit,COUNT(DISTINCT o.an) AS an ,SUM(qty) AS qty,SUM(qty*cost) AS cost,SUM(sum_price) AS price
-            FROM opitemrece o
-            LEFT JOIN pttype p ON p.pttype=o.pttype
-            LEFT JOIN drugitems d ON d.icode=o.icode
-            LEFT JOIN iptdiag i ON i.an=o.an
-            WHERE o.rxdate BETWEEN "'.$start_date.'" AND "'.$end_date.'"
-            AND o.an IS NOT NULL AND i.icd10 BETWEEN "N185" AND "N185" AND i.diagtype = "1"
-            AND o.icode IN ("1611211","1611217","1610723","1610725","1611207","1611106","1611108","1630803",
-            "1610719","1611219","1611209","1611225","1611214","1611221","1611223","1610721","1611227")
-            GROUP BY p.hipdata_code,o.icode
-            ORDER BY p.hipdata_code,d.`name`');
+                $ipd = collect(DB::connection('hosxp')->select('
+                        SELECT o.icode,
+                        CONCAT(d.`name`,SPACE(1),d.strength) AS `name`,
+                        d.generic_name,
+                        COUNT(DISTINCT o.hn) AS total_hn ,
+                        COUNT(DISTINCT o.an) AS total_an ,
+                        SUM(qty) AS total_qty,
+                        SUM(qty*cost) AS total_cost,
+                        SUM(sum_price) AS total_price,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN 1 ELSE 0 END) AS ucs_an,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN qty ELSE 0 END) AS ucs_qty,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN qty * cost ELSE 0 END) AS ucs_cost,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN sum_price ELSE 0 END) AS ucs_price,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN 1 ELSE 0 END) AS ofc_an,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN qty ELSE 0 END) AS ofc_qty,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN qty * cost ELSE 0 END) AS ofc_cost,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN sum_price ELSE 0 END) AS ofc_price,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN 1 ELSE 0 END) AS lgo_an,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN qty ELSE 0 END) AS lgo_qty,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN qty * cost ELSE 0 END) AS lgo_cost,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN sum_price ELSE 0 END) AS lgo_price,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN 1 ELSE 0 END) AS sss_an,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN qty ELSE 0 END) AS sss_qty,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN qty * cost ELSE 0 END) AS sss_cost,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN sum_price ELSE 0 END) AS sss_price,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN 1 ELSE 0 END) AS other_an,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN qty ELSE 0 END) AS other_qty,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN qty * cost ELSE 0 END) AS other_cost,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN sum_price ELSE 0 END) AS other_price
+                        FROM opitemrece o
+                        INNER JOIN drugitems_property_list dpl ON dpl.icode= o.icode 
+                                AND dpl.drugitems_property_id = 7
+                        LEFT JOIN pttype p ON p.pttype=o.pttype
+                        LEFT JOIN drugitems d ON d.icode=o.icode								
+                        WHERE o.rxdate BETWEEN ? AND ?
+                        AND (o.an IS NOT NULL OR o.an <> "")	
+                        GROUP BY o.icode
+                        ORDER BY d.`name`',[$start_date, $end_date]));
 
-    $request->session()->put('esrd_opd',$esrd_opd);
-    $request->session()->put('esrd_ipd',$esrd_ipd);
-    $request->session()->put('start_date',$start_date);
-    $request->session()->put('end_date',$end_date);
-    $request->session()->save();
+        return view('service_drug.esrd',compact('opd','ipd','start_date','end_date'));
+        }
+################################################################################################################
+//Create hd
+        public function hd(Request $request) 
+        {
+                $start_date = $request->start_date ?: Session::get('start_date') ?: date('Y-m-d');
+                $end_date = $request->end_date ?: Session::get('end_date') ?: date('Y-m-d');
 
-      return view('service_drug.esrd',compact('esrd_opd','esrd_ipd','start_date','end_date'));
-}
-//Create esrd_excel
-public function esrd_excel()
-{
-    $esrd_opd = Session::get('esrd_opd');
-    $esrd_ipd = Session::get('esrd_ipd');
-    $start_date = Session::get('start_date');
-    $end_date = Session::get('end_date');
+                $opd = collect(DB::connection('hosxp')->select('
+                        SELECT o.icode,
+                        CONCAT(d.`name`,SPACE(1),d.strength) AS `name`,
+                        d.generic_name,
+                        COUNT(DISTINCT o.hn) AS total_hn ,
+                        COUNT(DISTINCT o.vn) AS total_visit ,
+                        SUM(qty) AS total_qty,
+                        SUM(qty*cost) AS total_cost,
+                        SUM(sum_price) AS total_price,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN 1 ELSE 0 END) AS ucs_visit,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN qty ELSE 0 END) AS ucs_qty,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN qty * cost ELSE 0 END) AS ucs_cost,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN sum_price ELSE 0 END) AS ucs_price,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN 1 ELSE 0 END) AS ofc_visit,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN qty ELSE 0 END) AS ofc_qty,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN qty * cost ELSE 0 END) AS ofc_cost,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN sum_price ELSE 0 END) AS ofc_price,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN 1 ELSE 0 END) AS lgo_visit,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN qty ELSE 0 END) AS lgo_qty,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN qty * cost ELSE 0 END) AS lgo_cost,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN sum_price ELSE 0 END) AS lgo_price,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN 1 ELSE 0 END) AS sss_visit,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN qty ELSE 0 END) AS sss_qty,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN qty * cost ELSE 0 END) AS sss_cost,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN sum_price ELSE 0 END) AS sss_price,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN 1 ELSE 0 END) AS other_visit,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN qty ELSE 0 END) AS other_qty,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN qty * cost ELSE 0 END) AS other_cost,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN sum_price ELSE 0 END) AS other_price
+                        FROM opitemrece o
+                        INNER JOIN drugitems_property_list dpl ON dpl.icode= o.icode 
+                                AND dpl.drugitems_property_id = 8
+                        LEFT JOIN pttype p ON p.pttype=o.pttype
+                        LEFT JOIN drugitems d ON d.icode=o.icode								
+                        WHERE o.rxdate BETWEEN ? AND ?
+                        AND (o.vn IS NOT NULL OR o.vn <> "")	
+                        GROUP BY o.icode
+                        ORDER BY d.`name`',[$start_date, $end_date]));
 
-      return view('service_drug.esrd_excel',compact('esrd_opd','esrd_ipd','start_date','end_date'));
-}
+                $ipd = collect(DB::connection('hosxp')->select('
+                        SELECT o.icode,
+                        CONCAT(d.`name`,SPACE(1),d.strength) AS `name`,
+                        d.generic_name,
+                        COUNT(DISTINCT o.hn) AS total_hn ,
+                        COUNT(DISTINCT o.an) AS total_an ,
+                        SUM(qty) AS total_qty,
+                        SUM(qty*cost) AS total_cost,
+                        SUM(sum_price) AS total_price,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN 1 ELSE 0 END) AS ucs_an,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN qty ELSE 0 END) AS ucs_qty,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN qty * cost ELSE 0 END) AS ucs_cost,
+                        SUM(CASE WHEN p.hipdata_code = "UCS" THEN sum_price ELSE 0 END) AS ucs_price,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN 1 ELSE 0 END) AS ofc_an,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN qty ELSE 0 END) AS ofc_qty,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN qty * cost ELSE 0 END) AS ofc_cost,
+                        SUM(CASE WHEN p.hipdata_code = "OFC" THEN sum_price ELSE 0 END) AS ofc_price,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN 1 ELSE 0 END) AS lgo_an,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN qty ELSE 0 END) AS lgo_qty,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN qty * cost ELSE 0 END) AS lgo_cost,
+                        SUM(CASE WHEN p.hipdata_code = "LGO" THEN sum_price ELSE 0 END) AS lgo_price,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN 1 ELSE 0 END) AS sss_an,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN qty ELSE 0 END) AS sss_qty,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN qty * cost ELSE 0 END) AS sss_cost,
+                        SUM(CASE WHEN p.hipdata_code IN ("SSS","SSI") THEN sum_price ELSE 0 END) AS sss_price,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN 1 ELSE 0 END) AS other_an,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN qty ELSE 0 END) AS other_qty,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN qty * cost ELSE 0 END) AS other_cost,
+                        SUM(CASE WHEN p.hipdata_code NOT IN ("UCS","OFC","LGO","SSS","SSI") THEN sum_price ELSE 0 END) AS other_price
+                        FROM opitemrece o
+                        INNER JOIN drugitems_property_list dpl ON dpl.icode= o.icode 
+                                AND dpl.drugitems_property_id = 8
+                        LEFT JOIN pttype p ON p.pttype=o.pttype
+                        LEFT JOIN drugitems d ON d.icode=o.icode								
+                        WHERE o.rxdate BETWEEN ? AND ?
+                        AND (o.an IS NOT NULL OR o.an <> "")	
+                        GROUP BY o.icode
+                        ORDER BY d.`name`',[$start_date, $end_date]));
+
+        return view('service_drug.hd',compact('opd','ipd','start_date','end_date'));
+        }
 ################################################################################################################
 //Create dmht
 public function dmht(Request $request)
