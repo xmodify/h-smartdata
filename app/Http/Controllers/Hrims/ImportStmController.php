@@ -979,8 +979,9 @@ public function __construct()
 //ucs_save-----------------------------------------------------------------------------------------------------------------------------
     public function ucs_save(Request $request)
     {
-        set_time_limit(300);
-        @ini_set('memory_limit', '1024M');
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
+        ini_set('max_execution_time', 0);
 
         // ✅ รับทีละหลายไฟล์ เหมือน ofc_save (จำกัดไม่เกิน 5)
         $this->validate($request, [
