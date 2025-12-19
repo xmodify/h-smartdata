@@ -72,8 +72,9 @@ class ClaimOpController extends Controller
             LEFT JOIN (SELECT op.vn, SUM(op.sum_price) AS claim_price	FROM opitemrece op
                 INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
 	            WHERE op.vstdate BETWEEN ? AND ? AND li.herb32 = "Y" GROUP BY op.vn) herb ON herb.vn=o.vn           
-            LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate	
-                AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+            LEFT JOIN ( SELECT cid, vstdate, LEFT(TIME(datetimeadm),5) AS vsttime5,SUM(receive_total) AS receive_total
+                FROM htp_report.stm_ucs
+                GROUP BY cid, vstdate, LEFT(TIME(datetimeadm),5)) stm ON stm.cid = pt.cid AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)               
             WHERE (o.an ="" OR o.an IS NULL) 
 				AND o.vstdate BETWEEN ? AND ?
                 AND p.hipdata_code IN ("UCS","WEL") 
@@ -115,7 +116,9 @@ class ClaimOpController extends Controller
             LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
             LEFT JOIN htp_report.fdh_claim_status fdh ON fdh.seq=o.vn
-            LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
+            LEFT JOIN ( SELECT cid, vstdate, LEFT(TIME(datetimeadm),5) AS vsttime5,SUM(receive_total) AS receive_total,
+                GROUP_CONCAT(DISTINCT repno) AS repno FROM htp_report.stm_ucs
+                GROUP BY cid, vstdate, LEFT(TIME(datetimeadm),5)) stm ON stm.cid = pt.cid AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)               
             WHERE (o.an ="" OR o.an IS NULL) 
                 AND o.vstdate BETWEEN ? AND ?
                 AND p.hipdata_code = "UCS" 
@@ -158,7 +161,9 @@ class ClaimOpController extends Controller
             LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
             LEFT JOIN htp_report.fdh_claim_status fdh ON fdh.seq=o.vn
-            LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
+            LEFT JOIN ( SELECT cid, vstdate, LEFT(TIME(datetimeadm),5) AS vsttime5,SUM(receive_total) AS receive_total,
+                GROUP_CONCAT(DISTINCT repno) AS repno FROM htp_report.stm_ucs
+                GROUP BY cid, vstdate, LEFT(TIME(datetimeadm),5)) stm ON stm.cid = pt.cid AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)                       
             WHERE (o.an ="" OR o.an IS NULL) 
             AND o.vstdate BETWEEN ? AND ?
             AND p.hipdata_code = "UCS" 
@@ -227,8 +232,9 @@ class ClaimOpController extends Controller
             LEFT JOIN (SELECT op.vn, SUM(op.sum_price) AS claim_price	FROM opitemrece op
                 INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
 	            WHERE op.vstdate BETWEEN ? AND ? AND li.herb32 = "Y" GROUP BY op.vn) herb ON herb.vn=o.vn           
-            LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate	
-                AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+            LEFT JOIN ( SELECT cid, vstdate, LEFT(TIME(datetimeadm),5) AS vsttime5,SUM(receive_total) AS receive_total,
+                GROUP_CONCAT(DISTINCT repno) AS repno FROM htp_report.stm_ucs
+                GROUP BY cid, vstdate, LEFT(TIME(datetimeadm),5)) stm ON stm.cid = pt.cid AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)                       
             WHERE (o.an ="" OR o.an IS NULL) 
 				AND o.vstdate BETWEEN ? AND ?
                 AND p.hipdata_code IN ("UCS","WEL") 
@@ -271,7 +277,9 @@ class ClaimOpController extends Controller
             LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
             LEFT JOIN htp_report.fdh_claim_status fdh ON fdh.seq=o.vn
-            LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate	AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
+            LEFT JOIN ( SELECT cid, vstdate, LEFT(TIME(datetimeadm),5) AS vsttime5,SUM(receive_total) AS receive_total,
+                GROUP_CONCAT(DISTINCT repno) AS repno FROM htp_report.stm_ucs
+                GROUP BY cid, vstdate, LEFT(TIME(datetimeadm),5)) stm ON stm.cid = pt.cid AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)                       
             WHERE (o.an ="" OR o.an IS NULL) 
             AND p.hipdata_code = "UCS" 
             AND o.vstdate BETWEEN ? AND ?             
@@ -315,7 +323,9 @@ class ClaimOpController extends Controller
             LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
             LEFT JOIN htp_report.fdh_claim_status fdh ON fdh.seq=o.vn
-            LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate	AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
+            LEFT JOIN ( SELECT cid, vstdate, LEFT(TIME(datetimeadm),5) AS vsttime5,SUM(receive_total) AS receive_total,
+                GROUP_CONCAT(DISTINCT repno) AS repno FROM htp_report.stm_ucs
+                GROUP BY cid, vstdate, LEFT(TIME(datetimeadm),5)) stm ON stm.cid = pt.cid AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)                       
             WHERE (o.an ="" OR o.an IS NULL) 
             AND p.hipdata_code = "UCS" 
             AND o.vstdate BETWEEN ? AND ?            
@@ -441,8 +451,9 @@ class ClaimOpController extends Controller
             LEFT JOIN pttype p ON p.pttype=vp.pttype           
             LEFT JOIN vn_stat v ON v.vn = o.vn            
             LEFT JOIN opitemrece kidney ON kidney.vn=o.vn AND kidney.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE kidney = "Y")            
-            LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate	
-                AND LEFT(TIME(stm.datetimeadm),5) =LEFT(o.vsttime,5)
+            LEFT JOIN ( SELECT cid, vstdate, LEFT(TIME(datetimeadm),5) AS vsttime5,SUM(receive_total) AS receive_total,
+                GROUP_CONCAT(DISTINCT repno) AS repno FROM htp_report.stm_ucs
+                GROUP BY cid, vstdate, LEFT(TIME(datetimeadm),5)) stm ON stm.cid = pt.cid AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)                       
             WHERE (o.an ="" OR o.an IS NULL) AND p.hipdata_code IN ("UCS","WEL") 
             AND o.vstdate BETWEEN ? AND ?
             AND vp.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y")
@@ -481,7 +492,9 @@ class ClaimOpController extends Controller
             LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
             LEFT JOIN htp_report.fdh_claim_status fdh ON fdh.seq=o.vn
-            LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
+            LEFT JOIN ( SELECT cid, vstdate, LEFT(TIME(datetimeadm),5) AS vsttime5,SUM(receive_total) AS receive_total,
+                GROUP_CONCAT(DISTINCT repno) AS repno FROM htp_report.stm_ucs
+                GROUP BY cid, vstdate, LEFT(TIME(datetimeadm),5)) stm ON stm.cid = pt.cid AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)                       
             WHERE (o.an ="" OR o.an IS NULL) 
             AND p.hipdata_code = "UCS" 
             AND o.vstdate BETWEEN ? AND ?
@@ -500,8 +513,8 @@ class ClaimOpController extends Controller
             CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,p.`name` AS pttype,vp.hospmain,os.cc,
             v.pdx,GROUP_CONCAT(DISTINCT od.icd10) AS icd9,v.income,v.rcpt_money,SUM(DISTINCT refer.sum_price) AS refer,
             GROUP_CONCAT(DISTINCT n_proj.nhso_adp_code) AS project,et.ucae AS er,vp.nhso_ucae_type_code AS ae,
-            rep.rep_eclaim_detail_nhso AS rep_nhso,rep.rep_eclaim_detail_error_code AS rep_error,stm.receive_total,stm.repno,
-            fdh.status_message_th AS fdh_status
+            rep.rep_eclaim_detail_nhso AS rep_nhso,rep.rep_eclaim_detail_error_code AS rep_error,
+            stm.receive_total,stm.repno,fdh.status_message_th AS fdh_status
             FROM ovst o
             LEFT JOIN patient pt ON pt.hn=o.hn
             LEFT JOIN visit_pttype vp ON vp.vn=o.vn
@@ -521,7 +534,9 @@ class ClaimOpController extends Controller
             LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
             LEFT JOIN htp_report.fdh_claim_status fdh ON fdh.seq=o.vn
-            LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate	AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
+            LEFT JOIN ( SELECT cid, vstdate, LEFT(TIME(datetimeadm),5) AS vsttime5,SUM(receive_total) AS receive_total,
+                GROUP_CONCAT(DISTINCT repno) AS repno FROM htp_report.stm_ucs
+                GROUP BY cid, vstdate, LEFT(TIME(datetimeadm),5)) stm ON stm.cid = pt.cid AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)                       
             WHERE (o.an ="" OR o.an IS NULL) 
             AND p.hipdata_code = "UCS" 
             AND o.vstdate BETWEEN ? AND ?
@@ -665,7 +680,9 @@ class ClaimOpController extends Controller
             LEFT JOIN visit_pttype vp ON vp.vn=o.vn
             LEFT JOIN pttype p ON p.pttype=vp.pttype           
             LEFT JOIN vn_stat v ON v.vn = o.vn           
-            LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
+            LEFT JOIN ( SELECT cid, vstdate, LEFT(TIME(datetimeadm),5) AS vsttime5,SUM(receive_total) AS receive_total,
+                GROUP_CONCAT(DISTINCT repno) AS repno FROM htp_report.stm_ucs
+                GROUP BY cid, vstdate, LEFT(TIME(datetimeadm),5)) stm ON stm.cid = pt.cid AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)                       
             WHERE (o.an ="" OR o.an IS NULL) 
                 AND o.vstdate BETWEEN ? AND ?
                 AND p.hipdata_code = "STP" 
@@ -700,10 +717,15 @@ class ClaimOpController extends Controller
                 WHERE op.vstdate BETWEEN ? AND ? AND li.ppfs = "Y" GROUP BY op.vn) o2 ON o2.vn=o.vn            
             LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-            LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
+            LEFT JOIN ( SELECT cid, vstdate, LEFT(TIME(datetimeadm),5) AS vsttime5,SUM(receive_total) AS receive_total,
+                GROUP_CONCAT(DISTINCT repno) AS repno FROM htp_report.stm_ucs
+                GROUP BY cid, vstdate, LEFT(TIME(datetimeadm),5)) stm ON stm.cid = pt.cid AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)                       
             WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN ? AND ?
-            AND p.hipdata_code = "STP" AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
-            AND oe.moph_finance_upload_status IS NULL AND rep.vn IS NULL AND stm.cid IS NULL 
+            AND p.hipdata_code = "STP" 
+            AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
+            AND oe.moph_finance_upload_status IS NULL 
+            AND rep.vn IS NULL 
+            AND stm.cid IS NULL 
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
 
         $claim=DB::connection('hosxp')->select('
@@ -727,9 +749,13 @@ class ClaimOpController extends Controller
                 WHERE op.vstdate BETWEEN ? AND ? AND li.ppfs = "Y" GROUP BY op.vn) o2 ON o2.vn=o.vn            
             LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-            LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
-            WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN ? AND ?
-            AND p.hipdata_code = "STP" AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
+            LEFT JOIN ( SELECT cid, vstdate, LEFT(TIME(datetimeadm),5) AS vsttime5,SUM(receive_total) AS receive_total,
+                GROUP_CONCAT(DISTINCT repno) AS repno FROM htp_report.stm_ucs
+                GROUP BY cid, vstdate, LEFT(TIME(datetimeadm),5)) stm ON stm.cid = pt.cid AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)                       
+            WHERE (o.an ="" OR o.an IS NULL) 
+            AND o.vstdate BETWEEN ? AND ?
+            AND p.hipdata_code = "STP" 
+            AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
             AND (oe.moph_finance_upload_status IS NOT NULL OR rep.vn IS NOT NULL OR stm.cid IS NOT NULL )
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
 
@@ -781,7 +807,9 @@ class ClaimOpController extends Controller
             LEFT JOIN visit_pttype vp ON vp.vn=o.vn
             LEFT JOIN pttype p ON p.pttype=vp.pttype           
             LEFT JOIN vn_stat v ON v.vn = o.vn           
-            LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
+            LEFT JOIN ( SELECT cid, vstdate, LEFT(TIME(datetimeadm),5) AS vsttime5,SUM(receive_total) AS receive_total,
+                GROUP_CONCAT(DISTINCT repno) AS repno FROM htp_report.stm_ucs
+                GROUP BY cid, vstdate, LEFT(TIME(datetimeadm),5)) stm ON stm.cid = pt.cid AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)                       
             WHERE (o.an ="" OR o.an IS NULL) 
                 AND o.vstdate BETWEEN ? AND ?
                 AND p.hipdata_code = "STP" 
@@ -818,10 +846,17 @@ class ClaimOpController extends Controller
             LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
             LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-            LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
-            WHERE (o.an ="" OR o.an IS NULL) AND p.hipdata_code = "STP" AND o.vstdate BETWEEN ? AND ?
+            LEFT JOIN ( SELECT cid, vstdate, LEFT(TIME(datetimeadm),5) AS vsttime5,SUM(receive_total) AS receive_total,
+                GROUP_CONCAT(DISTINCT repno) AS repno FROM htp_report.stm_ucs
+                GROUP BY cid, vstdate, LEFT(TIME(datetimeadm),5)) stm ON stm.cid = pt.cid AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)                       
+            WHERE (o.an ="" OR o.an IS NULL) 
+            AND p.hipdata_code = "STP" 
+            AND o.vstdate BETWEEN ? AND ?
             AND vp.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs = "Y")
-            AND kidney.vn IS NULL AND oe.moph_finance_upload_status IS NULL AND rep.vn IS NULL AND stm.cid IS NULL 
+            AND kidney.vn IS NULL 
+            AND oe.moph_finance_upload_status IS NULL 
+            AND rep.vn IS NULL 
+            AND stm.cid IS NULL 
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date]);
 
         $claim=DB::connection('hosxp')->select('
@@ -850,10 +885,15 @@ class ClaimOpController extends Controller
             LEFT JOIN nondrugitems n_proj ON n_proj.icode=proj.icode
             LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-            LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
-            WHERE (o.an ="" OR o.an IS NULL) AND p.hipdata_code = "STP" AND o.vstdate BETWEEN ? AND ?
+            LEFT JOIN ( SELECT cid, vstdate, LEFT(TIME(datetimeadm),5) AS vsttime5,SUM(receive_total) AS receive_total,
+                GROUP_CONCAT(DISTINCT repno) AS repno FROM htp_report.stm_ucs
+                GROUP BY cid, vstdate, LEFT(TIME(datetimeadm),5)) stm ON stm.cid = pt.cid AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)                       
+            WHERE (o.an ="" OR o.an IS NULL) 
+            AND p.hipdata_code = "STP" 
+            AND o.vstdate BETWEEN ? AND ?
             AND vp.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs = "Y")
-            AND kidney.vn IS NULL AND (oe.moph_finance_upload_status IS NOT NULL OR rep.vn IS NOT NULL OR stm.cid IS NOT NULL )
+            AND kidney.vn IS NULL 
+            AND (oe.moph_finance_upload_status IS NOT NULL OR rep.vn IS NOT NULL OR stm.cid IS NOT NULL )
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date]);
 
         return view('hrims.claim_op.stp_outcup',compact('budget_year_select','budget_year','start_date','end_date','month','claim_price','receive_total','search','claim'));
@@ -926,7 +966,7 @@ class ClaimOpController extends Controller
             IFNULL(vp.Claim_Code,oq.edc_approve_list_text) AS edc,o.vstdate,o.vsttime,o.oqueue,pt.cid,pt.hn,
             CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,p.`name` AS pttype,os.cc,v.pdx,
             GROUP_CONCAT(DISTINCT od.icd10) AS icd9,GROUP_CONCAT(DISTINCT s.`name`) AS ppfs_list,v.income,
-            v.rcpt_money,COALESCE(o2.claim_price, 0) AS ppfs,v.income-v.rcpt_money AS debtor
+            v.rcpt_money,COALESCE(o2.claim_price, 0) AS ppfs,v.income-v.rcpt_money-COALESCE(o3.other_price, 0) AS debtor
             FROM ovst o
             LEFT JOIN patient pt ON pt.hn=o.hn
             LEFT JOIN visit_pttype vp ON vp.vn=o.vn
@@ -942,6 +982,9 @@ class ClaimOpController extends Controller
             LEFT JOIN (SELECT op.vn,SUM(op.sum_price) AS claim_price	FROM opitemrece op
             INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
                 WHERE op.vstdate BETWEEN ? AND ? AND li.ppfs = "Y" GROUP BY op.vn) o2 ON o2.vn=o.vn
+            LEFT JOIN (SELECT op.vn, SUM(op.sum_price) AS other_price	FROM opitemrece op
+				INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode AND li.ems ="Y" 
+				WHERE op.vstdate BETWEEN ? AND ? GROUP BY op.vn) o3 ON o3.vn=o.vn
             LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             WHERE (o.an ="" OR o.an IS NULL) 
             AND p.hipdata_code = "OFC" 
@@ -950,7 +993,7 @@ class ClaimOpController extends Controller
             AND v.income <>"0" 
             AND kidney.vn IS NULL 
             AND oe.upload_datetime IS NULL             
-            GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
+            GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]);
 
         $claim=DB::connection('hosxp')->select('
             SELECT IF((vp.auth_code IS NOT NULL OR vp.auth_code <> ""),"Y",NULL) AS auth_code,
@@ -959,7 +1002,7 @@ class ClaimOpController extends Controller
             CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,p.`name` AS pttype,os.cc,v.pdx,
             GROUP_CONCAT(DISTINCT od.icd10) AS icd9,GROUP_CONCAT(DISTINCT s.`name`) AS ppfs_list,
             oe.upload_datetime AS ecliam,v.income,v.rcpt_money,COALESCE(o2.claim_price, 0) AS ppfs,
-            v.income-v.rcpt_money AS debtor,stm.receive_total,stm_uc.receive_pp,stm.repno
+            v.income-v.rcpt_money-COALESCE(o3.other_price, 0) AS debtor,stm.receive_total,stm_uc.receive_pp,stm.repno
             FROM ovst o
             LEFT JOIN patient pt ON pt.hn=o.hn
             LEFT JOIN visit_pttype vp ON vp.vn=o.vn
@@ -975,9 +1018,14 @@ class ClaimOpController extends Controller
             LEFT JOIN (SELECT op.vn,SUM(op.sum_price) AS claim_price	FROM opitemrece op
             INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
                 WHERE op.vstdate BETWEEN ? AND ? AND li.ppfs = "Y" GROUP BY op.vn) o2 ON o2.vn=o.vn
+            LEFT JOIN (SELECT op.vn, SUM(op.sum_price) AS other_price	FROM opitemrece op
+				INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode AND li.ems ="Y" 
+				WHERE op.vstdate BETWEEN ? AND ? GROUP BY op.vn) o3 ON o3.vn=o.vn
             LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN htp_report.stm_ofc stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
-            LEFT JOIN htp_report.stm_ucs stm_uc ON stm_uc.cid=pt.cid AND stm_uc.vstdate = o.vstdate AND LEFT(stm_uc.vsttime,5) =LEFT(o.vsttime,5)
+            LEFT JOIN (SELECT cid,vstdate,LEFT(vsttime,5) AS vsttime5,SUM(receive_pp) AS receive_pp
+                FROM htp_report.stm_ucs
+                GROUP BY cid, vstdate, LEFT(vsttime,5)) stm_uc ON stm_uc.cid=pt.cid AND stm_uc.vstdate = o.vstdate AND stm_uc.vsttime5 = LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) 
             AND p.hipdata_code = "OFC"
             AND p.pttype NOT IN ('.$pttype_checkup.') 
@@ -985,7 +1033,7 @@ class ClaimOpController extends Controller
             AND v.income <>"0" 
             AND kidney.vn IS NULL 
             AND oe.upload_datetime IS NOT NULL
-            GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
+            GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]);
 
         return view('hrims.claim_op.ofc',compact('budget_year_select','budget_year','start_date','end_date','month','claim_price','receive_total','search','claim'));
     }
@@ -1125,7 +1173,9 @@ class ClaimOpController extends Controller
             LEFT JOIN vn_stat v ON v.vn = o.vn           
             LEFT JOIN opitemrece kidney ON kidney.vn=o.vn AND kidney.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE kidney = "Y") 
             LEFT JOIN htp_report.stm_lgo stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
-            LEFT JOIN htp_report.stm_ucs stm_uc ON stm_uc.cid=pt.cid AND stm_uc.vstdate = o.vstdate AND LEFT(stm_uc.vsttime,5) =LEFT(o.vsttime,5)
+            LEFT JOIN (SELECT cid,vstdate,LEFT(vsttime,5) AS vsttime5,SUM(receive_pp) AS receive_pp
+                FROM htp_report.stm_ucs
+                GROUP BY cid, vstdate, LEFT(vsttime,5)) stm_uc ON stm_uc.cid = pt.cid AND stm_uc.vstdate = o.vstdate AND stm_uc.vsttime5 = LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND p.hipdata_code = "LGO" AND o.vstdate BETWEEN ? AND ?
             AND v.income <>"0" AND kidney.vn IS NULL GROUP BY o.vn ) AS a
 			GROUP BY YEAR(vstdate), MONTH(vstdate)
@@ -1186,7 +1236,9 @@ class ClaimOpController extends Controller
                 WHERE op.vstdate BETWEEN ? AND ? AND li.ppfs = "Y" GROUP BY op.vn) o2 ON o2.vn=o.vn
             LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN htp_report.stm_lgo stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
-            LEFT JOIN htp_report.stm_ucs stm_uc ON stm_uc.cid=pt.cid AND stm_uc.vstdate = o.vstdate AND LEFT(stm_uc.vsttime,5) =LEFT(o.vsttime,5)
+            LEFT JOIN (SELECT cid,vstdate,LEFT(vsttime,5) AS vsttime5,SUM(receive_pp) AS receive_pp
+                FROM htp_report.stm_ucs
+                GROUP BY cid, vstdate, LEFT(vsttime,5)) stm_uc ON stm_uc.cid = pt.cid AND stm_uc.vstdate = o.vstdate AND stm_uc.vsttime5 = LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND p.hipdata_code = "LGO" AND o.vstdate BETWEEN ? AND ?
             AND v.income <>"0" AND kidney.vn IS NULL AND oe.upload_datetime IS NOT NULL
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
@@ -1329,7 +1381,9 @@ class ClaimOpController extends Controller
             LEFT JOIN vn_stat v ON v.vn = o.vn           
             LEFT JOIN opitemrece kidney ON kidney.vn=o.vn AND kidney.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE kidney = "Y")  
             LEFT JOIN htp_report.stm_ofc stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
-            LEFT JOIN htp_report.stm_ucs stm_uc ON stm_uc.cid=pt.cid AND stm_uc.vstdate = o.vstdate AND LEFT(stm_uc.vsttime,5) =LEFT(o.vsttime,5)
+             LEFT JOIN (SELECT cid,vstdate,LEFT(vsttime,5) AS vsttime5,SUM(receive_pp) AS receive_pp
+                FROM htp_report.stm_ucs
+                GROUP BY cid, vstdate, LEFT(vsttime,5)) stm_uc ON stm_uc.cid=pt.cid AND stm_uc.vstdate = o.vstdate AND stm_uc.vsttime5 = LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND p.hipdata_code = "BKK" AND o.vstdate BETWEEN ? AND ?
             AND v.income <>"0" AND kidney.vn IS NULL GROUP BY o.vn ) AS a
 						GROUP BY YEAR(vstdate), MONTH(vstdate)
@@ -1390,7 +1444,9 @@ class ClaimOpController extends Controller
                 WHERE op.vstdate BETWEEN ? AND ? AND li.ppfs = "Y" GROUP BY op.vn) o2 ON o2.vn=o.vn
             LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN htp_report.stm_ofc stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
-            LEFT JOIN htp_report.stm_ucs stm_uc ON stm_uc.cid=pt.cid AND stm_uc.vstdate = o.vstdate AND LEFT(stm_uc.vsttime,5) =LEFT(o.vsttime,5)
+             LEFT JOIN (SELECT cid,vstdate,LEFT(vsttime,5) AS vsttime5,SUM(receive_pp) AS receive_pp
+                FROM htp_report.stm_ucs
+                GROUP BY cid, vstdate, LEFT(vsttime,5)) stm_uc ON stm_uc.cid=pt.cid AND stm_uc.vstdate = o.vstdate AND stm_uc.vsttime5 = LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND p.hipdata_code = "BKK" AND o.vstdate BETWEEN ? AND ?
             AND v.income <>"0" AND kidney.vn IS NULL AND oe.upload_datetime IS NOT NULL
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
@@ -1446,7 +1502,9 @@ class ClaimOpController extends Controller
             LEFT JOIN vn_stat v ON v.vn = o.vn           
             LEFT JOIN opitemrece kidney ON kidney.vn=o.vn AND kidney.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE kidney = "Y")  
             LEFT JOIN htp_report.stm_ofc stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
-            LEFT JOIN htp_report.stm_ucs stm_uc ON stm_uc.cid=pt.cid AND stm_uc.vstdate = o.vstdate AND LEFT(stm_uc.vsttime,5) =LEFT(o.vsttime,5)
+             LEFT JOIN (SELECT cid,vstdate,LEFT(vsttime,5) AS vsttime5,SUM(receive_pp) AS receive_pp
+                FROM htp_report.stm_ucs
+                GROUP BY cid, vstdate, LEFT(vsttime,5)) stm_uc ON stm_uc.cid=pt.cid AND stm_uc.vstdate = o.vstdate AND stm_uc.vsttime5 = LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND p.hipdata_code = "BMT" AND o.vstdate BETWEEN ? AND ?
             AND v.income <>"0" AND kidney.vn IS NULL GROUP BY o.vn ) AS a
 						GROUP BY YEAR(vstdate), MONTH(vstdate)
@@ -1506,7 +1564,9 @@ class ClaimOpController extends Controller
                 WHERE op.vstdate BETWEEN ? AND ? AND li.ppfs = "Y" GROUP BY op.vn) o2 ON o2.vn=o.vn
             LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN htp_report.stm_ofc stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
-            LEFT JOIN htp_report.stm_ucs stm_uc ON stm_uc.cid=pt.cid AND stm_uc.vstdate = o.vstdate AND LEFT(stm_uc.vsttime,5) =LEFT(o.vsttime,5)
+             LEFT JOIN (SELECT cid,vstdate,LEFT(vsttime,5) AS vsttime5,SUM(receive_pp) AS receive_pp
+                FROM htp_report.stm_ucs
+                GROUP BY cid, vstdate, LEFT(vsttime,5)) stm_uc ON stm_uc.cid=pt.cid AND stm_uc.vstdate = o.vstdate AND stm_uc.vsttime5 = LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) AND p.hipdata_code = "BMT" AND o.vstdate BETWEEN ? AND ?
             AND v.income <>"0" AND kidney.vn IS NULL AND oe.upload_datetime IS NOT NULL
             GROUP BY o.vn ORDER BY o.vstdate,o.vsttime',[$start_date,$end_date,$start_date,$end_date]);
@@ -1564,7 +1624,9 @@ class ClaimOpController extends Controller
             LEFT JOIN (SELECT op.vn, SUM(op.sum_price) AS claim_price	FROM opitemrece op
 				INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
                 WHERE op.vstdate BETWEEN ? AND ? AND li.ppfs = "Y" GROUP BY op.vn) ppfs ON ppfs.vn=o.vn 
-            LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
+            LEFT JOIN ( SELECT cid, vstdate, LEFT(TIME(datetimeadm),5) AS vsttime5,SUM(receive_total) AS receive_total,
+                GROUP_CONCAT(DISTINCT repno) AS repno FROM htp_report.stm_ucs
+                GROUP BY cid, vstdate, LEFT(TIME(datetimeadm),5)) stm ON stm.cid = pt.cid AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)                       
             WHERE (o.an ="" OR o.an IS NULL) 
 				AND o.vstdate BETWEEN ? AND ?
                 AND p.hipdata_code IN ("SSS","SSI") GROUP BY o.vn ) AS a
@@ -1598,7 +1660,9 @@ class ClaimOpController extends Controller
                 WHERE op.vstdate BETWEEN ? AND ? AND li.ppfs = "Y" GROUP BY op.vn) o2 ON o2.vn=o.vn            
             LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=v.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-            LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
+            LEFT JOIN ( SELECT cid, vstdate, LEFT(TIME(datetimeadm),5) AS vsttime5,SUM(receive_total) AS receive_total,
+                GROUP_CONCAT(DISTINCT repno) AS repno FROM htp_report.stm_ucs
+                GROUP BY cid, vstdate, LEFT(TIME(datetimeadm),5)) stm ON stm.cid = pt.cid AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)                       
             WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN ? AND ?
             AND p.hipdata_code IN ("SSS","SSI") 
             AND oe.upload_datetime IS NULL AND stm.cid IS NULL
@@ -1626,7 +1690,9 @@ class ClaimOpController extends Controller
                 WHERE op.vstdate BETWEEN ? AND ? AND li.ppfs = "Y" GROUP BY op.vn) ppfs ON ppfs.vn=o.vn
             LEFT JOIN htp_report.nhso_endpoint ep ON ep.cid=pt.cid AND ep.vstdate=o.vstdate AND ep.claimCode LIKE "EP%"
             LEFT JOIN rep_eclaim_detail rep ON rep.vn=o.vn
-            LEFT JOIN htp_report.stm_ucs stm ON stm.cid=pt.cid AND stm.vstdate = o.vstdate AND LEFT(stm.vsttime,5) =LEFT(o.vsttime,5)
+            LEFT JOIN ( SELECT cid, vstdate, LEFT(TIME(datetimeadm),5) AS vsttime5,SUM(receive_total) AS receive_total,
+                GROUP_CONCAT(DISTINCT repno) AS repno FROM htp_report.stm_ucs
+                GROUP BY cid, vstdate, LEFT(TIME(datetimeadm),5)) stm ON stm.cid = pt.cid AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)                       
             WHERE (o.an ="" OR o.an IS NULL) AND o.vstdate BETWEEN ? AND ?
             AND p.hipdata_code IN ("SSS","SSI") 
             AND (oe.upload_datetime IS NOT NULL OR stm.cid IS NOT NULL)

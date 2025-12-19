@@ -13,6 +13,7 @@ class Stm_lgo_kidneyexcel extends Model
     protected $primaryKey = 'id';
     protected $fillable = [
         'id',
+        'round_no',
         'no',
         'repno', 
         'hn', 
@@ -21,8 +22,7 @@ class Stm_lgo_kidneyexcel extends Model
         'dep',  
         'datetimeadm',
         'compensate_kidney',
-        'note',  
-        'stm_filename',       
-    ]; 
+        'note',        
+    ];
     public $timestamps = false;   
 }

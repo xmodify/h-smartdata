@@ -41,10 +41,10 @@ class MainSettingController extends Controller
         return back()->with('success', 'แก้ไขข้อมูลสำเร็จ');
     }
 #######################################################################################################################################    
-// UP Structure -----------------------------------------------------------------------------------------------------------------------        
+// UP Structure -----------------------------------------------------------------------------------------------------------------------    
     public function up_structure(Request $request)
     {
-    //Table main_setting-----------------------------------------------------------------------------------------------------------
+    //Update Table main_setting-----------------------------------------------------------------------------------------------------------
         $main_setting = [
             ['id' => 1, 'name_th' => 'IPD จำนวนเตียง', 'name' => 'bed_qty', 'value' => ''],
             ['id' => 2, 'name_th' => 'Token Authen Kiosk สปสช.', 'name' => 'token_authen_kiosk_nhso', 'value' => ''],
@@ -68,13 +68,11 @@ class MainSettingController extends Controller
             ['id' => 20, 'name_th' => 'OPOH Token', 'name' => 'opoh_token', 'value' => ''],
             ['id' => 21, 'name_th' => 'FDH User', 'name' => 'fdh_user', 'value' => ''],
             ['id' => 22, 'name_th' => 'FDH Pass', 'name' => 'fdh_pass', 'value' => ''],
-            ['id' => 23, 'name_th' => 'FDH Secret Key', 'name' => 'fdh_secretKey', 'value' => ''],
+            ['id' => 23, 'name_th' => 'FDH Secret Key', 'name' => 'fdh_secretKey', 'value' => '$jwt@moph#'],
         ];
         
         foreach ($main_setting as $row) {
-
             $check = MainSetting::where('id', $row['id'])->count();
-
             if ($check > 0) {
                 DB::table('main_setting')
                 ->where('id', $row['id']) 
@@ -95,24 +93,108 @@ class MainSettingController extends Controller
 
     //After Table-----------------------------------------------------------------------------------------------------------
         $tables = [
+
+            // ---------------- lookup ----------------
             'lookup_icode' => [
-                ['name' => 'ems', 'definition' => 'VARCHAR(1) NULL AFTER `kidney`'],
+                ['name' => 'ems', 'type' => 'VARCHAR(1) NULL', 'after' => 'kidney'],
             ],
-            'lookup_ward' => [               
-                ['name' => 'ward_normal', 'definition' => 'VARCHAR(1) NULL AFTER `ward_name`'],
-                ['name' => 'bed_qty', 'definition' => 'INT UNSIGNED NULL AFTER `ward_homeward`']
+            'lookup_ward' => [
+                ['name' => 'ward_normal', 'type' => 'VARCHAR(1) NULL', 'after' => 'ward_name'],
+                ['name' => 'bed_qty', 'type' => 'INT UNSIGNED NULL', 'after' => 'ward_homeward'],
+            ],
+            // ---------------- STM ----------------
+            'stm_lgo' => [
+                ['name' => 'round_no',   'type' => 'VARCHAR(20) NULL', 'after' => 'id'],
+                ['name' => 'receive_no', 'type' => 'VARCHAR(20) NULL', 'after' => 'stm_filename'], 
+            ],
+            'stm_lgo_kidney' => [
+                ['name' => 'round_no',   'type' => 'VARCHAR(20) NULL', 'after' => 'id'],
+                ['name' => 'receive_no', 'type' => 'VARCHAR(20) NULL', 'after' => 'stm_filename'],
+            ],
+            'stm_ofc' => [
+                ['name' => 'round_no',   'type' => 'VARCHAR(20) NULL', 'after' => 'id'],
+                ['name' => 'receive_no', 'type' => 'VARCHAR(20) NULL', 'after' => 'stm_filename'],
+            ],
+            'stm_ofc_kidney' => [
+                ['name' => 'round_no',   'type' => 'VARCHAR(20) NULL', 'after' => 'id'],
+                ['name' => 'receive_no', 'type' => 'VARCHAR(20) NULL', 'after' => 'hdflag'],
+            ],
+            'stm_sss_kidney' => [
+                ['name' => 'round_no',   'type' => 'VARCHAR(20) NULL', 'after' => 'id'],
+                ['name' => 'receive_no', 'type' => 'VARCHAR(20) NULL', 'after' => 'hdflag'],
+            ],
+            'stm_ucs' => [
+                ['name' => 'round_no',   'type' => 'VARCHAR(20) NULL', 'after' => 'id'],
+                ['name' => 'receive_no', 'type' => 'VARCHAR(20) NULL', 'after' => 'stm_filename'],
+            ],
+            'stm_ucs_kidney' => [
+                ['name' => 'round_no',   'type' => 'VARCHAR(20) NULL', 'after' => 'id'],
+                ['name' => 'receive_no', 'type' => 'VARCHAR(20) NULL', 'after' => 'stm_filename'],
+            ],
+            // ---------------- STM EXCEL (staging) ----------------
+            'stm_lgo_kidneyexcel' => [
+                ['name' => 'round_no', 'type' => 'VARCHAR(20) NULL', 'after' => 'id'],
+            ],
+            'stm_lgoexcel' => [
+                ['name' => 'round_no', 'type' => 'VARCHAR(20) NULL', 'after' => 'id'],
+            ],
+            'stm_ofcexcel' => [
+                ['name' => 'round_no', 'type' => 'VARCHAR(20) NULL', 'after' => 'id'],
+            ],
+            'stm_ucs_kidneyexcel' => [
+                ['name' => 'round_no', 'type' => 'VARCHAR(20) NULL', 'after' => 'id'],
+            ],
+            'stm_ucsexcel' => [
+                ['name' => 'round_no', 'type' => 'VARCHAR(20) NULL', 'after' => 'id'],
             ],
         ];
-
         try {
             foreach ($tables as $table => $columns) {
+                // ✅ ต้องมี table ก่อน
+                if (!Schema::hasTable($table)) {
+                    continue;
+                }
                 foreach ($columns as $col) {
                     if (!Schema::hasColumn($table, $col['name'])) {
-                        DB::statement("ALTER TABLE `$table` ADD COLUMN `{$col['name']}` {$col['definition']}");
+                        // ตำแหน่ง column
+                        $afterSql = '';
+                        if (
+                            isset($col['after']) &&
+                            $col['after'] !== '' &&
+                            Schema::hasColumn($table, $col['after'])
+                        ) {
+                            $afterSql = " AFTER `{$col['after']}`";
+                        }
+                        DB::statement("
+                            ALTER TABLE `$table`
+                            ADD COLUMN `{$col['name']}` {$col['type']}{$afterSql}
+                        ");
                     }
                 }
             }
 
+    // CREATE TABLE fdh_claim_status ----------------------------------------------------------------------------------------
+        if (!Schema::hasTable('fdh_claim_status')) {
+            DB::statement("
+                CREATE TABLE `fdh_claim_status` (
+                    `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+                    `hn` VARCHAR(50) NOT NULL,
+                    `seq` VARCHAR(50) DEFAULT NULL,
+                    `an` VARCHAR(50) DEFAULT NULL,
+                    `hcode` VARCHAR(10) NOT NULL,
+                    `status` VARCHAR(50) NOT NULL,
+                    `process_status` VARCHAR(10) DEFAULT NULL,
+                    `status_message_th` VARCHAR(255) DEFAULT NULL,
+                    `stm_period` VARCHAR(50) DEFAULT NULL,
+                    `created_at` TIMESTAMP NULL DEFAULT NULL,
+                    `updated_at` TIMESTAMP NULL DEFAULT NULL,
+                    PRIMARY KEY (`id`),
+                    KEY `idx_hn` (`hn`),
+                    KEY `idx_an` (`an`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            ");
+        }
+        // END --------------------------------------------------------------------------------------------------------
             return redirect()->route('admin.main_setting')
                 ->with('success', 'Upgrade Structure สำเร็จ');
 
