@@ -27,13 +27,6 @@
                             </button> 
                         </div>
                     </div>
-                    <div class="row"> 
-                        @if ($message = Session::get('success'))
-                        <div class="alert alert-success text-center">
-                        <h5><strong>{{ $message }}</strong></h5>
-                        </div>
-                        @endif
-                    </div>
                 </form>
                 <div class="row justify-content-center">      
                     <div class="col-md-12">
@@ -145,16 +138,7 @@
     </div>
 </div>
 {{-- End Modal --}}
-@if (session('success'))
-<script>
-    Swal.fire({
-        title: 'นำเข้าสำเร็จ!',
-        text: '{{ session('success') }}',
-        icon: 'success',
-        confirmButtonText: 'ตกลง'
-    });
-</script>
-@endif
+
 
 @endsection
     <script>

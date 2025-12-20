@@ -451,16 +451,18 @@
 
      <!-- SweetAlert: Success -->
     @if (session('success'))
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'สำเร็จ',
-                    text: @json(session('success')),
-                    confirmButtonText: 'ปิด'
-                });
-            });
-        </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        Swal.fire({
+            icon: 'success',
+            title: 'สำเร็จ',
+            text: @json(session('success')),
+            confirmButtonText: 'ปิด'
+        }).then(() => {
+            location.reload();
+        });
+    });
+    </script>
     @endif
 
     <!-- SweetAlert: Error -->
