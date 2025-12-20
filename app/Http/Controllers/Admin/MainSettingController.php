@@ -124,8 +124,10 @@ class MainSettingController extends Controller
                 ['name' => 'receive_no', 'type' => 'VARCHAR(20) NULL', 'after' => 'hdflag'],
             ],
             'stm_ucs' => [
-                ['name' => 'round_no',   'type' => 'VARCHAR(20) NULL', 'after' => 'id'],
-                ['name' => 'receive_no', 'type' => 'VARCHAR(20) NULL', 'after' => 'stm_filename'],
+                ['name' => 'round_no',    'type' => 'VARCHAR(20) NULL', 'after' => 'id'], 
+                ['name' => 'receive_no',  'type' => 'VARCHAR(20) NULL', 'after' => 'stm_filename'],
+                ['name' => 'receipt_date','type' => 'DATE NULL',        'after' => 'receive_no'],
+                ['name' => 'receipt_by',  'type' => 'VARCHAR(100) NULL','after' => 'receipt_date'],
             ],
             'stm_ucs_kidney' => [
                 ['name' => 'round_no',   'type' => 'VARCHAR(20) NULL', 'after' => 'id'],

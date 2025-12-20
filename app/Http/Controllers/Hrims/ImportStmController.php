@@ -939,10 +939,10 @@ public function __construct()
 
 //Create ucs----------------------------------------------------------------------------------------------------------------------
     public function ucs(Request $request)
-    {  
+    {
         ini_set('max_execution_time', 300); // 5 นาที
 
-        // ---------------- ปีงบ ----------------
+        /* ---------------- ปีงบ (dropdown) ---------------- */
         $budget_year_select = DB::table('budget_year')
             ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
             ->orderByDesc('LEAVE_YEAR_ID')
@@ -956,24 +956,35 @@ public function __construct()
 
         $budget_year = $request->budget_year ?: $budget_year_now;
 
-        $start_date_b = DB::table('budget_year')
-            ->where('LEAVE_YEAR_ID', $budget_year)
-            ->value('DATE_BEGIN');
+        /* ---------------- Query หลัก ---------------- */
+        $stm_ucs = DB::select("
+            SELECT
+            IF(SUBSTRING(stm_filename,11) LIKE 'O%','OPD','IPD') AS dep,
+            stm_filename,
+            round_no,
+            COUNT(DISTINCT repno) AS repno,
+            COUNT(cid) AS count_cid,
+            SUM(charge) AS charge,
+            SUM(fund_ip_payrate) AS fund_ip_payrate,
+            SUM(receive_total) AS receive_total,
+            MAX(receive_no)   AS receive_no,
+            MAX(receipt_date) AS receipt_date,
+            MAX(receipt_by)   AS receipt_by
+            FROM stm_ucs
+            WHERE ((round_no IS NOT NULL AND round_no <> ''
+                AND (CASE WHEN CAST(SUBSTRING(round_no,3,2) AS UNSIGNED) >= 10 THEN 
+                CAST(LEFT(round_no,2) AS UNSIGNED) + 2501 ELSE 
+                CAST(LEFT(round_no,2) AS UNSIGNED) + 2500 END ) = ?) 
+                OR
+                ((round_no IS NULL OR round_no = '') AND CAST(SUBSTRING(stm_filename, LOCATE('UCS', stm_filename) + 3, 4)
+                AS UNSIGNED) = ? ))
+            GROUP BY stm_filename, round_no
+            ORDER BY stm_filename DESC, dep DESC ", [$budget_year,$budget_year]);
 
-        $end_date_b = DB::table('budget_year')
-            ->where('LEAVE_YEAR_ID', $budget_year)
-            ->value('DATE_END');
-            
-        $stm_ucs=DB::select('
-            SELECT IF(SUBSTRING(stm_filename,11) LIKE "O%","OPD","IPD") AS dep,stm_filename,
-            round_no,COUNT(DISTINCT repno) AS repno,COUNT(cid) AS count_cid,SUM(charge) AS charge,
-            SUM(fund_ip_payrate) AS fund_ip_payrate,SUM(receive_total) AS receive_total 
-            FROM stm_ucs 
-            WHERE vstdate BETWEEN ? AND ?
-            GROUP BY round_no, stm_filename 
-            ORDER BY SUBSTRING(round_no, 1, 4) DESC,stm_filename DESC , dep DESC',[ $start_date_b, $end_date_b]);
-
-        return view('hrims.import_stm.ucs',compact('stm_ucs','budget_year_select','budget_year'));
+        return view(
+            'hrims.import_stm.ucs',
+            compact('stm_ucs', 'budget_year_select', 'budget_year')
+        );
     }
 
 //ucs_save-----------------------------------------------------------------------------------------------------------------------------
@@ -1126,7 +1137,7 @@ public function __construct()
         DB::transaction(function () {
 
             Stm_ucsexcel::whereNotNull('charge')
-                ->chunk(500, function ($rows) {
+                ->chunk(1000, function ($rows) {
 
                     foreach ($rows as $value) {
 
@@ -1196,7 +1207,32 @@ public function __construct()
             ->route('hrims.import_stm.ucs')
             ->with('success', implode(', ', $allFileNames));
     }
+//Create ucs_updateReceipt------------------------------------------------------------------------------------------------------------- 
+    public function ucs_updateReceipt(Request $request)
+    {
+        $request->validate([
+            'round_no'     => 'required',
+            'receive_no'   => 'required|max:20',
+            'receipt_date' => 'required|date',
+        ]);
 
+        DB::table('stm_ucs')
+            ->where('round_no', $request->round_no)
+            ->update([
+                'receive_no'   => $request->receive_no,
+                'receipt_date' => $request->receipt_date,
+                'receipt_by'   => auth()->user()->name ?? 'system',
+                'updated_at'   => now(),
+            ]);
+
+        return response()->json([
+            'status'       => 'success',
+            'message'      => 'ออกใบเสร็จเรียบร้อยแล้ว',
+            'round_no'     => $request->round_no,
+            'receive_no'   => $request->receive_no,
+            'receipt_date' => $request->receipt_date,
+        ]);
+    }
 //Create ucs_detail-------------------------------------------------------------------------------------------------------------
     public function ucs_detail(Request $request)
     {  

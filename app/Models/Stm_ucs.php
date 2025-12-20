@@ -61,6 +61,8 @@ class Stm_ucs extends Model
         'resources',
         'stm_filename',
         'receive_no',
+        'receipt_date',
+        'receipt_by',
     ];
     public $timestamps = false;   
 }
