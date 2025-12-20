@@ -971,15 +971,14 @@ public function __construct()
             MAX(receipt_date) AS receipt_date,
             MAX(receipt_by)   AS receipt_by
             FROM stm_ucs
-            WHERE ((round_no IS NOT NULL AND round_no <> ''
-                AND (CASE WHEN CAST(SUBSTRING(round_no,3,2) AS UNSIGNED) >= 10 THEN 
-                CAST(LEFT(round_no,2) AS UNSIGNED) + 2501 ELSE 
-                CAST(LEFT(round_no,2) AS UNSIGNED) + 2500 END ) = ?) 
-                OR
-                ((round_no IS NULL OR round_no = '') AND CAST(SUBSTRING(stm_filename, LOCATE('UCS', stm_filename) + 3, 4)
-                AS UNSIGNED) = ? ))
+            WHERE (CAST(SUBSTRING(stm_filename, LOCATE('25', stm_filename), 4) AS UNSIGNED)
+                + (CAST(SUBSTRING(stm_filename, LOCATE('25', stm_filename) + 4, 2) AS UNSIGNED) >= 10)) = ?
             GROUP BY stm_filename, round_no
-            ORDER BY stm_filename DESC, dep DESC ", [$budget_year,$budget_year]);
+            ORDER BY CASE WHEN round_no IS NOT NULL AND round_no <> '' 
+                THEN (CAST(LEFT(round_no,2) AS UNSIGNED) + 2500) * 100
+                + CAST(SUBSTRING(round_no,3,2) AS UNSIGNED)  
+                ELSE CAST(REGEXP_SUBSTR(stm_filename, '[0-9]{6}') AS UNSIGNED) END DESC,
+                stm_filename DESC, dep DESC ", [$budget_year]);
 
         return view(
             'hrims.import_stm.ucs',
