@@ -74,7 +74,7 @@
                             </thead> 
                             <?php $count = 1 ; ?>  
                             @foreach($stm_ucs as $row) 
-                           <tr>
+                            <tr>
                                 <td align="right">{{ $row->stm_filename }}</td> 
                                 <td align="center">{{ $row->dep }}</td> 
                                 <td align="right">{{ $row->round_no }}</td>

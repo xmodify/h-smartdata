@@ -62,14 +62,15 @@ class MishosController extends Controller
                 LEFT JOIN opitemrece kidney ON kidney.vn=o.vn AND kidney.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE kidney = "Y")
                 LEFT JOIN opitemrece proj ON proj.vn=o.vn AND proj.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("WALKIN","UCEP24"))
                 LEFT JOIN ( SELECT cid, vstdate, LEFT(TIME(datetimeadm),5) AS vsttime5,SUM(receive_total) AS receive_total,
-                GROUP_CONCAT(DISTINCT repno) AS repno FROM htp_report.stm_ucs
-                GROUP BY cid, vstdate, LEFT(TIME(datetimeadm),5)) stm ON stm.cid = pt.cid AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)                       
+                    GROUP_CONCAT(DISTINCT repno) AS repno FROM htp_report.stm_ucs
+                    GROUP BY cid, vstdate, LEFT(TIME(datetimeadm),5)) stm ON stm.cid = pt.cid 
+                    AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)                       
                 WHERE (o.an ="" OR o.an IS NULL)
-                    AND proj.vn IS NULL
-                    AND kidney.vn IS NULL 
-                    AND p.hipdata_code = "UCS" 							
-                    AND vp.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y")            
-                    AND o.vstdate BETWEEN ? AND ?
+                AND proj.vn IS NULL
+                AND kidney.vn IS NULL 
+                AND p.hipdata_code = "UCS" 							
+                AND vp.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y")            
+                AND o.vstdate BETWEEN ? AND ?
                 GROUP BY o.vn ) AS a
                 GROUP BY YEAR(vstdate), MONTH(vstdate)
                 ORDER BY YEAR(vstdate), MONTH(vstdate)',[$start_date_b,$end_date_b]);
@@ -91,7 +92,8 @@ class MishosController extends Controller
 		    LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
             LEFT JOIN ( SELECT cid, vstdate, LEFT(TIME(datetimeadm),5) AS vsttime5,SUM(receive_total) AS receive_total,
                 GROUP_CONCAT(DISTINCT repno) AS repno FROM htp_report.stm_ucs
-                GROUP BY cid, vstdate, LEFT(TIME(datetimeadm),5)) stm ON stm.cid = pt.cid AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)                       
+                GROUP BY cid, vstdate, LEFT(TIME(datetimeadm),5)) stm ON stm.cid = pt.cid 
+                AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)                       
             WHERE (o.an ="" OR o.an IS NULL)
 			AND proj.vn IS NULL
 			AND kidney.vn IS NULL 
@@ -151,14 +153,15 @@ class MishosController extends Controller
                 LEFT JOIN opitemrece kidney ON kidney.vn=o.vn AND kidney.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE kidney = "Y")
                 LEFT JOIN opitemrece proj ON proj.vn=o.vn AND proj.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("WALKIN"))
                 LEFT JOIN ( SELECT cid, vstdate, LEFT(TIME(datetimeadm),5) AS vsttime5,SUM(receive_total) AS receive_total,
-                GROUP_CONCAT(DISTINCT repno) AS repno FROM htp_report.stm_ucs
-                GROUP BY cid, vstdate, LEFT(TIME(datetimeadm),5)) stm ON stm.cid = pt.cid AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)                       
+                    GROUP_CONCAT(DISTINCT repno) AS repno FROM htp_report.stm_ucs
+                    GROUP BY cid, vstdate, LEFT(TIME(datetimeadm),5)) stm ON stm.cid = pt.cid 
+                    AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)                       
                 WHERE (o.an ="" OR o.an IS NULL)
-                    AND proj.vn IS NOT NULL
-                    AND kidney.vn IS NULL 
-                    AND p.hipdata_code = "UCS" 							
-                    AND vp.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y")            
-                    AND o.vstdate BETWEEN ? AND ?
+                AND proj.vn IS NOT NULL
+                AND kidney.vn IS NULL 
+                AND p.hipdata_code = "UCS" 							
+                AND vp.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y")            
+                AND o.vstdate BETWEEN ? AND ?
                 GROUP BY o.vn ) AS a
                 GROUP BY YEAR(vstdate), MONTH(vstdate)
                 ORDER BY YEAR(vstdate), MONTH(vstdate)',[$start_date_b,$end_date_b]);
@@ -180,7 +183,8 @@ class MishosController extends Controller
             LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
             LEFT JOIN ( SELECT cid, vstdate, LEFT(TIME(datetimeadm),5) AS vsttime5,SUM(receive_total) AS receive_total,
                 GROUP_CONCAT(DISTINCT repno) AS repno FROM htp_report.stm_ucs
-                GROUP BY cid, vstdate, LEFT(TIME(datetimeadm),5)) stm ON stm.cid = pt.cid AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)                       
+                GROUP BY cid, vstdate, LEFT(TIME(datetimeadm),5)) stm ON stm.cid = pt.cid 
+                AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)                       
             WHERE (o.an ="" OR o.an IS NULL)
 			AND proj.vn IS NOT NULL
 			AND kidney.vn IS NULL 
@@ -232,7 +236,7 @@ class MishosController extends Controller
                 WHEN MONTH(vstdate)=9 THEN CONCAT("ก.ย. ", RIGHT(YEAR(vstdate)+543, 2))
                 END AS month,COUNT(vn) AS visit,SUM(IFNULL(claim_price,0)) AS claim_price,SUM(IFNULL(receive_total,0)) AS receive_total
             FROM (SELECT o.vstdate,o.vsttime,o.vn,COALESCE(herb.claim_price, 0) AS claim_price,
-				IF(stm.receive_hc_drug=0,stm.receive_hc_hc,stm.receive_hc_drug) AS receive_total
+				LEAST(IF(stm.receive_hc_drug=0, stm.receive_hc_hc, stm.receive_hc_drug),COALESCE(herb.claim_price,0)) AS receive_total
                 FROM ovst o
                 LEFT JOIN patient pt ON pt.hn=o.hn
                 LEFT JOIN visit_pttype vp ON vp.vn=o.vn           
@@ -244,13 +248,13 @@ class MishosController extends Controller
 					INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode
 					WHERE op.vstdate BETWEEN ? AND ? AND li.herb32 = "Y" GROUP BY op.vn) herb ON herb.vn=o.vn						
                 LEFT JOIN (SELECT cid,vstdate,LEFT(vsttime,5) AS vsttime5, SUM(receive_hc_drug) AS receive_hc_drug,
-                SUM(receive_hc_hc) AS receive_hc_hc 
-                FROM htp_report.stm_ucs  GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid
-                AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
+                    SUM(receive_hc_hc) AS receive_hc_hc FROM htp_report.stm_ucs  
+                    GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid
+                    AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
                 WHERE (o.an ="" OR o.an IS NULL)
-			        AND p.hipdata_code = "UCS" 	
-			        AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs = "Y")            
-			        AND o.vstdate BETWEEN ? AND ?
+			    AND p.hipdata_code = "UCS" 	
+			    AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs = "Y")            
+			    AND o.vstdate BETWEEN ? AND ?
                 GROUP BY o.vn ORDER BY o.vstdate,o.vsttime ) AS a
                 GROUP BY YEAR(vstdate), MONTH(vstdate)
                 ORDER BY YEAR(vstdate), MONTH(vstdate)',[$start_date_b,$end_date_b,$start_date_b,$end_date_b]);
@@ -260,9 +264,9 @@ class MishosController extends Controller
 
         $search=DB::connection('hosxp')->select('
             SELECT o.vstdate,o.vsttime,o.oqueue,pt.cid,pt.hn,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,
-                p.`name` AS pttype,vp.hospmain,v.pdx,v.income,v.rcpt_money,COALESCE(herb.claim_price, 0) AS claim_price,
-                IF(stm.receive_hc_drug=0,stm.receive_hc_hc,stm.receive_hc_drug) AS receive_total,
-                GROUP_CONCAT(DISTINCT sd.`name`) AS claim_list,IF(oe.moph_finance_upload_status IS NOT NULL,"Y","") AS claim
+            p.`name` AS pttype,vp.hospmain,v.pdx,v.income,v.rcpt_money,COALESCE(herb.claim_price, 0) AS claim_price,
+            LEAST(IF(stm.receive_hc_drug = 0, stm.receive_hc_hc, stm.receive_hc_drug),COALESCE(herb.claim_price, 0)) AS receive_total,
+            GROUP_CONCAT(DISTINCT sd.`name`) AS claim_list,IF(oe.moph_finance_upload_status IS NOT NULL,"Y","") AS claim
             FROM ovst o
             LEFT JOIN patient pt ON pt.hn=o.hn
             LEFT JOIN visit_pttype vp ON vp.vn=o.vn           
@@ -276,8 +280,8 @@ class MishosController extends Controller
 				WHERE op.vstdate BETWEEN ? AND ? AND li.herb32 = "Y" GROUP BY op.vn) herb ON herb.vn=o.vn						
             LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
             LEFT JOIN (SELECT cid,vstdate,LEFT(vsttime,5) AS vsttime5, SUM(receive_hc_drug) AS receive_hc_drug,
-                SUM(receive_hc_hc) AS receive_hc_hc 
-                FROM htp_report.stm_ucs  GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid
+                SUM(receive_hc_hc) AS receive_hc_hc FROM htp_report.stm_ucs 
+                GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid
                 AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL)
             AND p.hipdata_code = "UCS" 	
@@ -340,8 +344,8 @@ class MishosController extends Controller
 					WHERE op.vstdate BETWEEN ? AND ?
 					AND op.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("TELMED")) GROUP BY op.vn) tele ON tele.vn=o.vn						
                 LEFT JOIN ( SELECT cid, vstdate,LEFT(vsttime,5) AS vsttime5, SUM(receive_op) AS receive_op
-                    FROM htp_report.stm_ucs
-                    GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
+                    FROM htp_report.stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid 
+                    AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
                 WHERE (o.an ="" OR o.an IS NULL)
 			    AND p.hipdata_code = "UCS" 	
 			    AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs = "Y")            
@@ -371,8 +375,8 @@ class MishosController extends Controller
 				AND op.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("TELMED")) GROUP BY op.vn) tele ON tele.vn=o.vn						
             LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn
             LEFT JOIN ( SELECT cid, vstdate,LEFT(vsttime,5) AS vsttime5, SUM(receive_op) AS receive_op
-                FROM htp_report.stm_ucs
-                GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
+                FROM htp_report.stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid 
+                AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL)
             AND p.hipdata_code = "UCS" 	
             AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs = "Y")            
@@ -529,8 +533,8 @@ class MishosController extends Controller
 				    AND op.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("80008")) 
                     GROUP BY op.vn) ppfs ON ppfs.vn=o.vn						
                 LEFT JOIN (SELECT cid,vstdate,LEFT(vsttime,5) AS vsttime5, SUM(receive_dmis_compensate_pay) AS receive_dmis_compensate_pay
-                    FROM htp_report.stm_ucs
-                    GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
+                    FROM htp_report.stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid 
+                    AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
                 WHERE (o.an ="" OR o.an IS NULL)
                 AND p.hipdata_code = "UCS" 	       
 			    AND o.vstdate BETWEEN ? AND ? 
@@ -561,8 +565,8 @@ class MishosController extends Controller
 			    AND op.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("80008")) 
                 GROUP BY op.vn) ppfs ON ppfs.vn=o.vn						
             LEFT JOIN (SELECT cid,vstdate,LEFT(vsttime,5) AS vsttime5, SUM(receive_dmis_compensate_pay) AS receive_dmis_compensate_pay
-                FROM htp_report.stm_ucs
-                GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
+                FROM htp_report.stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid 
+                AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL) 
             AND p.hipdata_code = "UCS" 	 
 			AND (o1.vn IS NOT NULL OR ov.icd10 IS NOT NULL)
@@ -622,8 +626,7 @@ class MishosController extends Controller
 				LEFT JOIN (SELECT op.vn, SUM(op.sum_price) AS claim_price FROM opitemrece op					
 					WHERE op.vstdate BETWEEN ? AND ? AND op.icode = ? GROUP BY op.vn) drug ON drug.vn=o.vn						
                 LEFT JOIN (SELECT cid,vstdate,LEFT(vsttime,5) AS vsttime5,SUM(receive_hc_drug) AS receive_hc_drug
-                    FROM htp_report.stm_ucs
-                    GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid
+                    FROM htp_report.stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid                    
                     AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
                 WHERE (o.an ="" OR o.an IS NULL)
 			    AND p.hipdata_code = "UCS"        
@@ -651,8 +654,7 @@ class MishosController extends Controller
 				WHERE op.vstdate BETWEEN ? AND ? AND op.icode=? GROUP BY op.vn) drug ON drug.vn=o.vn
             LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn						
             LEFT JOIN (SELECT cid,vstdate,LEFT(vsttime,5) AS vsttime5,SUM(receive_hc_drug) AS receive_hc_drug
-                FROM htp_report.stm_ucs
-                GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid
+                FROM htp_report.stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid                
                 AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL)
             AND p.hipdata_code = "UCS" 	          
@@ -713,9 +715,8 @@ class MishosController extends Controller
 					WHERE op.vstdate BETWEEN ? AND ?
 					AND op.icode IN (SELECT icode FROM drugitems WHERE nhso_adp_code IN ("STEMI1")) GROUP BY op.vn) sk ON sk.vn=o.vn						
                 LEFT JOIN (SELECT cid,vstdate,LEFT(vsttime,5) AS vsttime5,SUM(receive_dmis_drug) AS receive_dmis_drug
-                FROM htp_report.stm_ucs
-                GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid
-                AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
+                    FROM htp_report.stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid
+                    AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)                
                 WHERE (o.an ="" OR o.an IS NULL)
 			    AND p.hipdata_code = "UCS" 	
 			    AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs = "Y")            
@@ -745,8 +746,7 @@ class MishosController extends Controller
 				AND op.icode IN (SELECT icode FROM drugitems WHERE nhso_adp_code IN ("STEMI1")) GROUP BY op.vn) sk ON sk.vn=o.vn
             LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn						
             LEFT JOIN (SELECT cid,vstdate,LEFT(vsttime,5) AS vsttime5,SUM(receive_dmis_drug) AS receive_dmis_drug
-                FROM htp_report.stm_ucs
-                GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid
+                FROM htp_report.stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid                
                 AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL)
             AND p.hipdata_code = "UCS" 	
@@ -809,9 +809,8 @@ class MishosController extends Controller
 					AND op.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_type_id = "2"
                     AND nhso_adp_code NOT IN ("8901","8902","8904")) GROUP BY op.vn) ins ON ins.vn=o.vn						
                 LEFT JOIN (SELECT cid, vstdate,LEFT(vsttime,5) AS vsttime5,SUM(receive_inst) AS receive_inst
-                FROM htp_report.stm_ucs
-                GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid
-                AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
+                    FROM htp_report.stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid                
+                    AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
                 WHERE (o.an ="" OR o.an IS NULL)
 			    AND p.hipdata_code = "UCS" 	       
 			    AND o.vstdate BETWEEN ? AND ? 
@@ -841,8 +840,7 @@ class MishosController extends Controller
                 AND nhso_adp_code NOT IN ("8901","8902","8904")) GROUP BY op.vn) ins ON ins.vn=o.vn	
             LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn					
             LEFT JOIN (SELECT cid, vstdate,LEFT(vsttime,5) AS vsttime5,SUM(receive_inst) AS receive_inst
-                FROM htp_report.stm_ucs
-                GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid
+                FROM htp_report.stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid                 
                 AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL)
             AND p.hipdata_code = "UCS"       
@@ -904,9 +902,8 @@ class MishosController extends Controller
 				    AND op.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("30001","Cons01","Eva001")) 
                     GROUP BY op.vn) palli ON palli.vn=o.vn						
                 LEFT JOIN (SELECT cid,vstdate,LEFT(vsttime,5) AS vsttime5,SUM(receive_palliative) AS receive_palliative
-                FROM htp_report.stm_ucs
-                GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid 
-                AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
+                    FROM htp_report.stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid                 
+                    AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
                 WHERE (o.an ="" OR o.an IS NULL)
 			    AND p.hipdata_code = "UCS" 	       
 			    AND o.vstdate BETWEEN ? AND ? 
@@ -936,8 +933,7 @@ class MishosController extends Controller
                 GROUP BY op.vn) palli ON palli.vn=o.vn
             LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn						
             LEFT JOIN (SELECT cid,vstdate,LEFT(vsttime,5) AS vsttime5,SUM(receive_palliative) AS receive_palliative
-                FROM htp_report.stm_ucs
-                GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid 
+                FROM htp_report.stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid                 
                 AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL)
             AND p.hipdata_code = "UCS"       
@@ -1036,8 +1032,8 @@ class MishosController extends Controller
 				OR op.icode IN (SELECT icode FROM drugitems	WHERE nhso_adp_code IN ("FP001","FP002","FP002_1","FP002_2","FP003_1","FP003_2","FP003_3","FP003_4")))
 				GROUP BY op.vn) ppfs ON ppfs.vn=o.vn						
             LEFT JOIN (SELECT cid, vstdate,LEFT(vsttime,5) AS vsttime5, SUM(receive_pp) AS receive_pp
-                    FROM htp_report.stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid
-                    AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
+                FROM htp_report.stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid
+                AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL)  
 			AND (o1.vn IS NOT NULL OR ov.icd10 IS NOT NULL)
             AND o.vstdate BETWEEN ? AND ?
@@ -1316,8 +1312,8 @@ class MishosController extends Controller
 			    WHERE op.vstdate BETWEEN ? AND ?
 			    AND op.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("14001")) GROUP BY op.vn) ppfs ON ppfs.vn=o.vn						
             LEFT JOIN (SELECT cid, vstdate,LEFT(vsttime,5) AS vsttime5, SUM(receive_pp) AS receive_pp
-                    FROM htp_report.stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid
-                    AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
+                FROM htp_report.stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid
+                AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL)  
 			AND (o1.vn IS NOT NULL OR ov.icd10 IS NOT NULL)
             AND o.vstdate BETWEEN ? AND ?
@@ -1407,8 +1403,8 @@ class MishosController extends Controller
 			    WHERE op.vstdate BETWEEN ? AND ?
 			    AND op.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("15001")) GROUP BY op.vn) ppfs ON ppfs.vn=o.vn						
             LEFT JOIN (SELECT cid, vstdate,LEFT(vsttime,5) AS vsttime5, SUM(receive_pp) AS receive_pp
-                    FROM htp_report.stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid
-                    AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
+                FROM htp_report.stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid
+                AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL)  
 			AND (o1.vn IS NOT NULL OR ov.icd10 IS NOT NULL)
             AND o.vstdate BETWEEN ? AND ?
@@ -1503,8 +1499,8 @@ class MishosController extends Controller
 			    AND op.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("30008","30009","30010","30011","30012","30013")) 
                 GROUP BY op.vn) ppfs ON ppfs.vn=o.vn						
             LEFT JOIN (SELECT cid, vstdate,LEFT(vsttime,5) AS vsttime5, SUM(receive_pp) AS receive_pp
-                    FROM htp_report.stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid
-                    AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
+                FROM htp_report.stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid
+                AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL)  
 			AND (o1.vn IS NOT NULL OR ov.icd10 IS NOT NULL)
             AND o.vstdate BETWEEN ? AND ?
@@ -1597,8 +1593,8 @@ class MishosController extends Controller
 			    AND op.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("30015","30016")) 
                 GROUP BY op.vn) ppfs ON ppfs.vn=o.vn						
             LEFT JOIN (SELECT cid, vstdate,LEFT(vsttime,5) AS vsttime5, SUM(receive_pp) AS receive_pp
-                    FROM htp_report.stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid
-                    AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
+                FROM htp_report.stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid
+                AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL)  
 			AND (o1.vn IS NOT NULL OR ov.icd10 IS NOT NULL)
             AND o.vstdate BETWEEN ? AND ?
@@ -1691,8 +1687,8 @@ class MishosController extends Controller
 			    AND op.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("90005")) 
                 GROUP BY op.vn) ppfs ON ppfs.vn=o.vn						
             LEFT JOIN (SELECT cid, vstdate,LEFT(vsttime,5) AS vsttime5, SUM(receive_pp) AS receive_pp
-                    FROM htp_report.stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid
-                    AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
+                FROM htp_report.stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid
+                AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL)  
 			AND (o1.vn IS NOT NULL OR ov.icd10 IS NOT NULL)
             AND o.vstdate BETWEEN ? AND ?
@@ -1785,8 +1781,8 @@ class MishosController extends Controller
 			    AND op.icode IN (SELECT icode FROM nondrugitems WHERE nhso_adp_code IN ("12003","12004")) 
                 GROUP BY op.vn) ppfs ON ppfs.vn=o.vn						
             LEFT JOIN (SELECT cid, vstdate,LEFT(vsttime,5) AS vsttime5, SUM(receive_pp) AS receive_pp
-                    FROM htp_report.stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid
-                    AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
+                FROM htp_report.stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) stm ON stm.cid = pt.cid
+                AND stm.vstdate = o.vstdate AND stm.vsttime5 = LEFT(o.vsttime,5)
             WHERE (o.an ="" OR o.an IS NULL)  
 			AND (o1.vn IS NOT NULL OR ov.icd10 IS NOT NULL)
             AND o.vstdate BETWEEN ? AND ?
