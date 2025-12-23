@@ -106,12 +106,9 @@ class DebtorController extends Controller
             FROM debtor_1102050101_203
             WHERE vstdate BETWEEN ? AND ? ',[$start_date,$end_date]);
         $_1102050101_209 = DB::select('
-            SELECT COUNT(DISTINCT d.vn) AS anvn,SUM(d.debtor) AS debtor,IFNULL(SUM(s.receive_pp),0) AS receive
-            FROM debtor_1102050101_209 d 
-            LEFT JOIN (SELECT cid,vstdate,LEFT(vsttime,5) AS vsttime5,SUM(receive_pp) AS receive_pp
-                FROM stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) s ON s.cid = d.cid
-                AND s.vstdate = d.vstdate AND s.vsttime5 = LEFT(d.vsttime,5)
-            WHERE d.vstdate BETWEEN ? AND ?',[$start_date,$end_date]);
+            SELECT COUNT(DISTINCT vn) AS anvn,SUM(debtor) AS debtor,IFNULL(SUM(receive),0) AS receive
+            FROM debtor_1102050101_209             
+            WHERE vstdate BETWEEN ? AND ?',[$start_date,$end_date]);
         $_1102050101_216 = DB::select('
             SELECT COUNT(DISTINCT d.vn) AS anvn,SUM(d.debtor) AS debtor,SUM(IFNULL(s.receive_total,sk.receive_total)) AS receive
             FROM debtor_1102050101_216 d             
@@ -1321,7 +1318,8 @@ class DebtorController extends Controller
             SELECT o.vn,o.hn,o.an,pt.cid,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,o.vstdate,
             o.vsttime,p.`name` AS pttype,vp.hospmain,p.hipdata_code,v.pdx,v.income,v.rcpt_money,
             COALESCE(o1.other_price, 0) AS other,COALESCE(o2.ppfs_price, 0) AS ppfs,
-			v.income-v.rcpt_money-COALESCE(o1.other_price, 0) AS debtor,GROUP_CONCAT(DISTINCT sd.`name`) AS other_list,
+			v.income-v.rcpt_money-COALESCE(o1.other_price, 0)-COALESCE(o2.ppfs_price, 0) AS debtor,
+            GROUP_CONCAT(DISTINCT sd.`name`) AS other_list,
 			GROUP_CONCAT(DISTINCT sd2.`name`) AS ppfs_list,"ยืนยันลูกหนี้" AS status  
             FROM ovst o    
             LEFT JOIN patient pt ON pt.hn=o.hn
@@ -1374,7 +1372,8 @@ class DebtorController extends Controller
             SELECT o.vn,o.hn,o.an,pt.cid,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,o.vstdate,
             o.vsttime,p.`name` AS pttype,vp.hospmain,p.hipdata_code,v.pdx,v.income,v.rcpt_money,
             COALESCE(o1.other_price, 0) AS other,COALESCE(o2.ppfs_price, 0) AS ppfs,
-			v.income-v.rcpt_money-COALESCE(o1.other_price, 0) AS debtor,GROUP_CONCAT(DISTINCT sd.`name`) AS other_list,
+			v.income-v.rcpt_money-COALESCE(o1.other_price, 0)-COALESCE(o2.ppfs_price, 0) AS debtor,
+            GROUP_CONCAT(DISTINCT sd.`name`) AS other_list,
 			GROUP_CONCAT(DISTINCT sd2.`name`) AS ppfs_list,"ยืนยันลูกหนี้" AS status  
             FROM ovst o    
             LEFT JOIN patient pt ON pt.hn=o.hn
@@ -1456,14 +1455,11 @@ class DebtorController extends Controller
         $start_date = Session::get('start_date');
         $end_date = Session::get('end_date');
         $debtor = DB::select('
-            SELECT d.vstdate,COUNT(DISTINCT d.vn) AS anvn,
-            SUM(d.debtor) AS debtor,SUM(s.receive_pp) AS receive
-            FROM debtor_1102050101_209 d   
-            LEFT JOIN (SELECT cid,vstdate,LEFT(vsttime,5) AS vsttime5,SUM(receive_pp) AS receive_pp,MAX(repno) AS repno
-                FROM stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) s ON s.cid = d.cid 
-                AND s.vstdate = d.vstdate AND s.vsttime5 = LEFT(d.vsttime,5)
-            WHERE d.vstdate BETWEEN ? AND ?
-            GROUP BY d.vstdate ORDER BY d.vstdate ',[$start_date,$end_date]);
+            SELECT vstdate,COUNT(DISTINCT vn) AS anvn,
+            SUM(debtor) AS debtor,SUM(receive) AS receive
+            FROM debtor_1102050101_209 d               
+            WHERE vstdate BETWEEN ? AND ?
+            GROUP BY vstdate ORDER BY d.vstdate ',[$start_date,$end_date]);
 
         $pdf = PDF::loadView('hrims.debtor.1102050101_209_daily_pdf', compact('start_date','end_date','debtor'))
                     ->setPaper('A4', 'portrait');
