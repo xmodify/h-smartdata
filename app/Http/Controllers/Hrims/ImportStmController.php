@@ -40,17 +40,57 @@ public function __construct()
 
 //Create ofc-------------------------------------------------------------------------------------------------------------
     public function ofc(Request $request)
-    {  
-        $stm_ofc=DB::select('
-            SELECT  stm_filename,COUNT(DISTINCT repno) AS count_repno,COUNT(cid) AS count_cid,
-            SUM(adjrw) AS sum_adjrw,SUM(charge) AS sum_charge,SUM(act) AS sum_act,
-            SUM(receive_room) AS sum_receive_room,SUM(receive_instument) AS sum_receive_instument,
-            SUM(receive_drug) AS sum_receive_drug,SUM(receive_treatment) AS sum_receive_treatment,
-            SUM(receive_car) AS sum_receive_car,SUM(receive_waitdch) AS sum_receive_waitdch,
-            SUM(receive_other) AS sum_receive_other,SUM(receive_total) AS sum_receive_total
-            FROM stm_ofc GROUP BY stm_filename ORDER BY repno');    
+    {
+        ini_set('max_execution_time', 300);
 
-        return view('hrims.import_stm.ofc',compact('stm_ofc'));
+        /* ---------------- ปีงบ (dropdown) ---------------- */
+        $budget_year_select = DB::table('budget_year')
+            ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
+            ->orderByDesc('LEAVE_YEAR_ID')
+            ->limit(7)
+            ->get();
+
+        $budget_year_now = DB::table('budget_year')
+            ->whereDate('DATE_END', '>=', date('Y-m-d'))
+            ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+            ->value('LEAVE_YEAR_ID');
+
+        $budget_year = $request->budget_year ?: $budget_year_now;
+
+        /* ---------------- Query หลัก (เหมือน UCS) ---------------- */
+        $stm_ofc = DB::select("
+            SELECT
+            IF(SUBSTRING(stm_filename,11) LIKE 'O%','OPD','IPD') AS dep,
+            stm_filename,
+            round_no,
+            COUNT(DISTINCT repno) AS repno,
+            COUNT(cid) AS count_cid,
+            SUM(adjrw) AS sum_adjrw,
+            SUM(charge) AS sum_charge,
+            SUM(act) AS sum_act,
+            SUM(receive_room) AS sum_receive_room,
+            SUM(receive_instument) AS sum_receive_instument,
+            SUM(receive_drug) AS sum_receive_drug,
+            SUM(receive_treatment) AS sum_receive_treatment,
+            SUM(receive_car) AS sum_receive_car,
+            SUM(receive_waitdch) AS sum_receive_waitdch,
+            SUM(receive_other) AS sum_receive_other,
+            SUM(receive_total) AS sum_receive_total,
+            MAX(receive_no)   AS receive_no,
+            MAX(receipt_date) AS receipt_date,
+            MAX(receipt_by)   AS receipt_by
+            FROM stm_ofc
+            WHERE (CAST(SUBSTRING(stm_filename, LOCATE('20', stm_filename), 4) AS UNSIGNED) + 543
+				+ (CAST(SUBSTRING(stm_filename, LOCATE('20', stm_filename) + 4, 2) AS UNSIGNED) >= 10)) = ?
+            GROUP BY stm_filename, round_no
+            ORDER BY CAST(SUBSTRING(stm_filename, LOCATE('20', stm_filename), 6) AS UNSIGNED ) DESC,   
+				CASE WHEN round_no IS NOT NULL AND round_no <> ''
+				THEN (CAST(LEFT(round_no,2) AS UNSIGNED) + 2500) * 100
+				+ CAST(SUBSTRING(round_no,3,2) AS UNSIGNED)  ELSE 0 END DESC,
+				stm_filename DESC, dep DESC ", [$budget_year]);
+
+        return view('hrims.import_stm.ofc', compact('stm_ofc', 'budget_year_select', 'budget_year')
+        );
     }
 
 // ofcexcel_save--------------------------------------------------------------------------------------------------------
@@ -70,7 +110,7 @@ public function __construct()
         // ✅ TRUNCATE นอกทรานแซกชัน (ก่อนเริ่มทำงาน)
         Stm_ofcexcel::truncate();
 
-        DB::beginTransaction();
+        DB::beginTransaction(); 
         try {
             // ------------------ อ่านทุกไฟล์ -> ใส่ staging ------------------
             foreach ($uploadedFiles as $the_file) {
@@ -81,7 +121,12 @@ public function __construct()
                 $sheet       = $spreadsheet->setActiveSheetIndex(0);
                 $row_limit   = $sheet->getHighestDataRow();
 
-                $data = [];
+                // ✅ round_no อยู่ที่ A6 เริ่มอักษรที่ 12 จากซ้าย
+                $roundText = $sheet->getCell('A6')->getCalculatedValue();
+                $round_no  = trim(mb_substr((string) $roundText, 13, null, 'UTF-8'));                         
+
+                $data = [];                
+
                 for ($row = 12; $row <= $row_limit; $row++) {
 
                     // รูปแบบเดิมของคุณ (G,H): dd/mm/yyyy HH:MM:SS
@@ -100,6 +145,7 @@ public function __construct()
                     $datetimedch = $dchyear.'-'.$dchmo.'-'.$dchday.' '.$dchtime;
 
                     $data[] = [
+                        'round_no'           => $round_no,
                         'repno'              => $sheet->getCell('A'.$row)->getValue(),
                         'no'                 => $sheet->getCell('B'.$row)->getValue(),
                         'hn'                 => $sheet->getCell('C'.$row)->getValue(),
@@ -147,6 +193,7 @@ public function __construct()
                     Stm_ofc::where('repno', $value->repno)
                         ->where('no', $value->no)
                         ->update([
+                            'round_no'          => $value->round_no,
                             'datetimeadm'       => $value->datetimeadm,
                             'vstdate'           => $value->vstdate,
                             'vsttime'           => $value->vsttime,
@@ -166,31 +213,32 @@ public function __construct()
                         ]);
                 } else {
                     Stm_ofc::create([
-                        'repno'              => $value->repno,
-                        'no'                 => $value->no,
-                        'hn'                 => $value->hn,
-                        'an'                 => $value->an,
-                        'cid'                => $value->cid,
-                        'pt_name'            => $value->pt_name,
-                        'datetimeadm'        => $value->datetimeadm,
-                        'vstdate'            => $value->vstdate,
-                        'vsttime'            => $value->vsttime,
-                        'datetimedch'        => $value->datetimedch,
-                        'dchdate'            => $value->dchdate,
-                        'dchtime'            => $value->dchtime,
-                        'projcode'           => $value->projcode,
-                        'adjrw'              => $value->adjrw,
-                        'charge'             => $value->charge,
-                        'act'                => $value->act,
-                        'receive_room'       => $value->receive_room,
-                        'receive_instument'  => $value->receive_instument,
-                        'receive_drug'       => $value->receive_drug,
-                        'receive_treatment'  => $value->receive_treatment,
-                        'receive_car'        => $value->receive_car,
-                        'receive_waitdch'    => $value->receive_waitdch,
-                        'receive_other'      => $value->receive_other,
-                        'receive_total'      => $value->receive_total,
-                        'stm_filename'       => $value->stm_filename,
+                        'round_no'              => $value->round_no,
+                        'repno'                 => $value->repno,
+                        'no'                    => $value->no,
+                        'hn'                    => $value->hn,
+                        'an'                    => $value->an,
+                        'cid'                   => $value->cid,
+                        'pt_name'               => $value->pt_name,
+                        'datetimeadm'           => $value->datetimeadm,
+                        'vstdate'               => $value->vstdate,
+                        'vsttime'               => $value->vsttime,
+                        'datetimedch'           => $value->datetimedch,
+                        'dchdate'               => $value->dchdate,
+                        'dchtime'               => $value->dchtime,
+                        'projcode'              => $value->projcode,
+                        'adjrw'                 => $value->adjrw,
+                        'charge'                => $value->charge,
+                        'act'                   => $value->act,
+                        'receive_room'          => $value->receive_room,
+                        'receive_instument'     => $value->receive_instument,
+                        'receive_drug'          => $value->receive_drug,
+                        'receive_treatment'     => $value->receive_treatment,
+                        'receive_car'           => $value->receive_car,
+                        'receive_waitdch'       => $value->receive_waitdch,
+                        'receive_other'         => $value->receive_other,
+                        'receive_total'         => $value->receive_total,
+                        'stm_filename'          => $value->stm_filename,
                     ]);
                 }
             }
@@ -208,6 +256,32 @@ public function __construct()
             DB::rollBack();
             return back()->withErrors('There was a problem uploading the data!');
         }
+    }
+//Create ofc_updateReceipt------------------------------------------------------------------------------------------------------------- 
+    public function ofc_updateReceipt(Request $request)
+    {
+        $request->validate([
+            'round_no'     => 'required',
+            'receive_no'   => 'required|max:30',
+            'receipt_date' => 'required|date',
+        ]);
+
+        DB::table('stm_ofc')
+            ->where('round_no', $request->round_no)
+            ->update([
+                'receive_no'   => $request->receive_no,
+                'receipt_date' => $request->receipt_date,
+                'receipt_by'   => auth()->user()->name ?? 'system',
+                'updated_at'   => now(),
+            ]);
+
+        return response()->json([
+            'status'       => 'success',
+            'message'      => 'ออกใบเสร็จเรียบร้อยแล้ว',
+            'round_no'     => $request->round_no,
+            'receive_no'   => $request->receive_no,
+            'receipt_date' => $request->receipt_date,
+        ]);
     }
 //Create ofc_detail----------------------------------------------------------------------------------------------------------------
     public function ofc_detail(Request $request)
@@ -976,9 +1050,9 @@ public function __construct()
             GROUP BY stm_filename, round_no
             ORDER BY CASE WHEN round_no IS NOT NULL AND round_no <> '' 
                 THEN (CAST(LEFT(round_no,2) AS UNSIGNED) + 2500) * 100
-                + CAST(SUBSTRING(round_no,3,2) AS UNSIGNED)  
-                ELSE CAST(REGEXP_SUBSTR(stm_filename, '[0-9]{6}') AS UNSIGNED) END DESC,
-                stm_filename DESC, dep DESC ", [$budget_year]);
+                + CAST(SUBSTRING(round_no,3,2) AS UNSIGNED)
+                ELSE CAST(SUBSTRING( stm_filename, LOCATE('25', stm_filename), 6) AS UNSIGNED )END DESC,
+            stm_filename DESC, dep DESC ", [$budget_year]);
 
         return view(
             'hrims.import_stm.ucs',
