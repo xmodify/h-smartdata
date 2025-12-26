@@ -1487,6 +1487,104 @@ public function asthma_clinic(Request $request)
     return view('service_ncd.asthma_clinic',compact('budget_year_select','budget_year','clinic_member_status','clinic_total',
             'newcase_m','newcase_total_m','newcase_y','newcase_total_y'));
 }
+//Create arv_waiting_period------------------------------------------------------------------------------------------------------------------------
+public function arv_waiting_period(Request $request)
+{
+      $budget_year_select = DB::table('budget_year')
+            ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
+            ->orderByDesc('LEAVE_YEAR_ID')
+            ->limit(7)
+            ->get();
+        $budget_year_now = DB::table('budget_year')
+            ->whereDate('DATE_END', '>=', date('Y-m-d'))
+            ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+            ->value('LEAVE_YEAR_ID');       
+        $budget_year = $request->budget_year ?: $budget_year_now;
+        $year_data = DB::table('budget_year')
+            ->whereIn('LEAVE_YEAR_ID', [$budget_year, $budget_year - 4])
+            ->pluck('DATE_BEGIN', 'LEAVE_YEAR_ID');
+        $start_date   = $year_data[$budget_year] ?? null;
+        $start_date_y   = $year_data[$budget_year-4] ?? null;
+        $end_date = DB::table('budget_year')
+            ->where('LEAVE_YEAR_ID', $budget_year)
+            ->value('DATE_END');
 
+      $waiting_period_month = DB::connection('hosxp')->select('
+            SELECT CASE WHEN MONTH(vstdate)="10" THEN CONCAT("ต.ค. ",RIGHT(YEAR(vstdate)+543,2))
+            WHEN MONTH(vstdate)="11" THEN CONCAT("พ.ย. ",RIGHT(YEAR(vstdate)+543,2))
+            WHEN MONTH(vstdate)="12" THEN CONCAT("ธ.ค. ",RIGHT(YEAR(vstdate)+543,2))
+            WHEN MONTH(vstdate)="1" THEN CONCAT("ม.ค. ",RIGHT(YEAR(vstdate)+543,2))
+            WHEN MONTH(vstdate)="2" THEN CONCAT("ก.พ. ",RIGHT(YEAR(vstdate)+543,2))
+            WHEN MONTH(vstdate)="3" THEN CONCAT("มี.ค. ",RIGHT(YEAR(vstdate)+543,2))
+            WHEN MONTH(vstdate)="4" THEN CONCAT("เม.ย. ",RIGHT(YEAR(vstdate)+543,2))
+            WHEN MONTH(vstdate)="5" THEN CONCAT("พ.ค. ",RIGHT(YEAR(vstdate)+543,2))
+            WHEN MONTH(vstdate)="6" THEN CONCAT("มิ.ย. ",RIGHT(YEAR(vstdate)+543,2))
+            WHEN MONTH(vstdate)="7" THEN CONCAT("ก.ค. ",RIGHT(YEAR(vstdate)+543,2))
+            WHEN MONTH(vstdate)="8" THEN CONCAT("ส.ค. ",RIGHT(YEAR(vstdate)+543,2))
+            WHEN MONTH(vstdate)="9" THEN CONCAT("ก.ย. ",RIGHT(YEAR(vstdate)+543,2))
+            END AS "month",LEFT(SEC_TO_TIME(AVG(screen_wait)),8) AS screen_wait,LEFT(SEC_TO_TIME(AVG(screen_success)),8) AS screen_success,
+            LEFT(SEC_TO_TIME(AVG(doctor_wait)),8) AS doctor_wait,LEFT(SEC_TO_TIME(AVG(doctor_success)),8) AS doctor_success,
+            LEFT(SEC_TO_TIME(AVG(rx_success)),8) AS rx_success,LEFT(SEC_TO_TIME(AVG(success_all)),8) AS success_all  
+            FROM (SELECT o.vstdate,o.vsttime,b1.begin_time_screen,b2.end_time_screen,b3.begin_time_doctor,b4.end_time_doctor,b5.end_time_rx,
+            (time_to_sec(TIME(b1.begin_time_screen))-time_to_sec(TIME(o.vsttime))) AS screen_wait, 
+            (time_to_sec(TIME(b2.end_time_screen))-time_to_sec(TIME(b1.begin_time_screen ))) AS screen_success, 
+            (time_to_sec(TIME(b3.begin_time_doctor))-time_to_sec(TIME(b2.end_time_screen ))) AS doctor_wait, 
+            (time_to_sec(TIME(b4.end_time_doctor))-time_to_sec(TIME(b3.begin_time_doctor ))) AS doctor_success, 
+            (time_to_sec(TIME(b5.end_time_rx))-time_to_sec(TIME(b4.end_time_doctor))) AS rx_success,
+            (time_to_sec(TIME(IFNULL(b5.end_time_rx,b4.end_time_doctor)))-time_to_sec(TIME(o.vsttime))) AS success_all  
+            FROM ovst o 
+            LEFT JOIN ( SELECT s1.vn, Time( s1.service_begin_datetime ) AS begin_time_screen FROM ovst_service_time s1  
+            WHERE s1.ovst_service_time_type_code = "OPD-SCREEN" ) b1 ON b1.vn = o.vn 
+            LEFT JOIN ( SELECT s1.vn, Time( s1.service_end_datetime ) AS end_time_screen FROM ovst_service_time s1  
+            WHERE s1.ovst_service_time_type_code = "OPD-SCREEN" ) b2 ON b2.vn = o.vn 
+            LEFT JOIN ( SELECT s1.vn, Time( s1.service_begin_datetime ) AS begin_time_doctor FROM ovst_service_time s1  
+            WHERE s1.ovst_service_time_type_code = "OPD-DOCTOR" ) b3 ON b3.vn = o.vn 
+            LEFT JOIN ( SELECT s1.vn, Time( s1.service_end_datetime ) AS end_time_doctor FROM ovst_service_time s1  
+            WHERE s1.ovst_service_time_type_code = "OPD-DOCTOR" ) b4 ON b4.vn = o.vn 
+            LEFT JOIN ( SELECT r1.vn, Time( r1.review_finish_datetime ) AS end_time_rx FROM rx_stat r1  
+            WHERE r1.review_finish_datetime IS NOT NULL ) b5 ON b5.vn = o.vn 
+            WHERE o.vstdate BETWEEN ? AND ?
+            AND o.main_dep = "019" AND o.vn NOT IN (SELECT vn FROM er_regist)
+            AND b1.begin_time_screen IS NOT NULL  
+            AND b3.begin_time_doctor IS NOT NULL  
+            GROUP BY o.vn ,o.vstdate  
+            ORDER BY o.vstdate,o.vsttime ) AS a
+            GROUP BY MONTH(vstdate)
+            ORDER BY YEAR(vstdate),MONTH(vstdate) ',[$start_date,$end_date]);
+
+      $waiting_period_year = DB::connection('hosxp')->select('
+            SELECT IF(MONTH(vstdate)>9,YEAR(vstdate)+1,YEAR(vstdate)) + 543 AS year_bud,
+            LEFT(SEC_TO_TIME(AVG(screen_wait)),8) AS screen_wait,LEFT(SEC_TO_TIME(AVG(screen_success)),8) AS screen_success,
+            LEFT(SEC_TO_TIME(AVG(doctor_wait)),8) AS doctor_wait,LEFT(SEC_TO_TIME(AVG(doctor_success)),8) AS doctor_success,
+            LEFT(SEC_TO_TIME(AVG(rx_success)),8) AS rx_success,LEFT(SEC_TO_TIME(AVG(success_all)),8) AS success_all  
+            FROM (SELECT o.vstdate,o.vsttime,b1.begin_time_screen,b2.end_time_screen,b3.begin_time_doctor,b4.end_time_doctor,b5.end_time_rx,
+            (time_to_sec(TIME(b1.begin_time_screen))-time_to_sec(TIME(o.vsttime))) AS screen_wait, 
+            (time_to_sec(TIME(b2.end_time_screen))-time_to_sec(TIME(b1.begin_time_screen ))) AS screen_success, 
+            (time_to_sec(TIME(b3.begin_time_doctor))-time_to_sec(TIME(b2.end_time_screen ))) AS doctor_wait, 
+            (time_to_sec(TIME(b4.end_time_doctor))-time_to_sec(TIME(b3.begin_time_doctor ))) AS doctor_success, 
+            (time_to_sec(TIME(b5.end_time_rx))-time_to_sec(TIME(b4.end_time_doctor))) AS rx_success,
+            (time_to_sec(TIME(IFNULL(b5.end_time_rx,b4.end_time_doctor)))-time_to_sec(TIME(o.vsttime))) AS success_all  
+            FROM ovst o 
+            LEFT JOIN ( SELECT s1.vn, Time( s1.service_begin_datetime ) AS begin_time_screen FROM ovst_service_time s1  
+            WHERE s1.ovst_service_time_type_code = "OPD-SCREEN" ) b1 ON b1.vn = o.vn 
+            LEFT JOIN ( SELECT s1.vn, Time( s1.service_end_datetime ) AS end_time_screen FROM ovst_service_time s1  
+            WHERE s1.ovst_service_time_type_code = "OPD-SCREEN" ) b2 ON b2.vn = o.vn 
+            LEFT JOIN ( SELECT s1.vn, Time( s1.service_begin_datetime ) AS begin_time_doctor FROM ovst_service_time s1  
+            WHERE s1.ovst_service_time_type_code = "OPD-DOCTOR" ) b3 ON b3.vn = o.vn 
+            LEFT JOIN ( SELECT s1.vn, Time( s1.service_end_datetime ) AS end_time_doctor FROM ovst_service_time s1  
+            WHERE s1.ovst_service_time_type_code = "OPD-DOCTOR" ) b4 ON b4.vn = o.vn 
+            LEFT JOIN ( SELECT r1.vn, Time( r1.review_finish_datetime ) AS end_time_rx FROM rx_stat r1  
+            WHERE r1.review_finish_datetime IS NOT NULL ) b5 ON b5.vn = o.vn 
+            WHERE o.vstdate BETWEEN ? AND ?
+            AND o.main_dep = "019" AND o.vn NOT IN (SELECT vn FROM er_regist)
+            AND b1.begin_time_screen IS NOT NULL  
+            AND b3.begin_time_doctor IS NOT NULL  
+            GROUP BY o.vn ,o.vstdate  
+            ORDER BY o.vstdate,o.vsttime ) AS a
+            GROUP BY year_bud
+            ORDER BY year_bud ',[$start_date_y,$end_date]);
+
+      return view('service_ncd.arv_waiting_period',compact('budget_year_select','budget_year','waiting_period_month','waiting_period_year'));          
+}
 
 }

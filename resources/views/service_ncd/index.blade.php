@@ -63,6 +63,19 @@
           </div>      
       </div>
       <br>
+      <div class="card border-primary">
+        <div class="card-header bg-primary text-white">คลินิก ARV</div>
+          <div class="card-body">
+            <table class="table table-hover">
+              <tbody>             
+                <tr>
+                  <td><a href="{{ url('service_ncd/arv_waiting_period') }}" target="_blank"><li>ระยะเวลารอคอยเฉลี่ยคลินิก ARV</li></a></td>
+              </tr>
+              </tbody>
+            </table>
+          </div>      
+      </div>
+      <br>
     </div>     
     <!-- END Column left -->
     <!-- Column Rigth -->

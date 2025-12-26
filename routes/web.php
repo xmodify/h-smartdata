@@ -658,6 +658,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::match(['get','post'],'service_ncd/kidney_outsource',[Service_NCDController::class,'kidney_outsource']);
     Route::match(['get','post'],'service_ncd/kidney_egfr',[Service_NCDController::class,'kidney_egfr']);
     Route::match(['get','post'],'service_ncd/asthma_clinic',[Service_NCDController::class,'asthma_clinic']);
+    Route::match(['get','post'],'service_ncd/arv_waiting_period',[Service_NCDController::class,'arv_waiting_period']);
 
 // service_opd -------------------------------------------------------------------------------------------------------------------------------
     Route::get('service_opd/',[Service_OPDController::class,'index']);
