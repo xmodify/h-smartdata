@@ -502,8 +502,10 @@ class ClaimIpController extends Controller
             LEFT JOIN ipt_pttype ip ON ip.an=i.an
             LEFT JOIN pttype p ON p.pttype=ip.pttype          
             LEFT JOIN an_stat a ON a.an=i.an            
-            LEFT JOIN htp_report.stm_lgo stm ON stm.an=i.an 
-            WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN ? AND ?
+            LEFT JOIN (SELECT an,SUM(case_iplg) AS case_iplg,SUM(compensate_treatment) AS compensate_treatment,
+                GROUP_CONCAT(DISTINCT NULLIF(repno,"")) AS repno FROM htp_report.stm_lgo GROUP BY an) stm ON stm.an = i.an
+            WHERE i.confirm_discharge = "Y" 
+            AND i.dchdate BETWEEN ? AND ?
             AND p.hipdata_code = "LGO" GROUP BY i.an ) AS a
 			GROUP BY YEAR(dchdate), MONTH(dchdate)
             ORDER BY YEAR(dchdate), MONTH(dchdate) ',[$start_date_b,$end_date_b]);
@@ -527,8 +529,13 @@ class ClaimIpController extends Controller
             LEFT JOIN iptoprt idx ON idx.an=i.an
             LEFT JOIN ipt_coll_stat ic ON ic.an=i.an
             LEFT JOIN ipt_coll_status_type ict ON ict.ipt_coll_status_type_id=ic.ipt_coll_status_type_id
-            WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN ? AND ?
-            AND p.hipdata_code = "LGO" AND (ic.an IS NULL OR (ic.an IS NOT NULL AND ict.ipt_coll_status_type_id NOT IN ("4","5"))) 
+            LEFT JOIN (SELECT an,SUM(case_iplg) AS case_iplg,SUM(compensate_treatment) AS compensate_treatment,
+                GROUP_CONCAT(DISTINCT NULLIF(repno,"")) AS repno FROM htp_report.stm_lgo GROUP BY an) stm ON stm.an = i.an
+            WHERE i.confirm_discharge = "Y" 
+            AND i.dchdate BETWEEN ? AND ?
+            AND p.hipdata_code = "LGO" 
+            AND stm.an IS NULL
+            AND (ic.an IS NULL OR (ic.an IS NOT NULL AND ict.ipt_coll_status_type_id NOT IN ("4","5"))) 
             GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date]);
 
         $claim=DB::connection('hosxp')->select('
@@ -548,9 +555,12 @@ class ClaimIpController extends Controller
             LEFT JOIN iptoprt idx ON idx.an=i.an
             LEFT JOIN ipt_coll_stat ic ON ic.an=i.an
             LEFT JOIN ipt_coll_status_type ict ON ict.ipt_coll_status_type_id=ic.ipt_coll_status_type_id
-            LEFT JOIN htp_report.stm_lgo stm ON stm.an=i.an 
-            WHERE i.confirm_discharge = "Y" AND i.dchdate BETWEEN ? AND ?
-            AND p.hipdata_code = "LGO" AND ((ic.an IS NOT NULL AND ict.ipt_coll_status_type_id IN ("4","5")) OR stm.an IS NOT NULL)
+            LEFT JOIN (SELECT an,SUM(case_iplg) AS case_iplg,SUM(compensate_treatment) AS compensate_treatment,
+                GROUP_CONCAT(DISTINCT NULLIF(repno,"")) AS repno FROM htp_report.stm_lgo GROUP BY an) stm ON stm.an = i.an
+            WHERE i.confirm_discharge = "Y" 
+            AND i.dchdate BETWEEN ? AND ?
+            AND p.hipdata_code = "LGO" 
+            AND ((ic.an IS NOT NULL AND ict.ipt_coll_status_type_id IN ("4","5")) OR stm.an IS NOT NULL)
             GROUP BY i.an ORDER BY i.ward,i.dchdate',[$start_date,$end_date]);
 
         return view('hrims.claim_ip.lgo',compact('budget_year_select','budget_year','start_date','end_date','month','claim_price','receive_total','search','claim'));
