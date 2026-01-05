@@ -97,7 +97,8 @@ public function __construct()
 // ofcexcel_save--------------------------------------------------------------------------------------------------------
     public function ofc_save(Request $request)
     {
-        set_time_limit(300);
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
 
         // ✅ เปลี่ยน validation ให้รองรับหลายไฟล์และจำกัดไม่เกิน 5
         $this->validate($request, [
@@ -355,7 +356,8 @@ public function __construct()
 //Create ofc_kidney XML File----------------------------------------------------------------------------------------------------------------------------------------------------------------
     public function ofc_kidney_save(Request $request)
     {
-        set_time_limit(300);
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
 
         $this->validate($request, [
             'files'   => 'required|array|max:5',
@@ -557,7 +559,8 @@ public function __construct()
 // lgo_save-----------------------------------------------------------------------------------------------------------
     public function lgo_save(Request $request)
     {
-        set_time_limit(300);
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
 
         // ✅ รองรับหลายไฟล์ จำกัดไม่เกิน 5
         $this->validate($request, [
@@ -878,7 +881,8 @@ public function __construct()
 // lgo_kidney_save----------------------------------------------------------------------------------------------------------------
     public function lgo_kidney_save(Request $request)
     {
-        set_time_limit(300);
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
 
         // ✅ หลายไฟล์ ไม่เกิน 5
         $this->validate($request, [
@@ -1069,7 +1073,8 @@ public function __construct()
 //Create sss_kidney XML File--------------------------------------------------------------------------------------------------------
     public function sss_kidney_save(Request $request)
     {
-        set_time_limit(300);
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
 
         // ✅ หลายไฟล์ .zip ไม่เกิน 5
         $this->validate($request, [
@@ -1118,9 +1123,9 @@ public function __construct()
                     $STMdoc = $result['STMdoc'] ?? $innerName;
 
                     // ✅ นำเข้าเฉพาะไฟล์ STM เท่านั้น
-                            if (stripos($STMdoc, 'STM') === false) {
-                                continue;
-                            }
+                    if (stripos($STMdoc, 'STM') === false) {
+                        continue;
+                    }
 
                     $docNames[] = $STMdoc;
 
@@ -1633,7 +1638,8 @@ public function __construct()
 // ucs_kidney_save-------------------------------------------------------------------------------------------------------------------------------
     public function ucs_kidney_save(Request $request)
     {
-        set_time_limit(300);
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
 
         $this->validate($request, [
             'files'   => 'required|array|max:5',
