@@ -732,6 +732,7 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
     Route::match(['get','post'],'import_stm/ofc_detail',[ImportStmController::class,'ofc_detail']);
     Route::match(['get','post'],'import_stm/ofc_kidney',[ImportStmController::class,'ofc_kidney'])->name('import_stm.ofc_kidney');
     Route::post('import_stm/ofc_kidney_save',[ImportStmController::class,'ofc_kidney_save']);
+    Route::post('import_stm/ofc_kidney_updateReceipt',[ImportStmController::class,'ofc_kidney_updateReceipt']);
     Route::match(['get','post'],'import_stm/ofc_kidneydetail',[ImportStmController::class,'ofc_kidneydetail']);
     Route::match(['get','post'],'import_stm/lgo',[ImportStmController::class,'lgo'])->name('import_stm.lgo');
     Route::post('import_stm/lgo_save',[ImportStmController::class,'lgo_save']);
@@ -739,9 +740,11 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
     Route::match(['get','post'],'import_stm/lgo_detail',[ImportStmController::class,'lgo_detail']);
     Route::match(['get','post'],'import_stm/lgo_kidney',[ImportStmController::class,'lgo_kidney'])->name('import_stm.lgo_kidney');
     Route::post('import_stm/lgo_kidney_save',[ImportStmController::class,'lgo_kidney_save']);
+    Route::post('import_stm/lgo_kidney_updateReceipt',[ImportStmController::class,'lgo_kidney_updateReceipt']);
     Route::match(['get','post'],'import_stm/lgo_kidneydetail',[ImportStmController::class,'lgo_kidneydetail']);
     Route::match(['get','post'],'import_stm/sss_kidney',[ImportStmController::class,'sss_kidney'])->name('import_stm.sss_kidney');
     Route::post('import_stm/sss_kidney_save',[ImportStmController::class,'sss_kidney_save']);
+    Route::post('import_stm/sss_kidney_updateReceipt',[ImportStmController::class,'sss_kidney_updateReceipt']);
     Route::match(['get','post'],'import_stm/sss_kidneydetail',[ImportStmController::class,'sss_kidneydetail']);
     Route::match(['get','post'],'import_stm/ucs',[ImportStmController::class,'ucs'])->name('import_stm.ucs');
     Route::post('import_stm/ucs_save',[ImportStmController::class,'ucs_save']);
@@ -749,6 +752,7 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
     Route::match(['get','post'],'import_stm/ucs_detail',[ImportStmController::class,'ucs_detail']);
     Route::match(['get','post'],'import_stm/ucs_kidney',[ImportStmController::class,'ucs_kidney'])->name('import_stm.ucs_kidney');
     Route::post('import_stm/ucs_kidney_save',[ImportStmController::class,'ucs_kidney_save']);
+    Route::post('import_stm/ucs_kidney_updateReceipt',[ImportStmController::class,'ucs_kidney_updateReceipt']);
     Route::match(['get','post'],'import_stm/ucs_kidneydetail',[ImportStmController::class,'ucs_kidneydetail']);
 
     //Check------------------------------------------------------------------------------------------------------------------------------

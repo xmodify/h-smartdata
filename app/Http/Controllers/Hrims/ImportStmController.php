@@ -41,7 +41,8 @@ public function __construct()
 //Create ofc-------------------------------------------------------------------------------------------------------------
     public function ofc(Request $request)
     {
-        ini_set('max_execution_time', 300);
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
 
         /* ---------------- ปีงบ (dropdown) ---------------- */
         $budget_year_select = DB::table('budget_year')
@@ -315,13 +316,40 @@ public function __construct()
 //Create ofc_kidney--------------------------------------------------------------------------------------------------------------
     public function ofc_kidney(Request $request)
     {  
-        $stm_ofc_kidney=DB::select('
-            SELECT stmdoc,station,COUNT(*) AS count_no,	
-            SUM(amount) AS amount FROM stm_ofc_kidney 
-            GROUP BY stmdoc,station ORDER BY station ,stmdoc');
-        
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
 
-        return view('hrims.import_stm.ofc_kidney',compact('stm_ofc_kidney'));
+        /* ---------------- ปีงบ (dropdown) ---------------- */
+        $budget_year_select = DB::table('budget_year')
+            ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
+            ->orderByDesc('LEAVE_YEAR_ID')
+            ->limit(7)
+            ->get();
+
+        $budget_year_now = DB::table('budget_year')
+            ->whereDate('DATE_END', '>=', date('Y-m-d'))
+            ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+            ->value('LEAVE_YEAR_ID');
+
+        $budget_year = $request->budget_year ?: $budget_year_now;
+
+        $stm_ofc_kidney = DB::select("
+            SELECT
+                stmdoc,
+                station,
+                COUNT(*) AS count_no,
+                round_no,
+                SUM(amount) AS amount,
+                MAX(receive_no)   AS receive_no,
+                MAX(receipt_date) AS receipt_date,
+                MAX(receipt_by)   AS receipt_by
+            FROM stm_ofc_kidney
+            WHERE (CAST(LEFT(RIGHT(stmdoc, 8), 4) AS UNSIGNED) + 543
+                + (CAST(SUBSTRING(RIGHT(stmdoc, 8), 5, 2) AS UNSIGNED) >= 10)) = ?
+            GROUP BY stmdoc
+            ORDER BY stmdoc DESC,CAST(LEFT(RIGHT(stmdoc, 8), 6) AS UNSIGNED) DESC, stmdoc", [$budget_year]);        
+
+        return view('hrims.import_stm.ofc_kidney',compact('stm_ofc_kidney', 'budget_year_select', 'budget_year'));
     }
 
 //Create ofc_kidney XML File----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -363,6 +391,12 @@ public function __construct()
                         $hcode  = $result['hcode']  ?? null;
                         $hname  = $result['hname']  ?? null;
                         $STMdoc = $result['STMdoc'] ?? $innerName;
+                        
+                        // ✅ นำเข้าเฉพาะไฟล์ STM เท่านั้น
+                            if (stripos($STMdoc, 'STM') === false) {
+                                continue;
+                            }
+
                         $docNames[] = $STMdoc;
 
                         $TBills = $result['TBills']['TBill'] ?? [];
@@ -384,20 +418,21 @@ public function __construct()
                                             ->exists();
 
                                 $dataRow = [
-                                    'hcode'   => $hcode,
-                                    'hname'   => $hname,
-                                    'stmdoc'  => $STMdoc,
-                                    'station' => $bill['station'] ?? null,
-                                    'hreg'    => $bill['hreg'] ?? null,
-                                    'hn'      => $hn,
-                                    'invno'   => $bill['invno'] ?? null,
-                                    'dttran'  => $dttran,
-                                    'vstdate' => $dttdate,
-                                    'vsttime' => $dtttime,
-                                    'amount'  => $bill['amount'] ?? null,
-                                    'paid'    => $bill['paid'] ?? null,
-                                    'rid'     => $bill['rid'] ?? null,
-                                    'hdflag'  => $bill['HDflag'] ?? ($bill['hdflag'] ?? null),
+                                    'round_no'  => $STMdoc,
+                                    'hcode'     => $hcode,
+                                    'hname'     => $hname,
+                                    'stmdoc'    => $STMdoc,
+                                    'station'   => $bill['station'] ?? null,
+                                    'hreg'      => $bill['hreg'] ?? null,
+                                    'hn'        => $hn,
+                                    'invno'     => $bill['invno'] ?? null,
+                                    'dttran'    => $dttran,
+                                    'vstdate'   => $dttdate,
+                                    'vsttime'   => $dtttime,                                    
+                                    'amount'    => $bill['amount'] ?? null,
+                                    'paid'      => $bill['paid'] ?? null,
+                                    'rid'       => $bill['rid'] ?? null,
+                                    'hdflag'    => $bill['HDflag'] ?? ($bill['hdflag'] ?? null),
                                 ];
 
                                 if ($exists) {
@@ -425,6 +460,32 @@ public function __construct()
             return back()->withErrors('There was a problem uploading the data!');
         }
     }
+//Create ofc_kidney_updateReceipt------------------------------------------------------------------------------------------------------------- 
+    public function ofc_kidney_updateReceipt(Request $request)
+    {
+        $request->validate([
+            'round_no'     => 'required',
+            'receive_no'   => 'required|max:30',
+            'receipt_date' => 'required|date',
+        ]);
+
+        DB::table('stm_ofc_kidney')
+            ->where('round_no', $request->round_no)
+            ->update([
+                'receive_no'   => $request->receive_no,
+                'receipt_date' => $request->receipt_date,
+                'receipt_by'   => auth()->user()->name ?? 'system',
+                'updated_at'   => now(),
+            ]);
+
+        return response()->json([
+            'status'       => 'success',
+            'message'      => 'ออกใบเสร็จเรียบร้อยแล้ว',
+            'round_no'     => $request->round_no,
+            'receive_no'   => $request->receive_no,
+            'receipt_date' => $request->receipt_date,
+        ]);
+    }
 //Create ofc_kidneydetail-------------------------------------------------------------------------------------------------
     public function ofc_kidneydetail(Request $request)
     {  
@@ -442,7 +503,8 @@ public function __construct()
 //Create lgo---------------------------------------------------------------------------------------------------------------
     public function lgo(Request $request)
     {  
-        ini_set('max_execution_time', 300);
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
 
         /* ---------------- ปีงบ (dropdown) ---------------- */
         $budget_year_select = DB::table('budget_year')
@@ -776,14 +838,41 @@ public function __construct()
 //Create lgo_kidney-------------------------------------------------------------------------------------------------------------
     public function lgo_kidney(Request $request)
     {  
-        $stm_lgo_kidney=DB::select('
-            SELECT stm_filename,repno,COUNT(repno) AS count_no,	
-            SUM(compensate_kidney) AS compensate_kidney 
-            FROM stm_lgo_kidney 
-            GROUP BY stm_filename,repno 
-            ORDER BY stm_filename,repno');
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
 
-        return view('hrims.import_stm.lgo_kidney',compact('stm_lgo_kidney'));
+        /* ---------------- ปีงบ (dropdown) ---------------- */
+        $budget_year_select = DB::table('budget_year')
+            ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
+            ->orderByDesc('LEAVE_YEAR_ID')
+            ->limit(7)
+            ->get();
+
+        $budget_year_now = DB::table('budget_year')
+            ->whereDate('DATE_END', '>=', date('Y-m-d'))
+            ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+            ->value('LEAVE_YEAR_ID');
+
+        $budget_year = $request->budget_year ?: $budget_year_now;
+
+        $stm_lgo_kidney = DB::select("
+            SELECT
+                stm_filename ,
+                round_no ,
+                COUNT(*) AS count_no,
+                SUM(compensate_kidney) AS compensate_kidney,
+                MAX(receive_no)   AS receive_no,
+                MAX(receipt_date) AS receipt_date,
+                MAX(receipt_by)   AS receipt_by
+            FROM stm_lgo_kidney
+            WHERE ((CAST(SUBSTRING(repno, 7, 2) AS UNSIGNED) + 2500)
+                + (CAST(SUBSTRING(repno, 11, 2) AS UNSIGNED) >= 10)) = ?
+            GROUP BY repno
+            ORDER BY (CAST(SUBSTRING(repno, 7, 2) AS UNSIGNED) + 2500) DESC,
+                CAST(SUBSTRING(repno, 11, 2) AS UNSIGNED) DESC,
+                repno ", [$budget_year]);
+
+        return view('hrims.import_stm.lgo_kidney',compact('stm_lgo_kidney', 'budget_year_select', 'budget_year'));
     }
 
 // lgo_kidney_save----------------------------------------------------------------------------------------------------------------
@@ -855,10 +944,15 @@ public function __construct()
                     Stm_lgo_kidney::where('repno', $value->repno)
                         ->where('no', $value->no)
                         ->update([
-                            'datetimeadm'       => $value->datetimeadm
+                            'round_no'              => $value->repno,
+                            'repno'                 => $value->repno,
+                            'datetimeadm'           => $value->datetimeadm,
+                            'compensate_kidney'     => $value->compensate_kidney,
+                            'stm_filename'          => $value->stm_filename,
                         ]);
                 } else {
                     Stm_lgo_kidney::create([
+                        'round_no'           => $value->repno,
                         'no'                 => $value->no,
                         'repno'              => $value->repno,
                         'hn'                 => $value->hn,
@@ -887,6 +981,32 @@ public function __construct()
             return back()->withErrors('There was a problem uploading the data!');
         }
     }
+//Create lgo_kidney_updateReceipt------------------------------------------------------------------------------------------------------------- 
+    public function lgo_kidney_updateReceipt(Request $request)
+    {
+        $request->validate([
+            'round_no'     => 'required',
+            'receive_no'   => 'required|max:30',
+            'receipt_date' => 'required|date',
+        ]);
+
+        DB::table('stm_lgo_kidney')
+            ->where('round_no', $request->round_no)
+            ->update([
+                'receive_no'   => $request->receive_no,
+                'receipt_date' => $request->receipt_date,
+                'receipt_by'   => auth()->user()->name ?? 'system',
+                'updated_at'   => now(),
+            ]);
+
+        return response()->json([
+            'status'       => 'success',
+            'message'      => 'ออกใบเสร็จเรียบร้อยแล้ว',
+            'round_no'     => $request->round_no,
+            'receive_no'   => $request->receive_no,
+            'receipt_date' => $request->receipt_date,
+        ]);
+    }
 //Create lgo_kidneydetail-------------------------------------------------------------------------------------------------------
     public function lgo_kidneydetail(Request $request)
     {  
@@ -907,13 +1027,43 @@ public function __construct()
 //Create sss_kidney XML File-----------------------------------------------------------------------------------------------------
     public function sss_kidney(Request $request)
     {  
-        $stm_sss_kidney=DB::select('
-            SELECT stmdoc,station,COUNT(*) AS count_no,	
-            SUM(amount) AS amount,SUM(epopay) AS epopay,
-            SUM(epoadm) AS epoadm FROM stm_sss_kidney 
-            GROUP BY stmdoc,station ORDER BY station ,stmdoc');    
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
 
-        return view('hrims.import_stm.sss_kidney',compact('stm_sss_kidney'));
+        /* ---------------- ปีงบ (dropdown) ---------------- */
+        $budget_year_select = DB::table('budget_year')
+            ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
+            ->orderByDesc('LEAVE_YEAR_ID')
+            ->limit(7)
+            ->get();
+
+        $budget_year_now = DB::table('budget_year')
+            ->whereDate('DATE_END', '>=', date('Y-m-d'))
+            ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+            ->value('LEAVE_YEAR_ID');
+
+        $budget_year = $request->budget_year ?: $budget_year_now;
+
+        $stm_sss_kidney = DB::select("
+            SELECT
+                stmdoc,
+                station,
+                COUNT(*) AS count_no,
+                round_no,
+                SUM(amount) AS amount,
+                SUM(epopay) AS epopay,
+                SUM(epoadm) AS epoadm,
+                SUM(amount)+SUM(epopay)+SUM(epoadm) AS receive_total,
+                MAX(receive_no)   AS receive_no,
+                MAX(receipt_date) AS receipt_date,
+                MAX(receipt_by)   AS receipt_by
+            FROM stm_sss_kidney
+            WHERE (CAST(LEFT(RIGHT(stmdoc, 8), 4) AS UNSIGNED) + 543
+                + (CAST(SUBSTRING(RIGHT(stmdoc, 8), 5, 2) AS UNSIGNED) >= 10)) = ?
+            GROUP BY stmdoc
+            ORDER BY stmdoc DESC, CAST(LEFT(RIGHT(stmdoc, 8), 6) AS UNSIGNED) DESC, stmdoc ", [$budget_year]);  
+
+        return view('hrims.import_stm.sss_kidney',compact('stm_sss_kidney', 'budget_year_select', 'budget_year'));
     }
 
 //Create sss_kidney XML File--------------------------------------------------------------------------------------------------------
@@ -966,6 +1116,12 @@ public function __construct()
                     $hcode  = $result['hcode']  ?? null;
                     $hname  = $result['hname']  ?? null;
                     $STMdoc = $result['STMdoc'] ?? $innerName;
+
+                    // ✅ นำเข้าเฉพาะไฟล์ STM เท่านั้น
+                            if (stripos($STMdoc, 'STM') === false) {
+                                continue;
+                            }
+
                     $docNames[] = $STMdoc;
 
                     // HDBills/HDBill อาจเป็น object เดี่ยว ให้ normalize เป็น array
@@ -1009,24 +1165,25 @@ public function __construct()
                             // upsert ตามคีย์เดิม: cid + vstdate
                             if ($cid && $dttdate) {
                                 $dataRow = [
-                                    'hcode'  => $hcode,
-                                    'hname'  => $hname,
-                                    'stmdoc' => $STMdoc,
-                                    'station'=> $station,
-                                    'hreg'   => $hreg,
-                                    'hn'     => $hn,
-                                    'cid'    => $cid,
-                                    'invno'  => $invno,
-                                    'dttran' => $dttran,
-                                    'vstdate'=> $dttdate,
-                                    'vsttime'=> $dtttime,
-                                    'amount' => $amount,
-                                    'epopay' => $epopay,
-                                    'epoadm' => $epoadm,
-                                    'paid'   => $paid,
-                                    'rid'    => $rid,
+                                    'round_no'  => $STMdoc,
+                                    'hcode'     => $hcode,
+                                    'hname'     => $hname,
+                                    'stmdoc'    => $STMdoc,
+                                    'station'   => $station,
+                                    'hreg'      => $hreg,
+                                    'hn'        => $hn,
+                                    'cid'       => $cid,
+                                    'invno'     => $invno,
+                                    'dttran'    => $dttran,
+                                    'vstdate'   => $dttdate,
+                                    'vsttime'   => $dtttime,
+                                    'amount'    => $amount,
+                                    'epopay'    => $epopay,
+                                    'epoadm'    => $epoadm,
+                                    'paid'      => $paid,
+                                    'rid'       => $rid,
                                     // เก็บชื่อคอลัมน์ให้ตรงกับ schema ของคุณ
-                                    'hdflag' => $HDflag,
+                                    'hdflag'    => $HDflag,
                                 ];
 
                                 $exists = Stm_sss_kidney::where('cid', $cid)
@@ -1060,7 +1217,32 @@ public function __construct()
             return back()->withErrors('There was a problem uploading the data!');
         }
     }
+//Create sss_kidney_updateReceipt------------------------------------------------------------------------------------------------------------- 
+    public function sss_kidney_updateReceipt(Request $request)
+    {
+        $request->validate([
+            'round_no'     => 'required',
+            'receive_no'   => 'required|max:30',
+            'receipt_date' => 'required|date',
+        ]);
 
+        DB::table('stm_sss_kidney')
+            ->where('round_no', $request->round_no)
+            ->update([
+                'receive_no'   => $request->receive_no,
+                'receipt_date' => $request->receipt_date,
+                'receipt_by'   => auth()->user()->name ?? 'system',
+                'updated_at'   => now(),
+            ]);
+
+        return response()->json([
+            'status'       => 'success',
+            'message'      => 'ออกใบเสร็จเรียบร้อยแล้ว',
+            'round_no'     => $request->round_no,
+            'receive_no'   => $request->receive_no,
+            'receipt_date' => $request->receipt_date,
+        ]);
+    }
 //Create sss_kidneydetail---------------------------------------------------------------------------------------------------------
     public function sss_kidneydetail(Request $request)
     {  
@@ -1080,7 +1262,8 @@ public function __construct()
 //Create ucs----------------------------------------------------------------------------------------------------------------------
     public function ucs(Request $request)
     {
-        ini_set('max_execution_time', 300); // 5 นาที
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
 
         /* ---------------- ปีงบ (dropdown) ---------------- */
         $budget_year_select = DB::table('budget_year')
@@ -1408,14 +1591,43 @@ public function __construct()
 
     //Create ucs_kidney
     public function ucs_kidney(Request $request)
-    {  
-        $stm_ucs_kidney=DB::select('
-            SELECT stm_filename,repno,COUNT(cid) AS count_cid,	
-            SUM(charge_total) AS charge_total,SUM(receive_total) AS receive_total
-            FROM stm_ucs_kidney 
-            GROUP BY stm_filename ORDER BY stm_filename');   
+    {         
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
 
-        return view('hrims.import_stm.ucs_kidney',compact('stm_ucs_kidney'));
+        /* ---------------- ปีงบ (dropdown) ---------------- */
+        $budget_year_select = DB::table('budget_year')
+            ->select('LEAVE_YEAR_ID', 'LEAVE_YEAR_NAME')
+            ->orderByDesc('LEAVE_YEAR_ID')
+            ->limit(7)
+            ->get();
+
+        $budget_year_now = DB::table('budget_year')
+            ->whereDate('DATE_END', '>=', date('Y-m-d'))
+            ->whereDate('DATE_BEGIN', '<=', date('Y-m-d'))
+            ->value('LEAVE_YEAR_ID');
+
+        $budget_year = $request->budget_year ?: $budget_year_now;
+
+        $stm_ucs_kidney = DB::select("
+            SELECT
+                stm_filename ,
+                round_no,
+                COUNT(cid) AS count_cid,
+                SUM(charge_total) AS charge_total,
+                SUM(receive_total) AS receive_total,
+                MAX(receive_no)   AS receive_no,
+                MAX(receipt_date) AS receipt_date,
+                MAX(receipt_by)   AS receipt_by
+            FROM stm_ucs_kidney
+            WHERE ((CAST(SUBSTRING(repno, 5, 2) AS UNSIGNED) + 2500)
+                + (CAST(SUBSTRING(repno, 7, 2) AS UNSIGNED) >= 10) ) = ?
+            GROUP BY repno
+            ORDER BY (CAST(SUBSTRING(repno, 5, 2) AS UNSIGNED) + 2500) DESC,
+                CAST(SUBSTRING(repno, 7, 2) AS UNSIGNED) DESC,
+                repno", [$budget_year]); 
+
+        return view('hrims.import_stm.ucs_kidney',compact('stm_ucs_kidney', 'budget_year_select', 'budget_year'));
     }
 
 // ucs_kidney_save-------------------------------------------------------------------------------------------------------------------------------
@@ -1487,6 +1699,7 @@ public function __construct()
                     Stm_ucs_kidney::where('repno', $value->repno)
                         ->where('no', $value->no)
                         ->update([
+                            'round_no'      => $value->repno,
                             'datetimeadm'   => $value->datetimeadm,
                             'charge_total'  => $value->charge_total,
                             'receive_total' => $value->receive_total,
@@ -1494,6 +1707,7 @@ public function __construct()
                         ]);
                 } else {
                     Stm_ucs_kidney::create([
+                        'round_no'      => $value->repno,
                         'no'            => $value->no,
                         'repno'         => $value->repno,
                         'hn'            => $value->hn,
@@ -1524,7 +1738,32 @@ public function __construct()
             return back()->withErrors('There was a problem uploading the data!');
         }
     }
+//Create ucs_kidney_updateReceipt------------------------------------------------------------------------------------------------------------- 
+    public function ucs_kidney_updateReceipt(Request $request)
+    {
+        $request->validate([
+            'round_no'     => 'required',
+            'receive_no'   => 'required|max:30',
+            'receipt_date' => 'required|date',
+        ]);
 
+        DB::table('stm_ucs_kidney')
+            ->where('round_no', $request->round_no)
+            ->update([
+                'receive_no'   => $request->receive_no,
+                'receipt_date' => $request->receipt_date,
+                'receipt_by'   => auth()->user()->name ?? 'system',
+                'updated_at'   => now(),
+            ]);
+
+        return response()->json([
+            'status'       => 'success',
+            'message'      => 'ออกใบเสร็จเรียบร้อยแล้ว',
+            'round_no'     => $request->round_no,
+            'receive_no'   => $request->receive_no,
+            'receipt_date' => $request->receipt_date,
+        ]);
+    }
 //Create ucs_kidneydetail--------------------------------------------------------------------------------------------------------
     public function ucs_kidneydetail(Request $request)
     {  
