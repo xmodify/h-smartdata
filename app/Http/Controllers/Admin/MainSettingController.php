@@ -105,11 +105,15 @@ class MainSettingController extends Controller
             // ---------------- STM ----------------
             'stm_lgo' => [
                 ['name' => 'round_no',   'type' => 'VARCHAR(30) NULL', 'after' => 'id'],
-                ['name' => 'receive_no', 'type' => 'VARCHAR(20) NULL', 'after' => 'stm_filename'], 
+                ['name' => 'receive_no', 'type' => 'VARCHAR(20) NULL', 'after' => 'stm_filename'],
+                ['name' => 'receipt_date','type' => 'DATE NULL',        'after' => 'receive_no'],
+                ['name' => 'receipt_by',  'type' => 'VARCHAR(100) NULL','after' => 'receipt_date'], 
             ],
             'stm_lgo_kidney' => [
                 ['name' => 'round_no',   'type' => 'VARCHAR(30) NULL', 'after' => 'id'],
                 ['name' => 'receive_no', 'type' => 'VARCHAR(20) NULL', 'after' => 'stm_filename'],
+                ['name' => 'receipt_date','type' => 'DATE NULL',        'after' => 'receive_no'],
+                ['name' => 'receipt_by',  'type' => 'VARCHAR(100) NULL','after' => 'receipt_date'],
             ],
             'stm_ofc' => [
                 ['name' => 'round_no',   'type' => 'VARCHAR(30) NULL', 'after' => 'id'],
@@ -120,10 +124,14 @@ class MainSettingController extends Controller
             'stm_ofc_kidney' => [
                 ['name' => 'round_no',   'type' => 'VARCHAR(30) NULL', 'after' => 'id'],
                 ['name' => 'receive_no', 'type' => 'VARCHAR(20) NULL', 'after' => 'hdflag'],
+                ['name' => 'receipt_date','type' => 'DATE NULL',        'after' => 'receive_no'],
+                ['name' => 'receipt_by',  'type' => 'VARCHAR(100) NULL','after' => 'receipt_date'],
             ],
             'stm_sss_kidney' => [
                 ['name' => 'round_no',   'type' => 'VARCHAR(30) NULL', 'after' => 'id'],
                 ['name' => 'receive_no', 'type' => 'VARCHAR(20) NULL', 'after' => 'hdflag'],
+                ['name' => 'receipt_date','type' => 'DATE NULL',        'after' => 'receive_no'],
+                ['name' => 'receipt_by',  'type' => 'VARCHAR(100) NULL','after' => 'receipt_date'],
             ],
             'stm_ucs' => [
                 ['name' => 'round_no',    'type' => 'VARCHAR(30) NULL', 'after' => 'id'], 
@@ -134,6 +142,8 @@ class MainSettingController extends Controller
             'stm_ucs_kidney' => [
                 ['name' => 'round_no',   'type' => 'VARCHAR(30) NULL', 'after' => 'id'],
                 ['name' => 'receive_no', 'type' => 'VARCHAR(20) NULL', 'after' => 'stm_filename'],
+                ['name' => 'receipt_date','type' => 'DATE NULL',        'after' => 'receive_no'],
+                ['name' => 'receipt_by',  'type' => 'VARCHAR(100) NULL','after' => 'receipt_date'],
             ],
             // ---------------- STM EXCEL (staging) ----------------
             'stm_lgo_kidneyexcel' => [
