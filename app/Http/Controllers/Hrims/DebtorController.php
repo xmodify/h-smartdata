@@ -4069,7 +4069,7 @@ class DebtorController extends Controller
         $tracking = DB::select('
             SELECT * FROM debtor_1102050102_106_tracking WHERE vn = ?',[$vn]);
 
-        return view('finance_debtor.1102050102_106_tracking',compact('debtor','tracking'));
+        return view('hrims.debtor.1102050102_106_tracking',compact('debtor','tracking'));
     }
 //_1102050102_106_tracking_insert--------------------------------------------------------------------------------------------------
     public function _1102050102_106_tracking_insert(Request $request)
