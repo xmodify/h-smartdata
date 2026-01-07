@@ -87,6 +87,77 @@ class DebtorController extends Controller
 
         return view('hrims.debtor._check_income',compact('start_date','end_date','check_income','check_income_ipd'));
     }
+//_check_nondebtor---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+    public function _check_nondebtor(Request $request )
+    {
+        $start_date = $request->start_date ?: date('Y-m-d');
+        $end_date = $request->end_date ?: date('Y-m-d');   
+
+        $check = DB::connection('hosxp')->select("
+            SELECT * FROM (SELECT 'OPD' AS dep,v.vstdate AS serv_date,v.vn AS vnan,v.hn,CONCAT(pt.pname,pt.fname,' ',pt.lname) AS ptname,
+                    p.hipdata_code,p.name AS pttype,vp.hospmain,v.pdx,v.income,v.paid_money,v.rcpt_money, v.income - v.rcpt_money AS debtor
+                FROM vn_stat v
+                LEFT JOIN ipt i ON i.vn = v.vn
+                LEFT JOIN visit_pttype vp ON vp.vn = v.vn
+                LEFT JOIN pttype p ON p.pttype = vp.pttype
+                LEFT JOIN patient pt ON pt.hn = v.hn
+                WHERE v.vstdate BETWEEN ? AND ?
+                AND (i.an IS NULL OR i.an = '')
+                AND v.income <> 0
+                AND v.income - v.rcpt_money <> 0
+                AND v.vn NOT IN ( SELECT vn FROM htp_report.debtor_1102050101_103
+                    UNION ALL SELECT vn FROM htp_report.debtor_1102050101_109
+                    UNION ALL SELECT vn FROM htp_report.debtor_1102050101_201
+                    UNION ALL SELECT vn FROM htp_report.debtor_1102050101_203
+                    UNION ALL SELECT vn FROM htp_report.debtor_1102050101_209
+                    UNION ALL SELECT vn FROM htp_report.debtor_1102050101_216
+                    UNION ALL SELECT vn FROM htp_report.debtor_1102050101_301
+                    UNION ALL SELECT vn FROM htp_report.debtor_1102050101_303
+                    UNION ALL SELECT vn FROM htp_report.debtor_1102050101_307
+                    UNION ALL SELECT vn FROM htp_report.debtor_1102050101_309
+                    UNION ALL SELECT vn FROM htp_report.debtor_1102050101_401
+                    UNION ALL SELECT vn FROM htp_report.debtor_1102050101_501
+                    UNION ALL SELECT vn FROM htp_report.debtor_1102050101_503
+                    UNION ALL SELECT vn FROM htp_report.debtor_1102050101_701
+                    UNION ALL SELECT vn FROM htp_report.debtor_1102050101_702
+                    UNION ALL SELECT vn FROM htp_report.debtor_1102050102_106
+                    UNION ALL SELECT vn FROM htp_report.debtor_1102050102_108
+                    UNION ALL SELECT vn FROM htp_report.debtor_1102050102_110
+                    UNION ALL SELECT vn FROM htp_report.debtor_1102050102_602
+                    UNION ALL SELECT vn FROM htp_report.debtor_1102050102_801
+                    UNION ALL SELECT vn FROM htp_report.debtor_1102050102_803
+                ) GROUP BY v.vn
+                    
+                UNION ALL    
+                    
+                SELECT 'IPD' AS dep,a.dchdate AS serv_date,a.an AS vnan,a.hn,CONCAT(pt.pname,pt.fname,' ',pt.lname) AS ptname,
+                    p.hipdata_code,p.name AS pttype,ip.hospmain,a.pdx,a.income,a.paid_money,a.rcpt_money,a.income - a.rcpt_money AS debtor
+                FROM an_stat a
+                LEFT JOIN ipt_pttype ip ON ip.an = a.an
+                LEFT JOIN pttype p ON p.pttype = ip.pttype
+                LEFT JOIN patient pt ON pt.hn = a.hn
+                WHERE a.dchdate BETWEEN ? AND ?
+                AND a.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_202
+                    UNION ALL SELECT an FROM htp_report.debtor_1102050101_217
+                    UNION ALL SELECT an FROM htp_report.debtor_1102050101_302
+                    UNION ALL SELECT an FROM htp_report.debtor_1102050101_304
+                    UNION ALL SELECT an FROM htp_report.debtor_1102050101_308
+                    UNION ALL SELECT an FROM htp_report.debtor_1102050101_310
+                    UNION ALL SELECT an FROM htp_report.debtor_1102050101_402
+                    UNION ALL SELECT an FROM htp_report.debtor_1102050101_502
+                    UNION ALL SELECT an FROM htp_report.debtor_1102050101_504
+                    UNION ALL SELECT an FROM htp_report.debtor_1102050101_704
+                    UNION ALL SELECT an FROM htp_report.debtor_1102050102_107
+                    UNION ALL SELECT an FROM htp_report.debtor_1102050102_109
+                    UNION ALL SELECT an FROM htp_report.debtor_1102050102_111
+                    UNION ALL SELECT an FROM htp_report.debtor_1102050102_603
+                    UNION ALL SELECT an FROM htp_report.debtor_1102050102_802
+                    UNION ALL SELECT an FROM htp_report.debtor_1102050102_804
+                )  GROUP BY a.an ) x
+            ORDER BY dep DESC,hipdata_code, serv_date ",[$start_date,$end_date,$start_date,$end_date]);        
+
+        return view('hrims.debtor._check_nondebtor',compact('start_date','end_date','check'));
+    }
 //_summary-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     public function _summary(Request $request )
         {

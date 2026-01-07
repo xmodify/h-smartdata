@@ -577,6 +577,7 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
     // H-RiMS Debtor -------------------------------------------------------------------------------------------------------------------------
     Route::get('debtor',[DebtorController::class,'index']);    
     Route::match(['get','post'],'debtor/check_income',[DebtorController::class,'_check_income']);
+    Route::match(['get','post'],'debtor/check_nondebtor',[DebtorController::class,'_check_nondebtor']);
     Route::match(['get','post'],'debtor/summary',[DebtorController::class,'_summary']);
     Route::match(['get','post'],'debtor/summary_pdf',[DebtorController::class,'_summary_pdf']);
     Route::get('debtor/forget_search', function() { Session::forget('search'); return redirect()->back();});

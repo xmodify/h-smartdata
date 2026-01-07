@@ -7,7 +7,8 @@
 
       <div class="row">            
         <div class="col-md-12">
-          <a class="btn btn-outline-danger" href="{{ url('hrims/debtor/check_income') }}" target="_blank">Check HOSxP</a> 
+          <a class="btn btn-warning" href="{{ url('hrims/debtor/check_income') }}" target="_blank">ตรวจสอบค่ารักษาพยาบาล</a> 
+          <a class="btn btn-outline-danger" href="{{ url('hrims/debtor/check_nondebtor') }}" target="_blank">รอยืนยันลูกหนี้</a>
           <a class="btn btn-outline-success" href="{{ url('hrims/debtor/summary') }}" target="_blank">สรุปบัญชีลูกหนี้ค่ารักษาพยาบาลแยกตามผังบัญชี</a>  
         </div>  
       </div>
