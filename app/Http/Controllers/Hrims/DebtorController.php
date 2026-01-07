@@ -62,26 +62,28 @@ class DebtorController extends Controller
         return view('hrims.debtor.index');
     }
 //_check_income---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
-    public function _check_income(Request $request )
+    public function _check_income(Request $request ) 
     {
         $start_date = $request->start_date ?: date('Y-m-d', strtotime("first day of this month"));
         $end_date = $request->end_date ?: date('Y-m-d', strtotime("last day of this month"));   
 
-        $check_income = DB::connection('hosxp')->select('
-            SELECT (SELECT SUM(income) FROM vn_stat WHERE vstdate BETWEEN ? AND ?) AS vn_stat,
-            (SELECT SUM(paid_money) FROM vn_stat WHERE vstdate BETWEEN ? AND ?) AS vn_stat_paid,
-            (SELECT SUM(sum_price) FROM opitemrece WHERE vstdate BETWEEN ? AND ? AND (an IS NULL OR an ="")) AS opitemrece,
-            (SELECT SUM(sum_price) FROM opitemrece WHERE vstdate BETWEEN ? AND ? AND (an IS NULL OR an ="") AND paidst IN ("01","03")) AS opitemrece_paid,
-            IF((SELECT SUM(income) FROM vn_stat WHERE vstdate BETWEEN ? AND ?)<>(SELECT SUM(sum_price) FROM opitemrece WHERE vstdate BETWEEN ? AND ? AND (an IS NULL OR an =""))
-            ,"Resync VN","Success") AS status_check',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]);
+        $check_income = DB::connection('hosxp')->select("
+            SELECT o.op_income,o.op_paid,v.vn_income,v.vn_paid,v.vn_rcpt,v.vn_income-v.vn_rcpt AS vn_debtor,
+            IF(v.vn_income <> o.op_income, 'Resync VN', 'Success') AS status_check
+            FROM (SELECT SUM(income) AS vn_income,SUM(paid_money) AS vn_paid,SUM(rcpt_money) AS vn_rcpt
+                FROM vn_stat WHERE vstdate BETWEEN ? AND ?) v
+            CROSS JOIN
+                (SELECT SUM(sum_price) AS op_income,SUM(CASE WHEN paidst IN ('01','03') THEN sum_price ELSE 0 END) AS op_paid
+                FROM opitemrece WHERE vstdate BETWEEN ? AND ?  AND (an IS NULL OR an = '')) o",[$start_date,$end_date,$start_date,$end_date]);
 
-        $check_income_ipd = DB::connection('hosxp')->select('
-            SELECT (SELECT SUM(income) FROM an_stat WHERE dchdate BETWEEN ? AND ?) AS an_stat,
-            (SELECT SUM(paid_money) FROM an_stat WHERE dchdate BETWEEN ? AND ?) AS an_stat_paid,
-            (SELECT SUM(sum_price) FROM opitemrece o ,ipt i WHERE o.an = i.an AND i.dchdate BETWEEN ? AND ?) AS opitemrece,
-            (SELECT SUM(sum_price) FROM opitemrece o ,ipt i WHERE o.an = i.an AND i.dchdate BETWEEN ? AND ? AND paidst IN ("01","03")) AS opitemrece_paid,
-            IF((SELECT SUM(income) FROM an_stat WHERE dchdate BETWEEN ? AND ?)<>(SELECT  SUM(sum_price) FROM opitemrece o ,ipt i WHERE o.an = i.an AND i.dchdate BETWEEN ? AND ?)
-            ,"Resync AN","Success") AS status_check',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]);  
+        $check_income_ipd = DB::connection('hosxp')->select("
+            SELECT o.op_income,o.op_paid,v.an_income,v.an_paid,v.an_rcpt,v.an_income-v.an_rcpt AS an_debtor,
+            IF(v.an_income <> o.op_income, 'Resync AN', 'Success') AS status_check
+            FROM (SELECT SUM(income) AS an_income,SUM(paid_money) AS an_paid,SUM(rcpt_money) AS an_rcpt
+                FROM an_stat WHERE dchdate BETWEEN ? AND ?) v
+            CROSS JOIN
+                (SELECT SUM(o.sum_price) AS op_income,SUM(CASE WHEN o.paidst IN ('01','03') THEN o.sum_price ELSE 0 END) AS op_paid
+                FROM opitemrece o INNER JOIN ipt i ON i.an = o.an WHERE i.dchdate BETWEEN ? AND ?) o",[$start_date,$end_date,$start_date,$end_date]);  
 
         return view('hrims.debtor._check_income',compact('start_date','end_date','check_income','check_income_ipd'));
     }
@@ -1319,9 +1321,9 @@ class DebtorController extends Controller
         if ($search) {
             $debtor = DB::select('
                 SELECT d.vn, d.vstdate, d.vsttime, d.hn, d.ptname, d.hipdata_code, d.pttype, d.hospmain,d.pdx, d.income,  
-                    d.rcpt_money, d.ppfs, d.pp, d.other, d.debtor,s.receive_pp, d.receive, s.repno, d.status, d.debtor_lock
+                    d.rcpt_money, d.ppfs, d.pp, d.other, d.debtor,s.receive_total, d.receive, s.repno, d.status, d.debtor_lock
                 FROM debtor_1102050101_209 d   
-                LEFT JOIN (SELECT cid,vstdate,LEFT(vsttime,5) AS vsttime5,SUM(receive_pp) AS receive_pp,MAX(repno) AS repno
+                LEFT JOIN (SELECT cid,vstdate,LEFT(vsttime,5) AS vsttime5,SUM(receive_total) AS receive_total,MAX(repno) AS repno
                     FROM stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) s ON s.cid = d.cid 
                     AND s.vstdate = d.vstdate AND s.vsttime5 = LEFT(d.vsttime,5)
                 WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%"))
@@ -1329,9 +1331,9 @@ class DebtorController extends Controller
         } else {
             $debtor = DB::select('
                 SELECT d.vn, d.vstdate, d.vsttime, d.hn, d.ptname, d.hipdata_code, d.pttype, d.hospmain, d.pdx,d.income,
-                     d.rcpt_money, d.ppfs, d.pp, d.other,d.debtor,s.receive_pp ,d.receive, s.repno, d.status, d.debtor_lock
+                     d.rcpt_money, d.ppfs, d.pp, d.other,d.debtor,s.receive_total ,d.receive, s.repno, d.status, d.debtor_lock
                 FROM debtor_1102050101_209 d   
-                LEFT JOIN (SELECT cid,vstdate,LEFT(vsttime,5) AS vsttime5,SUM(receive_pp) AS receive_pp,MAX(repno) AS repno
+                LEFT JOIN (SELECT cid,vstdate,LEFT(vsttime,5) AS vsttime5,SUM(receive_total) AS receive_total,MAX(repno) AS repno
                     FROM stm_ucs GROUP BY cid, vstdate, LEFT(vsttime,5)) s ON s.cid = d.cid 
                     AND s.vstdate = d.vstdate AND s.vsttime5 = LEFT(d.vsttime,5)
                 WHERE d.vstdate BETWEEN ? AND ?', [$start_date, $end_date]);
@@ -1360,8 +1362,7 @@ class DebtorController extends Controller
 			LEFT JOIN opitemrece o4 ON o4.vn=o.vn AND o4.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE ppfs ="Y")	
 			LEFT JOIN s_drugitems sd2 ON sd2.icode=o4.icode			
             WHERE (o.an IS NULL OR o.an ="")
-                AND v.income-v.rcpt_money <> "0" 
-                AND v.income-v.rcpt_money-COALESCE(o1.other_price, 0) <> "0" 
+                AND v.income-v.rcpt_money <> "0"                 
                 AND o.vstdate BETWEEN ? AND ?
                 AND p.hipdata_code NOT IN ("OFC","LGO")	
                 AND vp.pttype NOT IN ('.$pttype_checkup.')
@@ -1414,8 +1415,7 @@ class DebtorController extends Controller
 			LEFT JOIN opitemrece o4 ON o4.vn=o.vn AND o4.icode IN (SELECT icode FROM htp_report.lookup_icode WHERE ppfs ="Y")	
 			LEFT JOIN s_drugitems sd2 ON sd2.icode=o4.icode		
             WHERE (o.an IS NULL OR o.an ="") 
-                AND v.income-v.rcpt_money <> "0"
-                AND v.income-v.rcpt_money-COALESCE(o1.other_price, 0) <> "0" 
+                AND v.income-v.rcpt_money <> "0"                 
                 AND o.vstdate BETWEEN ? AND ?
                 AND p.hipdata_code NOT IN ("OFC","LGO")	
                 AND vp.pttype NOT IN ('.$pttype_checkup.')               
