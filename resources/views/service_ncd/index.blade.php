@@ -30,6 +30,9 @@
                 <tr>
                   <td><a href="{{ url('service_ncd/dm_death') }}" target="_blank"><li>ตรวจสอบสถานะการเสียชีวิตผู้ป่วยในทะเบียนคลินิกโรคเบาหวาน</li></a></td>
               </tr>
+              <tr>
+                  <td><a href="{{ url('service_ncd/dmht_waiting_period') }}" target="_blank"><li>ระยะเวลารอคอยเฉลี่ยคลินิกเบาหวาน-ความดัน</li></a></td>
+              </tr>
               </tbody>
             </table>
           </div>      

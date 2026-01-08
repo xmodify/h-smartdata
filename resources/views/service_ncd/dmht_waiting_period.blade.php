@@ -29,7 +29,7 @@
   <div class="row justify-content-center">  
     <div class="col-md-6">
       <div class="card">
-        <div class="card-header bg-primary bg-opacity-75 text-white">ระยะเวลารอคอยเฉลี่ยคลินิก ARV ปีงบประมาณ {{ $budget_year }} </div>        
+        <div class="card-header bg-primary bg-opacity-75 text-white">ระยะเวลารอคอยเฉลี่ยคลินิกเบาหวาน-ความดัน ปีงบประมาณ {{ $budget_year }} </div>        
         <div class="card-body">
           <table class="table table-bordered table-striped">
             <thead>
@@ -60,7 +60,7 @@
     </div>   
     <div class="col-md-6">
       <div class="card">
-        <div class="card-header bg-primary bg-opacity-75 text-white">ระยะเวลารอคอยเฉลี่ยคลินิก ARV ปีงบประมาณย้อนหลัง </div>        
+        <div class="card-header bg-primary bg-opacity-75 text-white">ระยะเวลารอคอยเฉลี่ยคลินิกเบาหวาน-ความดัน ปีงบประมาณย้อนหลัง </div>        
         <div class="card-body">
           <table class="table table-bordered table-striped">
             <thead>

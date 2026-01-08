@@ -393,6 +393,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::match(['get','post'],'service_ncd/dm_nonclinic',[Service_NCDController::class,'dm_nonclinic']);
     Route::match(['get','post'],'service_ncd/dm_admit',[Service_NCDController::class,'dm_admit']);
     Route::match(['get','post'],'service_ncd/dm_death',[Service_NCDController::class,'dm_death']);
+    Route::match(['get','post'],'service_ncd/dmht_waiting_period',[Service_NCDController::class,'dmht_waiting_period']);
     Route::match(['get','post'],'service_ncd/ht_clinic',[Service_NCDController::class,'ht_clinic']);
     Route::match(['get','post'],'service_ncd/ht',[Service_NCDController::class,'ht']);
     Route::match(['get','post'],'service_ncd/ht_appointment',[Service_NCDController::class,'ht_appointment']);
