@@ -128,30 +128,33 @@ class DebtorController extends Controller
             
         $check_income_ipd_pttype = DB::connection('hosxp')->select('
             SELECT p.hipdata_code AS inscl,
-            CASE WHEN p.hipdata_code = "A1" THEN "ชำระเงิน"
-            WHEN p.hipdata_code = "A9" THEN "พรบ." 
-            WHEN p.hipdata_code = "BKK" THEN "กทม." 
-            WHEN p.hipdata_code = "BMT" THEN "ขสมก." 
-            WHEN p.hipdata_code = "GOF" THEN "เบิกต้นสังกัด" 
-            WHEN p.hipdata_code = "LGO" THEN "อปท." 
-            WHEN p.hipdata_code = "NRD" THEN "ต่างด้าวไม่ขึ้นทะเบียน" 
-            WHEN p.hipdata_code = "NRH" THEN "ต่างด้าวขึ้นทะเบียน" 
-            WHEN p.hipdata_code = "OFC" THEN "กรมบัญชีกลาง" 
-            WHEN p.hipdata_code = "SSI" THEN "ปกส.ทุพพลภาพ" 
-            WHEN p.hipdata_code = "SSS" THEN "ปกส." 
-            WHEN p.hipdata_code = "STP" THEN "ผู้มีปัญหาสถานะสิทธิ" 
-            WHEN p.hipdata_code = "UCS" THEN "ประกันสุขภาพ" 
-            WHEN p.hipdata_code NOT IN ("A1","A9","BKK","BMT","GOF","LGO","NRD","NRH","OFC","SSI","SSS","STP","UCS")
-                THEN "ไม่พบเงื่อนไข" END AS pttype_group,
-            SUM(a.income) AS income,
-            SUM(a.paid_money) AS paid_money,
-            SUM(a.rcpt_money) AS rcpt_money,
-            SUM(a.income)-SUM(a.rcpt_money) AS debtor
+                CASE WHEN p.hipdata_code = "A1" THEN "ชำระเงิน"
+                    WHEN p.hipdata_code = "A9" THEN "พรบ."
+                    WHEN p.hipdata_code = "BKK" THEN "กทม."
+                    WHEN p.hipdata_code = "BMT" THEN "ขสมก."
+                    WHEN p.hipdata_code = "GOF" THEN "เบิกต้นสังกัด"
+                    WHEN p.hipdata_code = "LGO" THEN "อปท."
+                    WHEN p.hipdata_code = "NRD" THEN "ต่างด้าวไม่ขึ้นทะเบียน"
+                    WHEN p.hipdata_code = "NRH" THEN "ต่างด้าวขึ้นทะเบียน"
+                    WHEN p.hipdata_code = "OFC" THEN "กรมบัญชีกลาง"
+                    WHEN p.hipdata_code = "SSI" THEN "ปกส.ทุพพลภาพ"
+                    WHEN p.hipdata_code = "SSS" THEN "ปกส."
+                    WHEN p.hipdata_code = "STP" THEN "ผู้มีปัญหาสถานะสิทธิ"
+                    WHEN p.hipdata_code = "UCS" THEN "ประกันสุขภาพ"
+                    ELSE "ไม่พบเงื่อนไข"
+                END AS pttype_group,
+                SUM(a.income) AS income,
+                SUM(a.paid_money) AS paid_money,
+                SUM(a.rcpt_money) AS rcpt_money,
+                SUM(a.income - a.rcpt_money) AS debtor
             FROM an_stat a
-            LEFT JOIN ipt_pttype ip ON ip.an = a.an
+            LEFT JOIN ( SELECT an, MAX(pttype) AS pttype
+                FROM ipt_pttype
+                GROUP BY an ) ip ON ip.an = a.an
             LEFT JOIN pttype p ON p.pttype = ip.pttype
             WHERE a.dchdate BETWEEN ? AND ?
-            GROUP BY p.hipdata_code',[$start_date,$end_date]);
+            GROUP BY p.hipdata_code
+            ORDER BY p.hipdata_code',[$start_date,$end_date]);
 
         return view('hrims.debtor._check_income',compact('start_date','end_date','check_income',
             'check_income_pttype','check_income_ipd_pttype','check_income_ipd'));
