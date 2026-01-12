@@ -58,12 +58,12 @@
                             </td>
                             <td class="text-center">
                                 <button type="button"
-                                class="btn btn-warning btn-sm btn-detail"
-                                data-type="opd"
-                                data-bs-toggle="modal"
-                                data-bs-target="#detailModal">
-                                ตรวจสอบ
-                            </button>
+                                    class="btn btn-warning btn-sm btn-detail"
+                                    data-type="opd"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#detailModal">
+                                    ตรวจสอบ
+                                </button>
                             </td>
                         </tr>                        
                         @endforeach 
@@ -150,12 +150,12 @@
                             </td>
                             <td class="text-center">
                                 <button type="button"
-                                class="btn btn-warning btn-sm btn-detail"
-                                data-type="ipd"
-                                data-bs-toggle="modal"
-                                data-bs-target="#detailModal">
-                                ตรวจสอบ
-                            </button>
+                                    class="btn btn-warning btn-sm btn-detail"
+                                    data-type="ipd"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#detailModal">
+                                    ตรวจสอบ
+                                </button>
                             </td>
                         </tr>
                         @endforeach 

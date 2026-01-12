@@ -64,8 +64,8 @@ class DebtorController extends Controller
 //_check_income---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
     public function _check_income(Request $request ) 
     {
-        $start_date = $request->start_date ?: date('Y-m-d', strtotime("first day of this month"));
-        $end_date = $request->end_date ?: date('Y-m-d', strtotime("last day of this month"));   
+        $start_date = $request->start_date ?: date('Y-m-d', strtotime("-1 day"));
+        $end_date = $request->end_date ?: date('Y-m-d', strtotime("-1 day"));   
 
         $check_income = DB::connection('hosxp')->select("
             SELECT o.op_income,o.op_paid,v.vn_income,v.vn_paid,v.vn_rcpt,v.vn_income-v.vn_rcpt AS vn_debtor,
@@ -162,12 +162,12 @@ class DebtorController extends Controller
         return view('hrims.debtor._check_income',compact('start_date','end_date','check_income',
             'check_income_pttype','check_income_ipd_pttype','check_income_ipd'));
     }
-//_check_income_detail
+//_check_income_detail--------------------------------------------------------------------------------------------------------------------------
     public function _check_income_detail(Request $request)
     {
         $type = $request->type; // opd | ipd
-        $start_date = Session::get('start_date');
-        $end_date   = Session::get('end_date');
+        $start_date = Session::get('start_date') ?: date('Y-m-d', strtotime("-1 day"));
+        $end_date   = Session::get('end_date') ?: date('Y-m-d', strtotime("-1 day"));
 
         if ($type === 'opd') {
             // ---------------- OPD ----------------
