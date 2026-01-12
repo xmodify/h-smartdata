@@ -364,7 +364,7 @@
                     <ul class="navbar-nav ms-auto">
                         <li > 
                             <div class="btn text-info">
-                                V. 69-01-11 16:00
+                                V. 69-01-12 11:00
                             </div>   
                         </li> 
                         <!-- H-RiMS -->
