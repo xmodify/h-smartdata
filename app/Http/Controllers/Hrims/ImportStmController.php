@@ -365,100 +365,117 @@ public function __construct()
         ]);
 
         $uploadedFiles = $request->file('files');
-        $docNames = [];
+
+        $docCounts = [];   // ⭐ เก็บจำนวนรายการต่อ STMdoc
 
         DB::beginTransaction();
         try {
-            foreach ($uploadedFiles as $zipFile) {
-                $zip = new \ZipArchive;
-                if ($zip->open($zipFile->getRealPath()) === true) {
-                    for ($i = 0; $i < $zip->numFiles; $i++) {
-                        $stat = $zip->statIndex($i);
-                        $innerName = $stat['name'];
 
-                        // สนใจเฉพาะไฟล์ .xml ด้านใน
-                        if (strtolower(pathinfo($innerName, PATHINFO_EXTENSION)) !== 'xml') {
+            foreach ($uploadedFiles as $zipFile) {
+
+                $zip = new \ZipArchive;
+                if ($zip->open($zipFile->getRealPath()) !== true) {
+                    continue;
+                }
+
+                for ($i = 0; $i < $zip->numFiles; $i++) {
+
+                    $stat = $zip->statIndex($i);
+                    $innerName = $stat['name'];
+
+                    if (strtolower(pathinfo($innerName, PATHINFO_EXTENSION)) !== 'xml') {
+                        continue;
+                    }
+
+                    $xmlString = $zip->getFromIndex($i);
+                    if (!$xmlString) continue;
+
+                    $xmlObject = simplexml_load_string($xmlString, 'SimpleXMLElement', LIBXML_NOCDATA);
+                    if ($xmlObject === false) continue;
+
+                    $json   = json_encode($xmlObject);
+                    $result = json_decode($json, true);
+
+                    $STMdoc = $result['STMdoc'] ?? $innerName;
+
+                    if (stripos($STMdoc, 'STM') === false) {
+                        continue;
+                    }
+
+                    // init counter
+                    if (!isset($docCounts[$STMdoc])) {
+                        $docCounts[$STMdoc] = 0;
+                    }
+
+                    $hcode = $result['hcode'] ?? null;
+                    $hname = $result['hname'] ?? null;
+
+                    $TBills = $result['TBills']['TBill'] ?? [];
+                    if (!empty($TBills) && array_keys($TBills) !== range(0, count($TBills) - 1)) {
+                        $TBills = [$TBills];
+                    }
+
+                    foreach ($TBills as $bill) {
+
+                        $hn     = $bill['hn'] ?? null;
+                        $dttran = $bill['dttran'] ?? null;
+
+                        if (!$hn || !$dttran || strpos($dttran, 'T') === false) {
                             continue;
                         }
 
-                        $xmlString = $zip->getFromIndex($i);
-                        if (!$xmlString) continue;
+                        [$dttdate, $dtttime] = explode('T', $dttran, 2);
 
-                        $xmlObject = simplexml_load_string($xmlString, 'SimpleXMLElement', LIBXML_NOCDATA);
-                        if ($xmlObject === false) continue;
+                        $dataRow = [
+                            'stm_filename' => $innerName,
+                            'round_no'     => $STMdoc,
+                            'hcode'        => $hcode,
+                            'hname'        => $hname,
+                            'sys'          => $bill['sys'] ?? null,
+                            'station'      => $bill['station'] ?? null,
+                            'hreg'         => $bill['hreg'] ?? null,
+                            'hn'           => $hn,
+                            'pt_name'      => $bill['namepat'] ?? null,
+                            'invno'        => $bill['invno'] ?? null,
+                            'dttran'       => $dttran,
+                            'vstdate'      => $dttdate,
+                            'vsttime'      => $dtttime,
+                            'amount'       => isset($bill['amount']) ? (float)$bill['amount'] : 0,
+                            'paid'         => isset($bill['paid']) ? (float)$bill['paid'] : 0,
+                            'rid'          => $bill['rid'] ?? null,
+                            'hdflag'       => $bill['HDflag'] ?? null,
+                        ];
 
-                        $json   = json_encode($xmlObject);
-                        $result = json_decode($json, true);
+                        Stm_ofc_kidney::updateOrInsert(
+                            [
+                                'hn'     => $hn,
+                                'dttran' => $dttran
+                            ],
+                            $dataRow
+                        );
 
-                        $hcode  = $result['hcode']  ?? null;
-                        $hname  = $result['hname']  ?? null;
-                        $STMdoc = $result['STMdoc'] ?? $innerName;
-                        
-                        // ✅ นำเข้าเฉพาะไฟล์ STM เท่านั้น
-                            if (stripos($STMdoc, 'STM') === false) {
-                                continue;
-                            }
-
-                        $docNames[] = $STMdoc;
-
-                        $TBills = $result['TBills']['TBill'] ?? [];
-                        if (!empty($TBills) && array_keys($TBills) !== range(0, count($TBills) - 1)) {
-                            $TBills = [$TBills];
-                        }
-
-                        foreach ($TBills as $bill) {
-                            $hn     = $bill['hn'] ?? null;
-                            $dttran = $bill['dttran'] ?? null;
-                            $dttdate = null; $dtttime = null;
-                            if ($dttran && strpos($dttran, 'T') !== false) {
-                                [$dttdate, $dtttime] = explode('T', $dttran, 2);
-                            }
-
-                            if ($hn && $dttdate) {
-                                $exists = Stm_ofc_kidney::where('hn', $hn)
-                                            ->where('vstdate', $dttdate)
-                                            ->exists();
-
-                                $dataRow = [
-                                    'stm_filename'  => $innerName,
-                                    'round_no'      => $STMdoc,                                  
-                                    'hcode'         => $hcode,
-                                    'hname'         => $hname,                                                                   
-                                    'sys'           => $bill['sys'] ?? null,
-                                    'station'       => $bill['station'] ?? null,
-                                    'hreg'          => $bill['hreg'] ?? null,
-                                    'hn'            => $hn,
-                                    'invno'         => $bill['invno'] ?? null,
-                                    'dttran'        => $dttran,
-                                    'vstdate'       => $dttdate,
-                                    'vsttime'       => $dtttime,                                    
-                                    'amount'        => $bill['amount'] ?? null,
-                                    'paid'          => $bill['paid'] ?? null,
-                                    'rid'           => $bill['rid'] ?? null,
-                                    'hdflag'        => $bill['HDflag'] ?? ($bill['hdflag'] ?? null),
-                                ];
-
-                                if ($exists) {
-                                    Stm_ofc_kidney::where('hn', $hn)
-                                        ->where('dttran', $dttdate)
-                                        ->update($dataRow);
-                                } else {
-                                    Stm_ofc_kidney::insert($dataRow);
-                                }
-                            }
-                        }
+                        // ⭐ นับจำนวนรายการ
+                        $docCounts[$STMdoc]++;
                     }
-                    $zip->close();
                 }
+
+                $zip->close();
             }
 
             DB::commit();
 
+            // ===== สร้างข้อความแจ้งเตือน =====
+            $lines = [];
+            foreach ($docCounts as $doc => $count) {
+                $lines[] = $doc . ' (' . number_format($count) . ' รายการ)';
+            }
+
             return redirect()
                 ->route('hrims.import_stm.ofc_kidney')
-                ->with('success', implode(', ', $docNames));
+                ->with('success', implode(', ', $lines));
 
         } catch (\Throwable $e) {
+
             DB::rollBack();
             return back()->withErrors('There was a problem uploading the data!');
         }
@@ -496,8 +513,10 @@ public function __construct()
         $end_date = $request->end_date ?: date('Y-m-d', strtotime("last day of this month"));
 
         $stm_ofc_kidney_list=DB::select('
-            SELECT stm_filename,hcode,hname,round_no,sys,station,hreg,hn,invno,dttran,paid,rid,amount,hdflag
-            FROM stm_ofc_kidney  WHERE DATE(dttran) BETWEEN ? AND ?
+            SELECT stm_filename,hcode,hname,round_no,station,sys,hreg,hn,pt_name,invno,
+            vstdate,vsttime,paid,rid,amount,receive_no
+            FROM stm_ofc_kidney 
+            WHERE vstdate BETWEEN ? AND ?
             ORDER BY station ,round_no',[$start_date,$end_date]);
 
         return view('hrims.import_stm.ofc_kidneydetail',compact('start_date','end_date','stm_ofc_kidney_list'));
