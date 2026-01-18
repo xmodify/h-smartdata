@@ -397,6 +397,8 @@ public function __construct()
                     $result = json_decode($json, true);
 
                     $STMdoc = $result['STMdoc'] ?? $innerName;
+                    $stm_type   = $result['stmAccountID'] ?? null;
+                    $acc_period = $result['AccPeriod'] ?? null;
 
                     if (stripos($STMdoc, 'STM') === false) {
                         continue;
@@ -427,23 +429,25 @@ public function __construct()
                         [$dttdate, $dtttime] = explode('T', $dttran, 2);
 
                         $dataRow = [
-                            'stm_filename' => $innerName,
-                            'round_no'     => $STMdoc,
-                            'hcode'        => $hcode,
-                            'hname'        => $hname,
-                            'sys'          => $bill['sys'] ?? null,
-                            'station'      => $bill['station'] ?? null,
-                            'hreg'         => $bill['hreg'] ?? null,
-                            'hn'           => $hn,
-                            'pt_name'      => $bill['namepat'] ?? null,
-                            'invno'        => $bill['invno'] ?? null,
-                            'dttran'       => $dttran,
-                            'vstdate'      => $dttdate,
-                            'vsttime'      => $dtttime,
-                            'amount'       => isset($bill['amount']) ? (float)$bill['amount'] : 0,
-                            'paid'         => isset($bill['paid']) ? (float)$bill['paid'] : 0,
-                            'rid'          => $bill['rid'] ?? null,
-                            'hdflag'       => $bill['HDflag'] ?? null,
+                            'stm_filename'  => $innerName,
+                            'round_no'      => $STMdoc,
+                            'stm_type'      => $stm_type,
+                            'hcode'         => $hcode,
+                            'hname'         => $hname,
+                            'acc_period'    => $acc_period,
+                            'sys'           => $bill['sys'] ?? null,
+                            'station'       => $bill['station'] ?? null,
+                            'hreg'          => $bill['hreg'] ?? null,
+                            'hn'            => $hn,
+                            'pt_name'       => $bill['namepat'] ?? null,
+                            'invno'         => $bill['invno'] ?? null,
+                            'dttran'        => $dttran,
+                            'vstdate'       => $dttdate,
+                            'vsttime'       => $dtttime,
+                            'amount'        => isset($bill['amount']) ? (float)$bill['amount'] : 0,
+                            'paid'          => isset($bill['paid']) ? (float)$bill['paid'] : 0,
+                            'rid'           => $bill['rid'] ?? null,
+                            'hdflag'        => $bill['HDflag'] ?? null,
                         ];
 
                         Stm_ofc_kidney::updateOrInsert(
@@ -1070,7 +1074,7 @@ public function __construct()
 
         $stm_sss_kidney = DB::select("
             SELECT
-                stmdoc,
+                stm_filename,
                 station,
                 COUNT(*) AS count_no,
                 round_no,
@@ -1082,10 +1086,10 @@ public function __construct()
                 MAX(receipt_date) AS receipt_date,
                 MAX(receipt_by)   AS receipt_by
             FROM stm_sss_kidney
-            WHERE (CAST(LEFT(RIGHT(stmdoc, 8), 4) AS UNSIGNED) + 543
-                + (CAST(SUBSTRING(RIGHT(stmdoc, 8), 5, 2) AS UNSIGNED) >= 10)) = ?
-            GROUP BY stmdoc
-            ORDER BY stmdoc DESC, CAST(LEFT(RIGHT(stmdoc, 8), 6) AS UNSIGNED) DESC, stmdoc ", [$budget_year]);  
+            WHERE (CAST(LEFT(RIGHT(round_no, 8), 4) AS UNSIGNED) + 543
+                + (CAST(SUBSTRING(RIGHT(round_no, 8), 5, 2) AS UNSIGNED) >= 10)) = ?
+            GROUP BY round_no
+            ORDER BY round_no DESC, CAST(LEFT(RIGHT(round_no, 8), 6) AS UNSIGNED) DESC, round_no ", [$budget_year]);  
 
         return view('hrims.import_stm.sss_kidney',compact('stm_sss_kidney', 'budget_year_select', 'budget_year'));
     }
@@ -1167,15 +1171,15 @@ public function __construct()
                         }
 
                         foreach ($TBills as $row) {
-                            $hreg    = $row['hreg']    ?? null;
-                            $station = $row['station'] ?? null;
-                            $invno   = $row['invno']   ?? null;
-                            $hn      = $row['hn']      ?? null;
-                            $amount  = $row['amount']  ?? null;
-                            $paid    = $row['paid']    ?? null;
-                            $rid     = $row['rid']     ?? null;
-                            $HDflag  = $row['HDflag']  ?? ($row['hdflag'] ?? null);
-                            $dttran  = $row['dttran']  ?? null;
+                            $hreg       = $row['hreg']    ?? null;                           
+                            $station    = $row['station'] ?? null;
+                            $invno      = $row['invno']   ?? null;
+                            $hn         = $row['hn']      ?? null;
+                            $amount     = $row['amount']  ?? null;
+                            $paid       = $row['paid']    ?? null;
+                            $rid        = $row['rid']     ?? null;
+                            $HDflag     = $row['HDflag']  ?? ($row['hdflag'] ?? null);
+                            $dttran     = $row['dttran']  ?? null;
 
                             // แยกวันที่เวลาแบบ ISO: 2024-07-01T12:34:56
                             $dttdate = null; $dtttime = null;
@@ -1190,25 +1194,25 @@ public function __construct()
                             // upsert ตามคีย์เดิม: cid + vstdate
                             if ($cid && $dttdate) {
                                 $dataRow = [
-                                    'round_no'  => $STMdoc,
-                                    'hcode'     => $hcode,
-                                    'hname'     => $hname,
-                                    'stmdoc'    => $STMdoc,
-                                    'station'   => $station,
-                                    'hreg'      => $hreg,
-                                    'hn'        => $hn,
-                                    'cid'       => $cid,
-                                    'invno'     => $invno,
-                                    'dttran'    => $dttran,
-                                    'vstdate'   => $dttdate,
-                                    'vsttime'   => $dtttime,
-                                    'amount'    => $amount,
-                                    'epopay'    => $epopay,
-                                    'epoadm'    => $epoadm,
-                                    'paid'      => $paid,
-                                    'rid'       => $rid,
+                                    'stm_filename'  => $innerName,
+                                    'round_no'      => $STMdoc,
+                                    'hcode'         => $hcode,
+                                    'hname'         => $hname,       
+                                    'station'       => $station,
+                                    'hreg'          => $hreg,
+                                    'hn'            => $hn,
+                                    'cid'           => $cid,
+                                    'invno'         => $invno,
+                                    'dttran'        => $dttran,
+                                    'vstdate'       => $dttdate,
+                                    'vsttime'       => $dtttime,
+                                    'amount'        => $amount,
+                                    'epopay'        => $epopay,
+                                    'epoadm'        => $epoadm,
+                                    'paid'          => $paid,
+                                    'rid'           => $rid,
                                     // เก็บชื่อคอลัมน์ให้ตรงกับ schema ของคุณ
-                                    'hdflag'    => $HDflag,
+                                    'hdflag'        => $HDflag,
                                 ];
 
                                 $exists = Stm_sss_kidney::where('cid', $cid)
@@ -1275,11 +1279,11 @@ public function __construct()
         $end_date = $request->end_date ?: date('Y-m-d', strtotime("last day of this month"));
 
         $stm_sss_kidney_list=DB::select('
-            SELECT hcode,hname,stmdoc,station,hreg,hn,cid,
-            dttran,paid,rid,amount,epopay,epoadm 
+            SELECT stm_filename,hcode,hname,round_no,station,hreg,hn,cid,
+            dttran,paid,rid,amount,epopay,epoadm,receive_no
             FROM stm_sss_kidney 
             WHERE DATE(dttran) BETWEEN ? AND ?
-            ORDER BY station ,stmdoc',[$start_date,$end_date]);
+            ORDER BY station ,round_no',[$start_date,$end_date]);
 
         return view('hrims.import_stm.sss_kidneydetail',compact('start_date','end_date','stm_sss_kidney_list'));
     }

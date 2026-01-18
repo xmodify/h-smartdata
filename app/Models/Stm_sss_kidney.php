@@ -13,10 +13,10 @@ class Stm_sss_kidney extends Model
     protected $primaryKey = 'id';
     protected $fillable = [
         'id',
+        'stm_filename',
         'round_no',
         'hcode', 
         'hname', 
-        'stmdoc',
         'station', 
         'hreg',
         'hn',
