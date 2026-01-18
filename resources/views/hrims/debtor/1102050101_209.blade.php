@@ -64,8 +64,7 @@
                         <th class="text-center">PPFS</th>      
                         <th class="text-center text-primary">ลูกหนี้</th>
                         <th class="text-center text-primary">ชดเชย STM</th> 
-                        <th class="text-center text-primary">ผลต่าง</th>  
-                        <th class="text-center text-primary" width="5%">สถานะ</th>
+                        <th class="text-center text-primary">ผลต่าง</th>                          
                         <th class="text-center text-primary">REP</th>                         
                         <th class="text-center text-primary">Lock</th>                                       
                     </tr>
@@ -98,8 +97,7 @@
                         <td align="right" @if(($row->receive-$row->debtor) > 0) style="color:green"
                             @elseif(($row->receive-$row->debtor) < 0) style="color:red" @endif>
                             {{ number_format($row->receive-$row->debtor,2) }}
-                        </td>            
-                        <td align="right">{{ $row->status }}</td> 
+                        </td>                                    
                         <td align="right">{{ $row->repno }}</td> 
                         <td align="center" style="color:blue">{{ $row->debtor_lock }}</td>                            
                     <?php $count++; ?>

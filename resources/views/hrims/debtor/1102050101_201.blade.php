@@ -70,7 +70,7 @@
                         <th class="text-center text-primary">ชดเชย</th>
                         <th class="text-center text-primary">ชดเชย PPFS</th>                        
                         <th class="text-center text-primary">ผลต่าง</th>
-                        <th class="text-center text-primary">REP</th>  
+                        <th class="text-center text-primary">เลขที่ใบเสร็จ</th>  
                         <th class="text-center text-primary">Lock</th>                                       
                     </tr>
                     </thead>
