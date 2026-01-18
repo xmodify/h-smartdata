@@ -336,7 +336,7 @@ public function __construct()
 
         $stm_ofc_kidney = DB::select("
             SELECT
-                stmdoc,
+                stm_filename,
                 station,
                 COUNT(*) AS count_no,
                 round_no,
@@ -345,10 +345,10 @@ public function __construct()
                 MAX(receipt_date) AS receipt_date,
                 MAX(receipt_by)   AS receipt_by
             FROM stm_ofc_kidney
-            WHERE (CAST(LEFT(RIGHT(stmdoc, 8), 4) AS UNSIGNED) + 543
-                + (CAST(SUBSTRING(RIGHT(stmdoc, 8), 5, 2) AS UNSIGNED) >= 10)) = ?
-            GROUP BY stmdoc
-            ORDER BY stmdoc DESC,CAST(LEFT(RIGHT(stmdoc, 8), 6) AS UNSIGNED) DESC, stmdoc", [$budget_year]);        
+            WHERE (CAST(LEFT(RIGHT(round_no, 8), 4) AS UNSIGNED) + 543
+                + (CAST(SUBSTRING(RIGHT(round_no, 8), 5, 2) AS UNSIGNED) >= 10)) = ?
+            GROUP BY round_no
+            ORDER BY round_no DESC,CAST(LEFT(RIGHT(round_no, 8), 6) AS UNSIGNED) DESC, round_no", [$budget_year]);        
 
         return view('hrims.import_stm.ofc_kidney',compact('stm_ofc_kidney', 'budget_year_select', 'budget_year'));
     }
@@ -420,26 +420,27 @@ public function __construct()
                                             ->exists();
 
                                 $dataRow = [
-                                    'round_no'  => $STMdoc,
-                                    'hcode'     => $hcode,
-                                    'hname'     => $hname,
-                                    'stmdoc'    => $STMdoc,
-                                    'station'   => $bill['station'] ?? null,
-                                    'hreg'      => $bill['hreg'] ?? null,
-                                    'hn'        => $hn,
-                                    'invno'     => $bill['invno'] ?? null,
-                                    'dttran'    => $dttran,
-                                    'vstdate'   => $dttdate,
-                                    'vsttime'   => $dtttime,                                    
-                                    'amount'    => $bill['amount'] ?? null,
-                                    'paid'      => $bill['paid'] ?? null,
-                                    'rid'       => $bill['rid'] ?? null,
-                                    'hdflag'    => $bill['HDflag'] ?? ($bill['hdflag'] ?? null),
+                                    'stm_filename'  => $innerName,
+                                    'round_no'      => $STMdoc,                                  
+                                    'hcode'         => $hcode,
+                                    'hname'         => $hname,                                                                   
+                                    'sys'           => $bill['sys'] ?? null,
+                                    'station'       => $bill['station'] ?? null,
+                                    'hreg'          => $bill['hreg'] ?? null,
+                                    'hn'            => $hn,
+                                    'invno'         => $bill['invno'] ?? null,
+                                    'dttran'        => $dttran,
+                                    'vstdate'       => $dttdate,
+                                    'vsttime'       => $dtttime,                                    
+                                    'amount'        => $bill['amount'] ?? null,
+                                    'paid'          => $bill['paid'] ?? null,
+                                    'rid'           => $bill['rid'] ?? null,
+                                    'hdflag'        => $bill['HDflag'] ?? ($bill['hdflag'] ?? null),
                                 ];
 
                                 if ($exists) {
                                     Stm_ofc_kidney::where('hn', $hn)
-                                        ->where('vstdate', $dttdate)
+                                        ->where('dttran', $dttdate)
                                         ->update($dataRow);
                                 } else {
                                     Stm_ofc_kidney::insert($dataRow);
@@ -495,9 +496,9 @@ public function __construct()
         $end_date = $request->end_date ?: date('Y-m-d', strtotime("last day of this month"));
 
         $stm_ofc_kidney_list=DB::select('
-            SELECT hcode,hname,stmdoc,station,hreg,hn,invno,dttran,paid,rid,amount,hdflag
+            SELECT stm_filename,hcode,hname,round_no,sys,station,hreg,hn,invno,dttran,paid,rid,amount,hdflag
             FROM stm_ofc_kidney  WHERE DATE(dttran) BETWEEN ? AND ?
-            ORDER BY station ,stmdoc',[$start_date,$end_date]);
+            ORDER BY station ,round_no',[$start_date,$end_date]);
 
         return view('hrims.import_stm.ofc_kidneydetail',compact('start_date','end_date','stm_ofc_kidney_list'));
     }

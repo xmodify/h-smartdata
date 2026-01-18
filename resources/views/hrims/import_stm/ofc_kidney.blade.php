@@ -73,7 +73,7 @@
                             <?php $count = 1 ; ?>  
                             @foreach($stm_ofc_kidney as $row)          
                             <tr>
-                                <td align="right">{{ $row->stmdoc }}</td>
+                                <td align="right">{{ $row->stm_filename }}</td>
                                 <td align="right">{{ number_format($row->count_no) }}</td> 
                                 <td align="right" class="text-success">{{ number_format($row->amount,2) }}</td>
                                 <td align="right" class="text-primary">{{ $row->round_no }}</td>

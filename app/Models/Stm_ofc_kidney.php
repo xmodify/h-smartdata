@@ -13,10 +13,12 @@ class Stm_ofc_kidney extends Model
     protected $primaryKey = 'id';
     protected $fillable = [
         'id',
+        'stm_filename',
         'round_no',
         'hcode', 
         'hname', 
         'stmdoc',
+        'sys',
         'station', 
         'hreg',
         'hn',

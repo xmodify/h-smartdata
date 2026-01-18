@@ -28,9 +28,10 @@
                     <table id="stm_ofc_kidney_list" class="table table-bordered table-striped my-3">
                         <thead>
                             <tr class="table-primary">
-                                <th class="text-center">Hcode</th>
-                                <th class="text-center">Hname</th> 
                                 <th class="text-center">FileName</th> 
+                                <th class="text-center">Hcode</th>
+                                <th class="text-center">Hname</th>                                 
+                                <th class="text-center">Sys</th>
                                 <th class="text-center">Station</th> 
                                 <th class="text-center">Hreg</th>                      
                                 <th class="text-center">HN</th>
@@ -44,9 +45,10 @@
                             <?php $count = 1 ; ?>  
                             @foreach($stm_ofc_kidney_list as $row)          
                             <tr>
+                                <td align="right">{{ $row->stm_filename }}</td>
                                 <td align="center">{{ $row->hcode }}</td> 
-                                <td align="right">{{ $row->hname }}</td>
-                                <td align="right">{{ $row->stmdoc }}</td>
+                                <td align="right">{{ $row->hname }}</td>                                
+                                <td align="right">{{ $row->sys }}</td>
                                 <td align="right">{{ $row->station }}</td>
                                 <td align="right">{{ $row->hreg }}</td>
                                 <td align="left">{{ $row->hn }}</td>
