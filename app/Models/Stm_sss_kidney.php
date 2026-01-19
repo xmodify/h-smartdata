@@ -17,6 +17,7 @@ class Stm_sss_kidney extends Model
         'round_no',
         'hcode', 
         'hname', 
+        'sys', 
         'station', 
         'hreg',
         'hn',

@@ -9,7 +9,7 @@
         <img src="{{ asset('images/logo_hnplus1.png') }}" alt="HN-Plus Logo" height="200">
     </h1>
     <h3 class="text-center text-hnplus">
-        <strong>Huataphanhospital Nurse Plus </strong>
+        <strong>Nurse Plus </strong>
     </h3>
 </div>
 @endsection
