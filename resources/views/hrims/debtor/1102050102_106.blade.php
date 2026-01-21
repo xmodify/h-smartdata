@@ -73,7 +73,7 @@
                         <th class="text-center text-primary">ลูกหนี้</th>
                         <th class="text-center text-primary">ชดเชย</th> 
                         <th class="text-center text-primary">ผลต่าง</th>  
-                        <th class="text-center text-primary">ใบเสร็จ</th>    
+                        <th class="text-center text-primary">เลขที่ใบเสร็จ</th>    
                         <th class="text-center text-primary" width="9%">สถานะ</th>                         
                         <th class="text-center text-primary">อายุหนี้</th>
                         <th class="text-center text-primary" width="6%">Action</th>     
@@ -107,7 +107,7 @@
                             @elseif(($row->receive-$row->debtor) < 0) style="color:red" @endif>
                             {{ number_format($row->receive-$row->debtor,2) }}
                         </td> 
-                        <td align="center">{{ $row->repno }}</td>                  
+                        <td align="center">{{ $row->repno }} {{ $row->rcpno }}</td>                  
                         <td align="right" width="7%">{{ $row->status }}</td>                         
                         <td align="right" @if($row->days < 90) style="background-color: #90EE90;"  {{-- เขียวอ่อน --}}
                             @elseif($row->days >= 90 && $row->days <= 365) style="background-color: #FFFF99;" {{-- เหลือง --}}
