@@ -475,7 +475,7 @@ class DebtorController extends Controller
         $_1102050102_107 = DB::connection('hosxp')->select("
             SELECT COUNT(DISTINCT d.an) AS anvn,SUM(d.debtor) AS debtor, 
                 SUM(IFNULL(d.receive,0) + IFNULL(r.bill_amount,0)) AS receive
-            FROM hrims.debtor_1102050102_107 d
+            FROM htp_report.debtor_1102050102_107 d
             LEFT JOIN (SELECT vn,bill_date,SUM(bill_amount) AS bill_amount FROM rcpt_print
                 WHERE status = 'OK' AND department = 'IPD' GROUP BY vn,bill_date) r ON r.vn = d.an
                 AND r.bill_date <> d.dchdate
@@ -7531,11 +7531,11 @@ class DebtorController extends Controller
                     r.bill_amount,IFNULL(t.visit,0) AS visit,CASE WHEN (IFNULL(d.receive,0) 
                     + IFNULL(r.bill_amount,0)) - IFNULL(d.debtor,0) >= 0
                     THEN 0 ELSE DATEDIFF(CURDATE(), d.dchdate) END AS days
-                FROM hrims.debtor_1102050102_107 d
+                FROM htp_report.debtor_1102050102_107 d
                 LEFT JOIN (SELECT vn,bill_date,SUM(bill_amount) AS bill_amount,GROUP_CONCAT(rcpno) AS rcpno
                     FROM rcpt_print WHERE status = "OK" AND department = "IPD" GROUP BY vn,bill_date) r ON r.vn = d.an
                     AND r.bill_date <> d.dchdate
-                LEFT JOIN (SELECT an, COUNT(*) AS visit FROM hrims.debtor_1102050102_107_tracking 
+                LEFT JOIN (SELECT an, COUNT(*) AS visit FROM htp_report.debtor_1102050102_107_tracking 
                     GROUP BY an) t ON t.an = d.an
                 WHERE (d.ptname LIKE CONCAT("%", ?, "%") OR d.hn LIKE CONCAT("%", ?, "%") OR d.an LIKE CONCAT("%", ?, "%"))
                 AND d.dchdate BETWEEN ? AND ?', [$search,$search,$search,$start_date,$end_date]);
@@ -7549,11 +7549,11 @@ class DebtorController extends Controller
                     r.bill_amount,IFNULL(t.visit,0) AS visit,CASE WHEN (IFNULL(d.receive,0) 
                     + IFNULL(r.bill_amount,0)) - IFNULL(d.debtor,0) >= 0
                     THEN 0 ELSE DATEDIFF(CURDATE(), d.dchdate) END AS days
-                FROM hrims.debtor_1102050102_107 d
+                FROM htp_report.debtor_1102050102_107 d
                 LEFT JOIN (SELECT vn,bill_date,SUM(bill_amount) AS bill_amount,GROUP_CONCAT(rcpno) AS rcpno
                     FROM rcpt_print WHERE status = "OK" AND department = "IPD" GROUP BY vn,bill_date) r ON r.vn = d.an
                     AND r.bill_date <> d.dchdate
-                LEFT JOIN (SELECT an, COUNT(*) AS visit FROM hrims.debtor_1102050102_107_tracking 
+                LEFT JOIN (SELECT an, COUNT(*) AS visit FROM htp_report.debtor_1102050102_107_tracking 
                     GROUP BY an) t ON t.an = d.an
                 WHERE d.dchdate BETWEEN ? AND ?', [$start_date, $end_date]);
             }  
