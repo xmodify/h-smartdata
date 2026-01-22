@@ -180,26 +180,31 @@ class ProductVIPController extends Controller
         $nurse_shift_time = $patient_all * $hhpuos * (1.4 / 7);
 
         // ✅ บันทึกข้อมูลลงฐานข้อมูล
-        $productivity_vip = Nurse_productivity_vip::create([
-            'report_date'      => $request->report_date,
-            'shift_time'       => $request->shift_time,
-            'patient_all'      => $patient_all,
-            'convalescent'     => $convalescent,
-            'moderate_ill'     => $moderate_ill,
-            'semi_critical_ill'=> $semi_critical_ill,
-            'critical_ill'     => $critical_ill,
-            'patient_hr'       => $patient_hr,
-            'nurse_oncall'     => $request->nurse_oncall,
-            'nurse_partime'    => $request->nurse_partime,
-            'nurse_fulltime'   => $request->nurse_fulltime,
-            'nurse_hr'         => $nurse_hr,
-            'productivity'     => $productivity,
-            'hhpuos'           => $hhpuos,
-            'nurse_shift_time' => $nurse_shift_time,
-            'recorder'         => $request->recorder,
-            'note'             => $request->note,
-        ]);
-
+        $productivity_vip = Nurse_productivity_vip::updateOrCreate(
+            // 🔑 เงื่อนไขตรวจข้อมูลซ้ำ
+            [
+                'report_date' => $request->report_date,
+                'shift_time'  => $request->shift_time,
+            ],
+            // ✏️ ข้อมูลสำหรับ update / create
+            [
+                'patient_all'       => $patient_all,
+                'convalescent'      => $convalescent,
+                'moderate_ill'      => $moderate_ill,
+                'semi_critical_ill' => $semi_critical_ill,
+                'critical_ill'      => $critical_ill,
+                'patient_hr'        => $patient_hr,
+                'nurse_oncall'      => $request->nurse_oncall,
+                'nurse_partime'     => $request->nurse_partime,
+                'nurse_fulltime'    => $request->nurse_fulltime,
+                'nurse_hr'          => $nurse_hr,
+                'productivity'      => $productivity,
+                'hhpuos'            => $hhpuos,
+                'nurse_shift_time'  => $nurse_shift_time,
+                'recorder'          => $request->recorder,
+                'note'              => $request->note,
+            ]
+        );
         // ✅ เตรียมข้อความแจ้ง Telegram
         $message = "🛏️ งานผู้ป่วยใน VIP" ."\n"
             ."วันที่ " . DateThai(date('Y-m-d')) ."\n"
@@ -347,25 +352,31 @@ class ProductVIPController extends Controller
         $nurse_shift_time = $patient_all * $hhpuos * (1.4 / 7);
 
         // ✅ บันทึกข้อมูลลงฐานข้อมูล
-        $productivity_vip = Nurse_productivity_vip::create([
-            'report_date'      => $request->report_date,
-            'shift_time'       => $request->shift_time,
-            'patient_all'      => $patient_all,
-            'convalescent'     => $convalescent,
-            'moderate_ill'     => $moderate_ill,
-            'semi_critical_ill'=> $semi_critical_ill,
-            'critical_ill'     => $critical_ill,
-            'patient_hr'       => $patient_hr,
-            'nurse_oncall'     => $request->nurse_oncall,
-            'nurse_partime'    => $request->nurse_partime,
-            'nurse_fulltime'   => $request->nurse_fulltime,
-            'nurse_hr'         => $nurse_hr,
-            'productivity'     => $productivity,
-            'hhpuos'           => $hhpuos,
-            'nurse_shift_time' => $nurse_shift_time,
-            'recorder'         => $request->recorder,
-            'note'             => $request->note,
-        ]);
+        $productivity_vip = Nurse_productivity_vip::updateOrCreate(
+            // 🔑 เงื่อนไขตรวจข้อมูลซ้ำ
+            [
+                'report_date' => $request->report_date,
+                'shift_time'  => $request->shift_time,
+            ],
+            // ✏️ ข้อมูลสำหรับ update / create
+            [
+                'patient_all'       => $patient_all,
+                'convalescent'      => $convalescent,
+                'moderate_ill'      => $moderate_ill,
+                'semi_critical_ill' => $semi_critical_ill,
+                'critical_ill'      => $critical_ill,
+                'patient_hr'        => $patient_hr,
+                'nurse_oncall'      => $request->nurse_oncall,
+                'nurse_partime'     => $request->nurse_partime,
+                'nurse_fulltime'    => $request->nurse_fulltime,
+                'nurse_hr'          => $nurse_hr,
+                'productivity'      => $productivity,
+                'hhpuos'            => $hhpuos,
+                'nurse_shift_time'  => $nurse_shift_time,
+                'recorder'          => $request->recorder,
+                'note'              => $request->note,
+            ]
+        );
 
         // ✅ เตรียมข้อความแจ้ง Telegram
         $message = "🛏️ งานผู้ป่วยใน VIP" ."\n"
@@ -514,25 +525,31 @@ class ProductVIPController extends Controller
         $nurse_shift_time = $patient_all * $hhpuos * (1.4 / 7);
 
         // ✅ บันทึกข้อมูลลงฐานข้อมูล
-        $productivity_vip = Nurse_productivity_vip::create([
-            'report_date'      => $request->report_date,
-            'shift_time'       => $request->shift_time,
-            'patient_all'      => $patient_all,
-            'convalescent'     => $convalescent,
-            'moderate_ill'     => $moderate_ill,
-            'semi_critical_ill'=> $semi_critical_ill,
-            'critical_ill'     => $critical_ill,
-            'patient_hr'       => $patient_hr,
-            'nurse_oncall'     => $request->nurse_oncall,
-            'nurse_partime'    => $request->nurse_partime,
-            'nurse_fulltime'   => $request->nurse_fulltime,
-            'nurse_hr'         => $nurse_hr,
-            'productivity'     => $productivity,
-            'hhpuos'           => $hhpuos,
-            'nurse_shift_time' => $nurse_shift_time,
-            'recorder'         => $request->recorder,
-            'note'             => $request->note,
-        ]);
+        $productivity_vip = Nurse_productivity_vip::updateOrCreate(
+            // 🔑 เงื่อนไขตรวจข้อมูลซ้ำ
+            [
+                'report_date' => $request->report_date,
+                'shift_time'  => $request->shift_time,
+            ],
+            // ✏️ ข้อมูลสำหรับ update / create
+            [
+                'patient_all'       => $patient_all,
+                'convalescent'      => $convalescent,
+                'moderate_ill'      => $moderate_ill,
+                'semi_critical_ill' => $semi_critical_ill,
+                'critical_ill'      => $critical_ill,
+                'patient_hr'        => $patient_hr,
+                'nurse_oncall'      => $request->nurse_oncall,
+                'nurse_partime'     => $request->nurse_partime,
+                'nurse_fulltime'    => $request->nurse_fulltime,
+                'nurse_hr'          => $nurse_hr,
+                'productivity'      => $productivity,
+                'hhpuos'            => $hhpuos,
+                'nurse_shift_time'  => $nurse_shift_time,
+                'recorder'          => $request->recorder,
+                'note'              => $request->note,
+            ]
+        );
 
         // ✅ เตรียมข้อความแจ้ง Telegram
         $message = "🛏️ งานผู้ป่วยใน VIP" ."\n"

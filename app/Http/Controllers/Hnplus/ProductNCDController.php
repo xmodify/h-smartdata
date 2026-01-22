@@ -153,22 +153,27 @@ class ProductNCDController extends Controller
         // ==============================
         //   บันทึกข้อมูลลงฐานข้อมูล
         // ==============================
-        $productivity_ncd = Nurse_productivity_ncd::create([
-            'report_date'      => $request->report_date,
-            'shift_time'       => $request->shift_time,
-            'patient_all'      => $patient_all,
-            'patient_hr'       => $patient_hr,
-            'nurse_oncall'     => $nurse_oncall,
-            'nurse_partime'    => $nurse_partime,
-            'nurse_fulltime'   => $nurse_fulltime,
-            'nurse_hr'         => $nurse_hr,
-            'productivity'     => $productivity,
-            'hhpuos'           => $hhpuos,
-            'nurse_shift_time' => $nurse_shift_time,
-            'recorder'         => $request->recorder,
-            'note'             => $request->note,
-        ]);
-
+        $productivity_ncd = Nurse_productivity_ncd::updateOrCreate(
+            // 🔑 เงื่อนไขเช็คข้อมูลซ้ำ
+            [
+                'report_date' => $request->report_date,
+                'shift_time'  => $request->shift_time,
+            ],
+            // ✏️ ข้อมูลสำหรับ update / create
+            [
+                'patient_all'      => $patient_all,
+                'patient_hr'       => $patient_hr,
+                'nurse_oncall'     => $nurse_oncall,
+                'nurse_partime'    => $nurse_partime,
+                'nurse_fulltime'   => $nurse_fulltime,
+                'nurse_hr'         => $nurse_hr,
+                'productivity'     => $productivity,
+                'hhpuos'           => $hhpuos,
+                'nurse_shift_time' => $nurse_shift_time,
+                'recorder'         => $request->recorder,
+                'note'             => $request->note,
+            ]
+        );
         // ==============================
         //   ข้อความแจ้งเตือน Telegram (รูปแบบใหม่)
         // ==============================

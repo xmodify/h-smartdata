@@ -174,25 +174,31 @@ class ProductERController extends Controller
         $nurse_shift_time = $patient_all * $hhpuos * (1.4 / 7);
 
         // ✅ บันทึกข้อมูลลงฐานข้อมูล
-        $productivity_er = Nurse_productivity_er::create([
-            'report_date'      => $request->report_date,
-            'shift_time'       => $request->shift_time,
-            'patient_all'      => $patient_all,
-            'emergent'         => $emergent,
-            'urgent'           => $urgent,
-            'acute_illness'    => $acute_illness,
-            'non_acute_illness'=> $non_acute,
-            'patient_hr'       => $patient_hr,
-            'nurse_oncall'     => $request->nurse_oncall,
-            'nurse_partime'    => $request->nurse_partime,
-            'nurse_fulltime'   => $request->nurse_fulltime,
-            'nurse_hr'         => $nurse_hr,
-            'productivity'     => $productivity,
-            'hhpuos'           => $hhpuos,
-            'nurse_shift_time' => $nurse_shift_time,
-            'recorder'         => $request->recorder,
-            'note'             => $request->note,
-        ]);
+        $productivity_er = Nurse_productivity_er::updateOrCreate(
+            // 🔑 เงื่อนไขค้นหาว่ามีข้อมูลเดิมไหม
+            [
+                'report_date' => $request->report_date,
+                'shift_time'  => $request->shift_time,
+            ],
+            // ✏️ ข้อมูลสำหรับ update / create
+            [
+                'patient_all'       => $patient_all,
+                'emergent'          => $emergent,
+                'urgent'            => $urgent,
+                'acute_illness'     => $acute_illness,
+                'non_acute_illness' => $non_acute,
+                'patient_hr'        => $patient_hr,
+                'nurse_oncall'      => $request->nurse_oncall,
+                'nurse_partime'     => $request->nurse_partime,
+                'nurse_fulltime'    => $request->nurse_fulltime,
+                'nurse_hr'          => $nurse_hr,
+                'productivity'      => $productivity,
+                'hhpuos'            => $hhpuos,
+                'nurse_shift_time'  => $nurse_shift_time,
+                'recorder'          => $request->recorder,
+                'note'              => $request->note,
+            ]
+        );
 
         // ✅ เตรียมข้อความแจ้ง Telegram
         $message = "🚨 งานอุบัติเหตุ-ฉุกเฉิน \n"
@@ -333,25 +339,31 @@ class ProductERController extends Controller
         $nurse_shift_time = $patient_all * $hhpuos * (1.4 / 7);
 
         // ✅ บันทึกข้อมูลลงฐานข้อมูล
-        Nurse_productivity_er::create([
-            'report_date'      => $request->report_date,
-            'shift_time'       => $request->shift_time,
-            'patient_all'      => $patient_all,
-            'emergent'         => $emergent,
-            'urgent'           => $urgent,
-            'acute_illness'    => $acute_illness,
-            'non_acute_illness'=> $non_acute,
-            'patient_hr'       => $patient_hr,
-            'nurse_oncall'     => $request->nurse_oncall,
-            'nurse_partime'    => $request->nurse_partime,
-            'nurse_fulltime'   => $request->nurse_fulltime,
-            'nurse_hr'         => $nurse_hr,
-            'productivity'     => $productivity,
-            'hhpuos'           => $hhpuos,
-            'nurse_shift_time' => $nurse_shift_time,
-            'recorder'         => $request->recorder,
-            'note'             => $request->note,
-        ]);
+        $productivity_er = Nurse_productivity_er::updateOrCreate(
+            // 🔑 เงื่อนไขค้นหาว่ามีข้อมูลเดิมไหม
+            [
+                'report_date' => $request->report_date,
+                'shift_time'  => $request->shift_time,
+            ],
+            // ✏️ ข้อมูลสำหรับ update / create
+            [
+                'patient_all'       => $patient_all,
+                'emergent'          => $emergent,
+                'urgent'            => $urgent,
+                'acute_illness'     => $acute_illness,
+                'non_acute_illness' => $non_acute,
+                'patient_hr'        => $patient_hr,
+                'nurse_oncall'      => $request->nurse_oncall,
+                'nurse_partime'     => $request->nurse_partime,
+                'nurse_fulltime'    => $request->nurse_fulltime,
+                'nurse_hr'          => $nurse_hr,
+                'productivity'      => $productivity,
+                'hhpuos'            => $hhpuos,
+                'nurse_shift_time'  => $nurse_shift_time,
+                'recorder'          => $request->recorder,
+                'note'              => $request->note,
+            ]
+        );
 
         // ✅ สร้างข้อความแจ้งเตือน Telegram
         $message = "🚨 งานอุบัติเหตุ-ฉุกเฉิน \n"
@@ -493,25 +505,31 @@ class ProductERController extends Controller
         $nurse_shift_time = $patient_all * $hhpuos * (1.4 / 7);
 
         // ✅ บันทึกข้อมูลลงฐานข้อมูล
-        Nurse_productivity_er::create([
-            'report_date'      => $request->report_date,
-            'shift_time'       => $request->shift_time,
-            'patient_all'      => $patient_all,
-            'emergent'         => $emergent,
-            'urgent'           => $urgent,
-            'acute_illness'    => $acute_illness,
-            'non_acute_illness'=> $non_acute,
-            'patient_hr'       => $patient_hr,
-            'nurse_oncall'     => $request->nurse_oncall,
-            'nurse_partime'    => $request->nurse_partime,
-            'nurse_fulltime'   => $request->nurse_fulltime,
-            'nurse_hr'         => $nurse_hr,
-            'productivity'     => $productivity,
-            'hhpuos'           => $hhpuos,
-            'nurse_shift_time' => $nurse_shift_time,
-            'recorder'         => $request->recorder,
-            'note'             => $request->note,
-        ]);
+        $productivity_er = Nurse_productivity_er::updateOrCreate(
+            // 🔑 เงื่อนไขค้นหาว่ามีข้อมูลเดิมไหม
+            [
+                'report_date' => $request->report_date,
+                'shift_time'  => $request->shift_time,
+            ],
+            // ✏️ ข้อมูลสำหรับ update / create
+            [
+                'patient_all'       => $patient_all,
+                'emergent'          => $emergent,
+                'urgent'            => $urgent,
+                'acute_illness'     => $acute_illness,
+                'non_acute_illness' => $non_acute,
+                'patient_hr'        => $patient_hr,
+                'nurse_oncall'      => $request->nurse_oncall,
+                'nurse_partime'     => $request->nurse_partime,
+                'nurse_fulltime'    => $request->nurse_fulltime,
+                'nurse_hr'          => $nurse_hr,
+                'productivity'      => $productivity,
+                'hhpuos'            => $hhpuos,
+                'nurse_shift_time'  => $nurse_shift_time,
+                'recorder'          => $request->recorder,
+                'note'              => $request->note,
+            ]
+        );
 
         // ✅ สร้างข้อความแจ้งเตือน Telegram
         $message = "🚨 งานอุบัติเหตุ-ฉุกเฉิน \n"

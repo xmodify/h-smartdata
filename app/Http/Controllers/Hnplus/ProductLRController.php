@@ -213,27 +213,33 @@ class ProductLRController extends Controller
         $nurse_shift_time = $patient_all * $hhpuos * (1.4 / 7);
 
         // ✅ บันทึกข้อมูลลงฐานข้อมูล
-        $productivity_lr = Nurse_productivity_lr::create([
-            'report_date'      => $request->report_date,
-            'shift_time'       => $request->shift_time,
-            'opd_normal'       => $opd_normal,
-            'opd_high'         => $opd_high,
-            'patient_all'      => $patient_all,
-            'convalescent'     => $convalescent,
-            'moderate_ill'     => $moderate_ill,
-            'semi_critical_ill'=> $semi_critical_ill,
-            'critical_ill'     => $critical_ill,
-            'patient_hr'       => $patient_hr,
-            'nurse_oncall'     => $request->nurse_oncall,
-            'nurse_partime'    => $request->nurse_partime,
-            'nurse_fulltime'   => $request->nurse_fulltime,
-            'nurse_hr'         => $nurse_hr,
-            'productivity'     => $productivity,
-            'hhpuos'           => $hhpuos,
-            'nurse_shift_time' => $nurse_shift_time,
-            'recorder'         => $request->recorder,
-            'note'             => $request->note,
-        ]);
+        $productivity_lr = Nurse_productivity_lr::updateOrCreate(
+            // 🔑 เงื่อนไขตรวจว่ามีข้อมูลเดิมไหม
+            [
+                'report_date' => $request->report_date,
+                'shift_time'  => $request->shift_time,
+            ],
+            // ✏️ ข้อมูลสำหรับ update / create
+            [
+                'opd_normal'        => $opd_normal,
+                'opd_high'          => $opd_high,
+                'patient_all'       => $patient_all,
+                'convalescent'      => $convalescent,
+                'moderate_ill'      => $moderate_ill,
+                'semi_critical_ill' => $semi_critical_ill,
+                'critical_ill'      => $critical_ill,
+                'patient_hr'        => $patient_hr,
+                'nurse_oncall'      => $request->nurse_oncall,
+                'nurse_partime'     => $request->nurse_partime,
+                'nurse_fulltime'    => $request->nurse_fulltime,
+                'nurse_hr'          => $nurse_hr,
+                'productivity'      => $productivity,
+                'hhpuos'            => $hhpuos,
+                'nurse_shift_time'  => $nurse_shift_time,
+                'recorder'          => $request->recorder,
+                'note'              => $request->note,
+            ]
+        );
 
         // ✅ เตรียมข้อความแจ้ง Telegram
         $message = "🤰งานห้องคลอด LR" ."\n"
@@ -416,27 +422,33 @@ class ProductLRController extends Controller
         $nurse_shift_time = $patient_all * $hhpuos * (1.4 / 7);
 
         // ✅ บันทึกข้อมูลลงฐานข้อมูล
-        $productivity_lr = Nurse_productivity_lr::create([
-            'report_date'      => $request->report_date,
-            'shift_time'       => $request->shift_time,
-            'opd_normal'       => $opd_normal,
-            'opd_high'         => $opd_high,
-            'patient_all'      => $patient_all,
-            'convalescent'     => $convalescent,
-            'moderate_ill'     => $moderate_ill,
-            'semi_critical_ill'=> $semi_critical_ill,
-            'critical_ill'     => $critical_ill,
-            'patient_hr'       => $patient_hr,
-            'nurse_oncall'     => $request->nurse_oncall,
-            'nurse_partime'    => $request->nurse_partime,
-            'nurse_fulltime'   => $request->nurse_fulltime,
-            'nurse_hr'         => $nurse_hr,
-            'productivity'     => $productivity,
-            'hhpuos'           => $hhpuos,
-            'nurse_shift_time' => $nurse_shift_time,
-            'recorder'         => $request->recorder,
-            'note'             => $request->note,
-        ]);
+        $productivity_lr = Nurse_productivity_lr::updateOrCreate(
+            // 🔑 เงื่อนไขตรวจว่ามีข้อมูลเดิมไหม
+            [
+                'report_date' => $request->report_date,
+                'shift_time'  => $request->shift_time,
+            ],
+            // ✏️ ข้อมูลสำหรับ update / create
+            [
+                'opd_normal'        => $opd_normal,
+                'opd_high'          => $opd_high,
+                'patient_all'       => $patient_all,
+                'convalescent'      => $convalescent,
+                'moderate_ill'      => $moderate_ill,
+                'semi_critical_ill' => $semi_critical_ill,
+                'critical_ill'      => $critical_ill,
+                'patient_hr'        => $patient_hr,
+                'nurse_oncall'      => $request->nurse_oncall,
+                'nurse_partime'     => $request->nurse_partime,
+                'nurse_fulltime'    => $request->nurse_fulltime,
+                'nurse_hr'          => $nurse_hr,
+                'productivity'      => $productivity,
+                'hhpuos'            => $hhpuos,
+                'nurse_shift_time'  => $nurse_shift_time,
+                'recorder'          => $request->recorder,
+                'note'              => $request->note,
+            ]
+        );
 
         // ✅ เตรียมข้อความแจ้ง Telegram
         $message = "🤰งานห้องคลอด LR" ."\n"
@@ -619,27 +631,33 @@ class ProductLRController extends Controller
         $nurse_shift_time = $patient_all * $hhpuos * (1.4 / 7);
 
         // ✅ บันทึกข้อมูลลงฐานข้อมูล
-        $productivity_lr = Nurse_productivity_lr::create([
-            'report_date'      => $request->report_date,
-            'shift_time'       => $request->shift_time,
-            'opd_normal'       => $opd_normal,
-            'opd_high'         => $opd_high,
-            'patient_all'      => $patient_all,
-            'convalescent'     => $convalescent,
-            'moderate_ill'     => $moderate_ill,
-            'semi_critical_ill'=> $semi_critical_ill,
-            'critical_ill'     => $critical_ill,
-            'patient_hr'       => $patient_hr,
-            'nurse_oncall'     => $request->nurse_oncall,
-            'nurse_partime'    => $request->nurse_partime,
-            'nurse_fulltime'   => $request->nurse_fulltime,
-            'nurse_hr'         => $nurse_hr,
-            'productivity'     => $productivity,
-            'hhpuos'           => $hhpuos,
-            'nurse_shift_time' => $nurse_shift_time,
-            'recorder'         => $request->recorder,
-            'note'             => $request->note,
-        ]);
+        $productivity_lr = Nurse_productivity_lr::updateOrCreate(
+            // 🔑 เงื่อนไขตรวจว่ามีข้อมูลเดิมไหม
+            [
+                'report_date' => $request->report_date,
+                'shift_time'  => $request->shift_time,
+            ],
+            // ✏️ ข้อมูลสำหรับ update / create
+            [
+                'opd_normal'        => $opd_normal,
+                'opd_high'          => $opd_high,
+                'patient_all'       => $patient_all,
+                'convalescent'      => $convalescent,
+                'moderate_ill'      => $moderate_ill,
+                'semi_critical_ill' => $semi_critical_ill,
+                'critical_ill'      => $critical_ill,
+                'patient_hr'        => $patient_hr,
+                'nurse_oncall'      => $request->nurse_oncall,
+                'nurse_partime'     => $request->nurse_partime,
+                'nurse_fulltime'    => $request->nurse_fulltime,
+                'nurse_hr'          => $nurse_hr,
+                'productivity'      => $productivity,
+                'hhpuos'            => $hhpuos,
+                'nurse_shift_time'  => $nurse_shift_time,
+                'recorder'          => $request->recorder,
+                'note'              => $request->note,
+            ]
+        );
 
         // ✅ เตรียมข้อความแจ้ง Telegram
         $message = "🤰งานห้องคลอด LR" ."\n"

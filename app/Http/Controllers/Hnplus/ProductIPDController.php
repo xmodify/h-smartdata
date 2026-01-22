@@ -180,25 +180,31 @@ class ProductIPDController extends Controller
         $nurse_shift_time = $patient_all * $hhpuos * (1.4 / 7);
 
         // ✅ บันทึกข้อมูลลงฐานข้อมูล
-        $productivity_ipd = Nurse_productivity_ipd::create([
-            'report_date'      => $request->report_date,
-            'shift_time'       => $request->shift_time,
-            'patient_all'      => $patient_all,
-            'convalescent'     => $convalescent,
-            'moderate_ill'     => $moderate_ill,
-            'semi_critical_ill'=> $semi_critical_ill,
-            'critical_ill'     => $critical_ill,
-            'patient_hr'       => $patient_hr,
-            'nurse_oncall'     => $request->nurse_oncall,
-            'nurse_partime'    => $request->nurse_partime,
-            'nurse_fulltime'   => $request->nurse_fulltime,
-            'nurse_hr'         => $nurse_hr,
-            'productivity'     => $productivity,
-            'hhpuos'           => $hhpuos,
-            'nurse_shift_time' => $nurse_shift_time,
-            'recorder'         => $request->recorder,
-            'note'             => $request->note,
-        ]);
+        $productivity_ipd = Nurse_productivity_ipd::updateOrCreate(
+            // 🔑 เงื่อนไขเช็คข้อมูลซ้ำ
+            [
+                'report_date' => $request->report_date,
+                'shift_time'  => $request->shift_time,
+            ],
+            // ✏️ ข้อมูลสำหรับ update / create
+            [
+                'patient_all'       => $patient_all,
+                'convalescent'      => $convalescent,
+                'moderate_ill'      => $moderate_ill,
+                'semi_critical_ill' => $semi_critical_ill,
+                'critical_ill'      => $critical_ill,
+                'patient_hr'        => $patient_hr,
+                'nurse_oncall'      => $request->nurse_oncall,
+                'nurse_partime'     => $request->nurse_partime,
+                'nurse_fulltime'    => $request->nurse_fulltime,
+                'nurse_hr'          => $nurse_hr,
+                'productivity'      => $productivity,
+                'hhpuos'            => $hhpuos,
+                'nurse_shift_time'  => $nurse_shift_time,
+                'recorder'          => $request->recorder,
+                'note'              => $request->note,
+            ]
+        );
 
         // ✅ เตรียมข้อความแจ้ง Telegram
         $message = "🛏️ งานผู้ป่วยใน สามัญ" ."\n"
@@ -347,25 +353,31 @@ class ProductIPDController extends Controller
         $nurse_shift_time = $patient_all * $hhpuos * (1.4 / 7);
 
         // ✅ บันทึกข้อมูลลงฐานข้อมูล
-        $productivity_ipd = Nurse_productivity_ipd::create([
-            'report_date'      => $request->report_date,
-            'shift_time'       => $request->shift_time,
-            'patient_all'      => $patient_all,
-            'convalescent'     => $convalescent,
-            'moderate_ill'     => $moderate_ill,
-            'semi_critical_ill'=> $semi_critical_ill,
-            'critical_ill'     => $critical_ill,
-            'patient_hr'       => $patient_hr,
-            'nurse_oncall'     => $request->nurse_oncall,
-            'nurse_partime'    => $request->nurse_partime,
-            'nurse_fulltime'   => $request->nurse_fulltime,
-            'nurse_hr'         => $nurse_hr,
-            'productivity'     => $productivity,
-            'hhpuos'           => $hhpuos,
-            'nurse_shift_time' => $nurse_shift_time,
-            'recorder'         => $request->recorder,
-            'note'             => $request->note,
-        ]);
+        $productivity_ipd = Nurse_productivity_ipd::updateOrCreate(
+            // 🔑 เงื่อนไขเช็คข้อมูลซ้ำ
+            [
+                'report_date' => $request->report_date,
+                'shift_time'  => $request->shift_time,
+            ],
+            // ✏️ ข้อมูลสำหรับ update / create
+            [
+                'patient_all'       => $patient_all,
+                'convalescent'      => $convalescent,
+                'moderate_ill'      => $moderate_ill,
+                'semi_critical_ill' => $semi_critical_ill,
+                'critical_ill'      => $critical_ill,
+                'patient_hr'        => $patient_hr,
+                'nurse_oncall'      => $request->nurse_oncall,
+                'nurse_partime'     => $request->nurse_partime,
+                'nurse_fulltime'    => $request->nurse_fulltime,
+                'nurse_hr'          => $nurse_hr,
+                'productivity'      => $productivity,
+                'hhpuos'            => $hhpuos,
+                'nurse_shift_time'  => $nurse_shift_time,
+                'recorder'          => $request->recorder,
+                'note'              => $request->note,
+            ]
+        );
 
         // ✅ เตรียมข้อความแจ้ง Telegram
         $message = "🛏️ งานผู้ป่วยใน สามัญ" ."\n"
@@ -514,25 +526,31 @@ class ProductIPDController extends Controller
         $nurse_shift_time = $patient_all * $hhpuos * (1.4 / 7);
 
         // ✅ บันทึกข้อมูลลงฐานข้อมูล
-        $productivity_ipd = Nurse_productivity_ipd::create([
-            'report_date'      => $request->report_date,
-            'shift_time'       => $request->shift_time,
-            'patient_all'      => $patient_all,
-            'convalescent'     => $convalescent,
-            'moderate_ill'     => $moderate_ill,
-            'semi_critical_ill'=> $semi_critical_ill,
-            'critical_ill'     => $critical_ill,
-            'patient_hr'       => $patient_hr,
-            'nurse_oncall'     => $request->nurse_oncall,
-            'nurse_partime'    => $request->nurse_partime,
-            'nurse_fulltime'   => $request->nurse_fulltime,
-            'nurse_hr'         => $nurse_hr,
-            'productivity'     => $productivity,
-            'hhpuos'           => $hhpuos,
-            'nurse_shift_time' => $nurse_shift_time,
-            'recorder'         => $request->recorder,
-            'note'             => $request->note,
-        ]);
+        $productivity_ipd = Nurse_productivity_ipd::updateOrCreate(
+            // 🔑 เงื่อนไขเช็คข้อมูลซ้ำ
+            [
+                'report_date' => $request->report_date,
+                'shift_time'  => $request->shift_time,
+            ],
+            // ✏️ ข้อมูลสำหรับ update / create
+            [
+                'patient_all'       => $patient_all,
+                'convalescent'      => $convalescent,
+                'moderate_ill'      => $moderate_ill,
+                'semi_critical_ill' => $semi_critical_ill,
+                'critical_ill'      => $critical_ill,
+                'patient_hr'        => $patient_hr,
+                'nurse_oncall'      => $request->nurse_oncall,
+                'nurse_partime'     => $request->nurse_partime,
+                'nurse_fulltime'    => $request->nurse_fulltime,
+                'nurse_hr'          => $nurse_hr,
+                'productivity'      => $productivity,
+                'hhpuos'            => $hhpuos,
+                'nurse_shift_time'  => $nurse_shift_time,
+                'recorder'          => $request->recorder,
+                'note'              => $request->note,
+            ]
+        );
 
         // ✅ เตรียมข้อความแจ้ง Telegram
         $message = "🛏️ งานผู้ป่วยใน สามัญ" ."\n"
