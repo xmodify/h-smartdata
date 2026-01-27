@@ -998,7 +998,8 @@ class DebtorController extends Controller
             SELECT o.vn,o.hn,o.an,pt.cid,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,o.vstdate,
                 o.vsttime,p.`name` AS pttype,vp.hospmain,p.hipdata_code,v.pdx,v.income,v.rcpt_money,
                 COALESCE(o1.other_price, 0) AS other,COALESCE(o2.ppfs_price, 0) AS ppfs,
-                v.income-v.rcpt_money-COALESCE(o1.other_price, 0) AS debtor,GROUP_CONCAT(DISTINCT sd.`name`) AS other_list,
+                v.income-v.rcpt_money-COALESCE(o1.other_price, 0)-COALESCE(o2.ppfs_price, 0) AS debtor,
+                GROUP_CONCAT(DISTINCT sd.`name`) AS other_list,
                 GROUP_CONCAT(DISTINCT sd2.`name`) AS ppfs_list,"ยืนยันลูกหนี้" AS status  
             FROM ovst o    
             LEFT JOIN patient pt ON pt.hn=o.hn
@@ -1050,7 +1051,8 @@ class DebtorController extends Controller
             SELECT o.vn,o.hn,o.an,pt.cid,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,o.vstdate,
             o.vsttime,p.`name` AS pttype,vp.hospmain,p.hipdata_code,v.pdx,v.income,v.rcpt_money,
             COALESCE(o1.other_price, 0) AS other,COALESCE(o2.ppfs_price, 0) AS ppfs,
-			v.income-v.rcpt_money-COALESCE(o1.other_price, 0) AS debtor,GROUP_CONCAT(DISTINCT sd.`name`) AS other_list,
+			v.income-v.rcpt_money-COALESCE(o1.other_price, 0)-COALESCE(o2.ppfs_price, 0) AS debtor,
+            GROUP_CONCAT(DISTINCT sd.`name`) AS other_list,
 			GROUP_CONCAT(DISTINCT sd2.`name`) AS ppfs_list,"ยืนยันลูกหนี้" AS status  
             FROM ovst o    
             LEFT JOIN patient pt ON pt.hn=o.hn
@@ -2172,7 +2174,8 @@ class DebtorController extends Controller
             SELECT o.vn,o.hn,o.an,pt.cid,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,o.vstdate,
                 o.vsttime,p.`name` AS pttype,vp.hospmain,p.hipdata_code,v.pdx,v.income,v.rcpt_money,
                 COALESCE(o1.other_price, 0) AS other,COALESCE(o2.ppfs_price, 0) AS ppfs,
-                v.income-v.rcpt_money-COALESCE(o1.other_price, 0) AS debtor,GROUP_CONCAT(DISTINCT sd.`name`) AS other_list,
+                v.income-v.rcpt_money-COALESCE(o1.other_price, 0)-COALESCE(o2.ppfs_price, 0) AS debtor,
+                GROUP_CONCAT(DISTINCT sd.`name`) AS other_list,
                 GROUP_CONCAT(DISTINCT sd2.`name`) AS ppfs_list,"ยืนยันลูกหนี้" AS status  
             FROM ovst o    
             LEFT JOIN patient pt ON pt.hn=o.hn
@@ -2226,7 +2229,8 @@ class DebtorController extends Controller
             SELECT o.vn,o.hn,o.an,pt.cid,CONCAT(pt.pname,pt.fname,SPACE(1),pt.lname) AS ptname,o.vstdate,
             o.vsttime,p.`name` AS pttype,vp.hospmain,p.hipdata_code,v.pdx,v.income,v.rcpt_money,
             COALESCE(o1.other_price, 0) AS other,COALESCE(o2.ppfs_price, 0) AS ppfs,
-			v.income-v.rcpt_money-COALESCE(o1.other_price, 0) AS debtor,GROUP_CONCAT(DISTINCT sd.`name`) AS other_list,
+			v.income-v.rcpt_money-COALESCE(o1.other_price, 0)-COALESCE(o2.ppfs_price, 0) AS debtor,
+            GROUP_CONCAT(DISTINCT sd.`name`) AS other_list,
 			GROUP_CONCAT(DISTINCT sd2.`name`) AS ppfs_list,"ยืนยันลูกหนี้" AS status  
             FROM ovst o    
             LEFT JOIN patient pt ON pt.hn=o.hn
@@ -6212,7 +6216,7 @@ class DebtorController extends Controller
                 p.name AS pttype,p.hipdata_code,ip.hospmain,i.regdate,i.regtime,i.dchdate,i.dchtime,a.pdx,i.adjrw, 
                 COALESCE(inc.income,0) AS income,COALESCE(rc.rcpt_money,0) AS rcpt_money,COALESCE(oth.other_price,0) AS other,
                 COALESCE(inc.income,0)-COALESCE(rc.rcpt_money,0)-COALESCE(oth.other_price,0) AS debtor,oth.other_list,
-                    ict.ipt_coll_status_type_name,i.data_ok,"ยืนยันลูกหนี้" AS status
+                ict.ipt_coll_status_type_name,i.data_ok,"ยืนยันลูกหนี้" AS status
             FROM ipt i
             LEFT JOIN patient pt ON pt.hn = i.hn
             LEFT JOIN ipt_pttype ip ON ip.an = i.an
@@ -6228,7 +6232,7 @@ class DebtorController extends Controller
             LEFT JOIN (SELECT r.vn AS an,SUM(r.bill_amount) AS rcpt_money
                 FROM rcpt_print r
                 INNER JOIN ipt i3 ON i3.an = r.vn AND r.bill_date BETWEEN i3.regdate AND i3.dchdate 
-                    WHERE i3.dchdate BETWEEN ? AND ? GROUP BY r.vn) rc ON rc.an = i.an
+                WHERE i3.dchdate BETWEEN ? AND ? GROUP BY r.vn) rc ON rc.an = i.an
             LEFT JOIN (SELECT o.an,o.pttype,SUM(o.sum_price) AS other_price,GROUP_CONCAT(DISTINCT s.name ) AS other_list
                 FROM opitemrece o
                 INNER JOIN ipt i2 ON i2.an = o.an AND i2.dchdate BETWEEN ? AND ?
@@ -6239,7 +6243,7 @@ class DebtorController extends Controller
             AND p.hipdata_code = "SSS"
             AND i.dchdate BETWEEN ? AND ?
             AND ip.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_sss = "Y")
-            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_302 WHERE an IS NOT NULL)
+            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_304 WHERE an IS NOT NULL)
             AND ip.pttype NOT IN ('.$pttype_sss_fund.')
 			AND ip.pttype NOT IN ('.$pttype_sss_72.') 
             GROUP BY i.an, ip.pttype
@@ -6274,7 +6278,7 @@ class DebtorController extends Controller
                 p.name AS pttype,p.hipdata_code,ip.hospmain,i.regdate,i.regtime,i.dchdate,i.dchtime,a.pdx,i.adjrw, 
                 COALESCE(inc.income,0) AS income,COALESCE(rc.rcpt_money,0) AS rcpt_money,COALESCE(oth.other_price,0) AS other,
                 COALESCE(inc.income,0)-COALESCE(rc.rcpt_money,0)-COALESCE(oth.other_price,0) AS debtor,oth.other_list,
-                    ict.ipt_coll_status_type_name,i.data_ok,"ยืนยันลูกหนี้" AS status
+                ict.ipt_coll_status_type_name,i.data_ok,"ยืนยันลูกหนี้" AS status
             FROM ipt i
             LEFT JOIN patient pt ON pt.hn = i.hn
             LEFT JOIN ipt_pttype ip ON ip.an = i.an
@@ -6290,7 +6294,7 @@ class DebtorController extends Controller
             LEFT JOIN (SELECT r.vn AS an,SUM(r.bill_amount) AS rcpt_money
                 FROM rcpt_print r
                 INNER JOIN ipt i3 ON i3.an = r.vn AND r.bill_date BETWEEN i3.regdate AND i3.dchdate 
-                    WHERE i3.dchdate BETWEEN ? AND ? GROUP BY r.vn) rc ON rc.an = i.an
+                WHERE i3.dchdate BETWEEN ? AND ? GROUP BY r.vn) rc ON rc.an = i.an
             LEFT JOIN (SELECT o.an,o.pttype,SUM(o.sum_price) AS other_price,GROUP_CONCAT(DISTINCT s.name ) AS other_list
                 FROM opitemrece o
                 INNER JOIN ipt i2 ON i2.an = o.an AND i2.dchdate BETWEEN ? AND ?
@@ -6301,7 +6305,7 @@ class DebtorController extends Controller
             AND p.hipdata_code = "SSS"
             AND i.dchdate BETWEEN ? AND ?
             AND ip.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_sss = "Y")
-            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_302 WHERE an IS NOT NULL)
+            AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_304 WHERE an IS NOT NULL)
             AND ip.pttype NOT IN ('.$pttype_sss_fund.')
 			AND ip.pttype NOT IN ('.$pttype_sss_72.') 
             AND i.an IN ('.$checkbox_string.') 
@@ -6431,7 +6435,7 @@ class DebtorController extends Controller
                 p.name AS pttype,p.hipdata_code,ip.hospmain,i.regdate,i.regtime,i.dchdate,i.dchtime,a.pdx,i.adjrw, 
                 COALESCE(inc.income,0) AS income,COALESCE(rc.rcpt_money,0) AS rcpt_money,COALESCE(oth.other_price,0) AS other,
                 COALESCE(inc.income,0)-COALESCE(rc.rcpt_money,0)-COALESCE(oth.other_price,0) AS debtor,oth.other_list,
-                    ict.ipt_coll_status_type_name,i.data_ok,"ยืนยันลูกหนี้" AS status
+                ict.ipt_coll_status_type_name,i.data_ok,"ยืนยันลูกหนี้" AS status
             FROM ipt i
             LEFT JOIN patient pt ON pt.hn = i.hn
             LEFT JOIN ipt_pttype ip ON ip.an = i.an
@@ -6447,7 +6451,7 @@ class DebtorController extends Controller
             LEFT JOIN (SELECT r.vn AS an,SUM(r.bill_amount) AS rcpt_money
                 FROM rcpt_print r
                 INNER JOIN ipt i3 ON i3.an = r.vn AND r.bill_date BETWEEN i3.regdate AND i3.dchdate 
-                    WHERE i3.dchdate BETWEEN ? AND ? GROUP BY r.vn) rc ON rc.an = i.an
+                WHERE i3.dchdate BETWEEN ? AND ? GROUP BY r.vn) rc ON rc.an = i.an
             LEFT JOIN (SELECT o.an,o.pttype,SUM(o.sum_price) AS other_price,GROUP_CONCAT(DISTINCT s.name ) AS other_list
                 FROM opitemrece o
                 INNER JOIN ipt i2 ON i2.an = o.an AND i2.dchdate BETWEEN ? AND ?
@@ -7478,7 +7482,7 @@ class DebtorController extends Controller
                 p.name AS pttype,p.hipdata_code,ip.hospmain,i.regdate,i.regtime,i.dchdate,i.dchtime,a.pdx,i.adjrw, 
                 COALESCE(inc.income,0) AS income,a.income,COALESCE(rc.rcpt_money,0) AS rcpt_money,COALESCE(oth.other_price,0) AS other,
                 COALESCE(inc.income,0)-COALESCE(rc.rcpt_money,0)-COALESCE(oth.other_price,0) AS debtor,oth.other_list,
-                    ict.ipt_coll_status_type_name,i.data_ok,"ยืนยันลูกหนี้" AS status
+                ict.ipt_coll_status_type_name,i.data_ok,"ยืนยันลูกหนี้" AS status
             FROM ipt i
             LEFT JOIN patient pt ON pt.hn = i.hn
             LEFT JOIN ipt_pttype ip ON ip.an = i.an
@@ -7494,7 +7498,7 @@ class DebtorController extends Controller
             LEFT JOIN (SELECT r.vn AS an,SUM(r.bill_amount) AS rcpt_money
                 FROM rcpt_print r
                 INNER JOIN ipt i3 ON i3.an = r.vn AND r.bill_date BETWEEN i3.regdate AND i3.dchdate 
-                    WHERE i3.dchdate BETWEEN ? AND ? GROUP BY r.vn) rc ON rc.an = i.an
+                WHERE i3.dchdate BETWEEN ? AND ? GROUP BY r.vn) rc ON rc.an = i.an
             LEFT JOIN (SELECT o.an,o.pttype,SUM(o.sum_price) AS other_price,GROUP_CONCAT(DISTINCT s.name ) AS other_list
                 FROM opitemrece o
                 INNER JOIN ipt i2 ON i2.an = o.an AND i2.dchdate BETWEEN ? AND ?
@@ -7506,7 +7510,8 @@ class DebtorController extends Controller
             AND i.dchdate BETWEEN ? AND ?
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_704 WHERE an IS NOT NULL)
             GROUP BY i.an, ip.pttype
-            ORDER BY i.ward, i.dchdate, i.an, ip.pttype',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ORDER BY i.ward, i.dchdate, i.an, ip.pttype'
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
         $request->session()->put('end_date',$end_date);
@@ -7534,7 +7539,7 @@ class DebtorController extends Controller
                 p.name AS pttype,p.hipdata_code,ip.hospmain,i.regdate,i.regtime,i.dchdate,i.dchtime,a.pdx,i.adjrw, 
                 COALESCE(inc.income,0) AS income,a.income,COALESCE(rc.rcpt_money,0) AS rcpt_money,COALESCE(oth.other_price,0) AS other,
                 COALESCE(inc.income,0)-COALESCE(rc.rcpt_money,0)-COALESCE(oth.other_price,0) AS debtor,oth.other_list,
-                    ict.ipt_coll_status_type_name,i.data_ok,"ยืนยันลูกหนี้" AS status
+                ict.ipt_coll_status_type_name,i.data_ok,"ยืนยันลูกหนี้" AS status
             FROM ipt i
             LEFT JOIN patient pt ON pt.hn = i.hn
             LEFT JOIN ipt_pttype ip ON ip.an = i.an
@@ -7550,7 +7555,7 @@ class DebtorController extends Controller
             LEFT JOIN (SELECT r.vn AS an,SUM(r.bill_amount) AS rcpt_money
                 FROM rcpt_print r
                 INNER JOIN ipt i3 ON i3.an = r.vn AND r.bill_date BETWEEN i3.regdate AND i3.dchdate 
-                    WHERE i3.dchdate BETWEEN ? AND ? GROUP BY r.vn) rc ON rc.an = i.an
+                WHERE i3.dchdate BETWEEN ? AND ? GROUP BY r.vn) rc ON rc.an = i.an
             LEFT JOIN (SELECT o.an,o.pttype,SUM(o.sum_price) AS other_price,GROUP_CONCAT(DISTINCT s.name ) AS other_list
                 FROM opitemrece o
                 INNER JOIN ipt i2 ON i2.an = o.an AND i2.dchdate BETWEEN ? AND ?
@@ -7563,7 +7568,8 @@ class DebtorController extends Controller
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_704 WHERE an IS NOT NULL)
             AND i.an IN ('.$checkbox_string.') 
             GROUP BY i.an, ip.pttype
-            ORDER BY i.ward, i.dchdate, i.an, ip.pttype',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ORDER BY i.ward, i.dchdate, i.an, ip.pttype'
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
             Debtor_1102050101_704::insert([
@@ -8030,7 +8036,7 @@ class DebtorController extends Controller
             LEFT JOIN (SELECT r.vn AS an,SUM(r.bill_amount) AS rcpt_money
                 FROM rcpt_print r
                 INNER JOIN ipt i3 ON i3.an = r.vn AND r.bill_date BETWEEN i3.regdate AND i3.dchdate 
-                    WHERE i3.dchdate BETWEEN ? AND ? GROUP BY r.vn) rc ON rc.an = i.an
+                WHERE i3.dchdate BETWEEN ? AND ? GROUP BY r.vn) rc ON rc.an = i.an
             LEFT JOIN (SELECT o.an,o.pttype,SUM(o.sum_price) AS other_price,GROUP_CONCAT(DISTINCT s.name ) AS other_list
                 FROM opitemrece o
                 INNER JOIN ipt i2 ON i2.an = o.an AND i2.dchdate BETWEEN ? AND ?
@@ -8042,7 +8048,8 @@ class DebtorController extends Controller
             AND i.dchdate BETWEEN ? AND ?
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_109 WHERE an IS NOT NULL)
             GROUP BY i.an, ip.pttype
-            ORDER BY i.ward, i.dchdate, i.an, ip.pttype',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ORDER BY i.ward, i.dchdate, i.an, ip.pttype'
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
         $request->session()->put('end_date',$end_date);
@@ -8086,7 +8093,7 @@ class DebtorController extends Controller
             LEFT JOIN (SELECT r.vn AS an,SUM(r.bill_amount) AS rcpt_money
                 FROM rcpt_print r
                 INNER JOIN ipt i3 ON i3.an = r.vn AND r.bill_date BETWEEN i3.regdate AND i3.dchdate 
-                    WHERE i3.dchdate BETWEEN ? AND ? GROUP BY r.vn) rc ON rc.an = i.an
+                WHERE i3.dchdate BETWEEN ? AND ? GROUP BY r.vn) rc ON rc.an = i.an
             LEFT JOIN (SELECT o.an,o.pttype,SUM(o.sum_price) AS other_price,GROUP_CONCAT(DISTINCT s.name ) AS other_list
                 FROM opitemrece o
                 INNER JOIN ipt i2 ON i2.an = o.an AND i2.dchdate BETWEEN ? AND ?
@@ -8099,7 +8106,8 @@ class DebtorController extends Controller
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_109 WHERE an IS NOT NULL)
             AND i.an IN ('.$checkbox_string.') 
             GROUP BY i.an, ip.pttype
-            ORDER BY i.ward, i.dchdate, i.an, ip.pttype',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ORDER BY i.ward, i.dchdate, i.an, ip.pttype'
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
             Debtor_1102050102_109::insert([
@@ -8273,7 +8281,8 @@ class DebtorController extends Controller
             AND i.dchdate BETWEEN ? AND ?
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_111 WHERE an IS NOT NULL)
             GROUP BY i.an, ip.pttype
-            ORDER BY i.ward, i.dchdate',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ORDER BY i.ward, i.dchdate'
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
         $request->session()->put('end_date',$end_date);
@@ -8331,7 +8340,8 @@ class DebtorController extends Controller
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_111 WHERE an IS NOT NULL)
             AND i.an IN ('.$checkbox_string.') 
             GROUP BY i.an, ip.pttype
-            ORDER BY i.ward, i.dchdate',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ORDER BY i.ward, i.dchdate'
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
             Debtor_1102050102_111::insert([
@@ -8473,8 +8483,8 @@ class DebtorController extends Controller
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_603 WHERE an IS NOT NULL)
             AND p.pttype IN ('.$pttype_act.') 
             GROUP BY i.an, ip.pttype
-            ORDER BY i.ward, i.dchdate, i.an, ip.pttype
-            ',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ORDER BY i.ward, i.dchdate, i.an, ip.pttype'
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
         $request->session()->put('end_date',$end_date);
@@ -8533,8 +8543,8 @@ class DebtorController extends Controller
             AND p.pttype IN ('.$pttype_act.') 
             AND i.an IN ('.$checkbox_string.') 
             GROUP BY i.an, ip.pttype
-            ORDER BY i.ward, i.dchdate, i.an, ip.pttype
-            ',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ORDER BY i.ward, i.dchdate, i.an, ip.pttype'
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
             Debtor_1102050102_603::insert([
@@ -8706,8 +8716,8 @@ class DebtorController extends Controller
             AND i.dchdate BETWEEN ? AND ?
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_802 WHERE an IS NOT NULL)
             GROUP BY i.an, ip.pttype
-            ORDER BY i.ward, i.dchdate
-            ',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ORDER BY i.ward, i.dchdate'
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
         $request->session()->put('end_date',$end_date);
@@ -8765,8 +8775,8 @@ class DebtorController extends Controller
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_802 WHERE an IS NOT NULL)
             AND i.an IN ('.$checkbox_string.') 
             GROUP BY i.an, ip.pttype
-            ORDER BY i.ward, i.dchdate
-            ',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ORDER BY i.ward, i.dchdate'
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
             Debtor_1102050102_802::insert([
@@ -8931,8 +8941,8 @@ class DebtorController extends Controller
             AND i.dchdate BETWEEN ? AND ?
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_804 WHERE an IS NOT NULL)
             GROUP BY i.an, ip.pttype
-            ORDER BY i.ward, i.dchdate
-            ',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ORDER BY i.ward, i.dchdate'
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
         $request->session()->put('end_date',$end_date);
@@ -8990,8 +9000,8 @@ class DebtorController extends Controller
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_804 WHERE an IS NOT NULL)
             AND i.an IN ('.$checkbox_string.') 
             GROUP BY i.an, ip.pttype
-            ORDER BY i.ward, i.dchdate
-            ',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ORDER BY i.ward, i.dchdate'
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
             Debtor_1102050102_804::insert([
