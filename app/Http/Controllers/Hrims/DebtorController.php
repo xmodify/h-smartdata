@@ -1028,7 +1028,7 @@ class DebtorController extends Controller
                 AND v.income-v.rcpt_money <>"0"		
                 AND v.income-v.rcpt_money-COALESCE(o1.other_price, 0) <>"0"					
                 AND o.vstdate BETWEEN ? AND ?
-                AND p.hipdata_code = "UCS" 					
+                AND p.hipdata_code IN ("UCS","WEL")		
                 AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
                 AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
                 AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_201 WHERE vn IS NOT NULL) 
@@ -1081,7 +1081,7 @@ class DebtorController extends Controller
                 AND v.income-v.rcpt_money <>"0"		
                 AND v.income-v.rcpt_money-COALESCE(o1.other_price, 0) <>"0"					
                 AND o.vstdate BETWEEN ? AND ?
-                AND p.hipdata_code = "UCS" 					
+                AND p.hipdata_code IN ("UCS","WEL")			
                 AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")
                 AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
                 AND o.vn IN ('.$checkbox_string.') 
@@ -1320,7 +1320,7 @@ class DebtorController extends Controller
                 AND v.income-v.rcpt_money <>"0"		
                 AND v.income-v.rcpt_money-COALESCE(o1.other_price, 0) <>"0"					
                 AND o.vstdate BETWEEN ? AND ?
-                AND p.hipdata_code = "UCS" 					
+                AND p.hipdata_code IN ("UCS","WEL")			
                 AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y"	AND (hmain_ucs IS NULL OR hmain_ucs ="")) 
                 AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
                 AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_203 WHERE vn IS NOT NULL) 
@@ -1374,7 +1374,7 @@ class DebtorController extends Controller
                 AND v.income-v.rcpt_money <>"0"		
                 AND v.income-v.rcpt_money-COALESCE(o1.other_price, 0) <>"0"					
                 AND o.vstdate BETWEEN ? AND ?
-                AND p.hipdata_code = "UCS" 					
+                AND p.hipdata_code IN ("UCS","WEL")		
                 AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y"	AND (hmain_ucs IS NULL OR hmain_ucs ="")) 
                 AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
                 AND o.vn IN ('.$checkbox_string.') 
@@ -1569,7 +1569,6 @@ class DebtorController extends Controller
         $start_date = $request->start_date ?: Session::get('start_date') ?: date('Y-m-d');
         $end_date = $request->end_date ?: Session::get('end_date') ?: date('Y-m-d');
         $search  =  $request->search ?: Session::get('search'); 
-        $pttype_checkup = DB::table('main_setting')->where('name', 'pttype_checkup')->value('value');
         
         if ($search) {
             $debtor = DB::select('
@@ -1617,8 +1616,7 @@ class DebtorController extends Controller
             WHERE (o.an IS NULL OR o.an ="")
                 AND v.income-v.rcpt_money <> "0"                 
                 AND o.vstdate BETWEEN ? AND ?
-                AND p.hipdata_code NOT IN ("OFC","LGO")	
-                AND vp.pttype NOT IN ('.$pttype_checkup.')
+                AND p.hipdata_code IN ("UCS","WEL")	
                 AND v.pdx IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
                 AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_209 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
@@ -1635,8 +1633,7 @@ class DebtorController extends Controller
     public function _1102050101_209_confirm(Request $request )
     {
         $start_date = Session::get('start_date');
-        $end_date = Session::get('end_date');        
-        $pttype_checkup = DB::table('main_setting')->where('name', 'pttype_checkup')->value('value'); 
+        $end_date = Session::get('end_date');                
         $request->validate([
         'checkbox' => 'required|array',
         ], [
@@ -1670,8 +1667,7 @@ class DebtorController extends Controller
             WHERE (o.an IS NULL OR o.an ="") 
                 AND v.income-v.rcpt_money <> "0"                 
                 AND o.vstdate BETWEEN ? AND ?
-                AND p.hipdata_code NOT IN ("OFC","LGO")	
-                AND vp.pttype NOT IN ('.$pttype_checkup.')               
+                AND p.hipdata_code IN ("UCS","WEL")               
                 AND v.pdx IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
                 AND o.vn IN ('.$checkbox_string.')                 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
@@ -1812,7 +1808,7 @@ class DebtorController extends Controller
 			LEFT JOIN s_drugitems sd ON sd.icode=o2.icode	
             WHERE (o.an IS NULL OR o.an ="")                
                 AND o.vstdate BETWEEN ? AND ?
-                AND p.hipdata_code = "UCS"
+                AND p.hipdata_code IN ("UCS","WEL")
 				AND o1.vn IS NOT NULL 
                 AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_216 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date]); 
@@ -1836,7 +1832,7 @@ class DebtorController extends Controller
             LEFT JOIN ovst_eclaim oe ON oe.vn=o.vn 	
             WHERE (o.an IS NULL OR o.an ="")                                
                 AND o.vstdate BETWEEN ? AND ?
-                AND p.hipdata_code = "UCS"
+                AND p.hipdata_code IN ("UCS","WEL")
 				AND o1.vn IS NOT NULL 
                 AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y") 
                 AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_216 WHERE vn IS NOT NULL) 
@@ -1872,7 +1868,7 @@ class DebtorController extends Controller
             AND v.income-v.rcpt_money <>"0"		
             AND v.income-v.rcpt_money-COALESCE(o1.other_price, 0) <>"0"					
             AND o.vstdate BETWEEN ? AND ?
-            AND p.hipdata_code = "UCS" 		
+            AND p.hipdata_code IN ("UCS","WEL")	
 			AND kidney.vn IS NULL			
             AND vp.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y")
             AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
@@ -1918,7 +1914,7 @@ class DebtorController extends Controller
 			LEFT JOIN s_drugitems sd ON sd.icode=o2.icode	
             WHERE (o.an IS NULL OR o.an ="")                
                 AND o.vstdate BETWEEN ? AND ?
-                AND p.hipdata_code = "UCS"
+                AND p.hipdata_code IN ("UCS","WEL")
 				AND o1.vn IS NOT NULL 
                 AND o.vn IN ('.$checkbox_string.') 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date]); 
@@ -1983,7 +1979,7 @@ class DebtorController extends Controller
 			LEFT JOIN s_drugitems sd ON sd.icode=o2.icode	
             WHERE (o.an IS NULL OR o.an ="")                                                     
                 AND o.vstdate BETWEEN ? AND ?
-                AND p.hipdata_code = "UCS"
+                AND p.hipdata_code IN ("UCS","WEL")
 				AND o1.vn IS NOT NULL 
                 AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs ="Y")  
                 AND o.vn IN ('.$checkbox_string.') 
@@ -2061,7 +2057,7 @@ class DebtorController extends Controller
             AND v.income-v.rcpt_money <>"0"		
             AND v.income-v.rcpt_money-COALESCE(o1.other_price, 0) <>"0"					
             AND o.vstdate BETWEEN ? AND ?
-            AND p.hipdata_code = "UCS" 		
+            AND p.hipdata_code IN ("UCS","WEL")	
 			AND kidney.vn IS NULL			
             AND vp.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y")
             AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
@@ -2213,7 +2209,6 @@ class DebtorController extends Controller
                 AND p.hipdata_code = "SSS" 
                 AND p.pttype NOT IN ('.$pttype_sss_fund.')					
                 AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_sss ="Y")
-                AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
                 AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_301 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
@@ -2268,7 +2263,6 @@ class DebtorController extends Controller
                 AND p.hipdata_code = "SSS" 
                 AND p.pttype NOT IN ('.$pttype_sss_fund.')					
                 AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_sss ="Y")
-                AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
                 AND o.vn IN ('.$checkbox_string.') 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
@@ -2504,7 +2498,6 @@ class DebtorController extends Controller
                 AND p.pttype NOT IN ('.$pttype_sss_fund.')	
                 AND p.pttype NOT IN ('.$pttype_sss_ae.')				
                 AND vp.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_sss ="Y")
-                AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
                 AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_303 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
@@ -2559,7 +2552,6 @@ class DebtorController extends Controller
                 AND p.pttype NOT IN ('.$pttype_sss_fund.')
                 AND p.pttype NOT IN ('.$pttype_sss_ae.')					
                 AND vp.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_sss ="Y")
-                AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
                 AND o.vn IN ('.$checkbox_string.') 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
@@ -2708,7 +2700,6 @@ class DebtorController extends Controller
                 AND v.income-v.rcpt_money-COALESCE(o1.other_price, 0) <>"0"							
                 AND o.vstdate BETWEEN ? AND ?
                 AND p.pttype IN ('.$pttype_sss_fund.')
-                AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
                 AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_307 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
@@ -2788,7 +2779,6 @@ class DebtorController extends Controller
                 AND v.income-v.rcpt_money-COALESCE(o1.other_price, 0) <>"0"			
                 AND o.vstdate BETWEEN ? AND ?
                 AND p.pttype IN ('.$pttype_sss_fund.')	
-                AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
                 AND o.vn IN ('.$checkbox_string.') 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
@@ -4544,7 +4534,6 @@ class DebtorController extends Controller
                 AND v.income <> "0" 
                 AND v.paid_money = "0" 
                 AND p.hipdata_code IN ("BFC","GOF","PVT","WVO")
-                AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
                 AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_108 WHERE vn IS NOT NULL) 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date]); 
 
@@ -4586,7 +4575,6 @@ class DebtorController extends Controller
                 AND v.income <> "0" 
                 AND v.paid_money = "0" 
                 AND p.hipdata_code IN ("BFC","GOF","PVT","WVO")
-                AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
                 AND o.vn IN ('.$checkbox_string.') 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date]); 
         
@@ -5002,7 +4990,6 @@ class DebtorController extends Controller
                 AND o.vstdate BETWEEN ? AND ?
                 AND v.income-v.rcpt_money <> "0" 
                 AND vp.pttype IN ('.$pttype_act.')
-                AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
                 AND o.vn IN ('.$checkbox_string.') 
             GROUP BY o.vn ORDER BY o.vstdate,o.oqueue',[$start_date,$end_date]); 
         
@@ -5644,7 +5631,7 @@ class DebtorController extends Controller
                 WHERE (li.kidney = "Y" OR li.ems = "Y" OR li.uc_cr = "Y"OR n.nhso_adp_code IN ("S1801","S1802"))
             GROUP BY o.an, o.pttype) oth ON oth.an = i.an AND oth.pttype = ip.pttype
             WHERE i.confirm_discharge = "Y"
-            AND p.hipdata_code = "UCS"
+            AND p.hipdata_code = IN ("UCS","WEL")
             AND i.dchdate BETWEEN ? AND ?
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_202 WHERE an IS NOT NULL)
             GROUP BY i.an, ip.pttype
@@ -5701,7 +5688,7 @@ class DebtorController extends Controller
                 WHERE (li.kidney = "Y" OR li.ems = "Y" OR li.uc_cr = "Y"OR n.nhso_adp_code IN ("S1801","S1802"))
             GROUP BY o.an, o.pttype) oth ON oth.an = i.an AND oth.pttype = ip.pttype
             WHERE i.confirm_discharge = "Y"
-            AND p.hipdata_code = "UCS"
+            AND p.hipdata_code IN ("UCS","WEL")
             AND i.dchdate BETWEEN ? AND ?
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_202 WHERE an IS NOT NULL)
             AND i.an IN ('.$checkbox_string.') 
@@ -5846,7 +5833,7 @@ class DebtorController extends Controller
                 WHERE li.kidney = "Y" OR li.ems = "Y" OR li.uc_cr = "Y" OR n.nhso_adp_code IN ("S1801","S1802")
                 GROUP BY o.an) cr ON cr.an = i.an
             WHERE i.confirm_discharge = "Y"
-            AND p.hipdata_code = "UCS"
+            AND p.hipdata_code IN ("UCS","WEL")
             AND i.dchdate BETWEEN ? AND ?
             AND COALESCE(cr.cr_price,0) <> 0
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_217 WHERE an IS NOT NULL)
@@ -5895,7 +5882,7 @@ class DebtorController extends Controller
                 WHERE li.kidney = "Y" OR li.ems = "Y" OR li.uc_cr = "Y" OR n.nhso_adp_code IN ("S1801","S1802")
                 GROUP BY o.an) cr ON cr.an = i.an
             WHERE i.confirm_discharge = "Y"
-            AND p.hipdata_code = "UCS"
+            AND p.hipdata_code IN ("UCS","WEL")
             AND i.dchdate BETWEEN ? AND ?
             AND COALESCE(cr.cr_price,0) <> 0
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_217 WHERE an IS NOT NULL)
