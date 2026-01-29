@@ -3721,8 +3721,8 @@ class DebtorController extends Controller
                 FROM opitemrece op  
                 INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode AND li.ems = "Y"
                 LEFT JOIN s_drugitems sd ON sd.icode = op.icode
-            WHERE op.vstdate BETWEEN ? AND ?
-            GROUP BY op.vn) ch ON ch.vn = o.vn
+                WHERE op.vstdate BETWEEN ? AND ?
+                GROUP BY op.vn) ch ON ch.vn = o.vn
             WHERE (o.an IS NULL OR o.an = "")
             AND o.vstdate BETWEEN ? AND ?
             AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) > 0
@@ -3774,8 +3774,8 @@ class DebtorController extends Controller
                 FROM opitemrece op  
                 INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode AND li.ems = "Y"
                 LEFT JOIN s_drugitems sd ON sd.icode = op.icode
-            WHERE op.vstdate BETWEEN ? AND ?
-            GROUP BY op.vn) ch ON ch.vn = o.vn
+                WHERE op.vstdate BETWEEN ? AND ?
+                GROUP BY op.vn) ch ON ch.vn = o.vn
             WHERE (o.an IS NULL OR o.an = "")
             AND o.vstdate BETWEEN ? AND ?
             AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) > 0
@@ -3910,8 +3910,8 @@ class DebtorController extends Controller
                 FROM opitemrece op  
                 INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode AND li.ems = "Y"
                 LEFT JOIN s_drugitems sd ON sd.icode = op.icode
-            WHERE op.vstdate BETWEEN ? AND ?
-            ROUP BY op.vn) ch ON ch.vn = o.vn
+                WHERE op.vstdate BETWEEN ? AND ?
+                GROUP BY op.vn) ch ON ch.vn = o.vn
             WHERE (o.an IS NULL OR o.an = "")
             AND o.vstdate BETWEEN ? AND ?
             AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) > 0
@@ -3965,8 +3965,8 @@ class DebtorController extends Controller
                 FROM opitemrece op  
                 INNER JOIN htp_report.lookup_icode li ON op.icode = li.icode AND li.ems = "Y"
                 LEFT JOIN s_drugitems sd ON sd.icode = op.icode
-            WHERE op.vstdate BETWEEN ? AND ?
-            ROUP BY op.vn) ch ON ch.vn = o.vn
+                WHERE op.vstdate BETWEEN ? AND ?
+                GROUP BY op.vn) ch ON ch.vn = o.vn
             WHERE (o.an IS NULL OR o.an = "")
             AND o.vstdate BETWEEN ? AND ?
             AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) > 0
