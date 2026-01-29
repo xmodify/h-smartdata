@@ -124,7 +124,7 @@ class DebtorController extends Controller
             WHERE o.vstdate BETWEEN ? AND ?
             AND i.vn IS NULL 
             GROUP BY p.hipdata_code
-            ORDER BY p.hipdata_code',[$start_date,$end_date,$start_date,$end_date]);
+            ORDER BY p.hipdata_code',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]);
         
         $check_income_ipd = DB::connection('hosxp')->select("
             SELECT o.op_income,o.op_paid,v.an_income,v.an_paid,v.an_rcpt,v.an_income-v.an_rcpt AS an_debtor,
