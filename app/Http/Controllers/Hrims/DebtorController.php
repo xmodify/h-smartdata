@@ -1825,7 +1825,7 @@ class DebtorController extends Controller
             $debtor = DB::select('
                 SELECT d.vn,d.vstdate,d.vsttime,d.hn,MAX(d.ptname) AS ptname,MAX(d.hipdata_code) AS hipdata_code,MAX(d.pttype) AS pttype,
                     MAX(d.hospmain) AS hospmain,MAX(d.pdx) AS pdx,MAX(d.income) AS income,MAX(d.rcpt_money) AS rcpt_money,
-                    MAX(d.kidney) AS kidney,MAX(d.cr) AS cr, MAX(d.anywhere) AS anywhere,MAX(d.debtor) AS debtor,
+                    MAX(d.kidney) AS kidney,MAX(d.cr) AS cr, MAX(d.anywhere) AS anywhere,MAX(d.ppfs) AS ppfs,MAX(d.debtor) AS debtor,
                     IFNULL(MAX(s.receive_total),0)+CASE WHEN MAX(d.kidney) > 0 THEN IFNULL(MAX(sk.receive_total),0) ELSE 0 END AS receive,
                     MAX(s.repno) AS repno,MAX(sk.repno) AS rid,MAX(d.debtor_lock) AS debtor_lock,
                     CASE WHEN (IFNULL(MAX(s.receive_total),0)+CASE WHEN MAX(d.kidney) > 0 THEN IFNULL(MAX(sk.receive_total),0) ELSE 0 END
@@ -1843,7 +1843,7 @@ class DebtorController extends Controller
             $debtor = DB::select('
                 SELECT d.vn,d.vstdate,d.vsttime,d.hn,MAX(d.ptname) AS ptname,MAX(d.hipdata_code) AS hipdata_code,MAX(d.pttype) AS pttype,
                     MAX(d.hospmain) AS hospmain,MAX(d.pdx) AS pdx,MAX(d.income) AS income,MAX(d.rcpt_money) AS rcpt_money,
-                    MAX(d.kidney) AS kidney,MAX(d.cr) AS cr, MAX(d.anywhere) AS anywhere,MAX(d.debtor) AS debtor,
+                    MAX(d.kidney) AS kidney,MAX(d.cr) AS cr, MAX(d.anywhere) AS anywhere,MAX(d.ppfs) AS ppfs,MAX(d.debtor) AS debtor,
                     IFNULL(MAX(s.receive_total),0)+CASE WHEN MAX(d.kidney) > 0 THEN IFNULL(MAX(sk.receive_total),0) ELSE 0 END AS receive,
                     MAX(s.repno) AS repno,MAX(sk.repno) AS rid,MAX(d.debtor_lock) AS debtor_lock,
                     CASE WHEN (IFNULL(MAX(s.receive_total),0)+CASE WHEN MAX(d.kidney) > 0 THEN IFNULL(MAX(sk.receive_total),0) ELSE 0 END
