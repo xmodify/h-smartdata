@@ -103,16 +103,19 @@ class DebtorController extends Controller
                     WHEN p.hipdata_code = "UCS" THEN "ประกันสุขภาพ"
                     ELSE "ไม่พบเงื่อนไข" END AS pttype_group,
                 COUNT(DISTINCT o.vn) AS vn,
-                SUM(IFNULL(v.income,0)) AS income,
+                SUM(IFNULL(inc.income,0)) AS income,
                 SUM(IFNULL(v.paid_money ,0)) AS paid_money ,
                 SUM(IFNULL(v.rcpt_money,0)) AS rcpt_money,
                 SUM(IFNULL(pp.ppfs_price,0)) AS ppfs,
-                SUM(IFNULL(v.income,0))-SUM(IFNULL(v.rcpt_money,0))-SUM(IFNULL(pp.ppfs_price,0)) AS debtor
+                SUM(IFNULL(inc.income,0))-SUM(IFNULL(v.rcpt_money,0))-SUM(IFNULL(pp.ppfs_price,0)) AS debtor
             FROM ovst o
             LEFT JOIN ipt i ON i.vn = o.vn
             LEFT JOIN vn_stat v ON v.vn=o.vn   
             LEFT JOIN visit_pttype vp ON vp.vn = o.vn
-            LEFT JOIN pttype p ON p.pttype = vp.pttype            
+            LEFT JOIN pttype p ON p.pttype = vp.pttype    
+            LEFT JOIN (SELECT op.vn,op.pttype,SUM(op.sum_price) AS income
+                FROM opitemrece op WHERE op.vstdate BETWEEN ? AND ?
+                GROUP BY op.vn, op.pttype) inc ON inc.vn = o.vn AND inc.pttype = vp.pttype        
             LEFT JOIN (SELECT op.vn,SUM(op.sum_price) AS ppfs_price
                 FROM opitemrece op
                 INNER JOIN htp_report.lookup_icode li ON li.icode = op.icode AND li.ppfs = "Y"
