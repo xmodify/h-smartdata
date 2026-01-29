@@ -231,7 +231,7 @@ class DebtorController extends Controller
 
         $check = DB::connection('hosxp')->select("
             SELECT * FROM (SELECT 'OPD' AS dep,v.vstdate AS serv_date,v.vn AS vnan,v.hn,CONCAT(pt.pname,pt.fname,' ',pt.lname) AS ptname,
-                    p.hipdata_code,p.name AS pttype,vp.hospmain,v.pdx,v.income,v.paid_money,IFNULL(rc.rcpt_money,0),
+                    p.hipdata_code,p.name AS pttype,vp.hospmain,v.pdx,v.income,v.paid_money,IFNULL(rc.rcpt_money,0) AS rcpt_money,
                      v.income - IFNULL(rc.rcpt_money,0) AS debtor
                 FROM vn_stat v
                 LEFT JOIN ipt i ON i.vn = v.vn
