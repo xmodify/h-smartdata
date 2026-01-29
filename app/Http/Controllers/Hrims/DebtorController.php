@@ -4548,7 +4548,7 @@ class DebtorController extends Controller
             LEFT JOIN hospcode h ON h.hospcode = vp.hospmain
             WHERE (o.an IS NULL OR o.an = "")
             AND v.paid_money <> "0"
-            AND v.paid_money - IFNULL(rc.rcpt_money,0) > 0
+            AND v.paid_money - v.rcpt_money > 0
             AND o.vstdate BETWEEN ? AND ?
             AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_106 WHERE vn IS NOT NULL)
             ORDER BY o.vstdate, o.oqueue ',[$start_date,$end_date]); 
@@ -4612,7 +4612,7 @@ class DebtorController extends Controller
             LEFT JOIN hospcode h ON h.hospcode = vp.hospmain
             WHERE (o.an IS NULL OR o.an = "")
             AND v.paid_money <> "0"
-            AND v.paid_money - IFNULL(rc.rcpt_money,0) > 0
+            AND v.paid_money - v.rcpt_money > 0
             AND o.vstdate BETWEEN ? AND ?
             AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_106 WHERE vn IS NOT NULL)
             AND o.vn IN ('.$checkbox_string.')
