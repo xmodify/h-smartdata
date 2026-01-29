@@ -85,51 +85,57 @@ class DebtorController extends Controller
             ,[$start_date,$end_date,$start_date,$end_date]);
             
         $check_income_pttype = DB::connection('hosxp')->select('
-            SELECT p.hipdata_code AS inscl,
-                CASE WHEN p.hipdata_code IN ("A1","CSH") THEN "ชำระเงิน"
-                    WHEN p.hipdata_code = "A9" THEN "พรบ."
-                    WHEN p.hipdata_code = "BKK" THEN "กทม."
-                    WHEN p.hipdata_code = "PTY" THEN "พัทยา"
-                    WHEN p.hipdata_code = "BMT" THEN "ขสมก."
-                    WHEN p.hipdata_code = "KKT" THEN "กกต."
-                    WHEN p.hipdata_code = "GOF" THEN "เบิกต้นสังกัด"
-                    WHEN p.hipdata_code = "LGO" THEN "อปท."
-                    WHEN p.hipdata_code = "NRD" THEN "ต่างด้าวไม่ขึ้นทะเบียน"
-                    WHEN p.hipdata_code = "NRH" THEN "ต่างด้าวขึ้นทะเบียน"
-                    WHEN p.hipdata_code = "OFC" THEN "กรมบัญชีกลาง"
-                    WHEN p.hipdata_code = "SSI" THEN "ปกส.ทุพพลภาพ"
-                    WHEN p.hipdata_code = "SSS" THEN "ปกส."
-                    WHEN p.hipdata_code = "STP" THEN "ผู้มีปัญหาสถานะสิทธิ"
-                    WHEN p.hipdata_code = "UCS" THEN "ประกันสุขภาพ"
-                    ELSE "ไม่พบเงื่อนไข" END AS pttype_group,
-                COUNT(DISTINCT o.vn) AS vn,
-                SUM(IFNULL(v.income,0)) AS income,
-                SUM(IFNULL(v.paid_money ,0)) AS paid_money ,
-                SUM(IFNULL(v.rcpt_money,0)) AS rcpt_money,
-                SUM(IFNULL(pp.ppfs_price,0)) AS ppfs,
-                SUM(IFNULL(v.income,0))-SUM(IFNULL(v.rcpt_money,0))-SUM(IFNULL(pp.ppfs_price,0)) AS debtor
-            FROM ovst o
-            LEFT JOIN ipt i ON i.vn = o.vn
-            LEFT JOIN ( SELECT vn,MAX(income) AS income, MAX(paid_money) AS paid_money, MAX(rcpt_money) AS rcpt_money
-                FROM vn_stat
-                WHERE vstdate BETWEEN ? AND ? GROUP BY vn) v ON v.vn = o.vn 
-            LEFT JOIN visit_pttype vp ON vp.vn = o.vn
-            LEFT JOIN pttype p ON p.pttype = vp.pttype    
-            LEFT JOIN (SELECT op.vn, op.pttype, SUM(op.sum_price) AS income
-                FROM opitemrece op
-                WHERE op.vstdate BETWEEN ? AND ?
-                GROUP BY op.vn, op.pttype) inc ON inc.vn = o.vn AND inc.pttype = vp.pttype 
-            LEFT JOIN (SELECT r.vn, SUM(r.bill_amount) AS rcpt_money
-                FROM rcpt_print r
-                WHERE r.`status` = "OK" GROUP BY r.vn) rc ON rc.vn = o.vn   
-            LEFT JOIN (SELECT op.vn,SUM(op.sum_price) AS ppfs_price
-                FROM opitemrece op
-                INNER JOIN htp_report.lookup_icode li ON li.icode = op.icode AND li.ppfs = "Y"
-                WHERE op.vstdate BETWEEN ? AND ? GROUP BY op.vn ) pp ON pp.vn = o.vn
-            WHERE o.vstdate BETWEEN ? AND ?
-            AND i.vn IS NULL 
-            GROUP BY p.hipdata_code
-            ORDER BY p.hipdata_code',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]);
+            SELECT
+    p.hipdata_code AS inscl,
+    CASE 
+        WHEN p.hipdata_code IN ("A1","CSH") THEN "ชำระเงิน"
+        WHEN p.hipdata_code = "A9" THEN "พรบ."
+        WHEN p.hipdata_code = "BKK" THEN "กทม."
+        WHEN p.hipdata_code = "PTY" THEN "พัทยา"
+        WHEN p.hipdata_code = "BMT" THEN "ขสมก."
+        WHEN p.hipdata_code = "KKT" THEN "กกต."
+        WHEN p.hipdata_code = "GOF" THEN "เบิกต้นสังกัด"
+        WHEN p.hipdata_code = "LGO" THEN "อปท."
+        WHEN p.hipdata_code = "NRD" THEN "ต่างด้าวไม่ขึ้นทะเบียน"
+        WHEN p.hipdata_code = "NRH" THEN "ต่างด้าวขึ้นทะเบียน"
+        WHEN p.hipdata_code = "OFC" THEN "กรมบัญชีกลาง"
+        WHEN p.hipdata_code = "SSI" THEN "ปกส.ทุพพลภาพ"
+        WHEN p.hipdata_code = "SSS" THEN "ปกส."
+        WHEN p.hipdata_code = "STP" THEN "ผู้มีปัญหาสถานะสิทธิ"
+        WHEN p.hipdata_code = "UCS" THEN "ประกันสุขภาพ"
+        ELSE "ไม่พบเงื่อนไข"
+    END AS pttype_group,
+    COUNT(DISTINCT o.vn) AS vn,
+    SUM(v.income)      AS income,
+    SUM(v.paid_money) AS paid_money,
+    SUM(v.rcpt_money) AS rcpt_money,
+    SUM(IFNULL(pp.ppfs_price,0)) AS ppfs,
+    SUM(v.income) - SUM(v.rcpt_money) AS debtor
+FROM ovst o
+LEFT JOIN ipt i ON i.vn = o.vn
+LEFT JOIN (
+    SELECT vn,
+           MAX(income)     AS income,
+           MAX(paid_money) AS paid_money,
+           MAX(rcpt_money) AS rcpt_money
+    FROM vn_stat
+    WHERE vstdate BETWEEN ? AND ?
+    GROUP BY vn
+) v ON v.vn = o.vn
+LEFT JOIN visit_pttype vp ON vp.vn = o.vn
+LEFT JOIN pttype p ON p.pttype = vp.pttype
+LEFT JOIN (
+    SELECT op.vn,SUM(op.sum_price) AS ppfs_price
+    FROM opitemrece op
+    INNER JOIN htp_report.lookup_icode li
+        ON li.icode = op.icode AND li.ppfs = "Y"
+    WHERE op.vstdate BETWEEN ? AND ?
+    GROUP BY op.vn
+) pp ON pp.vn = o.vn
+WHERE o.vstdate BETWEEN ? AND ?
+AND i.vn IS NULL
+GROUP BY p.hipdata_code
+ORDER BY p.hipdata_code',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]);
         
         $check_income_ipd = DB::connection('hosxp')->select("
             SELECT o.op_income,o.op_paid,v.an_income,v.an_paid,v.an_rcpt,v.an_income-v.an_rcpt AS an_debtor,
