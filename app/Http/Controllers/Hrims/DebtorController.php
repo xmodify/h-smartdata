@@ -6018,7 +6018,7 @@ class DebtorController extends Controller
                 WHERE (li.kidney = "Y" OR li.ems = "Y" OR li.uc_cr = "Y"OR n.nhso_adp_code IN ("S1801","S1802"))
                 GROUP BY o.an, o.pttype) oth ON oth.an = i.an AND oth.pttype = ip.pttype
             WHERE i.confirm_discharge = "Y"
-            AND p.hipdata_code = IN ("UCS","WEL")
+            AND p.hipdata_code IN ("UCS","WEL")
             AND i.dchdate BETWEEN ? AND ?
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_202 WHERE an IS NOT NULL)
             GROUP BY i.an, ip.pttype
