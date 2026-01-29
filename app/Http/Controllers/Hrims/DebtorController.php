@@ -5556,7 +5556,7 @@ class DebtorController extends Controller
             WHERE (o.an IS NULL OR o.an = "")
             AND o.vstdate BETWEEN ? AND ?
             AND p.hipdata_code = "LGO"            
-            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.ppfs_price,0)-IFNULL(ch.other_price,0)) > 0
+            AND (IFNULL(v.income,0)-IFNULL(v.rcpt_money,0)-IFNULL(ch.ppfs_price,0)-IFNULL(ch.other_price,0)) > 0
             AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_801 WHERE vn IS NOT NULL)
             AND p.pttype NOT IN ('.$pttype_checkup.')
             GROUP BY o.vn, vp.pttype
