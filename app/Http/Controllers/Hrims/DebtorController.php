@@ -240,7 +240,7 @@ class DebtorController extends Controller
                 LEFT JOIN patient pt ON pt.hn = v.hn
                 LEFT JOIN (SELECT r.vn,SUM(r.bill_amount) AS rcpt_money
                     FROM rcpt_print r
-                    WHERE r.`status` = 'OK' GROUP BY r.vn) rc ON rc.vn = o.vn
+                    WHERE r.`status` = 'OK' GROUP BY r.vn) rc ON rc.vn = v.vn
                 WHERE v.vstdate BETWEEN ? AND ?
                 AND (i.an IS NULL OR i.an = '')
                 AND v.income <> 0
