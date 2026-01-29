@@ -110,7 +110,7 @@ class DebtorController extends Controller
     SUM(v.paid_money) AS paid_money,
     SUM(v.rcpt_money) AS rcpt_money,
     SUM(IFNULL(pp.ppfs_price,0)) AS ppfs,
-    SUM(v.income) - SUM(v.rcpt_money) AS debtor
+    SUM(v.income) - SUM(v.rcpt_money) - SUM(IFNULL(pp.ppfs_price,0)) AS debtor
 FROM ovst o
 LEFT JOIN ipt i ON i.vn = o.vn
 LEFT JOIN (
