@@ -2642,6 +2642,7 @@ class DebtorController extends Controller
         $start_date = Session::get('start_date');
         $end_date = Session::get('end_date');        
         $pttype_sss_fund = DB::table('main_setting')->where('name', 'pttype_sss_fund')->value('value'); 
+        $pttype_sss_ae = DB::table('main_setting')->where('name', 'pttype_sss_ae')->value('value');
         $request->validate([
         'checkbox' => 'required|array',
         ], [
