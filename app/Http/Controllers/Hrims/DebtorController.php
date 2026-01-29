@@ -105,9 +105,9 @@ class DebtorController extends Controller
                 COUNT(DISTINCT o.vn) AS vn,
                 SUM(IFNULL(inc.income,0)) AS income,
                 SUM(IFNULL(v.paid_money ,0)) AS paid_money ,
-                SUM(IFNULL(rc.rcpt_money,0)) AS rcpt_money,
+                SUM(IFNULL(inc.rcpt_money,0)) AS rcpt_money,
                 SUM(IFNULL(pp.ppfs_price,0)) AS ppfs,
-                SUM(IFNULL(inc.income,0))-SUM(IFNULL(rc.rcpt_money,0))-SUM(IFNULL(pp.ppfs_price,0)) AS debtor
+                SUM(IFNULL(inc.income,0))-SUM(IFNULL(inc.rcpt_money,0))-SUM(IFNULL(pp.ppfs_price,0)) AS debtor
             FROM ovst o
             LEFT JOIN ipt i ON i.vn = o.vn
             LEFT JOIN vn_stat v ON v.vn=o.vn   
@@ -123,7 +123,7 @@ class DebtorController extends Controller
             LEFT JOIN (SELECT op.vn,SUM(op.sum_price) AS ppfs_price
                 FROM opitemrece op
                 INNER JOIN htp_report.lookup_icode li ON li.icode = op.icode AND li.ppfs = "Y"
-                WHERE op.paidst = "02" AND op.vstdate BETWEEN ? AND ? GROUP BY op.vn ) pp ON pp.vn = o.vn
+                WHERE op.vstdate BETWEEN ? AND ? GROUP BY op.vn ) pp ON pp.vn = o.vn
             WHERE o.vstdate BETWEEN ? AND ?
             AND i.vn IS NULL 
             GROUP BY p.hipdata_code
