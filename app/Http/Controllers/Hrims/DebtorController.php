@@ -231,16 +231,20 @@ class DebtorController extends Controller
 
         $check = DB::connection('hosxp')->select("
             SELECT * FROM (SELECT 'OPD' AS dep,v.vstdate AS serv_date,v.vn AS vnan,v.hn,CONCAT(pt.pname,pt.fname,' ',pt.lname) AS ptname,
-                    p.hipdata_code,p.name AS pttype,vp.hospmain,v.pdx,v.income,v.paid_money,v.rcpt_money, v.income - v.rcpt_money AS debtor
+                    p.hipdata_code,p.name AS pttype,vp.hospmain,v.pdx,v.income,v.paid_money,IFNULL(rc.rcpt_money,0),
+                     v.income - IFNULL(rc.rcpt_money,0) AS debtor
                 FROM vn_stat v
                 LEFT JOIN ipt i ON i.vn = v.vn
                 LEFT JOIN visit_pttype vp ON vp.vn = v.vn
                 LEFT JOIN pttype p ON p.pttype = vp.pttype
                 LEFT JOIN patient pt ON pt.hn = v.hn
+                LEFT JOIN (SELECT r.vn,SUM(r.bill_amount) AS rcpt_money
+                    FROM rcpt_print r
+                    WHERE r.`status` = 'OK' GROUP BY r.vn) rc ON rc.vn = o.vn
                 WHERE v.vstdate BETWEEN ? AND ?
                 AND (i.an IS NULL OR i.an = '')
                 AND v.income <> 0
-                AND v.income - v.rcpt_money <> 0
+                AND v.income - IFNULL(rc.rcpt_money,0) <> 0
                 AND v.vn NOT IN ( SELECT vn FROM htp_report.debtor_1102050101_103
                     UNION ALL SELECT vn FROM htp_report.debtor_1102050101_109
                     UNION ALL SELECT vn FROM htp_report.debtor_1102050101_201
