@@ -256,7 +256,7 @@ class DebtorController extends Controller
                 WHERE v.vstdate BETWEEN ? AND ?
                 AND (i.an IS NULL OR i.an = '')
                 AND IFNULL(inc.income,0) <> 0
-                AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(pp.ppfs_price,0)) <> 0
+                AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(pp.ppfs_price,0)) > 0
                 AND v.vn NOT IN ( SELECT vn FROM htp_report.debtor_1102050101_103
                     UNION ALL SELECT vn FROM htp_report.debtor_1102050101_109
                     UNION ALL SELECT vn FROM htp_report.debtor_1102050101_201
@@ -304,7 +304,7 @@ class DebtorController extends Controller
                     GROUP BY r.vn) rc ON rc.an = i.an
                 WHERE i.dchdate BETWEEN ? AND ?
                 AND IFNULL(inc.income,0) <> 0
-                AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)) <> 0
+                AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)) > 0
                 AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_202
                     UNION ALL SELECT an FROM htp_report.debtor_1102050101_217
                     UNION ALL SELECT an FROM htp_report.debtor_1102050101_302
