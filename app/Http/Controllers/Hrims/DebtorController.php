@@ -230,21 +230,33 @@ class DebtorController extends Controller
         $end_date   = $request->end_date   ?: date('Y-m-d', strtotime('-1 day'));
 
         $check = DB::connection('hosxp')->select("
-            SELECT * FROM (SELECT 'OPD' AS dep,v.vstdate AS serv_date,v.vn AS vnan,v.hn,CONCAT(pt.pname,pt.fname,' ',pt.lname) AS ptname,
-                    p.hipdata_code,p.name AS pttype,vp.hospmain,v.pdx,v.income,v.paid_money,IFNULL(rc.rcpt_money,0) AS rcpt_money,
-                     v.income - IFNULL(rc.rcpt_money,0) AS debtor
+            SELECT * FROM (SELECT 'OPD' AS dep,v.vstdate AS serv_date,v.vn AS vnan,v.hn,
+                    CONCAT(pt.pname,pt.fname,' ',pt.lname) AS ptname,p.hipdata_code,p.name AS pttype,
+                    vp.hospmain,v.pdx,IFNULL(inc.income,0) AS income,v.paid_money,
+                    IFNULL(rc.rcpt_money,0) AS rcpt_money, IFNULL(pp.ppfs_price,0) AS ppfs_price,pp.ppfs_list,
+                    IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(pp.ppfs_price,0) AS debtor
                 FROM vn_stat v
                 LEFT JOIN ipt i ON i.vn = v.vn
                 LEFT JOIN visit_pttype vp ON vp.vn = v.vn
                 LEFT JOIN pttype p ON p.pttype = vp.pttype
                 LEFT JOIN patient pt ON pt.hn = v.hn
+                LEFT JOIN (SELECT op.vn,op.pttype,SUM(op.sum_price) AS income
+                    FROM opitemrece op
+                    WHERE op.vstdate BETWEEN ? AND ?
+                    GROUP BY op.vn, op.pttype) inc ON inc.vn = v.vn AND inc.pttype = vp.pttype
                 LEFT JOIN (SELECT r.vn,SUM(r.bill_amount) AS rcpt_money
                     FROM rcpt_print r
                     WHERE r.`status` = 'OK' GROUP BY r.vn) rc ON rc.vn = v.vn
+                LEFT JOIN ( SELECT op.vn, SUM(CASE WHEN li.ppfs = 'Y' THEN op.sum_price ELSE 0 END) AS ppfs_price,
+                    GROUP_CONCAT(DISTINCT sd.`name` ORDER BY sd.`name`) AS ppfs_list
+                    FROM opitemrece op
+                    INNER JOIN htp_report.lookup_icode li ON li.icode = op.icode
+                    LEFT JOIN s_drugitems sd ON sd.icode = op.icode
+                    WHERE li.ppfs = 'Y' AND op.vstdate BETWEEN ? AND ? GROUP BY op.vn) pp ON pp.vn = v.vn
                 WHERE v.vstdate BETWEEN ? AND ?
                 AND (i.an IS NULL OR i.an = '')
-                AND v.income <> 0
-                AND v.income - IFNULL(rc.rcpt_money,0) <> 0
+                AND IFNULL(inc.income,0) <> 0
+                AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(pp.ppfs_price,0)) <> 0
                 AND v.vn NOT IN ( SELECT vn FROM htp_report.debtor_1102050101_103
                     UNION ALL SELECT vn FROM htp_report.debtor_1102050101_109
                     UNION ALL SELECT vn FROM htp_report.debtor_1102050101_201
@@ -270,14 +282,30 @@ class DebtorController extends Controller
                     
                 UNION ALL    
                     
-                SELECT 'IPD' AS dep,a.dchdate AS serv_date,a.an AS vnan,a.hn,CONCAT(pt.pname,pt.fname,' ',pt.lname) AS ptname,
-                    p.hipdata_code,p.name AS pttype,ip.hospmain,a.pdx,a.income,a.paid_money,a.rcpt_money,a.income - a.rcpt_money AS debtor
-                FROM an_stat a
-                LEFT JOIN ipt_pttype ip ON ip.an = a.an
+                SELECT 'IPD' AS dep,i.dchdate AS serv_date,i.an AS vnan,i.hn,
+                    CONCAT(pt.pname, pt.fname, ' ', pt.lname) AS ptname,
+                    p.hipdata_code,p.name AS pttype,ip.hospmain,a.pdx,
+                    IFNULL(inc.income,0) AS income,a.paid_money,
+                    IFNULL(rc.rcpt_money,0) AS rcpt_money,0 AS ppfs_price,NULL AS ppfs_list,
+                    IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0) AS debtor
+                FROM ipt i
+                LEFT JOIN ipt_pttype ip ON ip.an = i.an
+                LEFT JOIN an_stat a ON a.an = i.an
                 LEFT JOIN pttype p ON p.pttype = ip.pttype
-                LEFT JOIN patient pt ON pt.hn = a.hn
-                WHERE a.dchdate BETWEEN ? AND ?
-                AND a.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_202
+                LEFT JOIN patient pt ON pt.hn = i.hn
+                LEFT JOIN (SELECT o.an,o.pttype,SUM(o.sum_price) AS income
+                    FROM opitemrece o
+                    INNER JOIN ipt i2 ON i2.an = o.an AND i2.confirm_discharge = 'Y' AND i2.dchdate BETWEEN ? AND ?
+                    GROUP BY o.an, o.pttype) inc ON inc.an = i.an AND inc.pttype = ip.pttype
+                LEFT JOIN (SELECT r.vn AS an,SUM(r.bill_amount) AS rcpt_money
+                    FROM rcpt_print r
+                    INNER JOIN ipt i3 ON i3.an = r.vn AND r.bill_date BETWEEN i3.regdate AND i3.dchdate
+                    WHERE r.status = 'OK' AND i3.dchdate BETWEEN ? AND ?
+                    GROUP BY r.vn) rc ON rc.an = i.an
+                WHERE i.dchdate BETWEEN ? AND ?
+                AND IFNULL(inc.income,0) <> 0
+                AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)) <> 0
+                AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_202
                     UNION ALL SELECT an FROM htp_report.debtor_1102050101_217
                     UNION ALL SELECT an FROM htp_report.debtor_1102050101_302
                     UNION ALL SELECT an FROM htp_report.debtor_1102050101_304
@@ -295,7 +323,9 @@ class DebtorController extends Controller
                     UNION ALL SELECT an FROM htp_report.debtor_1102050102_802
                     UNION ALL SELECT an FROM htp_report.debtor_1102050102_804
                 )  GROUP BY a.an ) x
-            ORDER BY dep DESC,hipdata_code, serv_date ",[$start_date,$end_date,$start_date,$end_date]);        
+            ORDER BY dep DESC,hipdata_code, serv_date "
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date
+            ,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]);    
 
         return view('hrims.debtor._check_nondebtor',compact('start_date','end_date','check'));
     }
@@ -692,7 +722,7 @@ class DebtorController extends Controller
                 WHERE r.`status` = "OK" GROUP BY r.vn) rc ON rc.vn = o.vn
             WHERE (o.an IS NULL OR o.an = "") 
             AND o.vstdate BETWEEN ? AND ?
-            AND (IFNULL(inc.income,0) - IFNULL(rc.rcpt_money,0)) <> 0
+            AND (IFNULL(inc.income,0) - IFNULL(rc.rcpt_money,0)) > 0
             AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_103 WHERE vn IS NOT NULL)
             AND vp.pttype IN ('.$pttype_checkup.')
             GROUP BY o.vn, vp.pttype
@@ -738,7 +768,7 @@ class DebtorController extends Controller
                 WHERE r.`status` = "OK" GROUP BY r.vn) rc ON rc.vn = o.vn
             WHERE (o.an IS NULL OR o.an = "") 
             AND o.vstdate BETWEEN ? AND ?
-            AND (IFNULL(inc.income,0) - IFNULL(rc.rcpt_money,0)) <> 0
+            AND (IFNULL(inc.income,0) - IFNULL(rc.rcpt_money,0)) > 0
             AND o.vn NOT IN (SELECT vn FROM hrims.debtor_1102050101_103 WHERE vn IS NOT NULL)
             AND vp.pttype IN ('.$pttype_checkup.')
             AND o.vn IN ('.$checkbox_string.')
@@ -1082,7 +1112,7 @@ class DebtorController extends Controller
                 WHERE op.vstdate BETWEEN ? AND ? GROUP BY op.vn) ch ON ch.vn = o.vn
             WHERE (o.an IS NULL OR o.an = "")
             AND o.vstdate BETWEEN ? AND ?
-            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) <> 0
+            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) > 0
             AND p.hipdata_code IN ("UCS","WEL")
             AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs = "Y")
             AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
@@ -1139,7 +1169,7 @@ class DebtorController extends Controller
                 WHERE op.vstdate BETWEEN ? AND ? GROUP BY op.vn) ch ON ch.vn = o.vn
             WHERE (o.an IS NULL OR o.an = "")
             AND o.vstdate BETWEEN ? AND ?
-            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) <> 0
+            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) > 0
             AND p.hipdata_code IN ("UCS","WEL")
             AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_ucs = "Y")
             AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
@@ -1383,7 +1413,7 @@ class DebtorController extends Controller
                 WHERE op.vstdate BETWEEN ? AND ? GROUP BY op.vn) ch ON ch.vn = o.vn
             WHERE (o.an IS NULL OR o.an = "")
             AND o.vstdate BETWEEN ? AND ?
-            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) <> 0
+            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) > 0
             AND p.hipdata_code IN ("UCS","WEL")
             AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y"	AND (hmain_ucs IS NULL OR hmain_ucs ="")) 
             AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
@@ -1441,7 +1471,7 @@ class DebtorController extends Controller
                 WHERE op.vstdate BETWEEN ? AND ? GROUP BY op.vn) ch ON ch.vn = o.vn
             WHERE (o.an IS NULL OR o.an = "")
             AND o.vstdate BETWEEN ? AND ?
-            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) <> 0
+            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) > 0
             AND p.hipdata_code IN ("UCS","WEL")
             AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y"	AND (hmain_ucs IS NULL OR hmain_ucs ="")) 
             AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
@@ -1689,7 +1719,7 @@ class DebtorController extends Controller
                 WHERE op.vstdate BETWEEN ? AND ? GROUP BY op.vn) ch ON ch.vn = o.vn
             WHERE (o.an IS NULL OR o.an = "")
             AND o.vstdate BETWEEN ? AND ?
-            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)) <> 0
+            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)) > 0
             AND p.hipdata_code IN ("UCS","WEL")            
             AND v.pdx IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
             AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_209 WHERE vn IS NOT NULL)
@@ -1745,7 +1775,7 @@ class DebtorController extends Controller
                 WHERE op.vstdate BETWEEN ? AND ? GROUP BY op.vn) ch ON ch.vn = o.vn
             WHERE (o.an IS NULL OR o.an = "")
             AND o.vstdate BETWEEN ? AND ?
-            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)) <> 0
+            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)) > 0
             AND p.hipdata_code IN ("UCS","WEL")            
             AND v.pdx IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
             AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_209 WHERE vn IS NOT NULL)
@@ -1964,7 +1994,7 @@ class DebtorController extends Controller
             LEFT JOIN ovst_eclaim oe ON oe.vn = o.vn
             WHERE (o.an IS NULL OR o.an = "")
             AND o.vstdate BETWEEN ? AND ?
-            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) <> 0
+            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) > 0
             AND p.hipdata_code IN ("UCS","WEL")
             AND vp.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y")  
             AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
@@ -2173,7 +2203,7 @@ class DebtorController extends Controller
             LEFT JOIN ovst_eclaim oe ON oe.vn = o.vn
             WHERE (o.an IS NULL OR o.an = "")
             AND o.vstdate BETWEEN ? AND ?
-            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) <> 0
+            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) > 0
             AND p.hipdata_code IN ("UCS","WEL")
             AND vp.hospmain NOT IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE in_province = "Y")  
             AND v.pdx NOT IN (SELECT icd10 FROM htp_report.lookup_icd10 WHERE pp = "Y")
@@ -2325,7 +2355,7 @@ class DebtorController extends Controller
                 GROUP BY op.vn) ch ON ch.vn = o.vn
             WHERE (o.an IS NULL OR o.an = "")
             AND o.vstdate BETWEEN ? AND ?
-            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) <> 0
+            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) > 0
             AND p.hipdata_code = "SSS"            
             AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_sss = "Y")
             AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_301 WHERE vn IS NOT NULL)
@@ -2383,7 +2413,7 @@ class DebtorController extends Controller
                 GROUP BY op.vn) ch ON ch.vn = o.vn
             WHERE (o.an IS NULL OR o.an = "")
             AND o.vstdate BETWEEN ? AND ?
-            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) <> 0
+            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) > 0
             AND p.hipdata_code = "SSS"            
             AND vp.hospmain IN (SELECT hospcode FROM htp_report.lookup_hospcode WHERE hmain_sss = "Y")
             AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_301 WHERE vn IS NOT NULL)
@@ -2840,7 +2870,7 @@ class DebtorController extends Controller
                 GROUP BY op.vn) ch ON ch.vn = o.vn
             WHERE (o.an IS NULL OR o.an = "")
             AND o.vstdate BETWEEN ? AND ?
-            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) <> 0
+            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) > 0
             AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_307 WHERE vn IS NOT NULL)
             AND p.pttype IN ('.$pttype_sss_fund.')
             GROUP BY o.vn, vp.pttype
@@ -2933,7 +2963,7 @@ class DebtorController extends Controller
                 GROUP BY op.vn) ch ON ch.vn = o.vn
             WHERE (o.an IS NULL OR o.an = "")
             AND o.vstdate BETWEEN ? AND ?
-            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) <> 0
+            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) > 0
             AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_307 WHERE vn IS NOT NULL)
             AND p.pttype IN ('.$pttype_sss_fund.')
             AND o.vn IN ('.$checkbox_string.')
@@ -3210,7 +3240,7 @@ class DebtorController extends Controller
                 GROUP BY op.vn) ch ON ch.vn = o.vn
             WHERE (o.an IS NULL OR o.an = "")
             AND o.vstdate BETWEEN ? AND ?
-            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) <> 0
+            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) > 0
             AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_309 WHERE vn IS NOT NULL)
             AND p.pttype IN ('.$pttype_sss_ae.')
             GROUP BY o.vn, vp.pttype
@@ -3346,7 +3376,7 @@ class DebtorController extends Controller
                 GROUP BY op.vn) ch ON ch.vn = o.vn
             WHERE (o.an IS NULL OR o.an = "")
             AND o.vstdate BETWEEN ? AND ?
-            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) <> 0
+            AND (IFNULL(inc.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) > 0
             AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050101_309 WHERE vn IS NOT NULL)
             AND p.pttype IN ('.$pttype_sss_ae.')
             AND o.vn IN ('.$checkbox_string.')
@@ -4548,7 +4578,7 @@ class DebtorController extends Controller
             LEFT JOIN hospcode h ON h.hospcode = vp.hospmain
             WHERE (o.an IS NULL OR o.an = "")
             AND v.paid_money <> "0"
-            AND v.paid_money - v.rcpt_money > 0
+            AND v.paid_money - IFNULL(rc.rcpt_money,0) > 0
             AND o.vstdate BETWEEN ? AND ?
             AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_106 WHERE vn IS NOT NULL)
             ORDER BY o.vstdate, o.oqueue ',[$start_date,$end_date]); 
@@ -4612,7 +4642,7 @@ class DebtorController extends Controller
             LEFT JOIN hospcode h ON h.hospcode = vp.hospmain
             WHERE (o.an IS NULL OR o.an = "")
             AND v.paid_money <> "0"
-            AND v.paid_money - v.rcpt_money > 0
+            AND v.paid_money - IFNULL(rc.rcpt_money,0) > 0
             AND o.vstdate BETWEEN ? AND ?
             AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_106 WHERE vn IS NOT NULL)
             AND o.vn IN ('.$checkbox_string.')
@@ -5560,7 +5590,7 @@ class DebtorController extends Controller
             WHERE (o.an IS NULL OR o.an = "")
             AND o.vstdate BETWEEN ? AND ?
             AND p.hipdata_code = "LGO"            
-            AND (IFNULL(v.income,0)-IFNULL(v.rcpt_money,0)-IFNULL(ch.other_price,0)) > 0
+            AND (IFNULL(v.income,0)-IFNULL(rc.rcpt_money,0)-IFNULL(ch.other_price,0)) > 0
             AND o.vn NOT IN (SELECT vn FROM htp_report.debtor_1102050102_801 WHERE vn IS NOT NULL)
             AND p.pttype NOT IN ('.$pttype_checkup.')
             GROUP BY o.vn, vp.pttype
