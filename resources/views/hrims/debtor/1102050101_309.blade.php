@@ -446,7 +446,7 @@
                 cancelButtonText: 'ยกเลิก'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    document.querySelector("form[action='{{ url('debtor/1102050101_309_confirm_ae') }}']").submit();
+                    document.querySelector("form[action='{{ url('hrims/debtor/1102050101_309_confirm_ae') }}']").submit();
                 }
             });
         }

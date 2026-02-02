@@ -3396,10 +3396,12 @@ class DebtorController extends Controller
                 'hipdata_code'    => $row->hipdata_code,   
                 'pdx'             => $row->pdx,  
                 'income'          => $row->income,  
-                'rcpt_money'      => $row->rcpt_money,               
+                'rcpt_money'      => $row->rcpt_money,  
+                'other'           => $row->other, 
+                'ppfs'            => $row->ppfs,              
                 'debtor'          => $row->debtor,  
                 'status'          => $row->status,          
-            ]);           
+            ]);   
         }
 
         if (empty($checkbox) || !is_array($checkbox)) {
