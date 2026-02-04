@@ -378,9 +378,10 @@ class DebtorController extends Controller
             FROM debtor_1102050101_303 
             WHERE vstdate BETWEEN ? AND ?',[$start_date,$end_date]);
         $_1102050101_307 = DB::select('
-            SELECT COUNT(DISTINCT vn) AS anvn,SUM(debtor) AS debtor,IFNULL(SUM(receive),0) AS receive
-            FROM debtor_1102050101_307 
-            WHERE vstdate BETWEEN ? AND ?',[$start_date,$end_date]);
+            SELECT COUNT(DISTINCT IF(an IS NOT NULL AND an <> "", an, vn)) AS anvn,
+                SUM(debtor) AS debtor,IFNULL(SUM(receive),0) AS receive
+            FROM debtor_1102050101_307
+            WHERE COALESCE(dchdate, vstdate) BETWEEN ? AND ?',[$start_date,$end_date]);
         $_1102050101_309 = DB::select('
             SELECT COUNT(DISTINCT d.vn) AS anvn,SUM(d.debtor) AS debtor,
                 SUM(IFNULL(d.receive,0)) + SUM(IFNULL(s.receive,0)) AS receive
@@ -3181,11 +3182,13 @@ class DebtorController extends Controller
         $start_date = Session::get('start_date');
         $end_date = Session::get('end_date');
         $debtor = DB::select('
-            SELECT vstdate,COUNT(DISTINCT vn) AS anvn,
-            SUM(debtor) AS debtor,SUM(receive) AS receive
-            FROM debtor_1102050101_307  
-            WHERE vstdate BETWEEN ? AND ?
-            GROUP BY vstdate ORDER BY vstdate',[$start_date,$end_date]);
+            SELECT COALESCE(dchdate, vstdate) AS vstdate,
+                COUNT(DISTINCT IF(an IS NOT NULL AND an <> "", an, vn)) AS anvn,
+                SUM(debtor) AS debtor,SUM(receive) AS receive
+            FROM debtor_1102050101_307
+            WHERE COALESCE(dchdate, vstdate) BETWEEN ? AND ?
+            GROUP BY COALESCE(dchdate, vstdate)
+            ORDER BY vstdate',[$start_date,$end_date]);
 
         $pdf = PDF::loadView('hrims.debtor.1102050101_307_daily_pdf', compact('start_date','end_date','debtor'))
                     ->setPaper('A4', 'portrait');
