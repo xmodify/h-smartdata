@@ -34,6 +34,7 @@ class User_AccessController extends Controller
             'role' => 'user',
             'del_product' => '',
             'h_rims' => '',
+            'hn_plus' => '',
         ]);
 
         return redirect()->route('admin.user_access.index')->with('success', 'เพิ่มข้อมูลสำเร็จ');
@@ -61,7 +62,8 @@ class User_AccessController extends Controller
             'ptname' => $request->ptname,
             'role' => $request->role,
             'del_product' => $request->has('del_product') ? 'Y' : 'N',
-            'h_rims' => $request->has('h_rims') ? 'Y' : 'N',          
+            'h_rims' => $request->has('h_rims') ? 'Y' : 'N',  
+            'hn_plus' => $request->has('hn_plus') ? 'Y' : 'N',        
         ];
 
         $user->update($data);

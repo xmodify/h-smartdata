@@ -18,6 +18,7 @@
                 <th class="text-center" width = "5%">Role</th>
                 <th class="text-center" width = "10%">Del_Product</th>
                 <th class="text-center" width = "10%">H-Rims</th>
+                <th class="text-center" width = "10%">HN-Plus</th>
                 <th class="text-center" width = "20%">Actions</th>
             </tr>
         </thead>
@@ -29,6 +30,7 @@
                     <td class="text-center">{{ $user->role }}</td>
                     <td class="text-center">{{ $user->del_product }}</td>
                     <td class="text-center">{{ $user->h_rims }}</td>
+                    <td class="text-center">{{ $user->hn_plus }}</td>
                     <td>
                         <!-- ปุ่ม Edit -->
                         <button class="btn btn-warning btn-sm btn-edit"                            
@@ -37,6 +39,7 @@
                             data-role="{{ $user->role }}"
                             data-del_product="{{ $user->del_product }}"
                             data-h_rims="{{ $user->h_rims }}"
+                            data-hn_plus="{{ $user->hn_plus }}"
                             data-bs-toggle="modal"
                             data-bs-target="#editModal">
                             Edit
@@ -72,6 +75,9 @@
                     <br>                                  
                     <input type="checkbox" name="h_rims" id="h_rims" value="Y">
                     <label for="h_rims">H-RiMS</label>
+                    <br>                                  
+                    <input type="checkbox" name="hn_plus" id="hn_plus" value="Y">
+                    <label for="hn_plus">HN-Plus</label>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-primary">Save</button>
@@ -104,6 +110,10 @@
                     <input type="checkbox" name="h_rims" id="edith_rims" value="Y"
                         {{ $user->h_rims === 'Y' ? 'checked' : '' }}>
                     <label for="edith_rims">H-RiMS</label>
+                    <br>                                  
+                    <input type="checkbox" name="hn_plus" id="edithn_plus" value="Y"
+                        {{ $user->hn_plus === 'Y' ? 'checked' : '' }}>
+                    <label for="edithn_plus">HN-Plus</label>
                 </div>
   
                 <div class="modal-footer">
@@ -138,6 +148,8 @@
                 activedel_product.checked = (this.dataset.del_product === 'Y');
                 const activeh_rims= document.getElementById('edith_rims');
                 activeh_rims.checked = (this.dataset.h_rims === 'Y');
+                const activehn_plus= document.getElementById('edithn_plus');
+                activehn_plus.checked = (this.dataset.hn_plus === 'Y');
 
                 document.getElementById('editusername').value = username;
                 document.getElementById('editptname').value = ptname; 

@@ -95,8 +95,7 @@ public function wait_icd_coder(Request $request)
             LEFT JOIN ipt_doctor_diag id3 ON id3.an = i.an	AND id3.diagtype = 3
             LEFT JOIN ipt_doctor_diag id4 ON id4.an = i.an	AND id4.diagtype = 4
             LEFT JOIN ipt_doctor_diag id5 ON id5.an = i.an	AND id5.diagtype = 5
-            LEFT JOIN an_stat a ON a.an=i.an
-            LEFT JOIN 
+            LEFT JOIN an_stat a ON a.an=i.an 
             WHERE i.dchdate BETWEEN ? AND ?
             GROUP BY i.an) AS a',[$start_date,$end_date]); 
       foreach ($sql as $row){
