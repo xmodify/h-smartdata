@@ -84,6 +84,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::post('insert_lookup_ward', [LookupWardController::class, 'insert_lookup_ward'])->name('insert_lookup_ward');
     Route::resource('lookup_hospcode', LookupHospcodeController::class)->parameters(['lookup_hospcode' => 'hospcode']);
     Route::resource('budget_year', BudgetYearController::class)->parameters(['LEAVE_YEAR_ID' => 'LEAVE_YEAR_ID']);
+    Route::post('debtor/lock_debtor',[DebtorController::class, 'lock_debtor'])->name('lock_debtor');
 });
 
 // home ------------------------------------------------------------------------------------------------------------------------------
