@@ -13,7 +13,7 @@
         </div>
         <div class="col-md-4 text-end">
           @auth
-            @if(auth()->user()->status === 'admin')
+            @if (auth()->user()->hasAccessRole('admin')) 
               <button type="button"
                 class="btn btn-danger"
                 data-bs-toggle="modal"
