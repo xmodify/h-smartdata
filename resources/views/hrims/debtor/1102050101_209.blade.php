@@ -75,7 +75,7 @@
                     <?php $sum_other = 0 ; ?>
                     <?php $sum_ppfs = 0 ; ?>
                     <?php $sum_debtor = 0 ; ?>
-                    <?php $sum_receive_total = 0 ; ?>
+                    <?php $sum_receive_pp = 0 ; ?>
                     <?php $sum_receive = 0 ; ?>
                     @foreach($debtor as $row) 
                     <tr>
@@ -90,9 +90,9 @@
                         <td align="right">{{ number_format($row->other,2) }}</td>
                         <td align="right">{{ number_format($row->ppfs,2) }}</td>
                         <td align="right" class="text-primary">{{ number_format($row->debtor,2) }}</td>  
-                        <td align="right" @if($row->receive_total > 0) style="color:green" 
-                            @elseif($row->receive_total < 0) style="color:red" @endif>
-                            {{ number_format($row->receive_total,2) }}
+                        <td align="right" @if($row->receive_pp > 0) style="color:green" 
+                            @elseif($row->receive_pp < 0) style="color:red" @endif>
+                            {{ number_format($row->receive_pp,2) }}
                         </td>
                         <td align="right" @if(($row->receive-$row->debtor) > 0) style="color:green"
                             @elseif(($row->receive-$row->debtor) < 0) style="color:red" @endif>
@@ -106,7 +106,7 @@
                     <?php $sum_other += $row->other ; ?> 
                     <?php $sum_ppfs += $row->ppfs ; ?> 
                     <?php $sum_debtor += $row->debtor ; ?> 
-                    <?php $sum_receive_total += $row->receive_total ; ?>     
+                    <?php $sum_receive_pp += $row->receive_pp ; ?>     
                     <?php $sum_receive += $row->receive ; ?>       
                     @endforeach 
                     </tr>   
@@ -122,7 +122,7 @@
                     <th class="text-center">กองทุนอื่น</th>
                     <th class="text-center">PPFS</th>
                     <th class="text-center">ลูกหนี้</th> 
-                    <th class="text-center">ชดเชย STM</th>   
+                    <th class="text-center">ชดเชย PPFS</th>   
                     <th class="text-center">ผลต่าง</th> 
                     <th class="text-center">รายงาน</th>                
                 </tr>
@@ -135,9 +135,9 @@
                     <td class="text-primary" align="right">{{ number_format($sum_other,2)}}</td>
                     <td class="text-primary" align="right">{{ number_format($sum_ppfs,2)}}</td>
                     <td class="text-primary" align="right"><strong>{{ number_format($sum_debtor,2)}}</strong></td>
-                    <td align="right" @if($sum_receive_total > 0) style="color:green"
-                        @elseif($sum_receive_total < 0) style="color:red" @endif>
-                        <strong>{{ number_format($sum_receive_total,2)}}</strong>
+                    <td align="right" @if($sum_receive_pp > 0) style="color:green"
+                        @elseif($sum_receive_pp < 0) style="color:red" @endif>
+                        <strong>{{ number_format($sum_receive_pp,2)}}</strong>
                     </td>
                     <td align="right" @if(($sum_receive-$sum_debtor) > 0) style="color:green"
                         @elseif(($sum_receive-$sum_debtor) < 0) style="color:red" @endif>
