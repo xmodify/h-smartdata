@@ -1,18 +1,4 @@
 @extends('layouts.app')
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
-<style>
-    table {
-    border-collapse: collapse;
-    border-spacing: 0;
-    width: 100%;
-    border: 1px solid #ddd;
-    }
-    th, td {
-    padding: 8px;
-    }
-    tr:nth-child(even){background-color: #f2f2f2}
-</style>
 
 @section('content')
 <div class="container-fluid">
@@ -117,16 +103,76 @@
     </div>
 </div>
 @endsection
-<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
-<script type="text/javascript" class="init">
-    $(document).ready(function () {
-        $('#doctor').DataTable();
-    });
-</script>
-<script type="text/javascript" class="init">
-    $(document).ready(function () {
-        $('#doctor_non_active').DataTable();
-    });
-</script>
+@push('scripts')
+    <script>
+        $(document).ready(function () {
+        $('#doctor').DataTable({
+            dom: '<"row mb-3"' +
+                    '<"col-md-6"l>' +
+                    '<"col-md-6 d-flex justify-content-end align-items-center gap-2"fB>' +
+                '>' +
+                'rt' +
+                '<"row mt-3"' +
+                    '<"col-md-6"i>' +
+                    '<"col-md-6"p>' +
+                '>',
+            buttons: [
+            {
+                extend: 'excelHtml5',
+                text: 'Excel',
+                className: 'btn btn-success',
+                title: 'บุคลากรทางการแพทย์ (เปิดการใช้งาน)',
+                exportOptions: {
+                columns: ':visible'
+                }
+            }
+            ],
+            language: {
+            search: "ค้นหา:",
+            lengthMenu: "แสดง _MENU_ รายการ",
+            info: "แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ",
+            paginate: {
+                previous: "ก่อนหน้า",
+                next: "ถัดไป"
+            }
+            }
+        });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+        $('#doctor_non_active').DataTable({
+            dom: '<"row mb-3"' +
+                    '<"col-md-6"l>' +
+                    '<"col-md-6 d-flex justify-content-end align-items-center gap-2"fB>' +
+                '>' +
+                'rt' +
+                '<"row mt-3"' +
+                    '<"col-md-6"i>' +
+                    '<"col-md-6"p>' +
+                '>',
+            buttons: [
+            {
+                extend: 'excelHtml5',
+                text: 'Excel',
+                className: 'btn btn-success',
+                title: 'บุคลากรทางการแพทย์ (ปิดการใช้งาน)',
+                exportOptions: {
+                columns: ':visible'
+                }
+            }
+            ],
+            language: {
+            search: "ค้นหา:",
+            lengthMenu: "แสดง _MENU_ รายการ",
+            info: "แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ",
+            paginate: {
+                previous: "ก่อนหน้า",
+                next: "ถัดไป"
+            }
+            }
+        });
+        });
+    </script>
+@endpush
