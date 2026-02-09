@@ -93,7 +93,9 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
 });
 
 // home ------------------------------------------------------------------------------------------------------------------------------
-Route::redirect('/', '/home');
+Route::get('/', function () {
+    return redirect()->route('home');
+});
 Route::match(['get', 'post'], '/home', [HomeController::class, 'index'])->name('home');
 
 // backoffice_asset ------------------------------------------------------------------------------------------------------------------
@@ -591,7 +593,8 @@ Route::prefix('hrims')->middleware(['auth', 'hrims'])->name('hrims.')->group(fun
     Route::match(['get', 'post'], 'debtor/summary_pdf', [DebtorController::class, '_summary_pdf']);
     Route::get('debtor/forget_search', function () {
         Session::forget('search');
-        return redirect()->back(); });
+        return redirect()->back();
+    });
     Route::match(['get', 'post'], 'debtor/1102050101_103', [DebtorController::class, '_1102050101_103']);
     Route::post('debtor/1102050101_103_confirm', [DebtorController::class, '_1102050101_103_confirm']);
     Route::delete('debtor/1102050101_103_delete', [DebtorController::class, '_1102050101_103_delete']);
