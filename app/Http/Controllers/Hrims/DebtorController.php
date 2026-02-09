@@ -6197,7 +6197,7 @@ class DebtorController extends Controller
             AND i.dchdate BETWEEN ? AND ?
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_202 WHERE an IS NOT NULL)
             GROUP BY i.an, ip.pttype
-            ORDER BY i.ward, i.dchdate, i.an, ip.pttype',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ORDER BY i.ward, i.dchdate, i.an, ip.pttype',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
         $request->session()->put('end_date',$end_date);
@@ -6258,7 +6258,7 @@ class DebtorController extends Controller
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_202 WHERE an IS NOT NULL)
             AND i.an IN ('.$checkbox_string.') 
             GROUP BY i.an, ip.pttype
-            ORDER BY i.ward, i.dchdate, i.an, ip.pttype',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ORDER BY i.ward, i.dchdate, i.an, ip.pttype',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
             Debtor_1102050101_202::insert([
@@ -6414,7 +6414,7 @@ class DebtorController extends Controller
             AND i.dchdate BETWEEN ? AND ?            
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_217 WHERE an IS NOT NULL)
             GROUP BY i.an, ip.pttype
-            ORDER BY i.ward, i.dchdate',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ORDER BY i.ward, i.dchdate',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
         $request->session()->put('end_date',$end_date);
@@ -6475,7 +6475,7 @@ class DebtorController extends Controller
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_217 WHERE an IS NOT NULL)
             AND i.an IN ('.$checkbox_string.') 
             GROUP BY i.an, ip.pttype
-            ORDER BY i.ward, i.dchdate',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ORDER BY i.ward, i.dchdate',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
             Debtor_1102050101_217::insert([
@@ -6625,7 +6625,7 @@ class DebtorController extends Controller
 			AND ip.pttype NOT IN ('.$pttype_sss_72.') 
             GROUP BY i.an, ip.pttype
             ORDER BY i.ward, i.dchdate, i.an, ip.pttype'
-            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
         $request->session()->put('end_date',$end_date);
@@ -6691,7 +6691,7 @@ class DebtorController extends Controller
             AND i.an IN ('.$checkbox_string.') 
             GROUP BY i.an, ip.pttype
             ORDER BY i.ward, i.dchdate, i.an, ip.pttype'
-            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
             Debtor_1102050101_302::insert([
@@ -6851,7 +6851,7 @@ class DebtorController extends Controller
 			AND ip.pttype NOT IN ('.$pttype_sss_72.') 
             GROUP BY i.an, ip.pttype
             ORDER BY i.ward, i.dchdate, i.an, ip.pttype'
-            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
         $request->session()->put('end_date',$end_date);
@@ -6917,7 +6917,7 @@ class DebtorController extends Controller
             AND i.an IN ('.$checkbox_string.') 
             GROUP BY i.an, ip.pttype
             ORDER BY i.ward, i.dchdate, i.an, ip.pttype'
-            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
             Debtor_1102050101_304::insert([
@@ -7074,7 +7074,7 @@ class DebtorController extends Controller
 			AND ip.pttype IN ('.$pttype_sss_72.') 
             GROUP BY i.an, ip.pttype
             ORDER BY i.ward, i.dchdate, i.an, ip.pttype'
-            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
         $request->session()->put('end_date',$end_date);
@@ -7138,7 +7138,7 @@ class DebtorController extends Controller
             AND i.an IN ('.$checkbox_string.') 
             GROUP BY i.an, ip.pttype
             ORDER BY i.ward, i.dchdate, i.an, ip.pttype'
-            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
             Debtor_1102050101_308::insert([
@@ -7291,7 +7291,7 @@ class DebtorController extends Controller
             AND i.dchdate BETWEEN ? AND ?
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_310 WHERE an IS NOT NULL)
             GROUP BY i.an, ip.pttype 
-            ORDER BY i.ward, i.dchdate',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ORDER BY i.ward, i.dchdate',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
         $request->session()->put('end_date',$end_date);
@@ -7350,7 +7350,7 @@ class DebtorController extends Controller
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_310 WHERE an IS NOT NULL)
             AND i.an IN ('.$checkbox_string.')
             GROUP BY i.an, ip.pttype 
-            ORDER BY i.ward, i.dchdate',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ORDER BY i.ward, i.dchdate',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
             Debtor_1102050101_310::insert([
@@ -7527,7 +7527,7 @@ class DebtorController extends Controller
             AND i.dchdate BETWEEN ? AND ?
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_402 WHERE an IS NOT NULL)
             GROUP BY i.an, ip.pttype
-            ORDER BY i.ward, i.dchdate',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ORDER BY i.ward, i.dchdate',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
         $request->session()->put('end_date',$end_date);
@@ -7588,7 +7588,7 @@ class DebtorController extends Controller
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_402 WHERE an IS NOT NULL)
             AND i.an IN ('.$checkbox_string.') 
             GROUP BY i.an, ip.pttype
-            ORDER BY i.ward, i.dchdate',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ORDER BY i.ward, i.dchdate',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
             Debtor_1102050101_402::insert([
@@ -7734,7 +7734,7 @@ class DebtorController extends Controller
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_502 WHERE an IS NOT NULL)
             GROUP BY i.an, ip.pttype
             ORDER BY i.ward, i.dchdate, i.an, ip.pttype
-            ',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
         $request->session()->put('end_date',$end_date);
@@ -7796,7 +7796,7 @@ class DebtorController extends Controller
             AND i.an IN ('.$checkbox_string.') 
             GROUP BY i.an, ip.pttype
             ORDER BY i.ward, i.dchdate, i.an, ip.pttype
-            ',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
             Debtor_1102050101_502::insert([
@@ -7953,7 +7953,7 @@ class DebtorController extends Controller
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_504 WHERE an IS NOT NULL)
             GROUP BY i.an, ip.pttype
             ORDER BY i.ward, i.dchdate, i.an, ip.pttype
-            ',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
         $request->session()->put('end_date',$end_date);
@@ -8016,7 +8016,7 @@ class DebtorController extends Controller
             AND i.an IN ('.$checkbox_string.') 
             GROUP BY i.an, ip.pttype
             ORDER BY i.ward, i.dchdate, i.an, ip.pttype
-            ',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ',[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
             Debtor_1102050101_504::insert([
@@ -8163,7 +8163,7 @@ class DebtorController extends Controller
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050101_704 WHERE an IS NOT NULL)
             GROUP BY i.an, ip.pttype
             ORDER BY i.ward, i.dchdate, i.an, ip.pttype'
-            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
         $request->session()->put('end_date',$end_date);
@@ -8224,7 +8224,7 @@ class DebtorController extends Controller
             AND i.an IN ('.$checkbox_string.') 
             GROUP BY i.an, ip.pttype
             ORDER BY i.ward, i.dchdate, i.an, ip.pttype'
-            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
             Debtor_1102050101_704::insert([
@@ -8729,7 +8729,7 @@ class DebtorController extends Controller
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_109 WHERE an IS NOT NULL)
             GROUP BY i.an, ip.pttype
             ORDER BY i.ward, i.dchdate, i.an, ip.pttype'
-            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
         $request->session()->put('end_date',$end_date);
@@ -8790,7 +8790,7 @@ class DebtorController extends Controller
             AND i.an IN ('.$checkbox_string.') 
             GROUP BY i.an, ip.pttype
             ORDER BY i.ward, i.dchdate, i.an, ip.pttype'
-            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
             Debtor_1102050102_109::insert([
@@ -8968,7 +8968,7 @@ class DebtorController extends Controller
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_111 WHERE an IS NOT NULL)
             GROUP BY i.an, ip.pttype
             ORDER BY i.ward, i.dchdate'
-            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
         $request->session()->put('end_date',$end_date);
@@ -9030,7 +9030,7 @@ class DebtorController extends Controller
             AND i.an IN ('.$checkbox_string.') 
             GROUP BY i.an, ip.pttype
             ORDER BY i.ward, i.dchdate'
-            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
             Debtor_1102050102_111::insert([
@@ -9176,7 +9176,7 @@ class DebtorController extends Controller
             AND p.pttype IN ('.$pttype_act.') 
             GROUP BY i.an, ip.pttype
             ORDER BY i.ward, i.dchdate, i.an, ip.pttype'
-            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
         $request->session()->put('end_date',$end_date);
@@ -9239,7 +9239,7 @@ class DebtorController extends Controller
             AND i.an IN ('.$checkbox_string.') 
             GROUP BY i.an, ip.pttype
             ORDER BY i.ward, i.dchdate, i.an, ip.pttype'
-            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
             Debtor_1102050102_603::insert([
@@ -9415,7 +9415,7 @@ class DebtorController extends Controller
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_802 WHERE an IS NOT NULL)
             GROUP BY i.an, ip.pttype
             ORDER BY i.ward, i.dchdate'
-            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
         $request->session()->put('end_date',$end_date);
@@ -9477,7 +9477,7 @@ class DebtorController extends Controller
             AND i.an IN ('.$checkbox_string.') 
             GROUP BY i.an, ip.pttype
             ORDER BY i.ward, i.dchdate'
-            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
             Debtor_1102050102_802::insert([
@@ -9646,7 +9646,7 @@ class DebtorController extends Controller
             AND i.an NOT IN (SELECT an FROM htp_report.debtor_1102050102_804 WHERE an IS NOT NULL)
             GROUP BY i.an, ip.pttype
             ORDER BY i.ward, i.dchdate'
-            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
 
         $request->session()->put('start_date',$start_date);
         $request->session()->put('end_date',$end_date);
@@ -9708,7 +9708,7 @@ class DebtorController extends Controller
             AND i.an IN ('.$checkbox_string.') 
             GROUP BY i.an, ip.pttype
             ORDER BY i.ward, i.dchdate'
-            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
+            ,[$start_date,$end_date,$start_date,$end_date,$start_date,$end_date]); 
         
         foreach ($debtor as $row) {
             Debtor_1102050102_804::insert([
