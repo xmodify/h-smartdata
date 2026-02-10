@@ -8607,7 +8607,7 @@ class DebtorController extends Controller
         $debtor = DB::connection('hosxp')->select("
             SELECT d.dchdate AS vstdate,COUNT(DISTINCT d.vn) AS anvn,
                 SUM(d.debtor) AS debtor,SUM(IFNULL(d.receive,0) + IFNULL(r.bill_amount,0)) AS receive
-            FROM hrims.debtor_1102050102_107 d
+            FROM htp_report.debtor_1102050102_107 d
             LEFT JOIN (SELECT r.vn, r.bill_date,SUM(r.bill_amount) AS bill_amount
                 FROM rcpt_print r
                 WHERE NOT EXISTS (SELECT 1 FROM rcpt_abort a WHERE a.rcpno = r.rcpno)
